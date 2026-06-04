@@ -1,150 +1,168 @@
-"""
-✏️ Semana 05 — Ejercicios: Funciones
+"""✏️ Ejercicios — Funciones
 
-Completá cada función donde dice '# TU CÓDIGO ACÁ'.
-Algunos ejercicios te piden REFACTORIZAR: tomar código repetido y meterlo
-en una función para no repetirte.
-
-Para probar tu trabajo: en test_ejercicios.py cambiá _cargar("soluciones")
-por _cargar("ejercicios"). Respuestas completas en soluciones.py.
+Definir funciones, parámetros por defecto, recursión y lambdas. Algunos piden
+REFACTORIZAR: meter código repetido en una función. ✅ Corregir cuando termines.
 """
 
 
-# 1) Calculá el daño: ataque menos defensa. Nunca menos de 0.
+# Calcular el daño
+# Devolvé ataque menos defensa, pero nunca menos de 0.
+# Ejemplo:  calcular_dano(80, 50)  →  30   ·   calcular_dano(20, 50)  →  0
 def calcular_dano(ataque, defensa):
     """Devolvé ataque - defensa, con mínimo 0."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 2) Velocidad efectiva = velocidad base + (nivel * 2).
+# Velocidad efectiva
+# Devolvé la velocidad base más nivel × 2.
+# Ejemplo:  velocidad_efectiva(60, 20)  →  100
 def velocidad_efectiva(velocidad, nivel):
     """Devolvé velocidad + nivel * 2."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 3) Nivel a partir de la experiencia: cada 100 de exp = 1 nivel (división entera).
+# Nivel por experiencia
+# Cada 100 de experiencia equivale a 1 nivel (usá división entera //).
+# Ejemplo:  nivel_por_experiencia(350)  →  3
 def nivel_por_experiencia(exp):
     """Devolvé exp // 100."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 4) Experiencia necesaria para un nivel = nivel al cubo (nivel ** 3).
+# Experiencia para subir
+# La experiencia necesaria para un nivel es el nivel al cubo (nivel ** 3).
+# Ejemplo:  experiencia_para_nivel(5)  →  125
 def experiencia_para_nivel(nivel):
     """Devolvé nivel ** 3."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 5) Saludá al entrenador. La ciudad tiene un valor por DEFECTO: "Pueblo Paleta".
-#    saludar_entrenador("Ash") -> "Hola Ash de Pueblo Paleta"
-#    saludar_entrenador("Brock", "Ciudad Plateada") -> "Hola Brock de Ciudad Plateada"
+# Saludo con ciudad por defecto
+# Devolvé 'Hola <nombre> de <ciudad>'. 'ciudad' tiene valor por defecto "Pueblo Paleta".
+# Ejemplo:  saludar_entrenador("Ash")  →  "Hola Ash de Pueblo Paleta"
+#           saludar_entrenador("Brock", "Ciudad Plateada")  →  "Hola Brock de Ciudad Plateada"
 def saludar_entrenador(nombre, ciudad="Pueblo Paleta"):
-    """Devolvé 'Hola <nombre> de <ciudad>' usando el valor por defecto."""
+    """Devolvé 'Hola <nombre> de <ciudad>'."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 6) Aplicá una poción: sumá 'cura' al hp, sin pasar de hp_max. cura por defecto = 20.
+# Aplicar poción
+# Sumá 'cura' al hp, pero sin pasar de hp_max. 'cura' por defecto es 20.
+# Ejemplo:  aplicar_pocion(90, 100)  →  100   ·   aplicar_pocion(50, 100, 30)  →  80
 def aplicar_pocion(hp, hp_max, cura=20):
     """Devolvé el hp curado, sin superar hp_max."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 7) Promedio de tres stats.
+# Promedio de tres
+# Devolvé el promedio de los tres stats.
+# Ejemplo:  promedio_tres(30, 60, 90)  →  60.0
 def promedio_tres(a, b, c):
     """Devolvé el promedio de a, b y c."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 8) Total de stats: sumá hp, ataque, defensa y velocidad.
+# Total de stats
+# Sumá hp, ataque, defensa y velocidad.
+# Ejemplo:  total_stats(45, 49, 49, 45)  →  188
 def total_stats(hp, ataque, defensa, velocidad):
     """Devolvé la suma de los cuatro stats."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 9) Clasificá el poder según el total de stats:
-#    total < 200 -> "debil" ; total < 400 -> "promedio" ; si no -> "fuerte"
+# Clasificar el poder
+# Según el total de stats:  total < 200 → "debil" ,  total < 400 → "promedio" ,
+#                           si no      → "fuerte".
+# Ejemplo:  clasificar_poder(188)  →  "debil"
 def clasificar_poder(total):
     """Devolvé 'debil', 'promedio' o 'fuerte'."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 10) REFACTOR. Este código estaba repetido en muchos lados:
-#         resultado = (ataque - defensa) + bonus
-#         if resultado < 0: resultado = 0
-#     Convertilo en una función con 'bonus' por defecto en 0.
+# Refactor: daño con bonus
+# Este cálculo estaba repetido por todos lados: (ataque - defensa) + bonus, con mínimo 0.
+# Metelo en esta función, con 'bonus' por defecto en 0.
+# Ejemplo:  calcular_dano_con_bonus(80, 50, 10)  →  40
 def calcular_dano_con_bonus(ataque, defensa, bonus=0):
     """Devolvé (ataque - defensa) + bonus, con mínimo 0."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 11) Multiplicador de efectividad: 2.0 si es súper efectivo, 1.0 si no.
-#     Usá un parámetro 'es_super' con valor por defecto False.
+# Multiplicador de efectividad
+# Devolvé 2.0 si es súper efectivo, 1.0 si no. 'es_super' por defecto es False.
+# Ejemplo:  multiplicador_efectividad(True)  →  2.0
 def multiplicador_efectividad(es_super=False):
     """Devolvé 2.0 si es_super es True, sino 1.0."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 12) REFACTOR / COMPOSICIÓN. Calculá el daño final REUSANDO otras funciones:
-#     daño base = calcular_dano(ataque, defensa)
-#     daño final = daño base * multiplicador_efectividad(es_super)
-#     Devolvé el resultado como entero (int).
+# Daño final (componer funciones)
+# Reusá las funciones de arriba:  daño base = calcular_dano(ataque, defensa) ,
+# daño final = daño base × multiplicador_efectividad(es_super). Devolvé un int.
+# Ejemplo:  dano_final(80, 50, True)  →  60
 def dano_final(ataque, defensa, es_super=False):
     """Combiná calcular_dano y multiplicador_efectividad. Devolvé un int."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 13) Factorial RECURSIVO. factorial(n) = n * factorial(n-1), con caso base factorial(0)=1.
+# Factorial recursivo
+# factorial(n) = n × factorial(n-1), con caso base factorial(0) = 1.
+# Ejemplo:  factorial(5)  →  120
 def factorial(n):
-    """Devolvé n! usando recursión (la función se llama a sí misma)."""
+    """Devolvé n! usando recursión."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 14) Suma RECURSIVA del 1 al n. suma_recursiva(3) = 3 + 2 + 1 = 6.
+# Suma recursiva
+# Sumá del 1 al n llamando a la función dentro de sí misma.
+# Ejemplo:  suma_recursiva(3)  →  6   (3 + 2 + 1)
 def suma_recursiva(n):
     """Devolvé 1 + 2 + ... + n usando recursión."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 15) Potencia RECURSIVA. potencia(2, 3) = 8. Caso base: exp 0 -> 1.
+# Potencia recursiva
+# base elevado a exp, con recursión. Caso base: exp 0 → 1.
+# Ejemplo:  potencia_recursiva(2, 3)  →  8
 def potencia_recursiva(base, exp):
     """Devolvé base ** exp usando recursión."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 16) Cuenta regresiva RECURSIVA. Para n=3 -> "3,2,1,Ya!".
+# Cuenta regresiva recursiva
+# Igual que antes pero con recursión. Para n=3 → "3,2,1,Ya!".
+# Ejemplo:  cuenta_regresiva_recursiva(3)  →  "3,2,1,Ya!"
 def cuenta_regresiva_recursiva(n):
     """Devolvé la cuenta regresiva como string, usando recursión."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# ----------------------------------------------------------------------
-# Ejercicios 17 a 20: definí estas LAMBDAS (funciones de una línea).
-# Asignales una lambda a cada variable.
-# ----------------------------------------------------------------------
+# ── Lambdas: funciones de una línea. Reemplazá None por una lambda. ──
 
-# 17) 'doble' debe devolver el doble de un número. Ej: doble(5) -> 10.
-doble = None  # TU CÓDIGO ACÁ (reemplazá None por una lambda)
+# 'doble' devuelve el doble de un número.       Ej:  doble(5)  →  10
+doble = None  # TU CÓDIGO ACÁ
 
-# 18) 'al_cuadrado' debe devolver el número al cuadrado. Ej: al_cuadrado(4) -> 16.
+# 'al_cuadrado' devuelve el número al cuadrado. Ej:  al_cuadrado(4)  →  16
 al_cuadrado = None  # TU CÓDIGO ACÁ
 
-# 19) 'mayor' debe devolver el más grande de dos números. Ej: mayor(3, 8) -> 8.
+# 'mayor' devuelve el más grande de dos números. Ej:  mayor(3, 8)  →  8
 mayor = None  # TU CÓDIGO ACÁ
 
-# 20) 'es_par' debe devolver True si el número es par. Ej: es_par(4) -> True.
+# 'es_par' devuelve True si el número es par.   Ej:  es_par(4)  →  True
 es_par = None  # TU CÓDIGO ACÁ
