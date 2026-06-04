@@ -35,6 +35,14 @@ export const GRUPOS = [
       'sql-update-delete', 'sql-join', 'sqlite-python', 'proyecto-db',
     ],
   },
+  {
+    nombre: 'Inteligencia Artificial',
+    icono: '🤖',
+    slugs: [
+      'ia-intro', 'ia-datos', 'ia-clasificacion', 'ia-evaluacion',
+      'ia-regresion', 'ia-arboles', 'ia-clustering', 'ia-proyecto',
+    ],
+  },
   { nombre: 'Git', icono: '🔀', slugs: ['git'] },
   { nombre: 'Ayuda', icono: '❓', slugs: ['ayuda'] },
 ];

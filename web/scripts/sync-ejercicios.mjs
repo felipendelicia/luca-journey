@@ -48,6 +48,15 @@ const SEMANAS = [
   ['sql-join', 'SQL: relaciones y JOIN', 'sinnoh'],
   ['sqlite-python', 'SQLite desde Python', 'sinnoh'],
   ['proyecto-db', 'Proyecto: Pokédex en SQLite', 'sinnoh'],
+  // Unova — inteligencia artificial (scikit-learn)
+  ['ia-intro', 'ML: tu primer modelo', 'unova'],
+  ['ia-datos', 'ML: preparar los datos', 'unova'],
+  ['ia-clasificacion', 'ML: clasificación', 'unova'],
+  ['ia-evaluacion', 'ML: evaluar modelos', 'unova'],
+  ['ia-regresion', 'ML: regresión', 'unova'],
+  ['ia-arboles', 'ML: árboles de decisión', 'unova'],
+  ['ia-clustering', 'ML: clustering', 'unova'],
+  ['ia-proyecto', 'Proyecto: clasificador Pokédex', 'unova'],
 ];
 const IGNORAR = new Set(['ejercicios.py', 'soluciones.py', 'test_ejercicios.py']);
 const leer = (p) => (fs.existsSync(p) ? fs.readFileSync(p, 'utf-8') : null);
@@ -61,6 +70,7 @@ function paquetesDe(textos) {
   if (/\b(import matplotlib|from matplotlib|matplotlib\.pyplot)\b/.test(todo) || /\bplt\./.test(todo)) pk.push('matplotlib');
   if (/\b(import flask|from flask)\b/.test(todo) || /\bFlask\(/.test(todo)) pk.push('flask');
   if (/\bimport sqlite3\b|\bsqlite3\./.test(todo)) pk.push('sqlite3');
+  if (/\bfrom sklearn\b|\bimport sklearn\b|\bsklearn\./.test(todo)) pk.push('scikit-learn');
   return pk;
 }
 
