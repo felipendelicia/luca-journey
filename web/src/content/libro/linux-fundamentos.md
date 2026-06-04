@@ -3,7 +3,7 @@ title: "Linux: Fundamentos"
 order: 10
 ---
 
-> 🎯 **Meta de la semana:** moverte por tu computadora usando solo texto, sin mouse. Vas a aprender los comandos básicos de la terminal de Linux.
+> 🎯 **Meta:** moverte por tu computadora usando solo texto, sin mouse. Vas a aprender los comandos básicos de la terminal de Linux.
 
 ---
 
@@ -221,11 +221,11 @@ Esa primera columna `-rwxr-xr--` son los permisos:
 - Después, en grupos de 3: **dueño**, **grupo**, **otros**.
 - `r` = leer (*read*), `w` = escribir (*write*), `x` = ejecutar (*execute*).
 
-Por ahora solo necesitás **reconocerlos**. En la semana 2 vas a aprender a cambiarlos con `chmod`.
+Por ahora solo necesitás **reconocerlos**. Más adelante vas a aprender a cambiarlos con `chmod`.
 
 ---
 
-## 📝 Resumen de la semana
+## 📝 Resumen
 
 | Comando | Qué hace | Analogía Pokémon |
 |---------|----------|------------------|
@@ -248,11 +248,6 @@ Por ahora solo necesitás **reconocerlos**. En la semana 2 vas a aprender a camb
 
 ## ➡️ ¿Y ahora qué?
 
-1. Abrí `ejercicios.md` y hacé los 15 desafíos en tu terminal de verdad.
-2. Si te trabás, mirá `soluciones.md`.
-3. Jugá el `interactivo.py` para practicar sin miedo a romper nada:
-   ```bash
-   python interactivo.py
-   ```
+Probá los comandos vos mismo y seguí con el próximo capítulo para sumar más herramientas a tu Pokédex. 💪
 
 > ⚡ *"Todo gran Entrenador empezó sin saber usar la Pokédex. Vos ya diste el primer paso."*

@@ -3,13 +3,13 @@ title: "Linux: Intermedio"
 order: 20
 ---
 
-> 🎯 **Meta de la semana:** dejar de ser un Entrenador novato y convertirte en uno que **configura su propia base de operaciones**. Vas a editar archivos, escribir tus primeros scripts, encadenar comandos y manejar procesos.
+> 🎯 **Meta:** dejar de ser un Entrenador novato y convertirte en uno que **configura su propia base de operaciones**. Vas a editar archivos, escribir tus primeros scripts, encadenar comandos y manejar procesos.
 
 ---
 
 ## 🎮 Analogía: tu base de operaciones
 
-En la semana 1 aprendiste a caminar por el mundo Pokémon. Esta semana **construís tu base**: automatizás tareas, organizás tu información y le das poder a tu Pokédex.
+Antes aprendiste a caminar por el mundo Pokémon. Ahora **construís tu base**: automatizás tareas, organizás tu información y le das poder a tu Pokédex.
 
 Un Entrenador avanzado no captura Pokémon uno por uno a mano: arma **máquinas** (scripts) que hacen el trabajo repetitivo por él. Eso es lo que vas a aprender.
 
@@ -159,7 +159,7 @@ kill -9 1234        # -9 = cierre forzado. El "golpe crítico". Usar solo si hac
 
 ## 🔐 chmod: cambiar permisos
 
-En la semana 1 aprendiste a **leer** los permisos. Ahora los **cambiás** con `chmod`.
+Antes aprendiste a **leer** los permisos. Ahora los **cambiás** con `chmod`.
 
 ```bash
 chmod +x script.sh      # agrega permiso de ejecución (la forma más común)
@@ -214,7 +214,7 @@ Te va a pedir contraseña, y después tenés una terminal en la máquina remota.
 
 ---
 
-## 📝 Resumen de la semana
+## 📝 Resumen
 
 | Comando | Qué hace |
 |---------|----------|
@@ -235,14 +235,6 @@ Te va a pedir contraseña, y después tenés una terminal en la máquina remota.
 
 ## ➡️ ¿Y ahora qué?
 
-1. Hacé los ejercicios de `ejercicios.md` en tu terminal.
-2. Jugá el `interactivo.py`: te guía a escribir tu **primer script bash real**.
-   ```bash
-   python interactivo.py
-   ```
-3. Poné a prueba lo aprendido con el quiz:
-   ```bash
-   python quiz.py
-   ```
+Probá los comandos vos mismo y seguí con el próximo capítulo para sumar más herramientas a tu Pokédex. 💪
 
 > ⚡ *"Un Entrenador que automatiza su trabajo tiene más tiempo para entrenar. Trabajá inteligente, no solo duro."*

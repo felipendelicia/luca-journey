@@ -3,7 +3,7 @@ title: "Python: Funciones"
 order: 50
 ---
 
-> 🎯 **Meta de la semana:** aprender a empaquetar código en **funciones** para reusarlo, organizarlo y no repetirte. Es uno de los conceptos más importantes de toda la programación.
+> 🎯 **Meta:** aprender a empaquetar código en **funciones** para reusarlo, organizarlo y no repetirte. Es uno de los conceptos más importantes de toda la programación.
 
 ---
 
@@ -161,7 +161,7 @@ sumar = lambda a, b: a + b
 print(sumar(3, 4))    # 7
 ```
 
-> 💡 Las lambda se usan mucho para ordenar o filtrar (lo vas a ver en la semana 6). Por ahora, alcanza con saber qué son.
+> 💡 Las lambda se usan mucho para ordenar o filtrar (lo vas a ver más adelante). Por ahora, alcanza con saber qué son.
 
 ---
 
@@ -200,7 +200,7 @@ print(factorial(5))    # 120
 
 ---
 
-## 📝 Resumen de la semana
+## 📝 Resumen
 
 ```python
 # Definir
@@ -234,11 +234,6 @@ doble = lambda x: x * 2
 
 ## ➡️ ¿Y ahora qué?
 
-1. Resolvé `ejercicios.py` (varios te piden refactorizar código repetido en funciones).
-2. Corré los tests: `pytest semana-05-python-funciones/`
-3. Jugá la **calculadora de estadísticas Pokémon**:
-   ```bash
-   python interactivo.py
-   ```
+Ahora **practicá**: andá a los [ejercicios de este tema](/ejercicios/funciones) y resolvelos. Se corrigen al instante con tests reales en tu navegador. 💪
 
 > ⚡ *"Una buena función es como un buen ataque: la aprendés una vez y te sirve toda la vida."*

@@ -3,7 +3,7 @@ title: "Python: Listas y Colecciones"
 order: 60
 ---
 
-> 🎯 **Meta de la semana:** guardar **muchos** datos juntos. Hasta ahora cada variable guardaba UNA cosa. Ahora vas a manejar equipos enteros, Pokédex completas y mucho más.
+> 🎯 **Meta:** guardar **muchos** datos juntos. Hasta ahora cada variable guardaba UNA cosa. Ahora vas a manejar equipos enteros, Pokédex completas y mucho más.
 
 ---
 
@@ -209,7 +209,7 @@ for nombre, nivel in zip(nombres, niveles):
 
 ---
 
-## 📝 Resumen de la semana
+## 📝 Resumen
 
 ```python
 # Lista: ordenada y modificable
@@ -244,11 +244,6 @@ for n, l in zip(nombres, niveles): ...
 
 ## ➡️ ¿Y ahora qué?
 
-1. Resolvé `ejercicios.py` (énfasis en manipular datos).
-2. Corré los tests: `pytest semana-06-python-listas-y-colecciones/`
-3. Jugá el **gestor de equipo Pokémon**:
-   ```bash
-   python interactivo.py
-   ```
+Ahora **practicá**: andá a los [ejercicios de este tema](/ejercicios/listas-y-colecciones) y resolvelos. Se corrigen al instante con tests reales en tu navegador. 💪
 
 > ⚡ *"Un buen Entrenador conoce a cada miembro de su equipo. Un buen programador conoce sus estructuras de datos."*

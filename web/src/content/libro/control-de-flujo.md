@@ -3,7 +3,7 @@ title: "Python: Control de Flujo"
 order: 40
 ---
 
-> 🎯 **Meta de la semana:** que tu programa **tome decisiones** y **repita** cosas. Hasta ahora tu código corría en línea recta. Ahora va a poder elegir caminos y dar vueltas.
+> 🎯 **Meta:** que tu programa **tome decisiones** y **repita** cosas. Hasta ahora tu código corría en línea recta. Ahora va a poder elegir caminos y dar vueltas.
 
 ---
 
@@ -123,7 +123,7 @@ print("¡Ganaste la batalla! 🏆")
 `for` recorre una secuencia de valores, uno por uno. Es el bucle de "para cada...".
 
 ```python
-# Recorre una lista de Pokémon (las listas las vemos a fondo en la semana 6).
+# Recorre una lista de Pokémon (las listas las vemos a fondo más adelante).
 equipo = ["Pikachu", "Charizard", "Snorlax"]
 
 for pokemon in equipo:
@@ -175,7 +175,7 @@ for pokemon in equipo:
 
 ---
 
-## 📝 Resumen de la semana
+## 📝 Resumen
 
 ```python
 # if / elif / else: decisiones
@@ -216,11 +216,6 @@ for i in range(5):
 
 ## ➡️ ¿Y ahora qué?
 
-1. Resolvé `ejercicios.py`.
-2. Corré los tests: `pytest semana-04-python-control-de-flujo/`
-3. Jugá el **simulador de batalla por turnos**:
-   ```bash
-   python interactivo.py
-   ```
+Ahora **practicá**: andá a los [ejercicios de este tema](/ejercicios/control-de-flujo) y resolvelos. Se corrigen al instante con tests reales en tu navegador. 💪
 
 > ⚡ *"En la batalla y en el código, las buenas decisiones ganan combates."*

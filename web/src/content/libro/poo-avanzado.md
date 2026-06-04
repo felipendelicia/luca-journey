@@ -3,7 +3,7 @@ title: "Python: POO Avanzado"
 order: 90
 ---
 
-> 🎯 **Meta de la semana:** llevar la POO al siguiente nivel con **herencia** y **polimorfismo**. Vas a crear familias de clases donde los Pokémon de Fuego, Agua y Planta comparten cosas pero cada uno tiene su estilo.
+> 🎯 **Meta:** llevar la POO al siguiente nivel con **herencia** y **polimorfismo**. Vas a crear familias de clases donde los Pokémon de Fuego, Agua y Planta comparten cosas pero cada uno tiene su estilo.
 
 ---
 
@@ -196,7 +196,7 @@ print(charizard.atacar())
 
 ---
 
-## 📝 Resumen de la semana
+## 📝 Resumen
 
 ```python
 from abc import ABC, abstractmethod
@@ -245,11 +245,6 @@ class PokemonFuego(Pokemon):              # herencia
 
 ## ➡️ ¿Y ahora qué?
 
-1. Resolvé `ejercicios.py`.
-2. Corré los tests: `pytest semana-09-python-poo-avanzado/`
-3. Jugá el **sistema de tipos Pokémon** (batallas con ventajas):
-   ```bash
-   python interactivo.py
-   ```
+Ahora **practicá**: andá a los [ejercicios de este tema](/ejercicios/poo-avanzado) y resolvelos. Se corrigen al instante con tests reales en tu navegador. 💪
 
 > ⚡ *"Un buen sistema de clases es como una buena familia Pokémon: comparten raíces, pero cada uno brilla a su manera."*

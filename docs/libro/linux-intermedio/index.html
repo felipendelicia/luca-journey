@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="es"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Linux: Intermedio — Python con Pokémon</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&display=swap"><link rel="stylesheet" href="/luca-journey/_astro/recursos.UAvNNIhJ.css"><script type="module" src="/luca-journey/_astro/hoisted.55VPuE-h.js"></script></head> <body> <div class="bg-grid" aria-hidden="true"></div> <header class="topbar"> <a class="brand-link" href="/luca-journey/"><span class="pb"></span><span class="brand">Pokédex <b>Codex</b></span></a> <div class="tools"> <a class="navlink" href="/luca-journey/">Inicio</a><a class="navlink activo" href="/luca-journey/libro">Libro</a><a class="navlink" href="/luca-journey/ejercicios">Ejercicios</a><a class="navlink" href="/luca-journey/liga">Liga</a><a class="navlink" href="/luca-journey/playground">Playground</a> <button class="theme-toggle" id="theme-toggle" type="button" title="Tema claro/oscuro">🌙</button> </div> </header> <script>(function(){const base = "/luca-journey";
 window.__BASE = base;})();</script>  <div class="wrap"> <div class="book-layout"> <aside class="book-rail"> <div class="rail-tit">Capítulos</div> <details class="grupo"> <summary><span class="g-ico">🎒</span>Introducción</summary> <a class="" href="/luca-journey/libro/introduccion"> <span class="rn">0</span><span>Cómo usar este libro</span> </a> </details><details class="grupo" open> <summary><span class="g-ico">🐧</span>Linux</summary> <a class="" href="/luca-journey/libro/linux-fundamentos"> <span class="rn">1</span><span>Linux: Fundamentos</span> </a><a class="activo" href="/luca-journey/libro/linux-intermedio"> <span class="rn">2</span><span>Linux: Intermedio</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🐍</span>Python</summary> <a class="" href="/luca-journey/libro/python-introduccion"> <span class="rn">3</span><span>Python: Introducción</span> </a><a class="" href="/luca-journey/libro/control-de-flujo"> <span class="rn">4</span><span>Python: Control de Flujo</span> </a><a class="" href="/luca-journey/libro/funciones"> <span class="rn">5</span><span>Python: Funciones</span> </a><a class="" href="/luca-journey/libro/listas-y-colecciones"> <span class="rn">6</span><span>Python: Listas y Colecciones</span> </a><a class="" href="/luca-journey/libro/cadenas-y-archivos"> <span class="rn">7</span><span>Python: Cadenas y Archivos</span> </a><a class="" href="/luca-journey/libro/poo-introduccion"> <span class="rn">8</span><span>Python: POO Introducción</span> </a><a class="" href="/luca-journey/libro/poo-avanzado"> <span class="rn">9</span><span>Python: POO Avanzado</span> </a><a class="" href="/luca-journey/libro/modulos-y-pip"> <span class="rn">10</span><span>Python: Módulos y pip</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🔀</span>Git</summary> <a class="" href="/luca-journey/libro/git"> <span class="rn">11</span><span>Git: Control de Versiones</span> </a> </details><details class="grupo"> <summary><span class="g-ico">❓</span>Ayuda</summary> <a class="" href="/luca-journey/libro/ayuda"> <span class="rn">12</span><span>Ayuda y glosario</span> </a> </details> </aside> <main class="book"> <h1>Linux: Intermedio</h1> <div class="callout nota"><span class="et">META</span>
-<p>🎯 <strong>Meta de la semana:</strong> dejar de ser un Entrenador novato y convertirte en uno que <strong>configura su propia base de operaciones</strong>. Vas a editar archivos, escribir tus primeros scripts, encadenar comandos y manejar procesos.</p>
+<p>🎯 <strong>Meta:</strong> dejar de ser un Entrenador novato y convertirte en uno que <strong>configura su propia base de operaciones</strong>. Vas a editar archivos, escribir tus primeros scripts, encadenar comandos y manejar procesos.</p>
 </div>
 <hr>
 <h2 id="-analogía-tu-base-de-operaciones">🎮 Analogía: tu base de operaciones</h2>
-<p>En la semana 1 aprendiste a caminar por el mundo Pokémon. Esta semana <strong>construís tu base</strong>: automatizás tareas, organizás tu información y le das poder a tu Pokédex.</p>
+<p>Antes aprendiste a caminar por el mundo Pokémon. Ahora <strong>construís tu base</strong>: automatizás tareas, organizás tu información y le das poder a tu Pokédex.</p>
 <p>Un Entrenador avanzado no captura Pokémon uno por uno a mano: arma <strong>máquinas</strong> (scripts) que hacen el trabajo repetitivo por él. Eso es lo que vas a aprender.</p>
 <hr>
 <h2 id="️-el-editor-nano">✍️ El editor nano</h2>
@@ -99,7 +99,7 @@ window.__BASE = base;})();</script>  <div class="wrap"> <div class="book-layout"
 <span class="line"></span></code></pre>
 <hr>
 <h2 id="-chmod-cambiar-permisos">🔐 chmod: cambiar permisos</h2>
-<p>En la semana 1 aprendiste a <strong>leer</strong> los permisos. Ahora los <strong>cambiás</strong> con <code>chmod</code>.</p>
+<p>Antes aprendiste a <strong>leer</strong> los permisos. Ahora los <strong>cambiás</strong> con <code>chmod</code>.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">chmod</span><span style="color:#98C379"> +x</span><span style="color:#98C379"> script.sh</span><span style="color:#7F848E;font-style:italic">      # agrega permiso de ejecución (la forma más común)</span></span>
 <span class="line"><span style="color:#61AFEF">chmod</span><span style="color:#D19A66"> -x</span><span style="color:#98C379"> script.sh</span><span style="color:#7F848E;font-style:italic">      # quita el permiso de ejecución</span></span>
 <span class="line"><span style="color:#61AFEF">chmod</span><span style="color:#D19A66"> 755</span><span style="color:#98C379"> script.sh</span><span style="color:#7F848E;font-style:italic">     # forma numérica (avanzada): dueño rwx, grupo y otros r-x</span></span>
@@ -136,7 +136,7 @@ window.__BASE = base;})();</script>  <div class="wrap"> <div class="book-layout"
 <p>💡 Por ahora solo necesitás saber <strong>qué es</strong>. Cuando tengas un servidor (o una Raspberry Pi), lo vas a usar todo el tiempo.</p>
 </div>
 <hr>
-<h2 id="-resumen-de-la-semana">📝 Resumen de la semana</h2>
+<h2 id="-resumen">📝 Resumen</h2>
 
 
 
@@ -197,17 +197,7 @@ window.__BASE = base;})();</script>  <div class="wrap"> <div class="book-layout"
 <table><thead><tr><th>Comando</th><th>Qué hace</th></tr></thead><tbody><tr><td><code>nano archivo</code></td><td>Edita un archivo de texto</td></tr><tr><td><code>$VARIABLE</code> / <code>export</code></td><td>Variables de entorno</td></tr><tr><td><code>chmod +x</code></td><td>Da permiso de ejecución</td></tr><tr><td><code>./script.sh</code></td><td>Ejecuta un script</td></tr><tr><td><code>></code> / <code>>></code></td><td>Redirige salida (reemplaza / agrega)</td></tr><tr><td><code>|</code> (pipe)</td><td>Conecta salida de un comando con otro</td></tr><tr><td><code>grep</code></td><td>Busca texto dentro de archivos</td></tr><tr><td><code>find</code></td><td>Busca archivos por nombre/tipo</td></tr><tr><td><code>ps</code> / <code>kill</code></td><td>Ver y cerrar procesos</td></tr><tr><td><code>sudo</code></td><td>Ejecuta como root</td></tr><tr><td><code>apt</code></td><td>Instala/desinstala programas</td></tr><tr><td><code>ssh</code></td><td>Te conecta a otra máquina</td></tr></tbody></table>
 <hr>
 <h2 id="️-y-ahora-qué">➡️ ¿Y ahora qué?</h2>
-<ol>
-<li>Hacé los ejercicios de <code>ejercicios.md</code> en tu terminal.</li>
-<li>Jugá el <code>interactivo.py</code>: te guía a escribir tu <strong>primer script bash real</strong>.
-<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">python</span><span style="color:#98C379"> interactivo.py</span></span>
-<span class="line"></span></code></pre>
-</li>
-<li>Poné a prueba lo aprendido con el quiz:
-<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">python</span><span style="color:#98C379"> quiz.py</span></span>
-<span class="line"></span></code></pre>
-</li>
-</ol>
+<p>Probá los comandos vos mismo y seguí con el próximo capítulo para sumar más herramientas a tu Pokédex. 💪</p>
 <div class="callout tip"><span class="et">ÁNIMO</span>
 <p>⚡ <em>“Un Entrenador que automatiza su trabajo tiene más tiempo para entrenar. Trabajá inteligente, no solo duro.”</em></p>
 </div> <nav class="cap-nav"> <a href="/luca-journey/libro/linux-fundamentos"><span class="dir">← Anterior</span><br>Linux: Fundamentos</a> <a class="next" href="/luca-journey/libro/python-introduccion"><span class="dir">Siguiente →</span><br>Python: Introducción</a> </nav> </main> </div> </div> <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>   <script>

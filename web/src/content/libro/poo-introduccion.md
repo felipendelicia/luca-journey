@@ -3,7 +3,7 @@ title: "Python: POO Introducción"
 order: 80
 ---
 
-> 🎯 **Meta de la semana:** aprender **Programación Orientada a Objetos (POO)**. Vas a crear tus propios "moldes" para fabricar Pokémon, cada uno con sus datos y sus acciones.
+> 🎯 **Meta:** aprender **Programación Orientada a Objetos (POO)**. Vas a crear tus propios "moldes" para fabricar Pokémon, cada uno con sus datos y sus acciones.
 
 ---
 
@@ -179,11 +179,11 @@ class Pokemon:
         return self._hp
 ```
 
-El guión bajo no lo "bloquea" de verdad (Python confía en vos), pero es una señal clara: *"accedé a esto solo a través de los métodos"*. En la semana 9 lo profundizamos con `@property`.
+El guión bajo no lo "bloquea" de verdad (Python confía en vos), pero es una señal clara: *"accedé a esto solo a través de los métodos"*. Más adelante lo profundizamos con `@property` (en POO: Avanzado).
 
 ---
 
-## 📝 Resumen de la semana
+## 📝 Resumen
 
 ```python
 class Pokemon:                          # clase = molde
@@ -222,11 +222,6 @@ print(pikachu)
 
 ## ➡️ ¿Y ahora qué?
 
-1. Resolvé `ejercicios.py` (vas de una clase básica a una con métodos de batalla).
-2. Corré los tests: `pytest semana-08-python-poo-introduccion/`
-3. Jugá el **creador de Pokémon personalizado**:
-   ```bash
-   python interactivo.py
-   ```
+Ahora **practicá**: andá a los [ejercicios de este tema](/ejercicios/poo-introduccion) y resolvelos. Se corrigen al instante con tests reales en tu navegador. 💪
 
 > ⚡ *"Una clase es un molde. Con un buen molde, fabricás Pokémon ilimitados."*

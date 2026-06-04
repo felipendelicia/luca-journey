@@ -3,7 +3,7 @@ title: "Python: Módulos y pip"
 order: 95
 ---
 
-> 🎯 **Meta de la semana:** usar código que ya escribieron otros. Vas a aprender a importar **módulos** de Python, instalar **librerías** con pip, y hasta consultar datos **reales de internet** con la PokéAPI.
+> 🎯 **Meta:** usar código que ya escribieron otros. Vas a aprender a importar **módulos** de Python, instalar **librerías** con pip, y hasta consultar datos **reales de internet** con la PokéAPI.
 
 ---
 
@@ -121,7 +121,7 @@ print(pokeutils.formatear_nombre("pikachu"))   # Pikachu
 print(pokeutils.es_legendario("Mewtwo"))       # True
 ```
 
-> 💡 En esta semana hay un `pokeutils.py` de ejemplo. Miralo: así se ven los módulos propios.
+> 💡 Acá tenés un `pokeutils.py` de ejemplo. Miralo: así se ven los módulos propios.
 
 ---
 
@@ -131,7 +131,7 @@ La librería estándar es enorme, pero a veces necesitás algo que no viene. **p
 
 ```bash
 pip install requests       # instala la librería 'requests'
-pip install flask          # instala Flask (semana 12)
+pip install flask          # instala Flask (para apps web)
 pip list                   # muestra lo que tenés instalado
 pip uninstall requests     # la desinstala
 ```
@@ -190,11 +190,11 @@ print(datos["weight"])                  # peso
 print(datos["types"][0]["type"]["name"])# electric
 ```
 
-> ⚠️ Para usar `requests` necesitás internet y tenerla instalada (`pip install requests`). El interactivo de esta semana maneja el caso de "no hay internet" sin romperse.
+> ⚠️ Para usar `requests` necesitás internet y tenerla instalada (`pip install requests`). Tené en cuenta el caso de "no hay internet" para que tu código no se rompa.
 
 ---
 
-## 📝 Resumen de la semana
+## 📝 Resumen
 
 ```python
 # Importar módulos estándar
@@ -233,12 +233,6 @@ datos = requests.get("https://pokeapi.co/api/v2/pokemon/pikachu").json()
 
 ## ➡️ ¿Y ahora qué?
 
-1. Resolvé `ejercicios.py`.
-2. Mirá el módulo de ejemplo `pokeutils.py`.
-3. Corré los tests: `pytest semana-10-python-modulos-y-pip/`
-4. Instalá requests (`pip install requests` o `bash ../setup.sh`) y jugá la **Pokédex online**:
-   ```bash
-   python interactivo.py
-   ```
+Ahora **practicá**: andá a los [ejercicios de este tema](/ejercicios/modulos-y-pip) y resolvelos. Se corrigen al instante con tests reales en tu navegador. 💪
 
 > ⚡ *"El mejor programador no es el que escribe más código, sino el que sabe reusar el de los demás."*

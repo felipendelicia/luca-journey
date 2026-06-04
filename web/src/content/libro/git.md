@@ -3,7 +3,7 @@ title: "Git: Control de Versiones"
 order: 96
 ---
 
-> 😌 **Semana relajada.** Después de tanto Python, frenamos un toque para aprender **Git**: la herramienta que usan TODOS los programadores para guardar su trabajo. Es fácil, es útil, y te va a salvar la vida mil veces.
+> 😌 **Capítulo relajado.** Después de tanto Python, frenamos un toque para aprender **Git**: la herramienta que usan TODOS los programadores para guardar su trabajo. Es fácil, es útil, y te va a salvar la vida mil veces.
 
 ---
 
@@ -228,7 +228,7 @@ Este ciclo lo vas a repetir **miles** de veces en tu vida de programador. 🔁
 
 ---
 
-## 📝 Resumen de la semana
+## 📝 Resumen
 
 | Comando | Qué hace |
 |---------|----------|
@@ -251,11 +251,6 @@ Este ciclo lo vas a repetir **miles** de veces en tu vida de programador. 🔁
 
 ## ➡️ ¿Y ahora qué?
 
-1. Hacé los ejercicios de `ejercicios.md` en una carpeta de prueba (¡con Git de verdad!).
-2. Si te trabás, mirá `soluciones.md`.
-3. Jugá el **simulador de Git** para practicar sin miedo:
-   ```bash
-   python interactivo.py
-   ```
+Probá los comandos vos mismo y seguí con el próximo capítulo para sumar más herramientas a tu Pokédex. 💪
 
 > ⚡ *"Programar sin Git es como jugar Pokémon sin poder guardar la partida. Una vez que lo usás, no querés volver atrás."*

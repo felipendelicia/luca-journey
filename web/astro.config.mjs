@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import rehypeCallouts from './src/lib/rehype-callouts.mjs';
+import rehypeBaseLinks from './src/lib/rehype-base-links.mjs';
 
 // Plataforma web del curso "Python con Pokémon".
 // En dev: base '/'. En build de producción: DEPLOY_BASE=/luca-journey (GitHub Pages).
@@ -16,6 +17,6 @@ export default defineConfig({
       wrap: false,
       transformers: [{ pre(node) { node.properties['data-language'] = this.options.lang; } }],
     },
-    rehypePlugins: [rehypeCallouts],
+    rehypePlugins: [rehypeCallouts, rehypeBaseLinks],
   },
 });

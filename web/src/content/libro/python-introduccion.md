@@ -3,7 +3,7 @@ title: "Python: Introducción"
 order: 30
 ---
 
-> 🎯 **Meta de la semana:** escribir tus primeros programas en Python. Vas a aprender a guardar datos en variables, mostrar cosas en pantalla y pedirle información al usuario.
+> 🎯 **Meta:** escribir tus primeros programas en Python. Vas a aprender a guardar datos en variables, mostrar cosas en pantalla y pedirle información al usuario.
 
 ---
 
@@ -181,7 +181,7 @@ print(f"{nombre} tiene {hp} HP y {ataque} de ataque")
 
 ---
 
-## 📝 Resumen de la semana
+## 📝 Resumen
 
 ```python
 # Variables: caja con nombre
@@ -221,12 +221,6 @@ print(f"{nombre} es nivel {nivel}")
 
 ## ➡️ ¿Y ahora qué?
 
-1. Hacé los ejercicios de `ejercicios.py` (escribí tu código donde dice `# TU CÓDIGO ACÁ`).
-2. Compará con `soluciones.py`.
-3. Corré los tests: `pytest semana-03-python-introduccion/`
-4. Jugá el interactivo, que te genera tu **tarjeta de Entrenador**:
-   ```bash
-   python interactivo.py
-   ```
+Ahora **practicá**: andá a los [ejercicios de este tema](/ejercicios/python-introduccion) y resolvelos. Se corrigen al instante con tests reales en tu navegador. 💪
 
 > ⚡ *"El viaje de mil Pokémon empieza con un solo `print()`."*

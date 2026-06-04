@@ -3,7 +3,7 @@ title: "Python: Cadenas y Archivos"
 order: 70
 ---
 
-> 🎯 **Meta de la semana:** trabajar con texto en profundidad y hacer que tus datos **sobrevivan** cuando cerrás el programa (guardándolos en archivos).
+> 🎯 **Meta:** trabajar con texto en profundidad y hacer que tus datos **sobrevivan** cuando cerrás el programa (guardándolos en archivos).
 
 ---
 
@@ -11,7 +11,7 @@ order: 70
 
 Hasta ahora, cuando cerrabas tu programa, todo se borraba: tu equipo, tus capturas, todo. Era una Pokédex con amnesia. 😵
 
-Esta semana le damos **memoria permanente**: vas a guardar datos en **archivos** del disco. Apagás la compu, volvés mañana, y tu Pokédex se acuerda de todo. 💾
+Acá le damos **memoria permanente**: vas a guardar datos en **archivos** del disco. Apagás la compu, volvés mañana, y tu Pokédex se acuerda de todo. 💾
 
 ---
 
@@ -183,7 +183,7 @@ Errores comunes que vas a atrapar:
 
 ---
 
-## 📝 Resumen de la semana
+## 📝 Resumen
 
 ```python
 # Métodos de string
@@ -226,12 +226,6 @@ except ValueError:
 
 ## ➡️ ¿Y ahora qué?
 
-1. Resolvé `ejercicios.py`.
-2. Corré los tests: `pytest semana-07-python-cadenas-y-archivos/`
-3. Mirá los datos de ejemplo en la carpeta `data/`.
-4. Jugá la **Pokédex con persistencia** (¡guarda y carga datos!):
-   ```bash
-   python interactivo.py
-   ```
+Ahora **practicá**: andá a los [ejercicios de este tema](/ejercicios/cadenas-y-archivos) y resolvelos. Se corrigen al instante con tests reales en tu navegador. 💪
 
 > ⚡ *"Los datos que no guardás, se los lleva el viento. Una buena Pokédex nunca olvida."*
