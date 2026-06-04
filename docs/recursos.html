@@ -390,10 +390,23 @@ body.dark strong{ color:#ffb3c6; }
 body.dark a{ color:#5fd0c8; }
 body.dark .toc, body.dark .reto{ background:var(--paper-2); }
 body.dark table{ background:var(--paper-2); }
+/* Cabeceras de tabla: en oscuro NO usar var(--ink) (es claro) */
+body.dark th{ background:#2a2d3c; color:var(--ink); }
 body.dark tbody tr:nth-child(even){ background:#20232f; }
 body.dark .nota{ background:#16243a; } body.dark .tip{ background:#13301f; }
 body.dark .cuidado{ background:#352a12; } body.dark .clave{ background:#2a1830; }
 body.dark .pokemon{ background:#34201c; }
+/* Barra superior y riel: forzar superficies oscuras (usaban tonos claros) */
+body.dark .topbar{ background:rgba(16,17,24,.86); border-bottom-color:var(--line); }
+body.dark .rail .device{ background:#0e0f15; }
+body.dark .rail nav a{ color:var(--ink-soft); }
+body.dark .rail nav a:hover{ background:var(--card); color:var(--ink); box-shadow:none; }
+body.dark .rail nav a:hover .rn{ background:var(--red); }
+/* La Pokéball de la portada mantiene su banda oscura en modo oscuro */
+body.dark .portada .pokeball{
+  background:linear-gradient(to bottom,#fff 0 46%,#211f2b 46% 54%,#fff 54%);
+  border-color:#211f2b; }
+body.dark .portada .pokeball::after{ border-color:#211f2b; }
 body.dark .bg-grid{
   background:
     radial-gradient(1200px 600px at 80% -10%, rgba(227,53,13,.16), transparent 60%),
