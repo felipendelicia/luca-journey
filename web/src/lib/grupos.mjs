@@ -3,12 +3,20 @@ export const GRUPOS = [
   { nombre: 'Introducción', icono: '🎒', slugs: ['introduccion'] },
   { nombre: 'Linux', icono: '🐧', slugs: ['linux-fundamentos', 'linux-intermedio'] },
   {
-    nombre: 'Python',
+    nombre: 'Fundamentos',
     icono: '🐍',
     slugs: [
       'python-introduccion', 'control-de-flujo', 'funciones',
       'listas-y-colecciones', 'cadenas-y-archivos',
       'poo-introduccion', 'poo-avanzado', 'modulos-y-pip',
+    ],
+  },
+  {
+    nombre: 'Análisis de datos',
+    icono: '📊',
+    slugs: [
+      'numpy-arrays', 'numpy-calculo', 'pandas-series-dataframe', 'pandas-seleccion',
+      'pandas-limpieza', 'pandas-groupby', 'matplotlib', 'analisis-integrador',
     ],
   },
   { nombre: 'Git', icono: '🔀', slugs: ['git'] },

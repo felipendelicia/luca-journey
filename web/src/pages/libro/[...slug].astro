@@ -74,11 +74,23 @@ const grupos = agrupar(caps);
       btn.disabled = true;
       try {
         const py = await getPy(out);
+        // cargar paquetes de datos si el código los usa
+        const pkgs = [];
+        if (/\bnumpy\b|\bnp\./.test(codigo)) pkgs.push('numpy');
+        if (/\bpandas\b|\bpd\./.test(codigo)) pkgs.push('pandas');
+        const usaPlot = /\bmatplotlib\b|\bplt\./.test(codigo);
+        if (usaPlot) pkgs.push('matplotlib');
+        if (pkgs.length) { out.innerHTML = '<span class="lbl">SALIDA</span>⏳ cargando ' + pkgs.join(', ') + '…'; await py.loadPackage(pkgs); }
         out.innerHTML = '<span class="lbl">SALIDA</span>';
         py.setStdout({ batched: (s) => out.appendChild(document.createTextNode(s + '\n')) });
         py.setStderr({ batched: (s) => { const e = document.createElement('span'); e.className = 'err'; e.textContent = s + '\n'; out.appendChild(e); } });
         py.setStdin({ stdin: () => { const v = window.prompt('input():'); return v === null ? '' : v; } });
+        if (usaPlot) await py.runPythonAsync("import matplotlib; matplotlib.use('AGG')");
         await py.runPythonAsync(codigo);
+        if (usaPlot) {
+          const b64 = await py.runPythonAsync("import io,base64,matplotlib.pyplot as _p\n_b=''\nif _p.get_fignums():\n    _f=io.BytesIO(); _p.gcf().savefig(_f,format='png',bbox_inches='tight',dpi=110); _p.close('all'); _b=base64.b64encode(_f.getvalue()).decode()\n_b");
+          if (b64) { const img = document.createElement('img'); img.className = 'cw-img'; img.src = 'data:image/png;base64,' + b64; out.appendChild(img); }
+        }
       } catch (err) {
         const e = document.createElement('span'); e.className = 'err';
         e.textContent = '\n' + (err && err.message ? err.message : err);

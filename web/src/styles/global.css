@@ -320,3 +320,13 @@ body.dark .ej-mini{ background:#3a1c1a; } body.dark .ej-mini.win{ background:#13
 .pt-bar{ flex:1; height:9px; background:var(--line-2); border-radius:99px; overflow:hidden; } .pt-bar i{ display:block; height:100%; background:linear-gradient(90deg,var(--teal),#27c93f); }
 .pt-num{ font-family:var(--font-mono); font-size:.82rem; color:var(--ink-mute); flex:0 0 auto; }
 .liga-nota{ color:var(--ink-mute); font-size:.9rem; margin-top:1.4rem; }
+
+/* gráficos matplotlib en la salida + regiones de la Liga */
+.cw-img{ display:block; max-width:100%; background:#fff; border-radius:8px; margin:10px 0 0; }
+.liga-h small{ font-weight:500; color:var(--ink-mute); font-size:.66em; }
+.reg-estado{ font-family:var(--font-pixel); font-size:9px; color:var(--ink-mute); margin-left:6px; }
+.region{ margin-bottom:1.6rem; }
+
+/* encabezado de región en el rail de ejercicios */
+.rail-region{ margin-bottom:14px; }
+.rail-region-tit{ font-family:var(--font-pixel); font-size:8.5px; letter-spacing:.08em; color:var(--red-deep); text-transform:uppercase; padding:0 9px; margin:4px 0 6px; border-bottom:1px solid var(--line); padding-bottom:5px; }

@@ -1,0 +1,118 @@
+<!DOCTYPE html><html lang="es"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>pandas: Series y DataFrame — Python con Pokémon</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&display=swap"><link rel="stylesheet" href="/luca-journey/_astro/recursos.Cg4y9nXX.css"><script type="module" src="/luca-journey/_astro/hoisted.6s-pdgTb.js"></script></head> <body> <div class="bg-grid" aria-hidden="true"></div> <header class="topbar"> <a class="brand-link" href="/luca-journey/"><span class="pb"></span><span class="brand">Pokédex <b>Codex</b></span></a> <div class="tools"> <a class="navlink" href="/luca-journey/">Inicio</a><a class="navlink activo" href="/luca-journey/libro">Libro</a><a class="navlink" href="/luca-journey/ejercicios">Ejercicios</a><a class="navlink" href="/luca-journey/liga">Liga</a><a class="navlink" href="/luca-journey/playground">Playground</a> <button class="theme-toggle" id="theme-toggle" type="button" title="Tema claro/oscuro">🌙</button> </div> </header> <script>(function(){const base = "/luca-journey";
+window.__BASE = base;})();</script>  <div class="wrap"> <div class="book-layout"> <aside class="book-rail"> <div class="rail-tit">Capítulos</div> <details class="grupo"> <summary><span class="g-ico">🎒</span>Introducción</summary> <a class="" href="/luca-journey/libro/introduccion"> <span class="rn">0</span><span>Cómo usar este libro</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🐧</span>Linux</summary> <a class="" href="/luca-journey/libro/linux-fundamentos"> <span class="rn">1</span><span>Linux: Fundamentos</span> </a><a class="" href="/luca-journey/libro/linux-intermedio"> <span class="rn">2</span><span>Linux: Intermedio</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🐍</span>Fundamentos</summary> <a class="" href="/luca-journey/libro/python-introduccion"> <span class="rn">3</span><span>Python: Introducción</span> </a><a class="" href="/luca-journey/libro/control-de-flujo"> <span class="rn">4</span><span>Python: Control de Flujo</span> </a><a class="" href="/luca-journey/libro/funciones"> <span class="rn">5</span><span>Python: Funciones</span> </a><a class="" href="/luca-journey/libro/listas-y-colecciones"> <span class="rn">6</span><span>Python: Listas y Colecciones</span> </a><a class="" href="/luca-journey/libro/cadenas-y-archivos"> <span class="rn">7</span><span>Python: Cadenas y Archivos</span> </a><a class="" href="/luca-journey/libro/poo-introduccion"> <span class="rn">8</span><span>Python: POO Introducción</span> </a><a class="" href="/luca-journey/libro/poo-avanzado"> <span class="rn">9</span><span>Python: POO Avanzado</span> </a><a class="" href="/luca-journey/libro/modulos-y-pip"> <span class="rn">10</span><span>Python: Módulos y pip</span> </a> </details><details class="grupo" open> <summary><span class="g-ico">📊</span>Análisis de datos</summary> <a class="" href="/luca-journey/libro/numpy-arrays"> <span class="rn">11</span><span>NumPy: Arrays</span> </a><a class="" href="/luca-journey/libro/numpy-calculo"> <span class="rn">12</span><span>NumPy: Cálculo numérico</span> </a><a class="activo" href="/luca-journey/libro/pandas-series-dataframe"> <span class="rn">13</span><span>pandas: Series y DataFrame</span> </a><a class="" href="/luca-journey/libro/pandas-seleccion"> <span class="rn">14</span><span>pandas: Selección y filtrado</span> </a><a class="" href="/luca-journey/libro/pandas-limpieza"> <span class="rn">15</span><span>pandas: Limpieza de datos</span> </a><a class="" href="/luca-journey/libro/pandas-groupby"> <span class="rn">16</span><span>pandas: Agrupar y combinar</span> </a><a class="" href="/luca-journey/libro/matplotlib"> <span class="rn">17</span><span>matplotlib: Gráficos</span> </a><a class="" href="/luca-journey/libro/analisis-integrador"> <span class="rn">18</span><span>Análisis integrador</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🔀</span>Git</summary> <a class="" href="/luca-journey/libro/git"> <span class="rn">19</span><span>Git: Control de Versiones</span> </a> </details><details class="grupo"> <summary><span class="g-ico">❓</span>Ayuda</summary> <a class="" href="/luca-journey/libro/ayuda"> <span class="rn">20</span><span>Ayuda y glosario</span> </a> </details> </aside> <main class="book"> <h1>pandas: Series y DataFrame</h1> <div class="callout nota"><span class="et">META</span>
+<p>🎯 <strong>Meta:</strong> conocer <strong>pandas</strong>, la librería estrella para trabajar con <strong>tablas de datos</strong> (como una Pokédex en Excel, pero con superpoderes).</p>
+</div>
+<p>NumPy maneja números. <strong>pandas</strong> maneja <strong>tablas</strong>: filas y columnas con nombres, tipos distintos, datos faltantes. Es la herramienta nº1 del análisis de datos.</p>
+<h2 id="-analogía-el-dataframe-es-tu-pokédex">🎮 Analogía: el DataFrame es tu Pokédex</h2>
+<ul>
+<li>Una <strong>Series</strong> es una <strong>columna</strong> con etiquetas (como la lista de niveles de tu equipo).</li>
+<li>Un <strong>DataFrame</strong> es la <strong>tabla completa</strong>: muchas columnas, una fila por Pokémon. Es tu Pokédex.</li>
+</ul>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> pandas </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> pd</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#ABB2BF">niveles </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> pd.</span><span style="color:#61AFEF">Series</span><span style="color:#ABB2BF">([</span><span style="color:#D19A66">25</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">90</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">12</span><span style="color:#ABB2BF">], </span><span style="color:#E06C75;font-style:italic">index</span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF">[</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Charizard"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Bulbasaur"</span><span style="color:#ABB2BF">])</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(niveles)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"El nivel de Charizard:"</span><span style="color:#ABB2BF">, niveles[</span><span style="color:#98C379">"Charizard"</span><span style="color:#ABB2BF">])</span></span>
+<span class="line"></span></code></pre>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 pandas se importa como <code>pd</code>, siempre. Y por dentro usa NumPy: una Series es un array con etiquetas.</p>
+</div>
+<h2 id="️-crear-un-dataframe">🗂️ Crear un DataFrame</h2>
+<p>Lo más común: desde un <strong>diccionario</strong> donde cada clave es una columna.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> pandas </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> pd</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#ABB2BF">pokedex </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> pd.</span><span style="color:#61AFEF">DataFrame</span><span style="color:#ABB2BF">({</span></span>
+<span class="line"><span style="color:#98C379">    "nombre"</span><span style="color:#ABB2BF">: [</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Charizard"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Bulbasaur"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Snorlax"</span><span style="color:#ABB2BF">],</span></span>
+<span class="line"><span style="color:#98C379">    "nivel"</span><span style="color:#ABB2BF">:  [</span><span style="color:#D19A66">25</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">90</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">12</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">70</span><span style="color:#ABB2BF">],</span></span>
+<span class="line"><span style="color:#98C379">    "tipo"</span><span style="color:#ABB2BF">:   [</span><span style="color:#98C379">"Eléctrico"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Fuego"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Planta"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Normal"</span><span style="color:#ABB2BF">],</span></span>
+<span class="line"><span style="color:#ABB2BF">})</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pokedex)</span></span>
+<span class="line"></span></code></pre>
+<h2 id="-mirar-la-tabla-por-arriba">👀 Mirar la tabla por arriba</h2>
+<p>Antes de analizar, siempre <strong>mirás</strong> los datos: las primeras filas, info, estadísticas.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> pandas </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> pd</span></span>
+<span class="line"><span style="color:#ABB2BF">pokedex </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> pd.</span><span style="color:#61AFEF">DataFrame</span><span style="color:#ABB2BF">({</span></span>
+<span class="line"><span style="color:#98C379">    "nombre"</span><span style="color:#ABB2BF">: [</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Charizard"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Bulbasaur"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Snorlax"</span><span style="color:#ABB2BF">],</span></span>
+<span class="line"><span style="color:#98C379">    "nivel"</span><span style="color:#ABB2BF">:  [</span><span style="color:#D19A66">25</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">90</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">12</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">70</span><span style="color:#ABB2BF">],</span></span>
+<span class="line"><span style="color:#ABB2BF">})</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pokedex.</span><span style="color:#61AFEF">head</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">2</span><span style="color:#ABB2BF">))     </span><span style="color:#7F848E;font-style:italic"># las primeras 2 filas</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"filas, columnas:"</span><span style="color:#ABB2BF">, pokedex.shape)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pokedex.</span><span style="color:#61AFEF">describe</span><span style="color:#ABB2BF">())  </span><span style="color:#7F848E;font-style:italic"># min, max, promedio, etc. de las columnas numéricas</span></span>
+<span class="line"></span></code></pre>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 <code>.head()</code>, <code>.info()</code> y <code>.describe()</code> son lo primero que corre todo analista al abrir un dataset nuevo.</p>
+</div>
+<h2 id="️-columnas">🏛️ Columnas</h2>
+<p>Accedés a una columna con corchetes y su nombre. Te devuelve una Series.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> pandas </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> pd</span></span>
+<span class="line"><span style="color:#ABB2BF">pokedex </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> pd.</span><span style="color:#61AFEF">DataFrame</span><span style="color:#ABB2BF">({</span></span>
+<span class="line"><span style="color:#98C379">    "nombre"</span><span style="color:#ABB2BF">: [</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Charizard"</span><span style="color:#ABB2BF">],</span></span>
+<span class="line"><span style="color:#98C379">    "nivel"</span><span style="color:#ABB2BF">:  [</span><span style="color:#D19A66">25</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">90</span><span style="color:#ABB2BF">],</span></span>
+<span class="line"><span style="color:#ABB2BF">})</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pokedex[</span><span style="color:#98C379">"nivel"</span><span style="color:#ABB2BF">])            </span><span style="color:#7F848E;font-style:italic"># la columna</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pokedex[</span><span style="color:#98C379">"nivel"</span><span style="color:#ABB2BF">].</span><span style="color:#61AFEF">mean</span><span style="color:#ABB2BF">())     </span><span style="color:#7F848E;font-style:italic"># promedio de la columna</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#56B6C2">list</span><span style="color:#ABB2BF">(pokedex.columns))       </span><span style="color:#7F848E;font-style:italic"># nombres de columnas</span></span>
+<span class="line"></span></code></pre>
+<h2 id="-agregar-una-columna">➕ Agregar una columna</h2>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> pandas </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> pd</span></span>
+<span class="line"><span style="color:#ABB2BF">pokedex </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> pd.</span><span style="color:#61AFEF">DataFrame</span><span style="color:#ABB2BF">({</span><span style="color:#98C379">"nombre"</span><span style="color:#ABB2BF">: [</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Charizard"</span><span style="color:#ABB2BF">], </span><span style="color:#98C379">"nivel"</span><span style="color:#ABB2BF">: [</span><span style="color:#D19A66">25</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">90</span><span style="color:#ABB2BF">]})</span></span>
+<span class="line"><span style="color:#ABB2BF">pokedex[</span><span style="color:#98C379">"hp"</span><span style="color:#ABB2BF">] </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> [</span><span style="color:#D19A66">35</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">78</span><span style="color:#ABB2BF">]      </span><span style="color:#7F848E;font-style:italic"># columna nueva</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pokedex)</span></span>
+<span class="line"></span></code></pre>
+<h2 id="-resumen">📝 Resumen</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Cosa</th><th>Para qué</th></tr></thead><tbody><tr><td><code>pd.Series(datos, index=...)</code></td><td>una columna con etiquetas</td></tr><tr><td><code>pd.DataFrame({...})</code></td><td>una tabla (desde un dict de columnas)</td></tr><tr><td><code>df.head(n)</code></td><td>primeras n filas</td></tr><tr><td><code>df.shape</code></td><td>(filas, columnas)</td></tr><tr><td><code>df.describe()</code></td><td>estadísticas de las columnas numéricas</td></tr><tr><td><code>df["col"]</code></td><td>una columna (Series)</td></tr><tr><td><code>df["nueva"] = [...]</code></td><td>agregar columna</td></tr></tbody></table>
+<h2 id="️-y-ahora-qué">➡️ ¿Y ahora qué?</h2>
+<p>Practicá con los <a href="/luca-journey/ejercicios/pandas-series-dataframe">ejercicios de este tema</a>. 💪</p>
+<div class="callout tip"><span class="et">ÁNIMO</span>
+<p>⚡ <em>“Una buena Pokédex ordena el mundo. Un buen DataFrame, los datos.”</em></p>
+</div> <nav class="cap-nav"> <a href="/luca-journey/libro/numpy-calculo"><span class="dir">← Anterior</span><br>NumPy: Cálculo numérico</a> <a class="next" href="/luca-journey/libro/pandas-seleccion"><span class="dir">Siguiente →</span><br>pandas: Selección y filtrado</a> </nav> </main> </div> </div> <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>   <script>
+    (function () {
+      var body = document.body;
+      if (localStorage.getItem('tema') === 'dark') body.classList.add('dark');
+      var t = document.getElementById('theme-toggle');
+      function refrescar() { if (t) t.textContent = body.classList.contains('dark') ? '☀️' : '🌙'; }
+      refrescar();
+      if (t) t.addEventListener('click', function () {
+        body.classList.toggle('dark');
+        localStorage.setItem('tema', body.classList.contains('dark') ? 'dark' : 'claro');
+        refrescar();
+      });
+    })();
+  </script> </body> </html>

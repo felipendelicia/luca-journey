@@ -3,24 +3,37 @@ import datos from '../data/ejercicios.json';
 import { u } from '../lib/url.ts';
 const { activeSlug = '', activeEx = '' } = Astro.props;
 const corto = (t) => t.replace(/^(Ejercicio\s+\d+\s*:?|\d+\))\s*/i, '');
+
+const REGIONES = [
+  ['kanto', '🔴 Kanto · Python'],
+  ['johto', '⚪ Johto · Datos'],
+];
+const grupos = REGIONES
+  .map(([id, label]) => ({ id, label, temas: datos.filter((w) => (w.region || 'kanto') === id) }))
+  .filter((g) => g.temas.length);
 ---
 <aside class="book-rail">
-  <div class="rail-tit">Temas</div>
-  {datos.map((w) => (
-    <details class="grupo" open={w.slug === activeSlug}>
-      <summary><span class="g-ico">🏋️</span>{w.titulo}</summary>
-      {w.ejercicios.map((ex, n) => (
-        <a
-          class={'ej-link' + (w.slug === activeSlug && ex.id === activeEx ? ' activo' : '')}
-          href={u(`/ejercicios/${w.slug}/${ex.id}`)}
-          data-key={`ej:${w.slug}:${ex.id}:ok`}
-        >
-          <span class="rn">{n + 1}</span>
-          <span class="ej-link-t">{corto(ex.titulo)}</span>
-          <span class="ej-link-dot"></span>
-        </a>
+  <div class="rail-tit">Ejercicios</div>
+  {grupos.map((g) => (
+    <div class="rail-region">
+      <div class="rail-region-tit">{g.label}</div>
+      {g.temas.map((w) => (
+        <details class="grupo" open={w.slug === activeSlug}>
+          <summary><span class="g-ico">🏋️</span>{w.titulo}</summary>
+          {w.ejercicios.map((ex, n) => (
+            <a
+              class={'ej-link' + (w.slug === activeSlug && ex.id === activeEx ? ' activo' : '')}
+              href={u(`/ejercicios/${w.slug}/${ex.id}`)}
+              data-key={`ej:${w.slug}:${ex.id}:ok`}
+            >
+              <span class="rn">{n + 1}</span>
+              <span class="ej-link-t">{corto(ex.titulo)}</span>
+              <span class="ej-link-dot"></span>
+            </a>
+          ))}
+        </details>
       ))}
-    </details>
+    </div>
   ))}
   <script is:inline>
     document.querySelectorAll('.ej-link[data-key]').forEach((a) => {

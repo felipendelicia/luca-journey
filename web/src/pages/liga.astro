@@ -2,16 +2,23 @@
 import Base from '../layouts/Base.astro';
 import datos from '../data/ejercicios.json';
 
-const GIMNASIOS = [
-  ['Roca', '🪨'], ['Cascada', '💧'], ['Trueno', '⚡'], ['Arcoíris', '🌈'],
-  ['Alma', '💗'], ['Pantano', '🟣'], ['Volcán', '🔥'], ['Tierra', '🌍'],
-];
-const semanas = datos.map((w, i) => ({
-  slug: w.slug, titulo: w.titulo,
-  exIds: w.ejercicios.map((e) => e.id),
-  gym: GIMNASIOS[i % GIMNASIOS.length][0], emoji: GIMNASIOS[i % GIMNASIOS.length][1],
-}));
-const totalEj = semanas.reduce((a, w) => a + w.exIds.length, 0);
+const BADGES = {
+  kanto: [['Roca', '🪨'], ['Cascada', '💧'], ['Trueno', '⚡'], ['Arcoíris', '🌈'], ['Alma', '💗'], ['Pantano', '🟣'], ['Volcán', '🔥'], ['Tierra', '🌍']],
+  johto: [['Cifré', '🌀'], ['Colmena', '🐝'], ['Llanura', '🌾'], ['Niebla', '🌫️'], ['Tormenta', '⛈️'], ['Mineral', '⛏️'], ['Glaciar', '❄️'], ['Subida', '🐉']],
+};
+const META = {
+  kanto: { nombre: 'Kanto', sub: 'Fundamentos: Python', titulo: 'Campeón de Kanto' },
+  johto: { nombre: 'Johto', sub: 'Análisis de datos', titulo: 'Campeón de Johto' },
+};
+
+function temasDe(region) {
+  return datos.filter((w) => (w.region || 'kanto') === region).map((w, i) => ({
+    slug: w.slug, titulo: w.titulo, exIds: w.ejercicios.map((e) => e.id),
+    gym: (BADGES[region][i] || ['?', '⭐'])[0], emoji: (BADGES[region][i] || ['?', '⭐'])[1],
+  }));
+}
+const regiones = ['kanto', 'johto'].map((id) => ({ id, ...META[id], temas: temasDe(id) }));
+const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exIds.length, 0), 0);
 ---
 <Base title="La Liga — Python con Pokémon" active="Liga">
   <div class="wrap liga">
@@ -32,66 +39,71 @@ const totalEj = semanas.reduce((a, w) => a + w.exIds.length, 0);
       <div class="t-stats">
         <div><b id="st-ej">0</b><span>ejercicios</span></div>
         <div><b id="st-med">0</b><span>medallas</span></div>
-        <div><b id="st-temas">0</b><span>temas completos</span></div>
+        <div><b id="st-reg">0</b><span>regiones</span></div>
       </div>
     </section>
 
-    <h2 class="liga-h">🏅 Medallas de gimnasio</h2>
-    <div class="medallas" id="medallas"></div>
+    {regiones.map((r) => (
+      <section class="region" data-region={r.id}>
+        <h2 class="liga-h">{r.id === 'kanto' ? '🔴' : '⚪'} Región {r.nombre} <small>— {r.sub}</small> <span class="reg-estado" data-reg={r.id}></span></h2>
+        <div class="medallas" data-medallas={r.id}></div>
+        <div class="progreso-temas" data-progreso={r.id}></div>
+      </section>
+    ))}
 
-    <h2 class="liga-h">📊 Progreso por tema</h2>
-    <div class="progreso-temas" id="progreso"></div>
-
-    <p class="liga-nota">Tu progreso se guarda en este navegador. Resolvé ejercicios para ganar EXP y medallas. ⚡</p>
+    <p class="liga-nota">Tu progreso se guarda en este navegador. Completá los 8 temas de una región para ser su Campeón. 🏆</p>
   </div>
 
-  <script type="application/json" id="liga-data" set:html={JSON.stringify({ semanas, totalEj })}></script>
+  <script type="application/json" id="liga-data" set:html={JSON.stringify({ regiones, totalEj })}></script>
   <script is:inline>
     (function () {
       const data = JSON.parse(document.getElementById('liga-data').textContent);
-      const RANGOS = [[0, 'Novato'], [3, 'Aprendiz'], [6, 'Entrenador'], [10, 'Veterano'], [16, 'As'], [24, 'Líder'], [40, 'Campeón']];
-      const $ = (id) => document.getElementById(id);
+      const $ = (s) => document.querySelector(s);
       const B = (window.__BASE || '/').replace(/\/$/, '');
-
-      // nombre
-      const nombre = $('nombre');
+      const nombre = document.getElementById('nombre');
       nombre.value = localStorage.getItem('liga:nombre') || '';
       nombre.addEventListener('input', () => localStorage.setItem('liga:nombre', nombre.value));
 
-      let doneTotal = 0, temasCompletos = 0, medallas = 0;
-      const filas = [];
-      const medHtml = [];
-      for (const w of data.semanas) {
-        const done = w.exIds.filter((id) => localStorage.getItem('ej:' + w.slug + ':' + id + ':ok') === '1').length;
-        const total = w.exIds.length;
-        const completo = total > 0 && done === total;
-        doneTotal += done;
-        if (completo) { temasCompletos++; medallas++; }
-        const pct = total ? Math.round((done / total) * 100) : 0;
-        filas.push('<a class="pt-row" href="' + B + '/ejercicios/' + w.slug + '"><span class="pt-emoji">' + w.emoji + '</span>' +
-          '<span class="pt-nom">' + w.titulo + '</span><span class="pt-bar"><i style="width:' + pct + '%"></i></span>' +
-          '<span class="pt-num">' + done + '/' + total + '</span></a>');
-        medHtml.push('<div class="medalla ' + (completo ? 'ganada' : '') + '" title="Gimnasio ' + w.gym + '">' +
-          '<div class="med-ico">' + w.emoji + '</div><div class="med-nom">' + w.gym + '</div></div>');
+      let doneTotal = 0, medallas = 0, regionesCompletas = 0;
+      for (const r of data.regiones) {
+        let medReg = 0;
+        const meds = [], filas = [];
+        for (const t of r.temas) {
+          const done = t.exIds.filter((id) => localStorage.getItem('ej:' + t.slug + ':' + id + ':ok') === '1').length;
+          const total = t.exIds.length;
+          const completo = total > 0 && done === total;
+          doneTotal += done;
+          if (completo) { medallas++; medReg++; }
+          const pct = total ? Math.round((done / total) * 100) : 0;
+          filas.push('<a class="pt-row" href="' + B + '/ejercicios/' + t.slug + '"><span class="pt-emoji">' + t.emoji + '</span>' +
+            '<span class="pt-nom">' + t.titulo + '</span><span class="pt-bar"><i style="width:' + pct + '%"></i></span>' +
+            '<span class="pt-num">' + done + '/' + total + '</span></a>');
+          meds.push('<div class="medalla ' + (completo ? 'ganada' : '') + '" title="Gimnasio ' + t.gym + '"><div class="med-ico">' + t.emoji + '</div><div class="med-nom">' + t.gym + '</div></div>');
+        }
+        $('[data-medallas="' + r.id + '"]').innerHTML = meds.join('');
+        $('[data-progreso="' + r.id + '"]').innerHTML = filas.join('');
+        const completaReg = medReg === r.temas.length && r.temas.length;
+        if (completaReg) regionesCompletas++;
+        $('[data-reg="' + r.id + '"]').textContent = completaReg ? '🏆 ¡' + r.titulo + '!' : medReg + '/' + r.temas.length + ' medallas';
       }
-      $('progreso').innerHTML = filas.join('');
-      $('medallas').innerHTML = medHtml.join('');
 
       const exp = doneTotal * 20;
-      let rango = 'Novato';
-      for (const [n, r] of RANGOS) if (medallas >= n || doneTotal >= n) rango = r;
-      // nivel: cada 100 EXP
       const nivel = 1 + Math.floor(exp / 100);
-      const expEnNivel = exp % 100;
-      $('nivel').textContent = nivel;
-      $('rango').textContent = rango;
-      $('exp-txt').textContent = exp + ' EXP';
-      $('exp-next').textContent = (100 - expEnNivel) + ' para nivel ' + (nivel + 1);
-      $('exp-fill').style.width = expEnNivel + '%';
-      $('st-ej').textContent = doneTotal + '/' + data.totalEj;
-      $('st-med').textContent = medallas + '/' + data.semanas.length;
-      $('st-temas').textContent = temasCompletos;
-      if (medallas === data.semanas.length && data.semanas.length) { $('avatar').textContent = '🏆'; $('rango').textContent = '¡Campeón de Kanto!'; }
+      const RANGOS = [[0, 'Novato'], [4, 'Aprendiz'], [8, 'Entrenador'], [12, 'Veterano'], [16, 'As'], [24, 'Líder'], [32, 'Maestro']];
+      let rango = 'Novato';
+      for (const [n, x] of RANGOS) if (medallas >= n) rango = x;
+      document.getElementById('nivel').textContent = nivel;
+      document.getElementById('rango').textContent = rango;
+      document.getElementById('exp-txt').textContent = exp + ' EXP';
+      document.getElementById('exp-next').textContent = (100 - (exp % 100)) + ' para nivel ' + (nivel + 1);
+      document.getElementById('exp-fill').style.width = (exp % 100) + '%';
+      document.getElementById('st-ej').textContent = doneTotal + '/' + data.totalEj;
+      document.getElementById('st-med').textContent = medallas + '/' + (data.regiones.length * 8);
+      document.getElementById('st-reg').textContent = regionesCompletas + '/' + data.regiones.length;
+      if (regionesCompletas === data.regiones.length && data.regiones.length) {
+        document.getElementById('avatar').textContent = '🏆';
+        document.getElementById('rango').textContent = '¡Maestro Pokémon!';
+      }
     })();
   </script>
 </Base>
