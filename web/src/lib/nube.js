@@ -55,10 +55,11 @@ async function alLoguear(user) {
   const tieneNube = nube && Object.keys(nube).length > 0;
   if (tieneNube) {
     // cuenta existente: importar su progreso y descartar el local
+    const cambia = serial(nube) !== serial(snapshot());
     limpiarLocal();
     aplicar(nube);
     _ultima = serial(nube);
-    location.reload();                       // reflejar el progreso importado
+    if (cambia) location.reload();           // reflejar el progreso importado (solo si cambió)
   } else {
     // cuenta nueva: el progreso local pasa a ser el de la cuenta
     const local = snapshot();
@@ -85,6 +86,19 @@ function vigilar() {
 
 // ---- API pública ----
 export function usuario() { return _user; }
+
+// Baja el progreso de la nube y lo aplica a localStorage (úsalo cuando la nube cambió
+// por fuera, ej: un intercambio). Devuelve true si había sesión y se aplicó.
+export async function refrescarDesdeNube() {
+  if (!haySupabase || !_user) return false;
+  const nube = await bajar(_user.id);
+  if (nube && Object.keys(nube).length) {
+    limpiarLocal();
+    aplicar(nube);
+    _ultima = serial(nube);   // evitar que el watcher re-suba lo viejo
+  }
+  return true;
+}
 
 export async function loginEmail(email) {
   const destino = window.location.origin + (window.__BASE || '') + '/';
