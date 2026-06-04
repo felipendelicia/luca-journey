@@ -8,14 +8,10 @@ export const GRUPOS = [
     slugs: [
       'python-introduccion', 'control-de-flujo', 'funciones',
       'listas-y-colecciones', 'cadenas-y-archivos',
+      'poo-introduccion', 'poo-avanzado', 'modulos-y-pip',
     ],
   },
   { nombre: 'Git', icono: '🔀', slugs: ['git'] },
-  {
-    nombre: 'Python avanzado',
-    icono: '🔥',
-    slugs: ['poo-introduccion', 'poo-avanzado', 'modulos-y-pip'],
-  },
   { nombre: 'Ayuda', icono: '❓', slugs: ['ayuda'] },
 ];
 
