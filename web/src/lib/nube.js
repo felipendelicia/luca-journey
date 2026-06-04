@@ -1,6 +1,8 @@
 // nube.js — sincroniza el progreso (localStorage) con Supabase cuando hay sesión.
-// Modo HÍBRIDO: sin login, todo sigue en localStorage. Al loguearte, FUSIONA tu
-// progreso local con el de la nube (no se pierde nada) y mantiene todo al día.
+// Modo HÍBRIDO: sin login, todo sigue en localStorage. Al loguearte:
+//   - si tu cuenta YA tiene progreso → se importa ese y se descarta el local.
+//   - si la cuenta es NUEVA (vacía) → tu progreso local la siembra.
+// Después, cada cambio se sube solo.
 import { supa, haySupabase } from './supa.js';
 
 const PREFIJOS = ['ej:', 'col:'];
@@ -25,30 +27,14 @@ function aplicar(o) {
 }
 const serial = (o) => JSON.stringify(Object.keys(o).sort().reduce((a, k) => ((a[k] = o[k]), a), {}));
 
-// ---- fusión local + nube (union-favoring; nada se pierde) ----
-const num = (v) => { try { return Number(JSON.parse(v)) || 0; } catch { return 0; } };
-const obj = (v) => { try { return JSON.parse(v) || {}; } catch { return {}; } };
-const arr = (v) => { try { const a = JSON.parse(v); return Array.isArray(a) ? a : []; } catch { return []; } };
-const union = (a, b) => [...new Set([...a, ...b])];
-
-function fusionar(local, nube) {
-  const out = { ...nube, ...local };
-  const claves = new Set([...Object.keys(local), ...Object.keys(nube)]);
-  for (const k of claves) {
-    if (k.endsWith(':ok')) out[k] = (local[k] === '1' || nube[k] === '1') ? '1' : (local[k] ?? nube[k]);
+// borra del localStorage todas las claves de progreso (ej:* y col:*)
+function limpiarLocal() {
+  const claves = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (PREFIJOS.some((p) => k.startsWith(p))) claves.push(k);
   }
-  if ('col:balls' in local || 'col:balls' in nube) out['col:balls'] = JSON.stringify(Math.max(num(local['col:balls']), num(nube['col:balls'])));
-  if ('col:atrapados' in local || 'col:atrapados' in nube) {
-    const a = obj(local['col:atrapados']), b = obj(nube['col:atrapados']), m = { ...b };
-    for (const [id, n] of Object.entries(a)) m[id] = Math.max(n, m[id] || 0);
-    out['col:atrapados'] = JSON.stringify(m);
-  }
-  if ('col:shiny' in local || 'col:shiny' in nube) out['col:shiny'] = JSON.stringify(union(arr(local['col:shiny']), arr(nube['col:shiny'])));
-  for (const k of ['col:ganados', 'col:hitos']) {
-    if (k in local || k in nube) out[k] = JSON.stringify(union(arr(local[k]), arr(nube[k])));
-  }
-  if (local['col:regalo'] || nube['col:regalo']) out['col:regalo'] = [local['col:regalo'], nube['col:regalo']].filter(Boolean).sort().pop();
-  return out;
+  claves.forEach((k) => localStorage.removeItem(k));
 }
 
 // ---- Supabase I/O ----
@@ -63,16 +49,22 @@ async function subir(userId, estado) {
   else _ultima = serial(estado);
 }
 
-// ---- al iniciar sesión: fusionar + (si hace falta) recargar ----
+// ---- al iniciar sesión: la cuenta manda (salvo que sea nueva) ----
 async function alLoguear(user) {
-  const local = snapshot();
   const nube = await bajar(user.id);
-  const fusion = fusionar(local, nube);
-  const cambioLocal = serial(fusion) !== serial(local);
-  const cambioNube = serial(fusion) !== serial(nube);
-  if (cambioNube) await subir(user.id, fusion);
-  else _ultima = serial(fusion);
-  if (cambioLocal) { aplicar(fusion); location.reload(); }   // reflejar lo bajado de la nube
+  const tieneNube = nube && Object.keys(nube).length > 0;
+  if (tieneNube) {
+    // cuenta existente: importar su progreso y descartar el local
+    limpiarLocal();
+    aplicar(nube);
+    _ultima = serial(nube);
+    location.reload();                       // reflejar el progreso importado
+  } else {
+    // cuenta nueva: el progreso local pasa a ser el de la cuenta
+    const local = snapshot();
+    if (Object.keys(local).length) await subir(user.id, local);
+    else _ultima = serial(local);
+  }
 }
 
 // ---- watcher: mientras hay sesión, sube los cambios (debounced) ----

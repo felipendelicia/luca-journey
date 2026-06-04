@@ -47,6 +47,7 @@ const nav = [
           <button type="submit" class="btn-grande" id="auth-send">Enviar link mágico</button>
         </form>
         <p class="auth-msg err" id="auth-err" hidden></p>
+        <p class="auth-fine">Si tu cuenta ya tiene progreso guardado, se carga ese al entrar.</p>
       </div>
       <div class="auth-pane" id="auth-sent" hidden>
         <h2>📩 ¡Revisá tu email!</h2>
@@ -75,10 +76,19 @@ const nav = [
       const panes = { out: $('auth-out'), sent: $('auth-sent'), in: $('auth-in') };
       const mostrar = (cual) => { for (const k in panes) panes[k].hidden = k !== cual; };
 
+      const atrapados = () => { try { return JSON.parse(localStorage.getItem('col:atrapados')) || {}; } catch { return {}; } };
       const pintarBtn = () => {
         const u = usuario();
-        btn.textContent = u ? '✅' : '☁️';
-        btn.title = u ? `Sesión: ${u.email || ''}` : 'Iniciar sesión y guardar progreso';
+        btn.classList.toggle('nube-avatar', false);
+        if (!u) { btn.textContent = '☁️'; btn.title = 'Iniciar sesión y guardar progreso'; return; }
+        btn.title = `Sesión: ${u.email || ''}`;
+        const id = localStorage.getItem('col:avatar');
+        if (id && atrapados()[id]) {
+          btn.classList.toggle('nube-avatar', true);
+          btn.innerHTML = `<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png" alt="perfil" />`;
+        } else {
+          btn.textContent = '👤';
+        }
       };
       const cerrar = () => { modal.hidden = true; };
       const abrir = () => {

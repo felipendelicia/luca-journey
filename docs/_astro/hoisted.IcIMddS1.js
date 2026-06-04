@@ -1,4 +1,4 @@
-import{E as f,b as h,o as x,k as w,i as k,p as E}from"./index.16Gn__M7.js";import{c as u,s as b}from"./sonidos.RiAsfTje.js";import"./hoisted.BkoKmW-V.js";const I=`# runner.py — corre los tests de una semana en el navegador con pytest real (Pyodide).
+import{E as f,b as h,o as x,k as w,i as k,p as E}from"./index.16Gn__M7.js";import{c as u,s as b}from"./sonidos.RiAsfTje.js";import"./hoisted.DaGvaHiF.js";const I=`# runner.py — corre los tests de una semana en el navegador con pytest real (Pyodide).
 # Escribe el código del alumno como ejercicios.py + el test + helpers, con
 # CURSO_MODULO=ejercicios, y ejecuta pytest recolectando el resultado por test.
 import os
