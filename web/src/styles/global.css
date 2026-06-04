@@ -715,3 +715,22 @@ body.claro .topbar{ background:rgba(238,241,232,.9); box-shadow:0 2px 0 rgba(31,
 body.claro .hero-home .kick{ color:#7dffa0; }
 body.claro .hero-home p{ color:#bfe6c8; }
 body.claro .hero-home h1{ color:#eafff0; }
+
+/* ── tarjeta de Entrenador: "pantalla" del Pokédex (siempre oscura, focal) ── */
+.tarjeta{ background:linear-gradient(135deg,#1c0f0c 0%,#0a1410 52%,#081310 100%) !important; color:#dcefe0;
+  border:1px solid #243f30; box-shadow:0 0 0 1px rgba(255,65,51,.22), inset 0 0 70px rgba(0,0,0,.55), var(--shadow-lg) !important; }
+.tarjeta .t-nombre-l{ color:var(--red); text-shadow:0 0 8px rgba(255,65,51,.4); }
+.tarjeta .t-nombre{ color:#eafff0; border-bottom:1px solid #2a4636; font-family:var(--font-pixel); font-size:1rem; padding:6px 0; }
+.tarjeta .t-nombre::placeholder{ color:#4f7a64; }
+.tarjeta .t-nombre:focus{ border-bottom-color:var(--neon); }
+.tarjeta .t-rango{ color:var(--neon); text-shadow:0 0 8px rgba(93,255,122,.4); font-weight:700; }
+.tarjeta .t-nivel-n{ font-family:var(--font-crt); color:var(--neon); font-size:3.4rem; text-shadow:0 0 16px rgba(93,255,122,.5); }
+.tarjeta .t-nivel-l{ color:#6f9a7e; }
+.tarjeta .t-exp-bar{ background:#05100b; border:1px solid #243f30; }
+.tarjeta .t-exp-bar span{ background:var(--neon); box-shadow:0 0 10px var(--neon); }
+.tarjeta .t-exp-txt{ color:#86bd97; opacity:1; }
+.tarjeta .t-stats{ gap:12px; }
+.tarjeta .t-stats div{ background:#091711; border:1px solid #243f30; }
+.tarjeta .t-stats b{ font-family:var(--font-crt); color:var(--neon); font-size:1.9rem; line-height:1; text-shadow:0 0 12px rgba(93,255,122,.4); }
+.tarjeta .t-stats span{ font-family:var(--font-pixel); font-size:7px; letter-spacing:.08em; color:#6f9a7e; opacity:1; text-transform:uppercase; }
+.tarjeta .avatar{ background:#06100c; border:1px solid var(--neon); box-shadow:0 0 12px rgba(93,255,122,.3); }
