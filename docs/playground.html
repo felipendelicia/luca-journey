@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Python con Pokémon — Inicio</title>
+<title>Playground — Python con Pokémon</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&display=swap">
 <style>
 :root{
@@ -607,24 +607,34 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 .highlight .vm { color: #E06C75 } /* Name.Variable.Magic */
 .highlight .il { color: #D19A66 } /* Literal.Number.Integer.Long */</style>
 </head>
-<body class="pagina-landing">
+<body class="pagina-recursos">
 <div class="bg-grid" aria-hidden="true"></div>
 <header class="topbar">
   <a class="brand-link" href="index.html"><span class="pb"></span><span class="brand">Pokédex <b>Codex</b></span></a>
-  <div class="tools"><a class="navlink activo" href="index.html">Inicio</a><a class="navlink" href="libro.html">Libro</a><a class="navlink" href="playground.html">Playground</a><a class="navlink" href="recursos.html">Recursos</a><button class="theme-toggle" type="button" title="Tema claro/oscuro">🌙</button></div>
+  <div class="tools"><a class="navlink" href="index.html">Inicio</a><a class="navlink" href="libro.html">Libro</a><a class="navlink activo" href="playground.html">Playground</a><a class="navlink" href="recursos.html">Recursos</a><button class="theme-toggle" type="button" title="Tema claro/oscuro">🌙</button></div>
   <div class="progress"></div>
 </header>
-<div class="wrap"><main class="landing">
-  <section class="hero-home">
-    <p class="kick">El curso completo, online</p>
-    <h1>Python con Pokémon</h1>
-    <p>Aprendé a programar desde cero — Linux, Python y mucha aventura — y convertite en Campeón de Kanto. 🏆</p>
-    <div class="cta">
-      <a class="btn-grande" href="libro.html">📖 Empezar a leer</a>
-      <a class="btn-grande sec" href="playground.html">🎮 Probar Python ya</a>
-    </div>
-  </section>
-  <div class="cards"><a class="card" href="libro.html"><div class="ico">📖</div><h3>El libro</h3><p>Aprendé Linux y Python desde cero, con toda la teoría del curso.</p></a><a class="card" href="playground.html"><div class="ico">🎮</div><h3>Playground</h3><p>Escribí y ejecutá Python en el navegador, sin instalar nada.</p></a><a class="card" href="recursos.html"><div class="ico">📚</div><h3>Bibliografía</h3><p>Libros, cursos (¡CS50!) y recursos recomendados.</p></a><a class="card" href="roadmap.html"><div class="ico">🗺️</div><h3>Roadmap</h3><p>El mapa completo del viaje, semana por semana.</p></a><a class="card" href="proyectos.html"><div class="ico">💻</div><h3>Proyectos</h3><p>Los 4 proyectos finales para coronar el curso.</p></a><a class="card" href="https://github.com/felipendelicia/luca-journey"><div class="ico">🏆</div><h3>El repositorio</h3><p>Código, ejercicios y la Liga Pokémon en GitHub.</p></a></div>
+<div class="wrap"><main class="pg book">
+  <h1 class="cap"><span class="cap-kicker">Probá</span><span class="cap-num">🎮</span><span class="cap-ttl">Playground de Python</span></h1>
+  <p>Escribí código Python y tocá <strong>Ejecutar</strong>. Corre de verdad en tu navegador (no se instala nada).
+  La primera ejecución descarga Python (~10-20s); después es instantáneo.</p>
+  <div class="pg-ejemplos"><button class="pg-ej" type="button" data-code="nombre = input(&quot;¿Tu nombre? &quot;)&#10;print(f&quot;¡Hola, {nombre}!&quot;)">Saludo</button><button class="pg-ej" type="button" data-code="for n in range(1, 11):&#10;    print(n, &quot;x 7 =&quot;, n * 7)">Bucle</button><button class="pg-ej" type="button" data-code="def dano(ataque, defensa):&#10;    return max(ataque - defensa, 1)&#10;&#10;print(dano(50, 20))">Función</button><button class="pg-ej" type="button" data-code="equipo = [&quot;Pikachu&quot;, &quot;Charizard&quot;, &quot;Snorlax&quot;]&#10;for p in equipo:&#10;    print(&quot;Tengo a&quot;, p)">Lista</button></div>
+  <div class="pg-panel">
+    <div class="pg-bar"><span class="dots"><i></i><i></i><i></i></span><span class="lbl">python</span>
+      <button class="pg-run" id="pg-run" type="button">▶ Ejecutar</button></div>
+    <textarea class="pg-code" id="pg-code" spellcheck="false">print(&quot;¡Hola, mundo Pokémon!&quot;)
+
+nombre = &quot;Pikachu&quot;
+nivel = 25
+print(f&quot;Mi {nombre} es nivel {nivel}&quot;)
+
+for i in range(1, 4):
+    print(f&quot;Pokéball número {i}&quot;)
+</textarea>
+    <div class="pg-out" id="pg-out"><span class="out-label">SALIDA</span></div>
+  </div>
+  <p class="pg-status" id="pg-status"></p>
+  <p style="color:var(--ink-mute);font-size:.9rem">💡 Si tu código usa <code>input()</code>, te va a aparecer una ventanita para escribir la respuesta.</p>
 </main></div>
 <script>
 (function(){
@@ -673,6 +683,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
   }
 })();
 </script>
-
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<script src="pyodide-run.js"></script>
 </body>
 </html>

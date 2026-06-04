@@ -676,4 +676,107 @@ body.dark .bg-grid{
 }
 """
 
-CSS = _VARS + _MAIN + _EXTRA
+# Estilos de las funciones web: ejecutar código (Pyodide), playground y landing.
+_WEB = r"""
+/* Botón "Ejecutar" en los bloques de código y panel de salida */
+.run-btn{
+  margin-left:8px; background:#1f9d55; color:#eafff2; border:1px solid #27c93f;
+  border-radius:7px; font-family:var(--font-pixel); font-size:8px; letter-spacing:.08em;
+  padding:4px 9px; cursor:pointer; text-transform:uppercase;
+}
+.run-btn:hover{ background:#27c93f; color:#06210c; }
+.run-btn[disabled]{ opacity:.6; cursor:default; }
+.code-out{
+  display:none; margin:0; padding:11px 14px; background:#0b0d14; color:#cdf5d6;
+  border-top:1px solid rgba(255,255,255,.12);
+  font-family:var(--font-mono); font-size:12px; line-height:1.5; white-space:pre-wrap;
+  word-break:break-word; max-height:320px; overflow:auto;
+}
+.code-out.show{ display:block; }
+.code-out .out-label{ font-family:var(--font-pixel); font-size:8px; color:#7aa; letter-spacing:.1em; display:block; margin-bottom:4px; }
+.code-out .err{ color:#ff9b9b; }
+
+/* Editor en línea (cuando se "edita" un ejemplo) */
+.code-edit{
+  width:100%; min-height:120px; resize:vertical; border:none; outline:none;
+  background:var(--code-bg); color:#e8eaf2; font-family:var(--font-mono);
+  font-size:13px; line-height:1.55; padding:14px 16px; display:block;
+}
+
+@media print{ .run-btn, .code-out, .code-edit{ display:none !important; } }
+
+/* Barra de navegación entre páginas del sitio */
+@media screen{
+  .tools .navlink.activo{ background:var(--red); color:#fff; border-color:var(--red); }
+}
+
+/* ===== Landing (página de inicio) ===== */
+.landing{ max-width:1000px; margin:0 auto; }
+.hero-home{
+  position:relative; overflow:hidden; border-radius:26px; padding:64px 44px 56px;
+  text-align:center; color:#fff; box-shadow:var(--shadow-lg); margin-bottom:34px;
+  background:radial-gradient(120% 120% at 50% -20%, #ff6a3d 0%, #e3350d 32%, #9d1505 72%, #5e0d04 100%);
+}
+.hero-home::after{ content:""; position:absolute; inset:0; pointer-events:none;
+  background:repeating-linear-gradient(transparent 0 3px, rgba(0,0,0,.05) 3px 4px); mix-blend-mode:overlay; }
+.hero-home .kick{ font-family:var(--font-pixel); font-size:11px; letter-spacing:.3em; color:var(--yellow); text-transform:uppercase; }
+.hero-home h1{ font-size:clamp(2.2rem,6vw,3.6rem); margin:.3rem 0 .3rem; color:#fff; border:none; letter-spacing:-.03em; }
+.hero-home p{ font-size:1.08rem; opacity:.95; max-width:620px; margin:.3rem auto; }
+.hero-home .cta{ margin-top:1.6rem; display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+.btn-grande{
+  display:inline-block; background:#fff; color:var(--red-deep); font-family:var(--font-display);
+  font-weight:800; padding:12px 22px; border-radius:999px; text-decoration:none; font-size:1rem;
+  box-shadow:0 8px 20px rgba(0,0,0,.25);
+}
+.btn-grande.sec{ background:rgba(255,255,255,.16); color:#fff; border:1px solid rgba(255,255,255,.5); }
+.btn-grande:hover{ transform:translateY(-2px); transition:transform .15s; }
+
+.cards{ display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:18px; }
+.card{
+  background:var(--paper-2); border:1px solid var(--line); border-radius:16px; padding:20px;
+  text-decoration:none; color:inherit; box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s;
+  display:block;
+}
+.card:hover{ transform:translateY(-4px); box-shadow:var(--shadow); border-color:var(--red); }
+.card .ico{ font-size:30px; }
+.card h3{ margin:.4rem 0 .2rem; color:var(--red-deep); }
+.card p{ margin:0; color:var(--ink-soft); font-size:.92rem; }
+body.dark .card .ico{ filter:none; }
+
+/* ===== Playground ===== */
+.pg{ max-width:920px; margin:0 auto; }
+.pg-panel{ border-radius:14px; overflow:hidden; box-shadow:var(--shadow); border:1px solid rgba(0,0,0,.25); background:var(--code-bg); }
+.pg-bar{ display:flex; align-items:center; gap:10px; padding:9px 14px; background:rgba(255,255,255,.05); border-bottom:1px solid rgba(255,255,255,.08); }
+.pg-bar .dots{ display:flex; gap:7px; } .pg-bar .dots i{ width:11px;height:11px;border-radius:50%;display:block; }
+.pg-bar .dots i:nth-child(1){background:#ff5f56;} .pg-bar .dots i:nth-child(2){background:#ffbd2e;} .pg-bar .dots i:nth-child(3){background:#27c93f;}
+.pg-bar .lbl{ font-family:var(--font-pixel); font-size:9px; color:rgba(255,255,255,.55); letter-spacing:.12em; }
+.pg-run{ margin-left:auto; background:#27c93f; color:#06210c; border:none; border-radius:8px; font-family:var(--font-pixel); font-size:9px; letter-spacing:.08em; padding:6px 14px; cursor:pointer; text-transform:uppercase; }
+.pg-run[disabled]{ opacity:.6; cursor:default; }
+.pg-code{ width:100%; min-height:280px; resize:vertical; border:none; outline:none; background:transparent; color:#e8eaf2; font-family:var(--font-mono); font-size:13.5px; line-height:1.6; padding:16px 18px; display:block; }
+.pg-out{ background:#0b0d14; color:#cdf5d6; font-family:var(--font-mono); font-size:12.5px; line-height:1.5; padding:14px 18px; white-space:pre-wrap; word-break:break-word; min-height:60px; max-height:360px; overflow:auto; }
+.pg-out .err{ color:#ff9b9b; }
+.pg-status{ font-size:.85rem; color:var(--ink-mute); margin:.6rem 0; }
+.pg-ejemplos{ display:flex; gap:8px; flex-wrap:wrap; margin:.8rem 0; }
+.pg-ej{ font-size:.82rem; padding:5px 12px; border:1px solid var(--line); border-radius:999px; background:var(--paper-2); color:var(--ink); cursor:pointer; }
+.pg-ej:hover{ border-color:var(--red); color:var(--red); }
+
+/* Páginas SIN riel (inicio, recursos, roadmap, proyectos, playground): columna centrada */
+@media screen{
+  .pagina-recursos .wrap, .pagina-landing .wrap{ display:block; max-width:980px; margin:0 auto; }
+}
+.recursos{ max-width:var(--readw); margin:0 auto; }
+.recursos h1{
+  font-family:var(--font-display); font-weight:800; color:var(--red-deep);
+  border-bottom:3px solid var(--red); padding-bottom:.2em; font-size:2.1rem; letter-spacing:-.02em;
+}
+.recursos h3{ color:var(--teal-deep); }
+.recursos a{ word-break:break-word; }
+.recursos hr{ border:none; border-top:1px solid var(--line); margin:1.6rem 0; }
+.recursos ul{ padding-left:1.2em; } .recursos li{ margin:.55em 0; }
+
+/* Link de marca (vuelve al inicio) y nav responsiva */
+.topbar .brand-link{ text-decoration:none; display:flex; align-items:center; gap:8px; }
+@media (max-width:760px){ .topbar .tools .navlink{ display:none; } .search-box{ width:120px; } }
+"""
+
+CSS = _VARS + _MAIN + _EXTRA + _WEB
