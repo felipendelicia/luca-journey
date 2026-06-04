@@ -16,8 +16,10 @@ def _msg(report):
     return texto.splitlines()[-1] if texto else "falló"
 
 
-def correr(slug, ejercicios_code, test_code, extra_json):
+def correr(slug, ejercicios_code, test_code, extra_json, solo_json="[]"):
     import pytest
+
+    solo = json.loads(solo_json or "[]")
 
     extra = json.loads(extra_json or "{}")
     d = "/work/" + slug
@@ -59,11 +61,13 @@ def correr(slug, ejercicios_code, test_code, extra_json):
                 self.carga = _msg(report)
 
     rec = Recolector()
+    args = ["-p", "no:cacheprovider", "-q", "--no-header", "-o", "addopts="]
+    if solo:
+        args += [d + "/test_ejercicios.py::" + n for n in solo]
+    else:
+        args += [d + "/test_ejercicios.py"]
     try:
-        pytest.main(
-            ["-p", "no:cacheprovider", "-q", "--no-header", "-o", "addopts=", d + "/test_ejercicios.py"],
-            plugins=[rec],
-        )
+        pytest.main(args, plugins=[rec])
     except SystemExit:
         pass
     except Exception as e:

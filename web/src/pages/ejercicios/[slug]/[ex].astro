@@ -1,0 +1,158 @@
+---
+import Base from '../../../layouts/Base.astro';
+import RailEjercicios from '../../../components/RailEjercicios.astro';
+import datos from '../../../data/ejercicios.json';
+
+export function getStaticPaths() {
+  const paths = [];
+  datos.forEach((w) => {
+    w.ejercicios.forEach((ex, n) => {
+      paths.push({ params: { slug: w.slug, ex: ex.id }, props: { w, ex, n } });
+    });
+  });
+  return paths;
+}
+
+const { w, ex, n } = Astro.props;
+const prev = w.ejercicios[n - 1];
+const next = w.ejercicios[n + 1];
+const desc = ex.prompt.split('\n').slice(1).join(' ').trim();
+const payload = {
+  slug: w.slug, preamble: w.preamble, test: w.test, extra: w.extra,
+  exId: ex.id, exTests: ex.tests, starter: ex.starter, solucion: ex.solucion || '',
+  ejercicios: w.ejercicios.map((e) => ({ id: e.id, starter: e.starter })),
+};
+---
+<Base title={ex.titulo + ' — Ejercicios'} active="Ejercicios">
+  <div class="wrap">
+    <div class="book-layout">
+      <RailEjercicios activeSlug={w.slug} activeEx={ex.id} />
+
+      <main class="book ejer">
+        <p class="ej-breadcrumb"><a href={`/ejercicios/${w.slug}`}>{w.titulo}</a> · Ejercicio {n + 1} de {w.ejercicios.length}</p>
+        <h1>{ex.titulo}</h1>
+        {desc && <p class="ej-prompt">{desc}</p>}
+
+        <div class="ejer-acciones">
+          <button class="btn-corregir" id="corregir" type="button" disabled={ex.tests.length === 0}>
+            {ex.tests.length ? '✅ Corregir' : 'Sin test automático'}
+          </button>
+          <button class="btn-sec" id="reset" type="button">↺ Reiniciar</button>
+          <button class="btn-sec" id="ver-sol" type="button">👁 Ver solución</button>
+          <span class="ejer-estado" id="estado"></span>
+        </div>
+
+        <div class="cw">
+          <div class="cw-bar"><span class="dots"><i></i><i></i><i></i></span><span class="cw-lang">python</span><span class="cw-hint">✎ editable</span></div>
+          <div id="editor"></div>
+        </div>
+
+        <div class="ejer-result" id="result"></div>
+
+        <details class="sol-box" id="sol-box" hidden>
+          <summary>Solución de este ejercicio</summary>
+          <pre class="sol-pre" id="sol-pre"></pre>
+        </details>
+
+        <nav class="cap-nav">
+          {prev
+            ? <a href={`/ejercicios/${w.slug}/${prev.id}`}><span class="dir">← Anterior</span><br />{prev.titulo}</a>
+            : <a href={`/ejercicios/${w.slug}`}><span class="dir">← Tema</span><br />{w.titulo}</a>}
+          {next
+            ? <a class="next" href={`/ejercicios/${w.slug}/${next.id}`}><span class="dir">Siguiente →</span><br />{next.titulo}</a>
+            : <a class="next" href="/ejercicios"><span class="dir">Fin del tema →</span><br />Todos los temas</a>}
+        </nav>
+      </main>
+    </div>
+  </div>
+
+  <script type="application/json" id="ej-data" set:html={JSON.stringify(payload)}></script>
+  <script is:inline src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+
+  <script>
+    import { EditorView, basicSetup } from 'codemirror';
+    import { keymap } from '@codemirror/view';
+    import { indentWithTab } from '@codemirror/commands';
+    import { python } from '@codemirror/lang-python';
+    import { oneDark } from '@codemirror/theme-one-dark';
+    import runnerPy from '../../../lib/runner.py?raw';
+
+    const data = JSON.parse(document.getElementById('ej-data').textContent);
+    const KEY = (id) => 'ej:' + data.slug + ':' + id;
+    const estado = (t) => { document.getElementById('estado').textContent = t; };
+    const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+
+    let guardar;
+    const editor = new EditorView({
+      doc: localStorage.getItem(KEY(data.exId)) ?? data.starter,
+      extensions: [
+        basicSetup, keymap.of([indentWithTab]), python(), oneDark,
+        EditorView.updateListener.of((v) => {
+          if (v.docChanged) { clearTimeout(guardar); guardar = setTimeout(() => localStorage.setItem(KEY(data.exId), editor.state.doc.toString()), 500); }
+        }),
+      ],
+      parent: document.getElementById('editor'),
+    });
+
+    function moduloCompleto() {
+      const partes = [data.preamble];
+      for (const e of data.ejercicios) {
+        partes.push(e.id === data.exId ? editor.state.doc.toString() : (localStorage.getItem(KEY(e.id)) ?? e.starter));
+      }
+      return partes.join('\n\n\n');
+    }
+
+    let pyReady = null, cargado = false;
+    async function getPy() {
+      if (!pyReady) {
+        estado('⏳ Cargando Python + pytest (~20s la primera vez)…');
+        pyReady = (async () => { const py = await window.loadPyodide(); await py.loadPackage('pytest'); return py; })();
+      }
+      const py = await pyReady;
+      if (!cargado) { await py.runPythonAsync(runnerPy); cargado = true; }
+      estado('');
+      return py;
+    }
+
+    function render(tests, carga) {
+      const box = document.getElementById('result');
+      if (carga) { box.innerHTML = '<div class="ejer-err">⚠️ El código no se pudo ejecutar:<br><code>' + esc(carga) + '</code></div>'; return; }
+      const tot = tests.length, ok = tests.filter((t) => t.ok).length, todo = tot > 0 && ok === tot;
+      localStorage.setItem(KEY(data.exId) + ':ok', todo ? '1' : '0');
+      let h = '<div class="ejer-resumen ' + (todo ? 'win' : '') + '">' + ok + ' / ' + tot + ' tests' + (todo ? ' · +' + (ok * 10) + ' EXP · ¡COMPLETO! 🏅' : '') + '</div><ul class="ejer-lista">';
+      for (const t of tests) h += '<li class="' + (t.ok ? 'ok' : 'no') + '"><span class="ic">' + (t.ok ? '✅' : '❌') + '</span><code>' + esc(t.name) + '</code>' + (t.msg ? '<div class="m">' + esc(t.msg) + '</div>' : '') + '</li>';
+      box.innerHTML = h + '</ul>';
+    }
+
+    async function corregir() {
+      const b = document.getElementById('corregir');
+      b.disabled = true; estado('Corrigiendo…');
+      try {
+        const py = await getPy();
+        py.globals.set('_slug', data.slug);
+        py.globals.set('_ej', moduloCompleto());
+        py.globals.set('_test', data.test);
+        py.globals.set('_extra', JSON.stringify(data.extra || {}));
+        py.globals.set('_solo', JSON.stringify(data.exTests));
+        const out = await py.runPythonAsync('correr(_slug, _ej, _test, _extra, _solo)');
+        const res = JSON.parse(out);
+        const byName = {}; res.tests.forEach((t) => (byName[t.name] = t));
+        render(data.exTests.map((nm) => byName[nm]).filter(Boolean), res.carga_error);
+      } catch (e) { render([], (e && e.message) || String(e)); }
+      finally { b.disabled = false; estado(''); }
+    }
+
+    if (data.exTests.length) document.getElementById('corregir').addEventListener('click', corregir);
+    document.getElementById('reset').addEventListener('click', () => {
+      if (!confirm('¿Volver al código original de este ejercicio?')) return;
+      editor.dispatch({ changes: { from: 0, to: editor.state.doc.length, insert: data.starter } });
+      localStorage.removeItem(KEY(data.exId)); localStorage.removeItem(KEY(data.exId) + ':ok');
+      document.getElementById('result').innerHTML = '';
+    });
+    document.getElementById('ver-sol').addEventListener('click', () => {
+      const box = document.getElementById('sol-box');
+      document.getElementById('sol-pre').textContent = data.solucion || '(sin solución)';
+      box.hidden = !box.hidden; if (!box.hidden) box.open = true;
+    });
+  </script>
+</Base>

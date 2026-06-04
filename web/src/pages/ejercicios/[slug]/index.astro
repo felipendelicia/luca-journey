@@ -1,0 +1,37 @@
+---
+import Base from '../../../layouts/Base.astro';
+import RailEjercicios from '../../../components/RailEjercicios.astro';
+import datos from '../../../data/ejercicios.json';
+
+export function getStaticPaths() {
+  return datos.map((w) => ({ params: { slug: w.slug }, props: { w } }));
+}
+const { w } = Astro.props;
+---
+<Base title={w.titulo + ' — Ejercicios'} active="Ejercicios">
+  <div class="wrap">
+    <div class="book-layout">
+      <RailEjercicios activeSlug={w.slug} />
+
+      <main class="book ejer">
+        <h1>{w.titulo} — Ejercicios</h1>
+        <p>Elegí un ejercicio para resolver. Cada uno se corrige por separado con tests reales en tu navegador.</p>
+
+        <div class="cards indice" id="grid">
+          {w.ejercicios.map((ex, n) => (
+            <a class="card" href={`/ejercicios/${w.slug}/${ex.id}`} data-key={`ej:${w.slug}:${ex.id}:ok`} style="display:flex; align-items:center; gap:8px;">
+              <span class="num">{n + 1}</span>
+              <span><h3 style="margin:0; font-size:.98rem;">{ex.titulo.replace(/^(Ejercicio\s+\d+\s*:?|\d+\))\s*/i, '')}</h3></span>
+            </a>
+          ))}
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script is:inline>
+    document.querySelectorAll('#grid .card[data-key]').forEach((c) => {
+      if (localStorage.getItem(c.dataset.key) === '1') c.classList.add('done');
+    });
+  </script>
+</Base>

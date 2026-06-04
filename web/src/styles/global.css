@@ -259,3 +259,28 @@ pre code, pre.astro-code code, .cw code{
 .card.done{ border-color:#27c93f; }
 body.dark .ejer-resumen{ background:#352a12; } body.dark .ejer-resumen.win{ background:#13301f; }
 body.dark .ejer-err{ background:#3a1c1a; }
+
+/* tarjetas de ejercicio individual */
+.ejer-progreso{ font-family:var(--font-display); font-weight:800; color:var(--red-deep); }
+.ej-card{ background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin:14px 0; box-shadow:var(--shadow-sm); }
+.ej-head{ display:flex; align-items:center; gap:10px; }
+.ej-head h3{ margin:0; font-size:1rem; flex:1; color:var(--ink); }
+.ej-dot{ width:12px; height:12px; border-radius:50%; background:var(--line); flex:0 0 auto; border:1px solid rgba(0,0,0,.12); }
+.ej-dot.ok{ background:#27c93f; border-color:#1f9d55; } .ej-dot.no{ background:var(--red); border-color:var(--red-deep); }
+.ej-corregir{ background:#1f9d55; color:#fff; border:none; border-radius:8px; font-family:var(--font-pixel); font-size:9px; letter-spacing:.06em; padding:7px 12px; cursor:pointer; text-transform:uppercase; flex:0 0 auto; }
+.ej-corregir:hover{ background:#27c93f; } .ej-corregir[disabled]{ background:var(--ink-mute); opacity:.5; cursor:default; }
+.ej-prompt{ color:var(--ink-soft); font-size:.92rem; margin:.5rem 0 .7rem; white-space:pre-line; }
+.ej-card .cw{ margin:.3rem 0; }
+.ej-res{ margin-top:.6rem; }
+.ej-mini{ display:inline-block; font-family:var(--font-display); font-weight:800; font-size:.9rem; padding:5px 12px; border-radius:9px; background:#fdecea; color:var(--red-deep); }
+.ej-mini.win{ background:#ecfaf1; color:var(--teal-deep); } .ej-mini.parc{ background:#fff6e2; color:var(--yellow-deep); } .ej-mini.mal{ background:#fdecea; color:var(--red-deep); }
+body.dark .ej-mini{ background:#3a1c1a; } body.dark .ej-mini.win{ background:#13301f; } body.dark .ej-mini.parc{ background:#352a12; }
+
+/* rail de ejercicios: items con texto recortado + dot de "hecho" */
+.book-rail .ej-link{ font-size:.82rem; }
+.book-rail .ej-link .ej-link-t{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.book-rail .ej-link .ej-link-dot{ width:8px; height:8px; border-radius:50%; background:var(--line); flex:0 0 auto; }
+.book-rail .ej-link.hecho .ej-link-dot{ background:#27c93f; }
+.book-rail .ej-link.hecho .ej-link-t{ color:var(--ink-mute); }
+.ej-breadcrumb{ font-size:.85rem; color:var(--ink-mute); margin:0 0 .3rem; }
+.ej-breadcrumb a{ color:var(--teal-deep); }

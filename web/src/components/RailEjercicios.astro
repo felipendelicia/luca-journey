@@ -1,0 +1,29 @@
+---
+import datos from '../data/ejercicios.json';
+const { activeSlug = '', activeEx = '' } = Astro.props;
+const corto = (t) => t.replace(/^(Ejercicio\s+\d+\s*:?|\d+\))\s*/i, '');
+---
+<aside class="book-rail">
+  <div class="rail-tit">Temas</div>
+  {datos.map((w) => (
+    <details class="grupo" open={w.slug === activeSlug}>
+      <summary><span class="g-ico">🏋️</span>{w.titulo}</summary>
+      {w.ejercicios.map((ex, n) => (
+        <a
+          class={'ej-link' + (w.slug === activeSlug && ex.id === activeEx ? ' activo' : '')}
+          href={`/ejercicios/${w.slug}/${ex.id}`}
+          data-key={`ej:${w.slug}:${ex.id}:ok`}
+        >
+          <span class="rn">{n + 1}</span>
+          <span class="ej-link-t">{corto(ex.titulo)}</span>
+          <span class="ej-link-dot"></span>
+        </a>
+      ))}
+    </details>
+  ))}
+  <script is:inline>
+    document.querySelectorAll('.ej-link[data-key]').forEach((a) => {
+      if (localStorage.getItem(a.dataset.key) === '1') a.classList.add('hecho');
+    });
+  </script>
+</aside>
