@@ -1,48 +1,54 @@
+"""✏️ Ejercicios — matplotlib: Gráficos
+
+Cada función recibe un 'ax' (un eje de matplotlib, ya creado). Dibujá o configurá
+algo sobre él y devolvé el mismo ax al final. ✅ Corregir al terminar.
 """
-✏️ Ejercicios — matplotlib: Gráficos
-
-Cada función recibe un "ax" (un eje de matplotlib, ya creado) y tenés que
-dibujar/configurar algo sobre él. Devolvé el mismo ax al final.
-"""
 
 
-# 1) Dibujá un gráfico de BARRAS con nombres (x) y valores (alturas).
+# Gráfico de barras
+# Dibujá un gráfico de barras con nombres (eje x) y valores (alturas). Pista: ax.bar(nombres, valores).
+# Acordate de devolver ax al final.
 def dibujar_barras(ax, nombres, valores):
-    """Usá ax.bar(nombres, valores). Devolvé ax."""
+    """Dibujá las barras y devolvé ax."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 2) Ponele un título al gráfico.
+# Poner un título
+# Ponele un título al gráfico. Pista: ax.set_title(titulo). Devolvé ax.
 def poner_titulo(ax, titulo):
-    """Usá ax.set_title(titulo). Devolvé ax."""
+    """Poné el título y devolvé ax."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 3) Ponele etiquetas a los ejes X e Y.
+# Etiquetas de los ejes
+# Ponele nombre al eje X y al eje Y. Pista: ax.set_xlabel(...) y ax.set_ylabel(...). Devolvé ax.
 def poner_etiquetas(ax, etiqueta_x, etiqueta_y):
-    """Usá ax.set_xlabel(...) y ax.set_ylabel(...). Devolvé ax."""
+    """Poné las etiquetas de los ejes y devolvé ax."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 4) Dibujá una LÍNEA con los puntos x, y.
+# Gráfico de línea
+# Dibujá una línea que una los puntos (x, y). Pista: ax.plot(x, y). Devolvé ax.
 def dibujar_linea(ax, x, y):
-    """Usá ax.plot(x, y). Devolvé ax."""
+    """Dibujá la línea y devolvé ax."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 5) Dibujá un gráfico de DISPERSIÓN (puntos) con x, y.
+# Gráfico de dispersión
+# Dibujá puntos sueltos en las posiciones (x, y). Pista: ax.scatter(x, y). Devolvé ax.
 def dibujar_dispersion(ax, x, y):
-    """Usá ax.scatter(x, y). Devolvé ax."""
+    """Dibujá los puntos y devolvé ax."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 6) Dibujá un HISTOGRAMA con una lista de datos.
+# Histograma
+# Dibujá un histograma a partir de una lista de datos. Pista: ax.hist(datos). Devolvé ax.
 def dibujar_histograma(ax, datos):
-    """Usá ax.hist(datos). Devolvé ax."""
+    """Dibujá el histograma y devolvé ax."""
     # TU CÓDIGO ACÁ
     pass

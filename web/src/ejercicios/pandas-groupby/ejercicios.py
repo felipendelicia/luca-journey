@@ -1,56 +1,66 @@
-"""
-✏️ Ejercicios — pandas: Agrupar y combinar
+"""✏️ Ejercicios — pandas: Agrupar y combinar
 
 Resumir datos con groupby y value_counts, y combinar tablas con merge.
-DataFrame con columnas: nombre, tipo, nivel, hp.
+DataFrame con columnas: nombre, tipo, nivel, hp. ✅ Corregir al terminar.
 """
 import pandas as pd
 
 
-# 1) Contá cuántos Pokémon hay de cada tipo. Usá value_counts.
+# Cuántos por tipo
+# Contá cuántos Pokémon hay de cada tipo. Pista: df["tipo"].value_counts().
+# Ejemplo:  devuelve una Serie  Fuego→3, Agua→2, ...
 def contar_por_tipo(df):
-    """Devolvé una Serie: tipo -> cantidad."""
+    """Devolvé una Serie: tipo → cantidad."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 2) Promedio de nivel por tipo. Usá groupby.
+# Nivel promedio por tipo
+# Calculá el nivel promedio de cada tipo. Pista: df.groupby("tipo")["nivel"].mean().
 def nivel_promedio_por_tipo(df):
-    """Devolvé una Serie: tipo -> nivel promedio."""
+    """Devolvé una Serie: tipo → nivel promedio."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 3) Nivel máximo por tipo.
+# Nivel máximo por tipo
+# Calculá el nivel más alto de cada tipo. Pista: groupby + max().
 def nivel_maximo_por_tipo(df):
-    """Devolvé una Serie: tipo -> nivel máximo."""
+    """Devolvé una Serie: tipo → nivel máximo."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 4) HP total por tipo.
+# HP total por tipo
+# Sumá el HP de cada tipo. Pista: groupby + sum().
 def hp_total_por_tipo(df):
-    """Devolvé una Serie: tipo -> suma de hp."""
+    """Devolvé una Serie: tipo → suma de hp."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 5) ¿Cuál es el tipo más común? Devolvé el nombre del tipo (str).
+# El tipo más común
+# Devolvé el NOMBRE del tipo que más se repite. Pista: value_counts().idxmax().
+# Ejemplo:  si hay más de Fuego que de otros  →  "Fuego"
 def tipo_mas_comun(df):
-    """Devolvé el tipo que más se repite. Pista: value_counts().idxmax()."""
+    """Devolvé el tipo más repetido (str)."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 6) Combiná dos DataFrames por una columna en común. Usá pd.merge.
+# Combinar tablas (merge)
+# Combiná dos DataFrames por una columna en común. Pista: pd.merge(df1, df2, on=col).
+# Ejemplo:  combinar(pokemon, tipos, "tipo")  →  una tabla con info de ambas
 def combinar(df1, df2, col):
     """Devolvé el merge de df1 y df2 usando 'col' como clave."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 7) Cantidad de Pokémon por tipo, pero solo de los tipos con 2 o más.
+# Tipos populares
+# Cantidad de Pokémon por tipo, pero SOLO de los tipos que tienen 2 o más.
+# Pista: contá por tipo y filtrá la Serie con [serie >= 2].
 def tipos_populares(df):
-    """Devolvé una Serie tipo -> cantidad, solo con los tipos que tienen 2+ Pokémon."""
+    """Devolvé una Serie tipo → cantidad, solo con los tipos de 2+ Pokémon."""
     # TU CÓDIGO ACÁ
     pass
