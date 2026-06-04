@@ -1,0 +1,56 @@
+---
+import Base from '../layouts/Base.astro';
+import datos from '../data/ejercicios.json';
+import pokemon from '../data/pokemon.json';
+import { u } from '../lib/url.ts';
+
+const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.ejercicios.map((e) => ({ id: e.id })) }));
+const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '🟢 Hoenn']];
+---
+<Base title="Pokédex — Python con Pokémon" active="Pokédex">
+  <div class="wrap coleccion">
+    <div class="safari-head">
+      <h1>📕 Mi Pokédex</h1>
+      <a class="navlink" href={u('/safari')}>🎒 Ir al Safari</a>
+    </div>
+    <p>Tu colección. Atrapá Pokémon en el <strong>Safari</strong> (con las Pokéballs que ganás resolviendo ejercicios). Sí, podés tener <strong>repetidos</strong>. 😎</p>
+
+    <div class="col-contadores" id="contadores"></div>
+    <div id="secciones"></div>
+  </div>
+
+  <script type="application/json" id="dex-data" set:html={JSON.stringify({ pokemon, temas, regiones: REGIONES })}></script>
+  <script>
+    import { sincronizar, estado, spriteUrl } from '../lib/coleccion.js';
+
+    const D = JSON.parse(document.getElementById('dex-data').textContent);
+    sincronizar(D.temas);
+    const at = estado().atrapados;
+
+    // contadores por región
+    const cont = D.regiones.map(([id, label]) => {
+      const total = D.pokemon.filter((p) => p.region === id).length;
+      const tengo = D.pokemon.filter((p) => p.region === id && at[p.id]).length;
+      return '<div class="cc"><span>' + label + '</span><b>' + tengo + ' / ' + total + '</b></div>';
+    }).join('');
+    document.getElementById('contadores').innerHTML = cont;
+
+    // grilla por región
+    const secciones = D.regiones.map(([id, label]) => {
+      const celdas = D.pokemon.filter((p) => p.region === id).map((p) => {
+        const n = at[p.id] || 0;
+        if (n > 0) {
+          return '<div class="poke tengo" title="' + p.nombre + '">' +
+            '<img loading="lazy" src="' + spriteUrl(p.id) + '" alt="' + p.nombre + '" />' +
+            (n > 1 ? '<span class="poke-x">x' + n + '</span>' : '') +
+            '<span class="poke-nom">' + p.nombre + '</span></div>';
+        }
+        return '<div class="poke falta" title="???">' +
+          '<img loading="lazy" src="' + spriteUrl(p.id) + '" alt="?" />' +
+          '<span class="poke-nom">Nº ' + p.id + '</span></div>';
+      }).join('');
+      return '<h2 class="liga-h">' + label + '</h2><div class="poke-grid">' + celdas + '</div>';
+    }).join('');
+    document.getElementById('secciones').innerHTML = secciones;
+  </script>
+</Base>

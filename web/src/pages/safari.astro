@@ -1,0 +1,79 @@
+---
+import Base from '../layouts/Base.astro';
+import datos from '../data/ejercicios.json';
+import pokemon from '../data/pokemon.json';
+import { u } from '../lib/url.ts';
+
+const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.ejercicios.map((e) => ({ id: e.id })) }));
+const total = pokemon.length;
+---
+<Base title="Safari — Python con Pokémon" active="Pokédex">
+  <div class="wrap safari">
+    <div class="safari-head">
+      <h1>🎒 Safari Pokémon</h1>
+      <a class="navlink" href={u('/pokedex')}>📕 Ver mi Pokédex</a>
+    </div>
+    <p>Tirá Pokéballs para atrapar Pokémon salvajes. Ganás Pokéballs <strong>resolviendo ejercicios</strong> (+2 c/u) y con el <strong>regalo diario</strong> (+5). ⚡</p>
+
+    <div class="safari-barra">
+      <div class="ss-item"><span class="ss-ico">🔴</span><b id="balls">0</b><span class="ss-lbl">Pokéballs</span></div>
+      <div class="ss-item"><span class="ss-ico">📕</span><b id="colN">0</b><span class="ss-lbl">de {total}</span></div>
+      <button class="btn-regalo" id="regalo">🎁 Regalo diario</button>
+    </div>
+
+    <div class="safari-arena">
+      <div class="arena-pasto" id="arena">
+        <div class="arena-vacio" id="vacio">El pasto se mueve… 🌿<br /><small>Tirá una Pokéball para ver qué aparece.</small></div>
+      </div>
+      <button class="btn-tirar" id="tirar">¡Tirá la Pokéball! 🔴</button>
+      <p class="safari-msg" id="msg"></p>
+    </div>
+  </div>
+
+  <script type="application/json" id="safari-data" set:html={JSON.stringify({ pokemon, temas })}></script>
+  <script>
+    import { sincronizar, tirar as lanzar, estado, reclamarRegalo, regaloDisponible, spriteUrl } from '../lib/coleccion.js';
+
+    const D = JSON.parse(document.getElementById('safari-data').textContent);
+    const $ = (id) => document.getElementById(id);
+
+    function refrescar() {
+      const e = estado();
+      $('balls').textContent = e.balls;
+      $('colN').textContent = e.atrapados.size;
+      $('tirar').disabled = e.balls <= 0;
+      $('regalo').style.display = regaloDisponible() ? '' : 'none';
+    }
+
+    // otorga lo pendiente (balls por ejercicios, capturas por hitos)
+    const nuevo = sincronizar(D.temas);
+    if (nuevo.balls || nuevo.capturas.length) {
+      const partes = [];
+      if (nuevo.balls) partes.push('🔴 +' + nuevo.balls + ' Pokéballs');
+      if (nuevo.capturas.length) partes.push('🎉 ' + nuevo.capturas.length + ' captura(s) por hitos');
+      $('msg').textContent = partes.join('  ·  ');
+    }
+    refrescar();
+
+    $('regalo').addEventListener('click', () => {
+      const n = reclamarRegalo();
+      if (n) $('msg').textContent = '🎁 ¡Regalo diario! +' + n + ' Pokéballs';
+      refrescar();
+    });
+
+    $('tirar').addEventListener('click', () => {
+      const r = lanzar(D.pokemon, D.temas);
+      if (r.error === 'sin-balls') { $('msg').textContent = 'Te quedaste sin Pokéballs. Resolvé ejercicios o volvé mañana por el regalo. 💪'; return; }
+      if (r.error) { $('msg').textContent = 'Hacé un ejercicio para desbloquear Pokémon salvajes. 💪'; return; }
+      const p = r.pokemon;
+      const titulo = r.repetido
+        ? '¡Otro <b>' + p.nombre + '</b>! Ya tenés <b>' + r.cantidad + '</b>'
+        : '¡Atrapaste a <b>' + p.nombre + '</b>!';
+      $('arena').innerHTML =
+        '<div class="captura' + (r.repetido ? ' repe' : '') + '"><img src="' + spriteUrl(p.id) + '" alt="' + p.nombre + '" />' +
+        '<div class="captura-txt">' + titulo + ' <span class="cap-n">Nº ' + p.id + '</span></div></div>';
+      $('msg').textContent = '';
+      refrescar();
+    });
+  </script>
+</Base>
