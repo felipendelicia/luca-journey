@@ -228,3 +228,10 @@ pre code, pre.astro-code code, .cw code{
   background:transparent !important; border:0 !important; padding:0 !important;
   color:inherit; font-size:inherit; border-radius:0;
 }
+
+/* editores editables dentro del libro */
+.cw-hint{ font-family:var(--font-pixel); font-size:8px; color:rgba(255,255,255,.42); letter-spacing:.08em; }
+.cw .cm-editor{ font-size:13px; }
+.cw .cm-scroller{ font-family:var(--font-mono); line-height:1.55; padding:6px 0; }
+.cw-edit .cm-editor{ max-height:460px; }
+.cw .cm-focused{ outline:none; }

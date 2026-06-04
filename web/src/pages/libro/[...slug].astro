@@ -51,15 +51,21 @@ const grupos = agrupar(caps);
 
   <script is:inline src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
   <script>
-    // Envuelve cada bloque de código en una "ventana" con botón ▶ ejecutar (Pyodide).
+    // Los bloques python del libro se vuelven editores (CodeMirror) que podés
+    // tocar y ejecutar; los bash quedan como ventana de solo lectura.
+    import { EditorView, basicSetup } from 'codemirror';
+    import { keymap } from '@codemirror/view';
+    import { indentWithTab } from '@codemirror/commands';
+    import { python } from '@codemirror/lang-python';
+    import { oneDark } from '@codemirror/theme-one-dark';
+
     let pyReady = null;
     async function getPy(out) {
       if (!pyReady) {
         out.innerHTML = '<span class="lbl">SALIDA</span>⏳ Cargando Python (~15s la primera vez)…';
         pyReady = window.loadPyodide();
       }
-      const py = await pyReady;
-      return py;
+      return pyReady;
     }
     async function correr(codigo, out, btn) {
       out.classList.add('show');
@@ -83,6 +89,7 @@ const grupos = agrupar(caps);
 
     document.querySelectorAll('.book pre.astro-code').forEach((pre) => {
       const lang = (pre.getAttribute('data-language') || '').toLowerCase();
+      const codigo = pre.innerText.replace(/\n+$/, '');
       const fig = document.createElement('figure');
       fig.className = 'cw';
       const bar = document.createElement('div');
@@ -90,16 +97,30 @@ const grupos = agrupar(caps);
       bar.innerHTML = '<span class="dots"><i></i><i></i><i></i></span><span class="cw-lang">' + (lang || 'code') + '</span>';
       pre.parentNode.insertBefore(fig, pre);
       fig.appendChild(bar);
-      fig.appendChild(pre);
+
       if (lang === 'python') {
+        const host = document.createElement('div');
+        host.className = 'cw-edit';
+        fig.appendChild(host);
+        pre.remove();
+        const view = new EditorView({
+          doc: codigo,
+          extensions: [basicSetup, keymap.of([indentWithTab]), python(), oneDark],
+          parent: host,
+        });
+        const hint = document.createElement('span');
+        hint.className = 'cw-hint'; hint.textContent = '✎ editable';
+        bar.appendChild(hint);
         const out = document.createElement('div');
         out.className = 'cw-out';
         out.innerHTML = '<span class="lbl">SALIDA</span>';
         const btn = document.createElement('button');
         btn.className = 'cw-run'; btn.type = 'button'; btn.textContent = '▶ ejecutar';
-        btn.addEventListener('click', () => correr(pre.innerText, out, btn));
+        btn.addEventListener('click', () => correr(view.state.doc.toString(), out, btn));
         bar.appendChild(btn);
         fig.appendChild(out);
+      } else {
+        fig.appendChild(pre);
       }
     });
   </script>

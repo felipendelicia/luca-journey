@@ -46,6 +46,8 @@ const data = { inicial, ejemplos };
 
   <script>
     import { EditorView, basicSetup } from 'codemirror';
+    import { keymap } from '@codemirror/view';
+    import { indentWithTab } from '@codemirror/commands';
     import { python } from '@codemirror/lang-python';
     import { oneDark } from '@codemirror/theme-one-dark';
 
@@ -53,7 +55,7 @@ const data = { inicial, ejemplos };
 
     const view = new EditorView({
       doc: data.inicial,
-      extensions: [basicSetup, python(), oneDark],
+      extensions: [basicSetup, keymap.of([indentWithTab]), python(), oneDark],
       parent: document.getElementById('editor'),
     });
 
