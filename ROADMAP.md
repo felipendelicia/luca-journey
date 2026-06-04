@@ -2,6 +2,8 @@
 
 Este es el mapa de tu aventura. Cada semana es una **ruta** que tenés que recorrer. Cada proyecto es un **gimnasio** donde ganás tu medalla. 🏅
 
+> 🏆 **Tip:** corré `python aventura.py` (la **Liga Pokémon**) para recorrer este mapa como un juego: ganás EXP, subís de nivel y conseguís las 8 medallas de gimnasio.
+
 ```
   INICIO
     │
@@ -44,6 +46,10 @@ Este es el mapa de tu aventura. Cada semana es una **ruta** que tenés que recor
     ├─ ⚡ Semana 07 — Cadenas y Archivos
     │     └─ strings, open(), CSV, try/except
     │     └─ 🏅 HITO: tus datos sobreviven al cerrar el programa
+    │
+    ├─ 😌 DESCANSO — Git: Control de Versiones
+    │     └─ init, add, commit, branch, merge, GitHub
+    │     └─ 🏅 HITO: aprendés a "guardar la partida" de tu código
     │
     ▼
 ╔═══════════════════════════════════════════════════════════════╗
@@ -104,6 +110,7 @@ Marcá con una ✅ a medida que avanzás:
 [ ] Semana 05 — Funciones
 [ ] Semana 06 — Listas y Colecciones
 [ ] Semana 07 — Cadenas y Archivos
+[ ] Descanso     — Git: Control de Versiones
 [ ] Semana 08 — POO Introducción
 [ ] Semana 09 — POO Avanzado
 [ ] Semana 10 — Módulos y pip

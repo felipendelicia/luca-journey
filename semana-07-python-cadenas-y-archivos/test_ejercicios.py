@@ -21,7 +21,8 @@ def _cargar(nombre):
     return modulo
 
 
-modulo = _cargar("soluciones")
+# Por defecto prueba soluciones.py; la Liga lo corre con CURSO_MODULO=ejercicios.
+modulo = _cargar(os.environ.get("CURSO_MODULO", "soluciones"))
 
 
 # ----------------------------------------------------------------------

@@ -22,8 +22,10 @@ def _cargar(nombre):
     return modulo
 
 
-# 👇 Cambiá "soluciones" por "ejercicios" para testear tu propio código.
-modulo = _cargar("soluciones")
+# Por defecto se prueba soluciones.py (el curso queda verde). La Liga Pokémon
+# corre estos tests con CURSO_MODULO=ejercicios para evaluar TU propio código.
+# También podés cambiarlo a mano poniendo "ejercicios" abajo.
+modulo = _cargar(os.environ.get("CURSO_MODULO", "soluciones"))
 
 
 # ----------------------------------------------------------------------
