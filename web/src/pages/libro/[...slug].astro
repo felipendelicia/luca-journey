@@ -54,11 +54,7 @@ const grupos = agrupar(caps);
   <script>
     // Los bloques python del libro se vuelven editores (CodeMirror) que podés
     // tocar y ejecutar; los bash quedan como ventana de solo lectura.
-    import { EditorView, basicSetup } from 'codemirror';
-    import { keymap } from '@codemirror/view';
-    import { indentWithTab } from '@codemirror/commands';
-    import { python } from '@codemirror/lang-python';
-    import { oneDark } from '@codemirror/theme-one-dark';
+    import { editorPython } from '../../lib/editor.js';
 
     let pyReady = null;
     async function getPy(out) {
@@ -121,10 +117,10 @@ const grupos = agrupar(caps);
         host.className = 'cw-edit';
         fig.appendChild(host);
         pre.remove();
-        const view = new EditorView({
+        const view = editorPython({
           doc: codigo,
-          extensions: [basicSetup, keymap.of([indentWithTab]), python(), oneDark],
           parent: host,
+          onRun: () => correr(view.state.doc.toString(), out, btn),
         });
         const hint = document.createElement('span');
         hint.className = 'cw-hint'; hint.textContent = '✎ editable';

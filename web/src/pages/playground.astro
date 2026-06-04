@@ -45,18 +45,14 @@ const data = { inicial, ejemplos };
   <script is:inline src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
 
   <script>
-    import { EditorView, basicSetup } from 'codemirror';
-    import { keymap } from '@codemirror/view';
-    import { indentWithTab } from '@codemirror/commands';
-    import { python } from '@codemirror/lang-python';
-    import { oneDark } from '@codemirror/theme-one-dark';
+    import { editorPython } from '../lib/editor.js';
 
     const data = JSON.parse(document.getElementById('pg-data').textContent);
 
-    const view = new EditorView({
+    const view = editorPython({
       doc: data.inicial,
-      extensions: [basicSetup, keymap.of([indentWithTab]), python(), oneDark],
       parent: document.getElementById('editor'),
+      onRun: () => run(),
     });
 
     // Botones de ejemplos
