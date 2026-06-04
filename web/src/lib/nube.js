@@ -100,9 +100,15 @@ export async function refrescarDesdeNube() {
   return true;
 }
 
-export async function loginEmail(email) {
-  const destino = window.location.origin + (window.__BASE || '') + '/';
-  return supa.auth.signInWithOtp({ email, options: { emailRedirectTo: destino } });
+// URL a la que vuelve el usuario tras autenticarse. __BASE ya trae '/' final en prod
+// ('/luca-journey/') y en dev ('/'); normalizamos para no generar '//'.
+function redirectURL() {
+  const base = window.__BASE || '/';
+  return window.location.origin + (base.endsWith('/') ? base : base + '/');
+}
+
+export async function loginGoogle() {
+  return supa.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: redirectURL() } });
 }
 
 export async function logout() {

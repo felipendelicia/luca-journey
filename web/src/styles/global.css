@@ -484,6 +484,14 @@ body.shiny-flash{ animation:shinyFlash .7s ease; }
 .auth-card .btn-grande.sec:hover{ border-color:var(--red); color:var(--red-deep); }
 .auth-msg.err{ color:var(--red-deep); font-size:.85rem; margin-top:.7rem; }
 .auth-fine{ font-size:.8rem; color:var(--ink-mute); margin-top:.5rem; }
+/* botón "Entrar con Google" (branding oficial: fondo blanco, logo a color) */
+.btn-google{ display:flex; align-items:center; justify-content:center; gap:10px; width:100%;
+  margin-top:1.1rem; font-family:var(--font-mono); font-weight:800; font-size:.92rem; color:#1f1f1f;
+  background:#fff; border:1px solid #dadce0; border-radius:5px; padding:12px 18px; cursor:pointer;
+  box-shadow:0 5px 0 rgba(0,0,0,.18); }
+.btn-google:hover{ transform:translateY(2px); box-shadow:0 3px 0 rgba(0,0,0,.18); transition:transform .12s; }
+.btn-google svg{ width:18px; height:18px; flex:none; }
+.btn-google[disabled]{ opacity:.6; cursor:default; transform:none; }
 /* botón de la nube con foto de perfil (sesión iniciada) */
 .theme-toggle.nube-avatar{ padding:0; overflow:hidden; background:var(--paper-2); }
 .theme-toggle.nube-avatar img{ width:100%; height:100%; object-fit:contain; image-rendering:pixelated; display:block; }
