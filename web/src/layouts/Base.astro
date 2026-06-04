@@ -35,33 +35,86 @@ const nav = [
     </div>
   </header>
 
+  <div class="auth-modal" id="auth-modal" hidden>
+    <div class="auth-card">
+      <button class="auth-x" id="auth-x" type="button" aria-label="Cerrar">✕</button>
+      <div class="auth-logo">☁️</div>
+      <div class="auth-pane" id="auth-out">
+        <h2>Guardá tu progreso</h2>
+        <p>Entrá con tu email y llevá tu progreso —ejercicios, medallas y Pokémon— a cualquier dispositivo. Sin contraseña: te mandamos un <b>link mágico</b>. ✨</p>
+        <form id="auth-form" novalidate>
+          <input type="email" id="auth-email" placeholder="tu@email.com" autocomplete="email" required />
+          <button type="submit" class="btn-grande" id="auth-send">Enviar link mágico</button>
+        </form>
+        <p class="auth-msg err" id="auth-err" hidden></p>
+      </div>
+      <div class="auth-pane" id="auth-sent" hidden>
+        <h2>📩 ¡Revisá tu email!</h2>
+        <p>Te enviamos un link a <b id="auth-sent-email"></b>. Tocalo desde este dispositivo para entrar.</p>
+        <p class="auth-fine">¿No llega? Mirá el spam o probá de nuevo en un minuto.</p>
+      </div>
+      <div class="auth-pane" id="auth-in" hidden>
+        <h2>✅ Sesión iniciada</h2>
+        <p>Entraste como <b id="auth-in-email"></b>. Tu progreso se <b>sincroniza solo</b>. 🔄</p>
+        <button class="btn-grande sec" id="auth-logout" type="button">Cerrar sesión</button>
+      </div>
+    </div>
+  </div>
+
   <script is:inline define:vars={{ base: import.meta.env.BASE_URL }}>window.__BASE = base;</script>
 
   <script>
     import { init, usuario, loginEmail, logout } from '../lib/nube.js';
     import { haySupabase } from '../lib/supa.js';
     const btn = document.getElementById('nube-btn');
-    if (haySupabase && btn) {
+    const modal = document.getElementById('auth-modal');
+    if (haySupabase && btn && modal) {
       btn.style.display = '';
       init();
-      const pintar = () => {
+      const $ = (id) => document.getElementById(id);
+      const panes = { out: $('auth-out'), sent: $('auth-sent'), in: $('auth-in') };
+      const mostrar = (cual) => { for (const k in panes) panes[k].hidden = k !== cual; };
+
+      const pintarBtn = () => {
         const u = usuario();
         btn.textContent = u ? '✅' : '☁️';
-        btn.title = u ? `Sesión: ${u.email || ''} — clic para salir` : 'Guardar progreso en la nube';
+        btn.title = u ? `Sesión: ${u.email || ''}` : 'Iniciar sesión y guardar progreso';
       };
-      pintar();
-      window.addEventListener('nube:cambio', pintar);
-      btn.addEventListener('click', async () => {
-        if (usuario()) {
-          if (confirm('¿Cerrar sesión? Tu progreso queda guardado en la nube.')) logout();
-        } else {
-          const email = prompt('Tu email (te mandamos un link para entrar y guardar tu progreso):');
-          if (email && email.trim()) {
-            const { error } = await loginEmail(email.trim());
-            alert(error ? `Error: ${error.message}` : '¡Listo! Revisá tu email y tocá el link. 📩');
-          }
-        }
+      const cerrar = () => { modal.hidden = true; };
+      const abrir = () => {
+        const u = usuario();
+        if (u) { $('auth-in-email').textContent = u.email || ''; mostrar('in'); }
+        else { $('auth-err').hidden = true; mostrar('out'); }
+        modal.hidden = false;
+        if (!u) setTimeout(() => $('auth-email').focus(), 60);
+      };
+
+      pintarBtn();
+      window.addEventListener('nube:cambio', () => {
+        pintarBtn();
+        if (!modal.hidden && usuario()) { $('auth-in-email').textContent = usuario().email || ''; mostrar('in'); }
       });
+
+      btn.addEventListener('click', abrir);
+      $('auth-x').addEventListener('click', cerrar);
+      modal.addEventListener('click', (e) => { if (e.target === modal) cerrar(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) cerrar(); });
+
+      $('auth-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = $('auth-email').value.trim();
+        const err = $('auth-err');
+        err.hidden = true;
+        if (!email.includes('@')) { err.textContent = 'Poné un email válido.'; err.hidden = false; return; }
+        const send = $('auth-send');
+        send.disabled = true; send.textContent = 'Enviando…';
+        const { error } = await loginEmail(email);
+        send.disabled = false; send.textContent = 'Enviar link mágico';
+        if (error) { err.textContent = error.message; err.hidden = false; }
+        else { $('auth-sent-email').textContent = email; mostrar('sent'); }
+      });
+
+      $('auth-logout').addEventListener('click', () => { cerrar(); logout(); });
     }
   </script>
 
