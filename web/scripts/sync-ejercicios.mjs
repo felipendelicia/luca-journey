@@ -57,6 +57,15 @@ const SEMANAS = [
   ['ia-arboles', 'ML: árboles de decisión', 'unova'],
   ['ia-clustering', 'ML: clustering', 'unova'],
   ['ia-proyecto', 'Proyecto: clasificador Pokédex', 'unova'],
+  // Kalos — testing y calidad de código
+  ['errores-try-except', 'Errores: try / except', 'kalos'],
+  ['raise-validar', 'Lanzar errores: raise', 'kalos'],
+  ['excepciones-propias', 'Excepciones personalizadas', 'kalos'],
+  ['assert-afirmaciones', 'assert: afirmaciones', 'kalos'],
+  ['primer-test', 'Tu primer test', 'kalos'],
+  ['casos-limite', 'Casos límite y errores', 'kalos'],
+  ['tdd', 'TDD: el test primero', 'kalos'],
+  ['proyecto-testing', 'Proyecto: módulo testeado', 'kalos'],
 ];
 const IGNORAR = new Set(['ejercicios.py', 'soluciones.py', 'test_ejercicios.py']);
 const leer = (p) => (fs.existsSync(p) ? fs.readFileSync(p, 'utf-8') : null);

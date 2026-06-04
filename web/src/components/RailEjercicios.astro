@@ -10,6 +10,7 @@ const REGIONES = [
   ['hoenn', '🟢 Hoenn · APIs'],
   ['sinnoh', '🔵 Sinnoh · Bases de datos'],
   ['unova', '⚫ Unova · Inteligencia Artificial'],
+  ['kalos', '🟠 Kalos · Testing'],
 ];
 const grupos = REGIONES
   .map(([id, label]) => ({ id, label, temas: datos.filter((w) => (w.region || 'kanto') === id) }))

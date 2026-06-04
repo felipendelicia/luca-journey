@@ -38,7 +38,7 @@ const total = pokemon.length;
 
     const D = JSON.parse(document.getElementById('safari-data').textContent);
     const $ = (id) => document.getElementById(id);
-    const REGN = { kanto: '🔴 Kanto', johto: '⚪ Johto', hoenn: '🟢 Hoenn', sinnoh: '🔵 Sinnoh', unova: '⚫ Unova' };
+    const REGN = { kanto: '🔴 Kanto', johto: '⚪ Johto', hoenn: '🟢 Hoenn', sinnoh: '🔵 Sinnoh', unova: '⚫ Unova', kalos: '🟠 Kalos' };
 
     function refrescar() {
       const e = estado();
@@ -48,7 +48,7 @@ const total = pokemon.length;
       $('regalo').style.display = regaloDisponible() ? '' : 'none';
       const d = regionesDesbloqueadas(D.temas);
       $('regiones').innerHTML = 'Aparecen: ' +
-        ['kanto', 'johto', 'hoenn', 'sinnoh', 'unova'].map((r) => d.has(r) ? '<b>' + REGN[r] + '</b>' : '<span class="bloq">' + REGN[r] + ' 🔒</span>').join(' · ') +
+        ['kanto', 'johto', 'hoenn', 'sinnoh', 'unova', 'kalos'].map((r) => d.has(r) ? '<b>' + REGN[r] + '</b>' : '<span class="bloq">' + REGN[r] + ' 🔒</span>').join(' · ') +
         ' &nbsp;<small>(hacé ejercicios de una región para desbloquearla)</small>';
     }
 

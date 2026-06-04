@@ -436,3 +436,16 @@ body.shiny-flash{ animation:shinyFlash .7s ease; }
 .evo-btn img{ width:44px; height:44px; image-rendering:pixelated; }
 .evo-card.evolucionando{ animation:evoFlash .5s ease; }
 @keyframes evoFlash{ 0%,100%{ filter:none } 50%{ filter:brightness(2.6) saturate(0) } }
+
+/* página /ayuda */
+.ayuda-h{ font-size:1.5rem; margin:2.2rem 0 .3rem; }
+.ayuda-p{ color:var(--ink-soft); max-width:var(--readw); }
+.ayuda-p code{ font-family:var(--font-mono); font-size:.9em; background:#fbe7e1; padding:.05em .35em; border-radius:5px; }
+.ayuda-regiones{ display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:10px; margin:.8rem 0; }
+.ay-region{ display:flex; align-items:flex-start; gap:12px; background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:12px 14px; }
+.ay-emoji{ font-size:26px; line-height:1.2; flex:0 0 auto; }
+.ay-region b{ font-family:var(--font-display); }
+.ay-det{ display:block; color:var(--ink-mute); font-size:.85rem; margin-top:2px; }
+.ayuda-pasos{ max-width:var(--readw); padding-left:1.3rem; line-height:1.8; }
+.ayuda-pasos li{ margin:.25rem 0; }
+.ayuda-cta{ display:flex; flex-wrap:wrap; gap:12px; margin:2.4rem 0 1rem; }

@@ -8,6 +8,7 @@ const BADGES = {
   hoenn: [['Piedra', '🗿'], ['Puño', '🥊'], ['Dínamo', '⚙️'], ['Calor', '🌋'], ['Equilibrio', '⚖️'], ['Pluma', '🪶'], ['Mente', '🧠'], ['Lluvia', '🌧️']],
   sinnoh: [['Carbón', '🌑'], ['Bosque', '🌲'], ['Adoquín', '🧱'], ['Pantano', '🐊'], ['Reliquia', '🏺'], ['Mina', '🛢️'], ['Carámbano', '🧊'], ['Faro', '🔦']],
   unova: [['Trío', '🔺'], ['Básica', '🔰'], ['Insecto', '🐛'], ['Rayo', '🔌'], ['Temblor', '🌐'], ['Jet', '🛩️'], ['Hielo', '🥶'], ['Leyenda', '🦾']],
+  kalos: [['Insecto', '🐞'], ['Acantilado', '🧗'], ['Lucha', '🤜'], ['Planta', '🍃'], ['Voltaje', '🔋'], ['Hada', '🧚'], ['Psíquica', '🔮'], ['Iceberg', '🏔️']],
 };
 const META = {
   kanto: { nombre: 'Kanto', sub: 'Fundamentos: Python', titulo: 'Campeón de Kanto' },
@@ -15,6 +16,7 @@ const META = {
   hoenn: { nombre: 'Hoenn', sub: 'APIs con Flask', titulo: 'Campeón de Hoenn' },
   sinnoh: { nombre: 'Sinnoh', sub: 'Bases de datos', titulo: 'Campeón de Sinnoh' },
   unova: { nombre: 'Unova', sub: 'Inteligencia Artificial', titulo: 'Campeón de Unova' },
+  kalos: { nombre: 'Kalos', sub: 'Testing y calidad', titulo: 'Campeón de Kalos' },
 };
 
 function temasDe(region) {
@@ -23,7 +25,7 @@ function temasDe(region) {
     gym: (BADGES[region][i] || ['?', '⭐'])[0], emoji: (BADGES[region][i] || ['?', '⭐'])[1],
   }));
 }
-const regiones = ['kanto', 'johto', 'hoenn', 'sinnoh', 'unova'].map((id) => ({ id, ...META[id], temas: temasDe(id) }));
+const regiones = ['kanto', 'johto', 'hoenn', 'sinnoh', 'unova', 'kalos'].map((id) => ({ id, ...META[id], temas: temasDe(id) }));
 const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exIds.length, 0), 0);
 ---
 <Base title="La Liga — Python con Pokémon" active="Liga">
@@ -54,7 +56,7 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
 
     {regiones.map((r) => (
       <section class="region" data-region={r.id}>
-        <h2 class="liga-h">{({ kanto: '🔴', johto: '⚪', hoenn: '🟢', sinnoh: '🔵', unova: '⚫' })[r.id] || '🔵'} Región {r.nombre} <small>— {r.sub}</small> <span class="reg-estado" data-reg={r.id}></span></h2>
+        <h2 class="liga-h">{({ kanto: '🔴', johto: '⚪', hoenn: '🟢', sinnoh: '🔵', unova: '⚫', kalos: '🟠' })[r.id] || '🔵'} Región {r.nombre} <small>— {r.sub}</small> <span class="reg-estado" data-reg={r.id}></span></h2>
         <div class="medallas" data-medallas={r.id}></div>
         <div class="progreso-temas" data-progreso={r.id}></div>
       </section>

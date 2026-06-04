@@ -9,7 +9,7 @@ const OUT = path.resolve(HERE, '..', 'src', 'data', 'evoluciones.json');
 const idDe = (url) => +url.split('/').filter(Boolean).pop();
 
 const evo = {};
-const ids = Array.from({ length: 649 }, (_, i) => i + 1);
+const ids = Array.from({ length: 721 }, (_, i) => i + 1);
 const lote = 25;
 for (let i = 0; i < ids.length; i += lote) {
   await Promise.all(ids.slice(i, i + lote).map(async (id) => {
@@ -18,7 +18,7 @@ for (let i = 0; i < ids.length; i += lote) {
       const s = await r.json();
       if (s.evolves_from_species) {
         const from = idDe(s.evolves_from_species.url);
-        if (from >= 1 && from <= 649) (evo[from] ||= []).push(id);
+        if (from >= 1 && from <= 721) (evo[from] ||= []).push(id);
       }
     } catch (e) { /* ignorar */ }
   }));

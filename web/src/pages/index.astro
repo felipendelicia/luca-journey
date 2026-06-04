@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import { u } from '../lib/url.ts';
 
 const cards = [
+  ['🧭', '¿Cómo funciona?', 'Guía del proyecto: todas las features y cómo sacarles el jugo.', '/ayuda'],
   ['📖', 'El libro', 'Toda la teoría del curso (Linux + Python), con ejemplos ejecutables.', '/libro'],
   ['🎮', 'Playground', 'Escribí y ejecutá Python en el navegador, sin instalar nada.', '/playground'],
   ['🏋️', 'Ejercicios en vivo', 'Resolvé y corregí tus ejercicios con tests reales en el navegador.', '/ejercicios'],
@@ -22,6 +23,7 @@ const cards = [
         <a class="btn-grande" href={u('/libro')}>📖 Empezar a leer</a>
         <a class="btn-grande sec" href={u('/playground')}>🎮 Probar Python ya</a>
         <a class="btn-grande sec" href={u('/safari')}>🎒 Atrapar Pokémon</a>
+        <a class="btn-grande sec" href={u('/ayuda')}>🧭 ¿Cómo funciona?</a>
       </div>
     </section>
 

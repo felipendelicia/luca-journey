@@ -43,6 +43,14 @@ export const GRUPOS = [
       'ia-regresion', 'ia-arboles', 'ia-clustering', 'ia-proyecto',
     ],
   },
+  {
+    nombre: 'Testing y calidad',
+    icono: '🧪',
+    slugs: [
+      'errores-try-except', 'raise-validar', 'excepciones-propias', 'assert-afirmaciones',
+      'primer-test', 'casos-limite', 'tdd', 'proyecto-testing',
+    ],
+  },
   { nombre: 'Git', icono: '🔀', slugs: ['git'] },
   { nombre: 'Ayuda', icono: '❓', slugs: ['ayuda'] },
 ];
