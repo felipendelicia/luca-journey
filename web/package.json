@@ -6,9 +6,10 @@
   "description": "Plataforma web del curso Python con Pokémon (Astro)",
   "scripts": {
     "sync": "node scripts/sync-content.mjs",
-    "dev": "node scripts/sync-content.mjs && astro dev",
-    "build": "node scripts/sync-content.mjs && astro build",
-    "preview": "astro preview"
+    "dev": "npm run prep && astro dev",
+    "build": "npm run prep && astro build",
+    "preview": "astro preview",
+    "prep": "node scripts/sync-ejercicios.mjs"
   },
   "dependencies": {
     "astro": "^4.16.18",

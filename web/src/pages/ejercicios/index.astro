@@ -1,0 +1,42 @@
+---
+import Base from '../../layouts/Base.astro';
+import datos from '../../data/ejercicios.json';
+
+const sets = datos.map((it, i) => ({
+  slug: it.slug, titulo: it.titulo, n: i + 1,
+  total: (it.test.match(/def test_/g) || []).length,
+}));
+---
+<Base title="Ejercicios — Python con Pokémon" active="Ejercicios">
+  <div class="wrap">
+    <section class="hero-home" style="padding:48px 36px 40px; margin-bottom:26px;">
+      <p class="kick">Practicá en el navegador</p>
+      <h1>Ejercicios</h1>
+      <p>Resolvé los ejercicios de cada tema y corregilos al instante: corro los tests reales con Python en tu navegador. ⚡</p>
+    </section>
+
+    <div class="cards indice" id="grid">
+      {sets.map((s) => (
+        <a class="card" href={`/ejercicios/${s.slug}`} data-slug={s.slug} data-total={s.total} style="display:flex; align-items:center; gap:8px;">
+          <span class="num">{s.n}</span>
+          <span>
+            <h3 style="margin:0;">{s.titulo}</h3>
+            <p class="ej-prog">{s.total} tests</p>
+          </span>
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <script is:inline>
+    document.querySelectorAll('#grid .card').forEach((c) => {
+      const slug = c.dataset.slug, total = c.dataset.total;
+      const best = +(localStorage.getItem('ej:' + slug + ':best') || 0);
+      if (best > 0) {
+        const p = c.querySelector('.ej-prog');
+        p.textContent = best + ' / ' + total + ' tests' + (best == total ? ' ✅' : '');
+        if (best == total) c.classList.add('done');
+      }
+    });
+  </script>
+</Base>

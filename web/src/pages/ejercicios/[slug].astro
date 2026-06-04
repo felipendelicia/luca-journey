@@ -1,0 +1,162 @@
+---
+import Base from '../../layouts/Base.astro';
+import datos from '../../data/ejercicios.json';
+
+export function getStaticPaths() {
+  return datos.map((item, i) => ({ params: { slug: item.slug }, props: { item, items: datos, i } }));
+}
+
+const { item, items, i } = Astro.props;
+const prev = items[i - 1];
+const next = items[i + 1];
+const payload = {
+  slug: item.slug, ejercicios: item.ejercicios, test: item.test,
+  solucion: item.solucion, extra: item.extra,
+};
+---
+<Base title={item.titulo + ' — Ejercicios'} active="Ejercicios">
+  <div class="wrap">
+    <div class="book-layout">
+      <aside class="book-rail">
+        <div class="rail-tit">Ejercicios</div>
+        {items.map((it, idx) => (
+          <a class={it.slug === item.slug ? 'activo' : ''} href={`/ejercicios/${it.slug}`}>
+            <span class="rn">{idx + 1}</span><span>{it.titulo}</span>
+          </a>
+        ))}
+      </aside>
+
+      <main class="book ejer">
+        <h1>{item.titulo} — Ejercicios</h1>
+        <p>Completá donde dice <code># TU CÓDIGO ACÁ</code> y tocá <strong>Corregir</strong>:
+        corro los tests reales en tu navegador y te digo qué pasa. Tu progreso se guarda solo.</p>
+
+        <div class="ejer-acciones">
+          <button class="btn-corregir" id="corregir" type="button">✅ Corregir</button>
+          <button class="btn-sec" id="reset" type="button">↺ Reiniciar</button>
+          <button class="btn-sec" id="ver-sol" type="button">👁 Ver solución</button>
+          <span class="ejer-estado" id="estado"></span>
+        </div>
+
+        <div class="cw">
+          <div class="cw-bar">
+            <span class="dots"><i></i><i></i><i></i></span>
+            <span class="cw-lang">ejercicios.py</span><span class="cw-hint">✎ editable</span>
+          </div>
+          <div id="editor"></div>
+        </div>
+
+        <div class="ejer-result" id="result"></div>
+
+        <details class="sol-box" id="sol-box" hidden>
+          <summary>Solución completa</summary>
+          <pre class="sol-pre" id="sol-pre"></pre>
+        </details>
+
+        <nav class="cap-nav">
+          {prev
+            ? <a href={`/ejercicios/${prev.slug}`}><span class="dir">← Anterior</span><br />{prev.titulo}</a>
+            : <a href="/ejercicios"><span class="dir">← Índice</span><br />Todos los ejercicios</a>}
+          {next
+            ? <a class="next" href={`/ejercicios/${next.slug}`}><span class="dir">Siguiente →</span><br />{next.titulo}</a>
+            : <a class="next" href="/libro"><span class="dir">Seguir →</span><br />Volver al libro</a>}
+        </nav>
+      </main>
+    </div>
+  </div>
+
+  <script type="application/json" id="ej-data" set:html={JSON.stringify(payload)}></script>
+  <script is:inline src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+
+  <script>
+    import { EditorView, basicSetup } from 'codemirror';
+    import { keymap } from '@codemirror/view';
+    import { indentWithTab } from '@codemirror/commands';
+    import { python } from '@codemirror/lang-python';
+    import { oneDark } from '@codemirror/theme-one-dark';
+    import runnerPy from '../../lib/runner.py?raw';
+
+    const data = JSON.parse(document.getElementById('ej-data').textContent);
+    const KEY = 'ej:' + data.slug;
+    const estado = (t) => { document.getElementById('estado').textContent = t; };
+    const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+
+    let guardar;
+    const editor = new EditorView({
+      doc: localStorage.getItem(KEY) ?? data.ejercicios,
+      extensions: [
+        basicSetup, keymap.of([indentWithTab]), python(), oneDark,
+        EditorView.updateListener.of((v) => {
+          if (v.docChanged) { clearTimeout(guardar); guardar = setTimeout(() => localStorage.setItem(KEY, editor.state.doc.toString()), 500); }
+        }),
+      ],
+      parent: document.getElementById('editor'),
+    });
+
+    let pyReady = null, cargado = false;
+    async function getPy() {
+      if (!pyReady) {
+        estado('⏳ Cargando Python + pytest (~20s la primera vez)…');
+        pyReady = (async () => {
+          const py = await window.loadPyodide();
+          await py.loadPackage('pytest');
+          return py;
+        })();
+      }
+      const py = await pyReady;
+      if (!cargado) { await py.runPythonAsync(runnerPy); cargado = true; }
+      estado('');
+      return py;
+    }
+
+    function render(res) {
+      const box = document.getElementById('result');
+      if (res.carga_error) {
+        box.innerHTML = '<div class="ejer-err">⚠️ Tu código no se pudo ejecutar:<br><code>' + esc(res.carga_error) + '</code></div>';
+        return;
+      }
+      const tot = res.tests.length, ok = res.tests.filter((t) => t.ok).length, exp = ok * 10;
+      const best = Math.max(ok, +(localStorage.getItem(KEY + ':best') || 0));
+      localStorage.setItem(KEY + ':best', best);
+      let h = '<div class="ejer-resumen ' + (ok === tot ? 'win' : '') + '">' +
+        ok + ' / ' + tot + ' tests · ' + exp + ' EXP' + (ok === tot ? ' · ¡COMPLETO! 🏅' : '') + '</div><ul class="ejer-lista">';
+      for (const t of res.tests) {
+        h += '<li class="' + (t.ok ? 'ok' : 'no') + '"><span class="ic">' + (t.ok ? '✅' : '❌') + '</span><code>' +
+          esc(t.name) + '</code>' + (t.msg ? '<div class="m">' + esc(t.msg) + '</div>' : '') + '</li>';
+      }
+      box.innerHTML = h + '</ul>';
+    }
+
+    async function corregir() {
+      const b = document.getElementById('corregir');
+      b.disabled = true; estado('Corrigiendo…');
+      try {
+        const py = await getPy();
+        localStorage.setItem(KEY, editor.state.doc.toString());
+        py.globals.set('_slug', data.slug);
+        py.globals.set('_ej', editor.state.doc.toString());
+        py.globals.set('_test', data.test);
+        py.globals.set('_extra', JSON.stringify(data.extra || {}));
+        const out = await py.runPythonAsync('correr(_slug, _ej, _test, _extra)');
+        render(JSON.parse(out));
+      } catch (e) {
+        render({ carga_error: (e && e.message) ? e.message : String(e), tests: [] });
+      } finally {
+        b.disabled = false; estado('');
+      }
+    }
+
+    document.getElementById('corregir').addEventListener('click', corregir);
+    document.getElementById('reset').addEventListener('click', () => {
+      if (!confirm('¿Volver al código original? Se borra lo que escribiste.')) return;
+      editor.dispatch({ changes: { from: 0, to: editor.state.doc.length, insert: data.ejercicios } });
+      localStorage.removeItem(KEY);
+    });
+    document.getElementById('ver-sol').addEventListener('click', () => {
+      const box = document.getElementById('sol-box');
+      document.getElementById('sol-pre').textContent = data.solucion || '(sin solución)';
+      box.hidden = !box.hidden;
+      if (!box.hidden) box.open = true;
+    });
+  </script>
+</Base>
