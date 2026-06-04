@@ -514,6 +514,7 @@ body.shiny-flash{ animation:shinyFlash .7s ease; }
 .tr-botones{ display:flex; gap:12px; flex-wrap:wrap; }
 .tr-login{ background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:14px; }
 .tr-pick{ position:relative; }
+.tr-pick .tr-cnt{ top:3px; left:3px; bottom:auto; right:auto; }
 .tr-add{ position:absolute; bottom:2px; right:2px; font-size:.7rem; border:0; border-radius:8px; background:var(--red); color:#fff; cursor:pointer; padding:1px 5px; }
 .tr-add.shiny{ right:auto; left:2px; background:var(--yellow-deep); }
 
@@ -529,6 +530,8 @@ body.shiny-flash{ animation:shinyFlash .7s ease; }
 .tr-piden-row{ display:flex; align-items:center; gap:10px; padding:5px 0; }
 .tr-piden-row img{ width:42px; height:42px; image-rendering:pixelated; }
 .tr-piden-row .nm{ flex:1; font-size:.92rem; }
+.tr-piden-row .tr-tengo{ font-weight:800; color:var(--ink); background:var(--card); border:1px solid var(--line); border-radius:8px; padding:1px 7px; white-space:nowrap; }
+.tr-piden-row .tr-tengo.unico{ color:#1a1200; background:var(--yellow); border-color:var(--yellow-deep); }
 .tr-piden-row.hecho{ opacity:.5; }
 .tr-aceptar{ border:0; border-radius:9px; background:#16a34a; color:#fff; font-weight:700; font-size:.8rem; padding:5px 12px; cursor:pointer; }
 .tr-rechazar{ border:0; border-radius:9px; background:var(--card); color:var(--ink-mute); font-weight:700; font-size:.8rem; padding:5px 9px; cursor:pointer; }

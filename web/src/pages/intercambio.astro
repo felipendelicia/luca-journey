@@ -136,10 +136,13 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
       const cont = $('tr-piden-lista'); cont.innerHTML = '';
       visibles.forEach((x) => {
         const tengo = miColCount(x.id), enLote = yaEnLote(x);
+        const cuantos = tengo === 0 ? ' <small>(no lo tenés)</small>'
+          : tengo === 1 ? ' <small class="tr-tengo unico">tenés 1 · el único</small>'
+          : ` <small class="tr-tengo">tenés ${tengo}</small>`;
         const row = document.createElement('div');
         row.className = 'tr-piden-row' + (enLote ? ' hecho' : '');
         row.innerHTML = `<img src="${sprite(x.id, x.shiny)}" />
-          <span class="nm">${nombres[x.id] || x.id}${x.shiny ? ' ✨' : ''}${tengo ? '' : ' <small>(no lo tenés)</small>'}</span>`;
+          <span class="nm">${nombres[x.id] || x.id}${x.shiny ? ' ✨' : ''}${cuantos}</span>`;
         const acc = document.createElement('button');
         if (enLote) { acc.className = 'tr-rechazar'; acc.textContent = '✓ en tu lote'; acc.disabled = true; }
         else if (!tengo) { acc.className = 'tr-rechazar'; acc.textContent = 'no lo tenés'; acc.disabled = true; }
@@ -255,6 +258,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
         const tieneShiny = shi.has(Number(id));
         return `<div class="tr-pick">
           <img src="${sprite(id, false)}" alt="${nombres[id] || id}" title="${nombres[id] || id} (x${at[id]})" />
+          <span class="tr-cnt">x${at[id]}</span>
           <button class="tr-add" data-id="${id}" data-shiny="0" type="button">+</button>
           ${tieneShiny ? `<button class="tr-add shiny" data-id="${id}" data-shiny="1" type="button">✨+</button>` : ''}
         </div>`;
