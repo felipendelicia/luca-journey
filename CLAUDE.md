@@ -26,6 +26,25 @@ consola fueron migrados a la web y eliminados (quedan en el historial de git).
 - `npm run dev` — dev server (base `/`, hot-reload), en `http://localhost:4321`.
 - `npm run build` — build a `../docs` con base `/luca-journey` (lo que sirve GitHub Pages).
 
+## Supabase (login Google + progreso en la nube + intercambios)
+
+El backend es **Supabase** (Postgres + Auth + Realtime). El schema vive en
+`supabase/migrations/*.sql` (cada cambio = una migración nueva; no editar las viejas).
+La CLI ya está **linkeada** a este proyecto:
+
+- **Project ref:** `cvknrqphepwzpdqdyegv` (org `juxovbtolkdxooccvngp`), nombre `luca-journey`.
+- **Config:** `supabase/config.toml` (`project_id = "luca-journey"`); el link cacheado en
+  `supabase/.temp/` (no se commitea).
+- **Ver estado:** `supabase migration list` (compara local vs remoto; read-only).
+- **Aplicar migraciones al remoto:** `supabase db push --yes` (las credenciales están
+  cacheadas; no pide password). El `build` **no** corre migraciones — esto es aparte.
+- **Cliente:** `src/lib/supa.js` (cliente), `src/lib/nube.js` (sincroniza el progreso de
+  localStorage ↔ tabla `progreso`), `src/lib/trades.js` (RPCs + Realtime de intercambios).
+- Las tablas/RPC se acceden con la **anon key**; el cliente lee `PUBLIC_SUPABASE_URL` y
+  `PUBLIC_SUPABASE_ANON_KEY` (env con prefijo `PUBLIC_`, Astro las expone al navegador). Si
+  faltan, `supa` queda en `null` y la app corre en modo solo-localStorage. Las mutaciones
+  sensibles van por **RPCs `security definer`** (ver `intercambios.sql`), no por escritura directa.
+
 ## Reglas
 
 - **Teoría:** editá `web/src/content/libro/*.md`. No dupliques contenido en otro lado.

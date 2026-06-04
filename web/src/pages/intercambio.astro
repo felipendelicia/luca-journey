@@ -30,20 +30,37 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     </section>
 
     <section class="tr-pane" id="tr-sala" hidden>
-      <div class="tr-mesa">
-        <div class="tr-lado">
-          <h3>Vos</h3>
+      <div class="tr-cab">
+        <span>Vos · <span id="tr-estado-yo">sin confirmar</span></span>
+        <span><b id="tr-nombre-otro">El otro</b> <span class="tr-pres" id="tr-pres-otro">🔴</span> · <span id="tr-estado-otro">sin confirmar</span></span>
+      </div>
+
+      <div class="tr-trato">
+        <div class="tr-col">
+          <div class="tr-lab">Vos das</div>
           <div class="tr-lote" id="tr-lote-yo"></div>
-          <button class="btn-sec" id="tr-elegir">+ Elegir Pokémon</button>
-          <div class="tr-estado" id="tr-estado-yo">sin confirmar</div>
+          <button class="btn-sec" id="tr-elegir">+ Ofrecer de lo mío</button>
         </div>
         <div class="tr-vs">⇄</div>
-        <div class="tr-lado">
-          <h3 id="tr-nombre-otro">El otro <span class="tr-pres" id="tr-pres-otro">🔴</span></h3>
+        <div class="tr-col">
+          <div class="tr-lab">Recibís</div>
           <div class="tr-lote" id="tr-lote-otro"></div>
-          <div class="tr-estado" id="tr-estado-otro">sin confirmar</div>
         </div>
       </div>
+
+      <div class="tr-piden" id="tr-piden" hidden>
+        <div class="tr-lab">📨 <span id="tr-piden-nom">El otro</span> te pide</div>
+        <div id="tr-piden-lista"></div>
+      </div>
+
+      <div class="tr-colec">
+        <button class="tr-colec-tog" id="tr-colec-tog" type="button">▾ Colección de <span id="tr-colec-nom">el otro</span></button>
+        <div class="tr-colec-body" id="tr-colec-body">
+          <input class="tr-colec-buscar" id="tr-colec-buscar" placeholder="Buscar Pokémon…" />
+          <div class="tr-grid" id="tr-colec-grid"></div>
+        </div>
+      </div>
+
       <div class="tr-botones">
         <button class="btn-grande" id="tr-confirmar">✅ Confirmar</button>
         <button class="btn-sec" id="tr-cancelar">✕ Cancelar</button>
@@ -68,7 +85,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
 
   <script type="application/json" id="tr-data" set:html={JSON.stringify({ nombres })}></script>
   <script>
-    import { crear, unirse, ponerLote, confirmar, cancelar, leerSala, suscribir, haySupabase } from '../lib/trades.js';
+    import { crear, unirse, ponerLote, ponerPedido, coleccionOtro, confirmar, cancelar, leerSala, suscribir, haySupabase } from '../lib/trades.js';
     import { usuario, init as initNube, refrescarDesdeNube } from '../lib/nube.js';
 
     const D = JSON.parse(document.getElementById('tr-data').textContent);
@@ -81,23 +98,119 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     const atrapados = () => { try { return JSON.parse(localStorage.getItem('col:atrapados')) || {}; } catch { return {}; } };
     const shinySet = () => { try { return new Set(JSON.parse(localStorage.getItem('col:shiny')) || []); } catch { return new Set(); } };
 
-    let sala = null, salaId = null, miLote = [], desuscribir = null, entrando = false, poll = null;
+    let sala = null, salaId = null, miLote = [], miPedido = [], desuscribir = null, entrando = false, poll = null;
+    let otroColeccion = null;            // { atrapados, shiny } del otro (cache)
+    const ocultos = new Set();           // pedidos "rechazados" localmente (key id+shiny)
+    const claveItem = (x) => `${x.id}${x.shiny ? 's' : ''}`;
+    const miColCount = (id) => atrapados()[id] || 0;
     const soyCreador = () => sala && usuario() && sala.creador_id === usuario().id;
 
-    function pintarLote(el, lote) {
-      el.innerHTML = lote.length
+    function chipQuitable(x, onQuitar) {
+      const img = `<img src="${sprite(x.id, x.shiny)}" title="${nombres[x.id] || x.id}${x.shiny ? ' ✨' : ''}" />`;
+      const b = document.createElement('span');
+      b.className = 'tr-chip';
+      b.innerHTML = `${img}<button class="tr-quitar" type="button">×</button>`;
+      b.querySelector('.tr-quitar').addEventListener('click', onQuitar);
+      return b;
+    }
+    function pintarLoteYo() {
+      const el = $('tr-lote-yo'); el.innerHTML = '';
+      if (!miLote.length) { el.innerHTML = '<span class="tr-vacio">(vacío)</span>'; return; }
+      miLote.forEach((x, i) => el.appendChild(chipQuitable(x, async () => {
+        miLote.splice(i, 1); pintarLoteYo();
+        try { await ponerLote(salaId, miLote); } catch (e) { alert(e.message); }
+      })));
+    }
+    function pintarLoteOtro(lote) {
+      const el = $('tr-lote-otro');
+      el.innerHTML = (lote && lote.length)
         ? lote.map((x) => `<img src="${sprite(x.id, x.shiny)}" title="${nombres[x.id] || x.id}${x.shiny ? ' ✨' : ''}" />`).join('')
         : '<span class="tr-vacio">(vacío)</span>';
+    }
+    function yaEnLote(x) { return miLote.some((y) => y.id === x.id && !!y.shiny === !!x.shiny); }
+    function pintarPiden(pedidoOtro) {
+      const lista = pedidoOtro || [];
+      const visibles = lista.filter((x) => !ocultos.has(claveItem(x)));
+      $('tr-piden').hidden = visibles.length === 0;
+      $('tr-piden-nom').textContent = (soyCreador() ? sala.invitado_nombre : sala.creador_nombre) || 'El otro';
+      const cont = $('tr-piden-lista'); cont.innerHTML = '';
+      visibles.forEach((x) => {
+        const tengo = miColCount(x.id), enLote = yaEnLote(x);
+        const row = document.createElement('div');
+        row.className = 'tr-piden-row' + (enLote ? ' hecho' : '');
+        row.innerHTML = `<img src="${sprite(x.id, x.shiny)}" />
+          <span class="nm">${nombres[x.id] || x.id}${x.shiny ? ' ✨' : ''}${tengo ? '' : ' <small>(no lo tenés)</small>'}</span>`;
+        const acc = document.createElement('button');
+        if (enLote) { acc.className = 'tr-rechazar'; acc.textContent = '✓ en tu lote'; acc.disabled = true; }
+        else if (!tengo) { acc.className = 'tr-rechazar'; acc.textContent = 'no lo tenés'; acc.disabled = true; }
+        else {
+          acc.className = 'tr-aceptar'; acc.textContent = 'Aceptar';
+          acc.addEventListener('click', async () => {
+            if (miLote.filter((y) => y.id === x.id).length >= tengo) return;
+            miLote.push({ id: x.id, shiny: !!x.shiny }); pintarLoteYo();
+            try { await ponerLote(salaId, miLote); } catch (e) { alert(e.message); }
+            pintarPiden(pedidoOtro);
+          });
+        }
+        const no = document.createElement('button');
+        no.className = 'tr-rechazar'; no.textContent = '✕';
+        no.title = 'ocultar'; no.addEventListener('click', () => { ocultos.add(claveItem(x)); pintarPiden(pedidoOtro); });
+        row.appendChild(acc); if (!enLote) row.appendChild(no);
+        cont.appendChild(row);
+      });
+    }
+    async function bajarColeccionOtro() {
+      if (otroColeccion || !sala || !sala.invitado_id) return;
+      try { otroColeccion = await coleccionOtro(salaId); } catch { otroColeccion = null; return; }
+      $('tr-colec-body').hidden = miLote.length > 0;   // abierto si tu lote está vacío
+      $('tr-colec-tog').firstChild.nodeValue = $('tr-colec-body').hidden ? '▸ ' : '▾ ';
+      pintarColeccion();
+    }
+    function pintarColeccion() {
+      const grid = $('tr-colec-grid'); if (!otroColeccion) return;
+      const at = otroColeccion.atrapados || {}, shi = new Set(otroColeccion.shiny || []);
+      const q = ($('tr-colec-buscar').value || '').trim().toLowerCase();
+      const ids = Object.keys(at).map(Number).filter((id) => at[id] > 0)
+        .filter((id) => !q || (nombres[id] || '').toLowerCase().includes(q))
+        .sort((a, b) => a - b);
+      if (!ids.length) { grid.innerHTML = '<div class="tr-colec-vacio">Sin Pokémon para mostrar.</div>'; return; }
+      grid.innerHTML = '';
+      const pedidoCount = (id, sh) => miPedido.filter((p) => p.id === id && !!p.shiny === sh).length;
+      ids.forEach((id) => {
+        const cell = document.createElement('div'); cell.className = 'tr-cell';
+        cell.innerHTML = `<img src="${sprite(id, false)}" title="${nombres[id] || id} (x${at[id]})" /><span class="tr-cnt">x${at[id]}</span>`;
+        const mk = (sh) => {
+          const on = pedidoCount(id, sh) > 0;
+          const btn = document.createElement('button');
+          btn.className = 'tr-pedir' + (sh ? ' shiny' : '') + (on ? ' on' : '');
+          btn.type = 'button'; btn.textContent = sh ? '✨' : '❤';
+          btn.title = on ? 'sacar de mi pedido' : (sh ? 'pedir el shiny' : 'pedir');
+          btn.addEventListener('click', async () => {
+            const i = miPedido.findIndex((p) => p.id === id && !!p.shiny === sh);
+            if (i >= 0) miPedido.splice(i, 1);
+            else { if (miPedido.filter((p) => p.id === id).length >= at[id]) return; miPedido.push({ id, shiny: sh }); }
+            pintarColeccion();
+            try { await ponerPedido(salaId, miPedido); } catch (e) { alert(e.message); }
+          });
+          return btn;
+        };
+        cell.appendChild(mk(false));
+        if (shi.has(id)) cell.appendChild(mk(true));
+        grid.appendChild(cell);
+      });
     }
     function pintarSala() {
       if (!sala) return;
       const otroNombre = soyCreador() ? sala.invitado_nombre : sala.creador_nombre;
       const otroLote = soyCreador() ? sala.invitado_lote : sala.creador_lote;
+      const otroPedido = soyCreador() ? sala.invitado_pedido : sala.creador_pedido; // lo que el otro me pide
       const yoOk = soyCreador() ? sala.creador_ok : sala.invitado_ok;
       const otroOk = soyCreador() ? sala.invitado_ok : sala.creador_ok;
-      $('tr-nombre-otro').childNodes[0].nodeValue = (otroNombre || 'El otro') + ' ';
-      pintarLote($('tr-lote-yo'), miLote);
-      pintarLote($('tr-lote-otro'), otroLote || []);
+      $('tr-nombre-otro').textContent = otroNombre || 'El otro';
+      $('tr-colec-nom').textContent = otroNombre || 'el otro';
+      pintarLoteYo();
+      pintarLoteOtro(otroLote || []);
+      pintarPiden(otroPedido || []);
       $('tr-estado-yo').textContent = yoOk ? '✅ confirmado' : 'sin confirmar';
       $('tr-estado-otro').textContent = otroOk ? '✅ confirmado' : 'sin confirmar';
     }
@@ -106,13 +219,15 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
       sala = row;
       if (row.estado === 'completada') { await terminar(); return; }
       if (row.estado === 'cancelada') { alert('El intercambio se canceló.'); location.href = location.pathname; return; }
-      if (row.invitado_id) ver('tr-sala');
+      if (row.invitado_id) { ver('tr-sala'); bajarColeccionOtro(); }
       pintarSala();
     }
 
     async function entrarSala(id) {
       salaId = id;
       sala = await leerSala(id);
+      miLote = (soyCreador() ? sala.creador_lote : sala.invitado_lote) || [];
+      miPedido = (soyCreador() ? sala.creador_pedido : sala.invitado_pedido) || [];
       $('tr-codigo-ver').textContent = sala.codigo;
       ver(sala.invitado_id ? 'tr-sala' : 'tr-espera');
       pintarSala();
@@ -122,6 +237,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
       });
       // fallback: re-leer la sala cada 3s por si Realtime pierde algún evento
       poll = setInterval(async () => { try { const row = await leerSala(id); if (row) onCambioSala(row); } catch {} }, 3000);
+      bajarColeccionOtro();
     }
 
     async function terminar() {
@@ -147,7 +263,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
         const id = Number(b.dataset.id), shiny = b.dataset.shiny === '1';
         if (miLote.filter((x) => x.id === id).length >= at[id]) return;
         miLote.push({ id, shiny });
-        pintarLote($('tr-lote-yo'), miLote);
+        pintarLoteYo();
       }));
       $('tr-modal').hidden = false;
     }
@@ -185,6 +301,11 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     $('tr-confirmar').addEventListener('click', async () => { try { await confirmar(salaId); } catch (e) { alert(e.message); } });
     $('tr-cancelar').addEventListener('click', async () => { await cancelar(salaId); location.href = location.pathname; });
     $('tr-cancelar-espera').addEventListener('click', async () => { await cancelar(salaId); location.href = location.pathname; });
+    $('tr-colec-tog').addEventListener('click', () => {
+      const b = $('tr-colec-body'); b.hidden = !b.hidden;
+      $('tr-colec-tog').firstChild.nodeValue = b.hidden ? '▸ ' : '▾ ';
+    });
+    $('tr-colec-buscar').addEventListener('input', pintarColeccion);
 
     arrancar();
   </script>

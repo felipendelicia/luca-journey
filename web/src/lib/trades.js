@@ -31,6 +31,15 @@ export async function leerSala(id) {
   if (error) throw error;
   return data;
 }
+export async function coleccionOtro(id) {
+  const { data, error } = await supa.rpc('coleccion_del_otro', { p_id: id });
+  if (error) throw error;
+  return data; // { atrapados: {<id>:<cant>}, shiny: [<id>...] }
+}
+export async function ponerPedido(id, pedido) {
+  const { error } = await supa.rpc('poner_pedido', { p_id: id, p_pedido: pedido });
+  if (error) throw error;
+}
 
 // Suscribe a los cambios de la sala (postgres_changes) + presencia del otro.
 // onCambio(row) cada vez que cambia la fila; onPresencia(hayOtro) cuando entra/sale.
