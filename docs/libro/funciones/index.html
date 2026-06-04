@@ -1,0 +1,226 @@
+<!DOCTYPE html><html lang="es"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Python: Funciones — Python con Pokémon</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&display=swap"><link rel="stylesheet" href="/luca-journey/_astro/recursos.UAvNNIhJ.css"><script type="module" src="/luca-journey/_astro/hoisted.55VPuE-h.js"></script></head> <body> <div class="bg-grid" aria-hidden="true"></div> <header class="topbar"> <a class="brand-link" href="/luca-journey/"><span class="pb"></span><span class="brand">Pokédex <b>Codex</b></span></a> <div class="tools"> <a class="navlink" href="/luca-journey/">Inicio</a><a class="navlink activo" href="/luca-journey/libro">Libro</a><a class="navlink" href="/luca-journey/ejercicios">Ejercicios</a><a class="navlink" href="/luca-journey/liga">Liga</a><a class="navlink" href="/luca-journey/playground">Playground</a> <button class="theme-toggle" id="theme-toggle" type="button" title="Tema claro/oscuro">🌙</button> </div> </header> <script>(function(){const base = "/luca-journey";
+window.__BASE = base;})();</script>  <div class="wrap"> <div class="book-layout"> <aside class="book-rail"> <div class="rail-tit">Capítulos</div> <details class="grupo"> <summary><span class="g-ico">🎒</span>Introducción</summary> <a class="" href="/luca-journey/libro/introduccion"> <span class="rn">0</span><span>Cómo usar este libro</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🐧</span>Linux</summary> <a class="" href="/luca-journey/libro/linux-fundamentos"> <span class="rn">1</span><span>Linux: Fundamentos</span> </a><a class="" href="/luca-journey/libro/linux-intermedio"> <span class="rn">2</span><span>Linux: Intermedio</span> </a> </details><details class="grupo" open> <summary><span class="g-ico">🐍</span>Python</summary> <a class="" href="/luca-journey/libro/python-introduccion"> <span class="rn">3</span><span>Python: Introducción</span> </a><a class="" href="/luca-journey/libro/control-de-flujo"> <span class="rn">4</span><span>Python: Control de Flujo</span> </a><a class="activo" href="/luca-journey/libro/funciones"> <span class="rn">5</span><span>Python: Funciones</span> </a><a class="" href="/luca-journey/libro/listas-y-colecciones"> <span class="rn">6</span><span>Python: Listas y Colecciones</span> </a><a class="" href="/luca-journey/libro/cadenas-y-archivos"> <span class="rn">7</span><span>Python: Cadenas y Archivos</span> </a><a class="" href="/luca-journey/libro/poo-introduccion"> <span class="rn">8</span><span>Python: POO Introducción</span> </a><a class="" href="/luca-journey/libro/poo-avanzado"> <span class="rn">9</span><span>Python: POO Avanzado</span> </a><a class="" href="/luca-journey/libro/modulos-y-pip"> <span class="rn">10</span><span>Python: Módulos y pip</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🔀</span>Git</summary> <a class="" href="/luca-journey/libro/git"> <span class="rn">11</span><span>Git: Control de Versiones</span> </a> </details><details class="grupo"> <summary><span class="g-ico">❓</span>Ayuda</summary> <a class="" href="/luca-journey/libro/ayuda"> <span class="rn">12</span><span>Ayuda y glosario</span> </a> </details> </aside> <main class="book"> <h1>Python: Funciones</h1> <div class="callout nota"><span class="et">META</span>
+<p>🎯 <strong>Meta de la semana:</strong> aprender a empaquetar código en <strong>funciones</strong> para reusarlo, organizarlo y no repetirte. Es uno de los conceptos más importantes de toda la programación.</p>
+</div>
+<hr>
+<h2 id="-analogía-los-ataques-aprendidos">🎮 Analogía: los ataques aprendidos</h2>
+<p>Un Pokémon aprende un ataque <strong>una vez</strong> y lo puede usar <strong>mil veces</strong>. No tiene que reaprender “Impactrueno” en cada batalla: lo sabe, le pone un nombre, y lo invoca cuando quiere.</p>
+<p>Una <strong>función</strong> es eso: un bloque de código que escribís <strong>una vez</strong>, le ponés un <strong>nombre</strong>, y lo <strong>llamás</strong> (lo usás) todas las veces que quieras. ⚡</p>
+<hr>
+<h2 id="️-definir-una-función-con-def">🛠️ Definir una función con def</h2>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> saludar</span><span style="color:#ABB2BF">():</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"¡Hola, Entrenador!"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span></code></pre>
+<p>Desglose:</p>
+<ul>
+<li><code>def</code> → palabra clave para <strong>def</strong>inir una función.</li>
+<li><code>saludar</code> → el nombre que le ponés.</li>
+<li><code>()</code> → los paréntesis (después vemos qué va adentro).</li>
+<li><code>:</code> → dos puntos, obligatorios.</li>
+<li>El cuerpo va <strong>indentado</strong> (4 espacios), igual que en los <code>if</code>.</li>
+</ul>
+<p><strong>Definir</strong> una función no la ejecuta. Para ejecutarla, la <strong>llamás</strong> por su nombre:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#61AFEF">saludar</span><span style="color:#ABB2BF">()    </span><span style="color:#7F848E;font-style:italic"># ¡Hola, Entrenador!</span></span>
+<span class="line"><span style="color:#61AFEF">saludar</span><span style="color:#ABB2BF">()    </span><span style="color:#7F848E;font-style:italic"># ¡Hola, Entrenador!  (la usamos de nuevo, gratis)</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-parámetros-darle-datos-a-la-función">📥 Parámetros: darle datos a la función</h2>
+<p>Un <strong>parámetro</strong> es un dato que la función recibe para trabajar. Va dentro de los paréntesis.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> saludar</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66;font-style:italic">nombre</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">f</span><span style="color:#98C379">"¡Hola, </span><span style="color:#D19A66">{</span><span style="color:#ABB2BF">nombre</span><span style="color:#D19A66">}</span><span style="color:#98C379">!"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#61AFEF">saludar</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Ash"</span><span style="color:#ABB2BF">)      </span><span style="color:#7F848E;font-style:italic"># ¡Hola, Ash!</span></span>
+<span class="line"><span style="color:#61AFEF">saludar</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Misty"</span><span style="color:#ABB2BF">)    </span><span style="color:#7F848E;font-style:italic"># ¡Hola, Misty!</span></span>
+<span class="line"></span></code></pre>
+<p>Podés tener varios parámetros, separados por comas:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> presentar</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66;font-style:italic">nombre</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">tipo</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">f</span><span style="color:#98C379">"</span><span style="color:#D19A66">{</span><span style="color:#ABB2BF">nombre</span><span style="color:#D19A66">}</span><span style="color:#98C379"> es de tipo </span><span style="color:#D19A66">{</span><span style="color:#ABB2BF">tipo</span><span style="color:#D19A66">}</span><span style="color:#98C379">"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#61AFEF">presentar</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Eléctrico"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span></code></pre>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 “Parámetro” es el nombre en la definición (<code>nombre</code>). “Argumento” es el valor que pasás al llamar (<code>"Ash"</code>). Mucha gente usa los términos como sinónimos, no te preocupes por eso.</p>
+</div>
+<hr>
+<h2 id="-return-devolver-un-resultado">📤 return: devolver un resultado</h2>
+<p><code>return</code> hace que la función <strong>devuelva</strong> un valor para usarlo después. Es la diferencia entre una función que solo “muestra” y una que “calcula y entrega”.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> calcular_dano</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66;font-style:italic">ataque</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">defensa</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#C678DD">    return</span><span style="color:#ABB2BF"> ataque </span><span style="color:#56B6C2">-</span><span style="color:#ABB2BF"> defensa</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Guardamos lo que devuelve en una variable.</span></span>
+<span class="line"><span style="color:#ABB2BF">resultado </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> calcular_dano</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">50</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">20</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(resultado)    </span><span style="color:#7F848E;font-style:italic"># 30</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># O lo usamos directamente.</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#61AFEF">calcular_dano</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">80</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">30</span><span style="color:#ABB2BF">))   </span><span style="color:#7F848E;font-style:italic"># 50</span></span>
+<span class="line"></span></code></pre>
+<div class="callout cuidado"><span class="et">CUIDADO</span>
+<p>⚠️ Cuando Python ejecuta un <code>return</code>, <strong>sale</strong> de la función inmediatamente. El código que esté después del <code>return</code> no se ejecuta.</p>
+</div>
+<h3 id="print-vs-return--la-confusión-clásica">print vs return — la confusión clásica</h3>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> con_print</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66;font-style:italic">x</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(x </span><span style="color:#56B6C2">*</span><span style="color:#D19A66"> 2</span><span style="color:#ABB2BF">)        </span><span style="color:#7F848E;font-style:italic"># MUESTRA en pantalla, pero no devuelve nada</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> con_return</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66;font-style:italic">x</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#C678DD">    return</span><span style="color:#ABB2BF"> x </span><span style="color:#56B6C2">*</span><span style="color:#D19A66"> 2</span><span style="color:#7F848E;font-style:italic">        # DEVUELVE el valor para seguir usándolo</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#ABB2BF">a </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> con_print</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">5</span><span style="color:#ABB2BF">)        </span><span style="color:#7F848E;font-style:italic"># imprime 10, pero a queda en None</span></span>
+<span class="line"><span style="color:#ABB2BF">b </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> con_return</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">5</span><span style="color:#ABB2BF">)       </span><span style="color:#7F848E;font-style:italic"># no imprime nada, pero b vale 10</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(b </span><span style="color:#56B6C2">+</span><span style="color:#D19A66"> 1</span><span style="color:#ABB2BF">)            </span><span style="color:#7F848E;font-style:italic"># 11  (porque b es un número de verdad)</span></span>
+<span class="line"></span></code></pre>
+<p>Regla práctica: si querés <strong>usar</strong> el resultado después, usá <code>return</code>.</p>
+<hr>
+<h2 id="️-valores-por-defecto">🎚️ Valores por defecto</h2>
+<p>Podés darle a un parámetro un valor por defecto, que se usa si no pasás nada:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> atacar</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66;font-style:italic">nombre</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">dano</span><span style="color:#ABB2BF">=</span><span style="color:#D19A66">10</span><span style="color:#ABB2BF">):       </span><span style="color:#7F848E;font-style:italic"># dano vale 10 si no se especifica</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">f</span><span style="color:#98C379">"</span><span style="color:#D19A66">{</span><span style="color:#ABB2BF">nombre</span><span style="color:#D19A66">}</span><span style="color:#98C379"> hizo </span><span style="color:#D19A66">{</span><span style="color:#ABB2BF">dano</span><span style="color:#D19A66">}</span><span style="color:#98C379"> de daño"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#61AFEF">atacar</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">)          </span><span style="color:#7F848E;font-style:italic"># Pikachu hizo 10 de daño  (usa el default)</span></span>
+<span class="line"><span style="color:#61AFEF">atacar</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Charizard"</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">35</span><span style="color:#ABB2BF">)    </span><span style="color:#7F848E;font-style:italic"># Charizard hizo 35 de daño (lo pisamos)</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-scope-dónde-vive-cada-variable">🌐 Scope: dónde vive cada variable</h2>
+<p>El <strong>scope</strong> (alcance) es la zona donde una variable existe. Una variable creada <strong>adentro</strong> de una función <strong>solo existe ahí adentro</strong>. Es como un Pokémon dentro de su Pokéball: afuera no se lo ve.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> entrenar</span><span style="color:#ABB2BF">():</span></span>
+<span class="line"><span style="color:#ABB2BF">    secreto </span><span style="color:#56B6C2">=</span><span style="color:#98C379"> "técnica oculta"</span><span style="color:#7F848E;font-style:italic">    # variable LOCAL: solo vive acá adentro</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(secreto)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#61AFEF">entrenar</span><span style="color:#ABB2BF">()</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># print(secreto)   # ❌ ERROR: 'secreto' no existe afuera de la función</span></span>
+<span class="line"></span></code></pre>
+<p>Las variables creadas afuera son <strong>globales</strong> y se pueden leer adentro:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#ABB2BF">entrenador </span><span style="color:#56B6C2">=</span><span style="color:#98C379"> "Ash"</span><span style="color:#7F848E;font-style:italic">        # variable global</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> saludar</span><span style="color:#ABB2BF">():</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">f</span><span style="color:#98C379">"Hola </span><span style="color:#D19A66">{</span><span style="color:#ABB2BF">entrenador</span><span style="color:#D19A66">}</span><span style="color:#98C379">"</span><span style="color:#ABB2BF">)   </span><span style="color:#7F848E;font-style:italic"># puede leer la global</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#61AFEF">saludar</span><span style="color:#ABB2BF">()    </span><span style="color:#7F848E;font-style:italic"># Hola Ash</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-funciones-lambda-funciones-express">⚡ Funciones lambda: funciones express</h2>
+<p>Una <strong>lambda</strong> es una función chiquita de una sola línea, sin nombre. Útil para cosas simples.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#7F848E;font-style:italic"># Función normal:</span></span>
+<span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> doble</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66;font-style:italic">x</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#C678DD">    return</span><span style="color:#ABB2BF"> x </span><span style="color:#56B6C2">*</span><span style="color:#D19A66"> 2</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># La misma como lambda:</span></span>
+<span class="line"><span style="color:#ABB2BF">doble </span><span style="color:#56B6C2">=</span><span style="color:#C678DD"> lambda</span><span style="color:#D19A66;font-style:italic"> x</span><span style="color:#ABB2BF">: x </span><span style="color:#56B6C2">*</span><span style="color:#D19A66"> 2</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#61AFEF">doble</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">5</span><span style="color:#ABB2BF">))    </span><span style="color:#7F848E;font-style:italic"># 10</span></span>
+<span class="line"></span></code></pre>
+<p>La estructura es: <code>lambda parámetros: expresión</code>. El resultado de la expresión es lo que devuelve.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#ABB2BF">sumar </span><span style="color:#56B6C2">=</span><span style="color:#C678DD"> lambda</span><span style="color:#D19A66;font-style:italic"> a</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">b</span><span style="color:#ABB2BF">: a </span><span style="color:#56B6C2">+</span><span style="color:#ABB2BF"> b</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#61AFEF">sumar</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">3</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">4</span><span style="color:#ABB2BF">))    </span><span style="color:#7F848E;font-style:italic"># 7</span></span>
+<span class="line"></span></code></pre>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 Las lambda se usan mucho para ordenar o filtrar (lo vas a ver en la semana 6). Por ahora, alcanza con saber qué son.</p>
+</div>
+<hr>
+<h2 id="-docstrings-documentar-tu-función">📖 Docstrings: documentar tu función</h2>
+<p>Un <strong>docstring</strong> es un texto (entre <code>"""triple comillas"""</code>) justo abajo del <code>def</code>, que explica qué hace la función.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> calcular_dano</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66;font-style:italic">ataque</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">defensa</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#98C379">    """Calcula el daño restando la defensa al ataque."""</span></span>
+<span class="line"><span style="color:#C678DD">    return</span><span style="color:#ABB2BF"> ataque </span><span style="color:#56B6C2">-</span><span style="color:#ABB2BF"> defensa</span></span>
+<span class="line"></span></code></pre>
+<p>Sirve para que vos (y otros) entiendan la función sin leer todo el código. Es de buena programadora documentar así.</p>
+<hr>
+<h2 id="-recursión-una-función-que-se-llama-a-sí-misma">🔁 Recursión: una función que se llama a sí misma</h2>
+<p><strong>Recursión</strong> es cuando una función se llama a sí misma para resolver un problema más chico. Suena raro, pero es potente.</p>
+<p>El ejemplo clásico es el <strong>factorial</strong> (5! = 5×4×3×2×1):</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> factorial</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66;font-style:italic">n</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">    # Caso base: el punto donde la recursión FRENA.</span></span>
+<span class="line"><span style="color:#C678DD">    if</span><span style="color:#ABB2BF"> n </span><span style="color:#56B6C2">&#x3C;=</span><span style="color:#D19A66"> 1</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#C678DD">        return</span><span style="color:#D19A66"> 1</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">    # Caso recursivo: la función se llama a sí misma con un número más chico.</span></span>
+<span class="line"><span style="color:#C678DD">    return</span><span style="color:#ABB2BF"> n </span><span style="color:#56B6C2">*</span><span style="color:#61AFEF"> factorial</span><span style="color:#ABB2BF">(n </span><span style="color:#56B6C2">-</span><span style="color:#D19A66"> 1</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#61AFEF">factorial</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">5</span><span style="color:#ABB2BF">))    </span><span style="color:#7F848E;font-style:italic"># 120</span></span>
+<span class="line"></span></code></pre>
+<div class="callout cuidado"><span class="et">CUIDADO</span>
+<p>⚠️ Toda recursión necesita un <strong>caso base</strong> (una condición que la frene). Sin él, se llama infinitamente y revienta. Es como las muñecas rusas: en algún momento llegás a la más chiquita.</p>
+</div>
+<hr>
+<h2 id="-resumen-de-la-semana">📝 Resumen de la semana</h2>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#7F848E;font-style:italic"># Definir</span></span>
+<span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> atacar</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66;font-style:italic">nombre</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">dano</span><span style="color:#ABB2BF">=</span><span style="color:#D19A66">10</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#98C379">    """Muestra un ataque (docstring)."""</span></span>
+<span class="line"><span style="color:#C678DD">    return</span><span style="color:#C678DD"> f</span><span style="color:#98C379">"</span><span style="color:#D19A66">{</span><span style="color:#ABB2BF">nombre</span><span style="color:#D19A66">}</span><span style="color:#98C379"> hizo </span><span style="color:#D19A66">{</span><span style="color:#ABB2BF">dano</span><span style="color:#D19A66">}</span><span style="color:#98C379"> de daño"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Llamar</span></span>
+<span class="line"><span style="color:#ABB2BF">mensaje </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> atacar</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">25</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># return devuelve un valor; print solo muestra</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Valores por defecto: dano=10</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Scope: las variables locales no existen afuera</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Lambda: función express</span></span>
+<span class="line"><span style="color:#ABB2BF">doble </span><span style="color:#56B6C2">=</span><span style="color:#C678DD"> lambda</span><span style="color:#D19A66;font-style:italic"> x</span><span style="color:#ABB2BF">: x </span><span style="color:#56B6C2">*</span><span style="color:#D19A66"> 2</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Recursión: función que se llama a sí misma (necesita caso base)</span></span>
+<span class="line"></span></code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Concepto</th><th>Para qué sirve</th></tr></thead><tbody><tr><td><code>def</code></td><td>Definir una función</td></tr><tr><td>parámetros</td><td>Pasarle datos</td></tr><tr><td><code>return</code></td><td>Devolver un resultado</td></tr><tr><td>valor por defecto</td><td>Parámetro opcional</td></tr><tr><td>scope</td><td>Dónde vive una variable</td></tr><tr><td><code>lambda</code></td><td>Función chica de una línea</td></tr><tr><td>docstring</td><td>Documentar qué hace</td></tr><tr><td>recursión</td><td>Función que se llama a sí misma</td></tr></tbody></table>
+<hr>
+<h2 id="️-y-ahora-qué">➡️ ¿Y ahora qué?</h2>
+<ol>
+<li>Resolvé <code>ejercicios.py</code> (varios te piden refactorizar código repetido en funciones).</li>
+<li>Corré los tests: <code>pytest semana-05-python-funciones/</code></li>
+<li>Jugá la <strong>calculadora de estadísticas Pokémon</strong>:
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">python</span><span style="color:#98C379"> interactivo.py</span></span>
+<span class="line"></span></code></pre>
+</li>
+</ol>
+<div class="callout tip"><span class="et">ÁNIMO</span>
+<p>⚡ <em>“Una buena función es como un buen ataque: la aprendés una vez y te sirve toda la vida.”</em></p>
+</div> <nav class="cap-nav"> <a href="/luca-journey/libro/control-de-flujo"><span class="dir">← Anterior</span><br>Python: Control de Flujo</a> <a class="next" href="/luca-journey/libro/listas-y-colecciones"><span class="dir">Siguiente →</span><br>Python: Listas y Colecciones</a> </nav> </main> </div> </div> <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>   <script>
+    (function () {
+      var body = document.body;
+      if (localStorage.getItem('tema') === 'dark') body.classList.add('dark');
+      var t = document.getElementById('theme-toggle');
+      function refrescar() { if (t) t.textContent = body.classList.contains('dark') ? '☀️' : '🌙'; }
+      refrescar();
+      if (t) t.addEventListener('click', function () {
+        body.classList.toggle('dark');
+        localStorage.setItem('tema', body.classList.contains('dark') ? 'dark' : 'claro');
+        refrescar();
+      });
+    })();
+  </script> </body> </html>

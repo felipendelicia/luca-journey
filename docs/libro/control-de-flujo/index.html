@@ -1,0 +1,262 @@
+<!DOCTYPE html><html lang="es"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Python: Control de Flujo — Python con Pokémon</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&display=swap"><link rel="stylesheet" href="/luca-journey/_astro/recursos.UAvNNIhJ.css"><script type="module" src="/luca-journey/_astro/hoisted.55VPuE-h.js"></script></head> <body> <div class="bg-grid" aria-hidden="true"></div> <header class="topbar"> <a class="brand-link" href="/luca-journey/"><span class="pb"></span><span class="brand">Pokédex <b>Codex</b></span></a> <div class="tools"> <a class="navlink" href="/luca-journey/">Inicio</a><a class="navlink activo" href="/luca-journey/libro">Libro</a><a class="navlink" href="/luca-journey/ejercicios">Ejercicios</a><a class="navlink" href="/luca-journey/liga">Liga</a><a class="navlink" href="/luca-journey/playground">Playground</a> <button class="theme-toggle" id="theme-toggle" type="button" title="Tema claro/oscuro">🌙</button> </div> </header> <script>(function(){const base = "/luca-journey";
+window.__BASE = base;})();</script>  <div class="wrap"> <div class="book-layout"> <aside class="book-rail"> <div class="rail-tit">Capítulos</div> <details class="grupo"> <summary><span class="g-ico">🎒</span>Introducción</summary> <a class="" href="/luca-journey/libro/introduccion"> <span class="rn">0</span><span>Cómo usar este libro</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🐧</span>Linux</summary> <a class="" href="/luca-journey/libro/linux-fundamentos"> <span class="rn">1</span><span>Linux: Fundamentos</span> </a><a class="" href="/luca-journey/libro/linux-intermedio"> <span class="rn">2</span><span>Linux: Intermedio</span> </a> </details><details class="grupo" open> <summary><span class="g-ico">🐍</span>Python</summary> <a class="" href="/luca-journey/libro/python-introduccion"> <span class="rn">3</span><span>Python: Introducción</span> </a><a class="activo" href="/luca-journey/libro/control-de-flujo"> <span class="rn">4</span><span>Python: Control de Flujo</span> </a><a class="" href="/luca-journey/libro/funciones"> <span class="rn">5</span><span>Python: Funciones</span> </a><a class="" href="/luca-journey/libro/listas-y-colecciones"> <span class="rn">6</span><span>Python: Listas y Colecciones</span> </a><a class="" href="/luca-journey/libro/cadenas-y-archivos"> <span class="rn">7</span><span>Python: Cadenas y Archivos</span> </a><a class="" href="/luca-journey/libro/poo-introduccion"> <span class="rn">8</span><span>Python: POO Introducción</span> </a><a class="" href="/luca-journey/libro/poo-avanzado"> <span class="rn">9</span><span>Python: POO Avanzado</span> </a><a class="" href="/luca-journey/libro/modulos-y-pip"> <span class="rn">10</span><span>Python: Módulos y pip</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🔀</span>Git</summary> <a class="" href="/luca-journey/libro/git"> <span class="rn">11</span><span>Git: Control de Versiones</span> </a> </details><details class="grupo"> <summary><span class="g-ico">❓</span>Ayuda</summary> <a class="" href="/luca-journey/libro/ayuda"> <span class="rn">12</span><span>Ayuda y glosario</span> </a> </details> </aside> <main class="book"> <h1>Python: Control de Flujo</h1> <div class="callout nota"><span class="et">META</span>
+<p>🎯 <strong>Meta de la semana:</strong> que tu programa <strong>tome decisiones</strong> y <strong>repita</strong> cosas. Hasta ahora tu código corría en línea recta. Ahora va a poder elegir caminos y dar vueltas.</p>
+</div>
+<hr>
+<h2 id="-analogía-decisiones-en-batalla">🎮 Analogía: decisiones en batalla</h2>
+<p>En una batalla Pokémon, vos tomás decisiones todo el tiempo: <em>“SI el rival es de tipo Agua, USO un ataque Eléctrico”</em>. Y repetís acciones: <em>“MIENTRAS el rival tenga HP, sigo atacando”</em>.</p>
+<p>Eso es exactamente el <strong>control de flujo</strong>: decirle al programa <strong>cuándo</strong> hacer algo (decisiones) y <strong>cuántas veces</strong> hacerlo (repeticiones).</p>
+<hr>
+<h2 id="-if-tomar-decisiones">🔀 if: tomar decisiones</h2>
+<p><code>if</code> ejecuta un bloque de código <strong>solo si</strong> una condición es verdadera.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#ABB2BF">nivel </span><span style="color:#56B6C2">=</span><span style="color:#D19A66"> 30</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">if</span><span style="color:#ABB2BF"> nivel </span><span style="color:#56B6C2">>=</span><span style="color:#D19A66"> 25</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"¡Tu Pokémon puede evolucionar!"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span></code></pre>
+<div class="callout cuidado"><span class="et">CUIDADO</span>
+<p>⚠️ <strong>La indentación importa.</strong> El código “adentro” del <code>if</code> va con <strong>4 espacios</strong> de sangría. Python usa esa sangría para saber qué está adentro y qué afuera. No es decorativo: es obligatorio.</p>
+</div>
+<hr>
+<h2 id="-operadores-de-comparación">🔢 Operadores de comparación</h2>
+<p>Sirven para construir condiciones. Devuelven <code>True</code> o <code>False</code>:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Operador</th><th>Significa</th><th>Ejemplo</th><th>Resultado</th></tr></thead><tbody><tr><td><code>==</code></td><td>igual a</td><td><code>nivel == 25</code></td><td>True si nivel es 25</td></tr><tr><td><code>!=</code></td><td>distinto de</td><td><code>tipo != "Agua"</code></td><td>True si no es Agua</td></tr><tr><td><code>></code></td><td>mayor que</td><td><code>hp > 0</code></td><td>True si hp es positivo</td></tr><tr><td><code>&#x3C;</code></td><td>menor que</td><td><code>nivel &#x3C; 100</code></td><td></td></tr><tr><td><code>>=</code></td><td>mayor o igual</td><td><code>nivel >= 25</code></td><td></td></tr><tr><td><code>&#x3C;=</code></td><td>menor o igual</td><td><code>hp &#x3C;= 0</code></td><td></td></tr></tbody></table>
+<div class="callout cuidado"><span class="et">CUIDADO</span>
+<p>⚠️ <strong>Ojo:</strong> <code>=</code> asigna (guarda en una variable), <code>==</code> compara. ¡No los confundas!</p>
+</div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#ABB2BF">nivel </span><span style="color:#56B6C2">=</span><span style="color:#D19A66"> 25</span><span style="color:#7F848E;font-style:italic">      # asignación: guardo 25 en nivel</span></span>
+<span class="line"><span style="color:#ABB2BF">nivel </span><span style="color:#56B6C2">==</span><span style="color:#D19A66"> 25</span><span style="color:#7F848E;font-style:italic">     # comparación: ¿nivel es igual a 25? → True</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-elif-y-else-más-caminos">🪜 elif y else: más caminos</h2>
+<p><code>else</code> es el “si no”. <code>elif</code> (“else if”) agrega más condiciones a chequear.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#ABB2BF">hp </span><span style="color:#56B6C2">=</span><span style="color:#D19A66"> 40</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">if</span><span style="color:#ABB2BF"> hp </span><span style="color:#56B6C2">></span><span style="color:#D19A66"> 70</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Tu Pokémon está sano 💚"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#C678DD">elif</span><span style="color:#ABB2BF"> hp </span><span style="color:#56B6C2">></span><span style="color:#D19A66"> 30</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Tu Pokémon está cansado 💛"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#C678DD">elif</span><span style="color:#ABB2BF"> hp </span><span style="color:#56B6C2">></span><span style="color:#D19A66"> 0</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"¡Tu Pokémon está grave! ❤️"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#C678DD">else</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Tu Pokémon se debilitó 💀"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span></code></pre>
+<p>Python revisa las condiciones <strong>de arriba hacia abajo</strong> y entra en la <strong>primera</strong> que sea verdadera. Las demás las ignora.</p>
+<hr>
+<h2 id="-operadores-lógicos-and-or-not">🧠 Operadores lógicos: and, or, not</h2>
+<p>Combinan varias condiciones:</p>
+<ul>
+<li><code>and</code> → verdadero si <strong>ambas</strong> son verdaderas.</li>
+<li><code>or</code> → verdadero si <strong>al menos una</strong> es verdadera.</li>
+<li><code>not</code> → invierte (verdadero ↔ falso).</li>
+</ul>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#ABB2BF">nivel </span><span style="color:#56B6C2">=</span><span style="color:#D19A66"> 30</span></span>
+<span class="line"><span style="color:#ABB2BF">tipo </span><span style="color:#56B6C2">=</span><span style="color:#98C379"> "Fuego"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Evoluciona SI tiene nivel suficiente Y es de fuego.</span></span>
+<span class="line"><span style="color:#C678DD">if</span><span style="color:#ABB2BF"> nivel </span><span style="color:#56B6C2">>=</span><span style="color:#D19A66"> 25</span><span style="color:#C678DD"> and</span><span style="color:#ABB2BF"> tipo </span><span style="color:#56B6C2">==</span><span style="color:#98C379"> "Fuego"</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"¡Charmander evoluciona a Charmeleon!"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Es fuerte SI es legendario O tiene nivel 100.</span></span>
+<span class="line"><span style="color:#C678DD">if</span><span style="color:#ABB2BF"> es_legendario </span><span style="color:#C678DD">or</span><span style="color:#ABB2BF"> nivel </span><span style="color:#56B6C2">==</span><span style="color:#D19A66"> 100</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"¡Pokémon poderoso!"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Puede pelear SI NO está debilitado.</span></span>
+<span class="line"><span style="color:#C678DD">if</span><span style="color:#C678DD"> not</span><span style="color:#ABB2BF"> debilitado:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"¡A la batalla!"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-while-repetir-mientras">🔁 while: repetir mientras…</h2>
+<p><code>while</code> repite un bloque <strong>mientras</strong> una condición sea verdadera. Es el bucle de “seguí hasta que…”.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#ABB2BF">hp_rival </span><span style="color:#56B6C2">=</span><span style="color:#D19A66"> 100</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">while</span><span style="color:#ABB2BF"> hp_rival </span><span style="color:#56B6C2">></span><span style="color:#D19A66"> 0</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">f</span><span style="color:#98C379">"Atacás. HP del rival: </span><span style="color:#D19A66">{</span><span style="color:#ABB2BF">hp_rival</span><span style="color:#D19A66">}</span><span style="color:#98C379">"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#ABB2BF">    hp_rival </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> hp_rival </span><span style="color:#56B6C2">-</span><span style="color:#D19A66"> 20</span><span style="color:#7F848E;font-style:italic">   # bajamos el HP en cada vuelta</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"¡Ganaste la batalla! 🏆"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span></code></pre>
+<div class="callout cuidado"><span class="et">CUIDADO</span>
+<p>⚠️ <strong>¡Cuidado con los bucles infinitos!</strong> Si la condición nunca se vuelve falsa, el programa nunca termina. Asegurate de que algo cambie adentro del <code>while</code> (acá, el HP baja).</p>
+</div>
+<hr>
+<h2 id="-for-repetir-una-cantidad-de-veces">🔂 for: repetir una cantidad de veces</h2>
+<p><code>for</code> recorre una secuencia de valores, uno por uno. Es el bucle de “para cada…“.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#7F848E;font-style:italic"># Recorre una lista de Pokémon (las listas las vemos a fondo en la semana 6).</span></span>
+<span class="line"><span style="color:#ABB2BF">equipo </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> [</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Charizard"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Snorlax"</span><span style="color:#ABB2BF">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">for</span><span style="color:#ABB2BF"> pokemon </span><span style="color:#C678DD">in</span><span style="color:#ABB2BF"> equipo:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">f</span><span style="color:#98C379">"Tengo a </span><span style="color:#D19A66">{</span><span style="color:#ABB2BF">pokemon</span><span style="color:#D19A66">}</span><span style="color:#98C379">"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span></code></pre>
+<h3 id="range-generar-números">range(): generar números</h3>
+<p><code>range()</code> genera una secuencia de números, ideal para repetir N veces.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#7F848E;font-style:italic"># Repite 5 veces (del 0 al 4).</span></span>
+<span class="line"><span style="color:#C678DD">for</span><span style="color:#ABB2BF"> i </span><span style="color:#C678DD">in</span><span style="color:#56B6C2"> range</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">5</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">f</span><span style="color:#98C379">"Lanzamiento de Pokéball número </span><span style="color:#D19A66">{</span><span style="color:#ABB2BF">i </span><span style="color:#56B6C2">+</span><span style="color:#D19A66"> 1}</span><span style="color:#98C379">"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># range(inicio, fin): del 1 al 10 (el 'fin' NO se incluye).</span></span>
+<span class="line"><span style="color:#C678DD">for</span><span style="color:#ABB2BF"> nivel </span><span style="color:#C678DD">in</span><span style="color:#56B6C2"> range</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">1</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">11</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">f</span><span style="color:#98C379">"Nivel </span><span style="color:#D19A66">{</span><span style="color:#ABB2BF">nivel</span><span style="color:#D19A66">}</span><span style="color:#98C379">"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># range(inicio, fin, paso): de 0 a 100 de 10 en 10.</span></span>
+<span class="line"><span style="color:#C678DD">for</span><span style="color:#ABB2BF"> hp </span><span style="color:#C678DD">in</span><span style="color:#56B6C2"> range</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">101</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">10</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(hp)</span></span>
+<span class="line"></span></code></pre>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 Recordá: <code>range(5)</code> da <code>0, 1, 2, 3, 4</code> (empieza en 0, termina <strong>antes</strong> del 5).</p>
+</div>
+<hr>
+<h2 id="️-break-y-continue">⏭️ break y continue</h2>
+<p>Controlan el bucle desde adentro:</p>
+<ul>
+<li><code>break</code> → <strong>corta</strong> el bucle por completo.</li>
+<li><code>continue</code> → <strong>saltea</strong> el resto de esta vuelta y pasa a la siguiente.</li>
+</ul>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#7F848E;font-style:italic"># break: dejamos de buscar al encontrar a Mewtwo.</span></span>
+<span class="line"><span style="color:#C678DD">for</span><span style="color:#ABB2BF"> pokemon </span><span style="color:#C678DD">in</span><span style="color:#ABB2BF"> equipo:</span></span>
+<span class="line"><span style="color:#C678DD">    if</span><span style="color:#ABB2BF"> pokemon </span><span style="color:#56B6C2">==</span><span style="color:#98C379"> "Mewtwo"</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">        print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"¡Encontramos a Mewtwo!"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#C678DD">        break</span><span style="color:#7F848E;font-style:italic">          # salimos del for inmediatamente</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># continue: salteamos a los Pokémon debilitados.</span></span>
+<span class="line"><span style="color:#C678DD">for</span><span style="color:#ABB2BF"> pokemon </span><span style="color:#C678DD">in</span><span style="color:#ABB2BF"> equipo:</span></span>
+<span class="line"><span style="color:#C678DD">    if</span><span style="color:#ABB2BF"> pokemon </span><span style="color:#56B6C2">==</span><span style="color:#98C379"> "debilitado"</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#C678DD">        continue</span><span style="color:#7F848E;font-style:italic">       # saltamos a la próxima vuelta</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">f</span><span style="color:#98C379">"</span><span style="color:#D19A66">{</span><span style="color:#ABB2BF">pokemon</span><span style="color:#D19A66">}</span><span style="color:#98C379"> entra a la batalla"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-resumen-de-la-semana">📝 Resumen de la semana</h2>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#7F848E;font-style:italic"># if / elif / else: decisiones</span></span>
+<span class="line"><span style="color:#C678DD">if</span><span style="color:#ABB2BF"> hp </span><span style="color:#56B6C2">></span><span style="color:#D19A66"> 50</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"sano"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#C678DD">elif</span><span style="color:#ABB2BF"> hp </span><span style="color:#56B6C2">></span><span style="color:#D19A66"> 0</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"herido"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#C678DD">else</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"debilitado"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Comparadores: ==, !=, >, &#x3C;, >=, &#x3C;=</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Lógicos: and, or, not</span></span>
+<span class="line"><span style="color:#C678DD">if</span><span style="color:#ABB2BF"> nivel </span><span style="color:#56B6C2">>=</span><span style="color:#D19A66"> 25</span><span style="color:#C678DD"> and</span><span style="color:#ABB2BF"> tipo </span><span style="color:#56B6C2">==</span><span style="color:#98C379"> "Fuego"</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"evoluciona"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># while: repetir mientras una condición sea verdadera</span></span>
+<span class="line"><span style="color:#C678DD">while</span><span style="color:#ABB2BF"> hp </span><span style="color:#56B6C2">></span><span style="color:#D19A66"> 0</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#ABB2BF">    hp </span><span style="color:#56B6C2">-=</span><span style="color:#D19A66"> 20</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># for + range: repetir N veces</span></span>
+<span class="line"><span style="color:#C678DD">for</span><span style="color:#ABB2BF"> i </span><span style="color:#C678DD">in</span><span style="color:#56B6C2"> range</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">5</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(i)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># break corta el bucle; continue saltea una vuelta</span></span>
+<span class="line"></span></code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Concepto</th><th>Para qué sirve</th></tr></thead><tbody><tr><td><code>if/elif/else</code></td><td>Elegir qué código correr</td></tr><tr><td><code>==, !=, >, &#x3C;</code></td><td>Comparar valores</td></tr><tr><td><code>and, or, not</code></td><td>Combinar condiciones</td></tr><tr><td><code>while</code></td><td>Repetir mientras algo sea cierto</td></tr><tr><td><code>for</code> + <code>range()</code></td><td>Repetir una cantidad de veces</td></tr><tr><td><code>break</code></td><td>Cortar el bucle</td></tr><tr><td><code>continue</code></td><td>Saltar a la próxima vuelta</td></tr></tbody></table>
+<hr>
+<h2 id="️-y-ahora-qué">➡️ ¿Y ahora qué?</h2>
+<ol>
+<li>Resolvé <code>ejercicios.py</code>.</li>
+<li>Corré los tests: <code>pytest semana-04-python-control-de-flujo/</code></li>
+<li>Jugá el <strong>simulador de batalla por turnos</strong>:
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">python</span><span style="color:#98C379"> interactivo.py</span></span>
+<span class="line"></span></code></pre>
+</li>
+</ol>
+<div class="callout tip"><span class="et">ÁNIMO</span>
+<p>⚡ <em>“En la batalla y en el código, las buenas decisiones ganan combates.”</em></p>
+</div> <nav class="cap-nav"> <a href="/luca-journey/libro/python-introduccion"><span class="dir">← Anterior</span><br>Python: Introducción</a> <a class="next" href="/luca-journey/libro/funciones"><span class="dir">Siguiente →</span><br>Python: Funciones</a> </nav> </main> </div> </div> <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>   <script>
+    (function () {
+      var body = document.body;
+      if (localStorage.getItem('tema') === 'dark') body.classList.add('dark');
+      var t = document.getElementById('theme-toggle');
+      function refrescar() { if (t) t.textContent = body.classList.contains('dark') ? '☀️' : '🌙'; }
+      refrescar();
+      if (t) t.addEventListener('click', function () {
+        body.classList.toggle('dark');
+        localStorage.setItem('tema', body.classList.contains('dark') ? 'dark' : 'claro');
+        refrescar();
+      });
+    })();
+  </script> </body> </html>

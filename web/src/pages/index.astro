@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import { u } from '../lib/url.ts';
 
 const cards = [
   ['📖', 'El libro', 'Toda la teoría del curso (Linux + Python), con ejemplos ejecutables.', '/libro'],
@@ -17,14 +18,14 @@ const cards = [
       <h1>Python con Pokémon</h1>
       <p>Aprendé a programar desde cero — Linux, Python y mucha aventura — directo en tu navegador. 🏆</p>
       <div class="cta">
-        <a class="btn-grande" href="/libro">📖 Empezar a leer</a>
-        <a class="btn-grande sec" href="/playground">🎮 Probar Python ya</a>
+        <a class="btn-grande" href={u('/libro')}>📖 Empezar a leer</a>
+        <a class="btn-grande sec" href={u('/playground')}>🎮 Probar Python ya</a>
       </div>
     </section>
 
     <div class="cards">
       {cards.map(([ico, t, d, href]) => (
-        <a class="card" href={href}>
+        <a class="card" href={href.startsWith('/') ? u(href) : href}>
           <div class="ico">{ico}</div>
           <h3>{t}</h3>
           <p>{d}</p>

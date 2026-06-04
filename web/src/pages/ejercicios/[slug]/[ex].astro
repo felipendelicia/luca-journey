@@ -2,6 +2,7 @@
 import Base from '../../../layouts/Base.astro';
 import RailEjercicios from '../../../components/RailEjercicios.astro';
 import datos from '../../../data/ejercicios.json';
+import { u } from '../../../lib/url.ts';
 
 export function getStaticPaths() {
   const paths = [];
@@ -29,7 +30,7 @@ const payload = {
       <RailEjercicios activeSlug={w.slug} activeEx={ex.id} />
 
       <main class="book ejer">
-        <p class="ej-breadcrumb"><a href={`/ejercicios/${w.slug}`}>{w.titulo}</a> · Ejercicio {n + 1} de {w.ejercicios.length}</p>
+        <p class="ej-breadcrumb"><a href={u(`/ejercicios/${w.slug}`)}>{w.titulo}</a> · Ejercicio {n + 1} de {w.ejercicios.length}</p>
         <h1>{ex.titulo}</h1>
         {desc && <p class="ej-prompt">{desc}</p>}
 
@@ -56,11 +57,11 @@ const payload = {
 
         <nav class="cap-nav">
           {prev
-            ? <a href={`/ejercicios/${w.slug}/${prev.id}`}><span class="dir">← Anterior</span><br />{prev.titulo}</a>
-            : <a href={`/ejercicios/${w.slug}`}><span class="dir">← Tema</span><br />{w.titulo}</a>}
+            ? <a href={u(`/ejercicios/${w.slug}/${prev.id}`)}><span class="dir">← Anterior</span><br />{prev.titulo}</a>
+            : <a href={u(`/ejercicios/${w.slug}`)}><span class="dir">← Tema</span><br />{w.titulo}</a>}
           {next
-            ? <a class="next" href={`/ejercicios/${w.slug}/${next.id}`}><span class="dir">Siguiente →</span><br />{next.titulo}</a>
-            : <a class="next" href="/ejercicios"><span class="dir">Fin del tema →</span><br />Todos los temas</a>}
+            ? <a class="next" href={u(`/ejercicios/${w.slug}/${next.id}`)}><span class="dir">Siguiente →</span><br />{next.titulo}</a>
+            : <a class="next" href={u('/ejercicios')}><span class="dir">Fin del tema →</span><br />Todos los temas</a>}
         </nav>
       </main>
     </div>

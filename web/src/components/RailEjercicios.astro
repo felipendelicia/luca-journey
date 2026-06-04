@@ -1,5 +1,6 @@
 ---
 import datos from '../data/ejercicios.json';
+import { u } from '../lib/url.ts';
 const { activeSlug = '', activeEx = '' } = Astro.props;
 const corto = (t) => t.replace(/^(Ejercicio\s+\d+\s*:?|\d+\))\s*/i, '');
 ---
@@ -11,7 +12,7 @@ const corto = (t) => t.replace(/^(Ejercicio\s+\d+\s*:?|\d+\))\s*/i, '');
       {w.ejercicios.map((ex, n) => (
         <a
           class={'ej-link' + (w.slug === activeSlug && ex.id === activeEx ? ' activo' : '')}
-          href={`/ejercicios/${w.slug}/${ex.id}`}
+          href={u(`/ejercicios/${w.slug}/${ex.id}`)}
           data-key={`ej:${w.slug}:${ex.id}:ok`}
         >
           <span class="rn">{n + 1}</span>

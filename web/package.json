@@ -7,7 +7,7 @@
   "scripts": {
     "sync": "node scripts/sync-content.mjs",
     "dev": "npm run prep && astro dev",
-    "build": "npm run prep && astro build",
+    "build": "node scripts/sync-ejercicios.mjs && DEPLOY_BASE=/luca-journey astro build && rm -rf ../docs/astro",
     "preview": "astro preview",
     "prep": "node scripts/sync-ejercicios.mjs"
   },

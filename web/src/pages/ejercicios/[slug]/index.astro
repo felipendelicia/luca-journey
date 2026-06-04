@@ -2,6 +2,7 @@
 import Base from '../../../layouts/Base.astro';
 import RailEjercicios from '../../../components/RailEjercicios.astro';
 import datos from '../../../data/ejercicios.json';
+import { u } from '../../../lib/url.ts';
 
 export function getStaticPaths() {
   return datos.map((w) => ({ params: { slug: w.slug }, props: { w } }));
@@ -19,7 +20,7 @@ const { w } = Astro.props;
 
         <div class="cards indice" id="grid">
           {w.ejercicios.map((ex, n) => (
-            <a class="card" href={`/ejercicios/${w.slug}/${ex.id}`} data-key={`ej:${w.slug}:${ex.id}:ok`} style="display:flex; align-items:center; gap:8px;">
+            <a class="card" href={u(`/ejercicios/${w.slug}/${ex.id}`)} data-key={`ej:${w.slug}:${ex.id}:ok`} style="display:flex; align-items:center; gap:8px;">
               <span class="num">{n + 1}</span>
               <span><h3 style="margin:0; font-size:.98rem;">{ex.titulo.replace(/^(Ejercicio\s+\d+\s*:?|\d+\))\s*/i, '')}</h3></span>
             </a>

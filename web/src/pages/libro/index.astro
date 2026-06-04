@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import { agrupar } from '../../lib/grupos.mjs';
+import { u } from '../../lib/url.ts';
 
 const caps = (await getCollection('libro')).sort((a, b) => a.data.order - b.data.order);
 const grupos = agrupar(caps);
@@ -22,7 +23,7 @@ const grupos = agrupar(caps);
         </summary>
         <div class="cards indice">
           {g.items.map(({ cap, n }) => (
-            <a class="card" href={`/libro/${cap.slug}`} style="display:flex; align-items:center; gap:6px;">
+            <a class="card" href={u(`/libro/${cap.slug}`)} style="display:flex; align-items:center; gap:6px;">
               <span class="num">{n}</span>
               <span><h3 style="margin:0;">{cap.data.title}</h3></span>
             </a>

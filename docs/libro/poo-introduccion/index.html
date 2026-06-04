@@ -1,0 +1,230 @@
+<!DOCTYPE html><html lang="es"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Python: POO Introducción — Python con Pokémon</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&display=swap"><link rel="stylesheet" href="/luca-journey/_astro/recursos.UAvNNIhJ.css"><script type="module" src="/luca-journey/_astro/hoisted.55VPuE-h.js"></script></head> <body> <div class="bg-grid" aria-hidden="true"></div> <header class="topbar"> <a class="brand-link" href="/luca-journey/"><span class="pb"></span><span class="brand">Pokédex <b>Codex</b></span></a> <div class="tools"> <a class="navlink" href="/luca-journey/">Inicio</a><a class="navlink activo" href="/luca-journey/libro">Libro</a><a class="navlink" href="/luca-journey/ejercicios">Ejercicios</a><a class="navlink" href="/luca-journey/liga">Liga</a><a class="navlink" href="/luca-journey/playground">Playground</a> <button class="theme-toggle" id="theme-toggle" type="button" title="Tema claro/oscuro">🌙</button> </div> </header> <script>(function(){const base = "/luca-journey";
+window.__BASE = base;})();</script>  <div class="wrap"> <div class="book-layout"> <aside class="book-rail"> <div class="rail-tit">Capítulos</div> <details class="grupo"> <summary><span class="g-ico">🎒</span>Introducción</summary> <a class="" href="/luca-journey/libro/introduccion"> <span class="rn">0</span><span>Cómo usar este libro</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🐧</span>Linux</summary> <a class="" href="/luca-journey/libro/linux-fundamentos"> <span class="rn">1</span><span>Linux: Fundamentos</span> </a><a class="" href="/luca-journey/libro/linux-intermedio"> <span class="rn">2</span><span>Linux: Intermedio</span> </a> </details><details class="grupo" open> <summary><span class="g-ico">🐍</span>Python</summary> <a class="" href="/luca-journey/libro/python-introduccion"> <span class="rn">3</span><span>Python: Introducción</span> </a><a class="" href="/luca-journey/libro/control-de-flujo"> <span class="rn">4</span><span>Python: Control de Flujo</span> </a><a class="" href="/luca-journey/libro/funciones"> <span class="rn">5</span><span>Python: Funciones</span> </a><a class="" href="/luca-journey/libro/listas-y-colecciones"> <span class="rn">6</span><span>Python: Listas y Colecciones</span> </a><a class="" href="/luca-journey/libro/cadenas-y-archivos"> <span class="rn">7</span><span>Python: Cadenas y Archivos</span> </a><a class="activo" href="/luca-journey/libro/poo-introduccion"> <span class="rn">8</span><span>Python: POO Introducción</span> </a><a class="" href="/luca-journey/libro/poo-avanzado"> <span class="rn">9</span><span>Python: POO Avanzado</span> </a><a class="" href="/luca-journey/libro/modulos-y-pip"> <span class="rn">10</span><span>Python: Módulos y pip</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🔀</span>Git</summary> <a class="" href="/luca-journey/libro/git"> <span class="rn">11</span><span>Git: Control de Versiones</span> </a> </details><details class="grupo"> <summary><span class="g-ico">❓</span>Ayuda</summary> <a class="" href="/luca-journey/libro/ayuda"> <span class="rn">12</span><span>Ayuda y glosario</span> </a> </details> </aside> <main class="book"> <h1>Python: POO Introducción</h1> <div class="callout nota"><span class="et">META</span>
+<p>🎯 <strong>Meta de la semana:</strong> aprender <strong>Programación Orientada a Objetos (POO)</strong>. Vas a crear tus propios “moldes” para fabricar Pokémon, cada uno con sus datos y sus acciones.</p>
+</div>
+<hr>
+<h2 id="-analogía-el-molde-y-los-pokémon">🎮 Analogía: el molde y los Pokémon</h2>
+<p>Imaginá la <strong>especie “Pikachu”</strong> como un <strong>molde</strong>: define que todo Pikachu tiene un nombre, un nivel, HP, y que puede usar Impactrueno. Pero TU Pikachu y el Pikachu de Ash son <strong>individuos distintos</strong>: mismo molde, datos diferentes.</p>
+<p>En POO:</p>
+<ul>
+<li>El <strong>molde</strong> se llama <strong>clase</strong> (la especie, el plano).</li>
+<li>Cada <strong>individuo</strong> fabricado con ese molde se llama <strong>objeto</strong> o <strong>instancia</strong> (tu Pikachu concreto).</li>
+</ul>
+<hr>
+<h2 id="️-definir-una-clase">🏗️ Definir una clase</h2>
+<p>Una <strong>clase</strong> se define con la palabra <code>class</code>. Por convención, su nombre empieza con <strong>mayúscula</strong>.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">class</span><span style="color:#E5C07B"> Pokemon</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#C678DD">    pass</span><span style="color:#7F848E;font-style:italic">    # por ahora vacía</span></span>
+<span class="line"></span></code></pre>
+<p>Para <strong>crear un objeto</strong> (instancia) de esa clase, la llamás como si fuera una función:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#ABB2BF">mi_pokemon </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> Pokemon</span><span style="color:#ABB2BF">()    </span><span style="color:#7F848E;font-style:italic"># fabricamos un Pokémon con el molde</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-init-el-constructor">🧬 <strong>init</strong>: el constructor</h2>
+<p>El método <code>__init__</code> es el <strong>constructor</strong>: se ejecuta automáticamente cuando creás un objeto. Sirve para darle sus datos iniciales.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">class</span><span style="color:#E5C07B"> Pokemon</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#C678DD">    def</span><span style="color:#56B6C2"> __init__</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B;font-style:italic">self</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">nombre</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">tipo</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">nivel</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">        # 'self' es el objeto que se está creando.</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">        # Guardamos los datos DENTRO del objeto con self.</span></span>
+<span class="line"><span style="color:#E5C07B">        self</span><span style="color:#ABB2BF">.nombre </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> nombre</span></span>
+<span class="line"><span style="color:#E5C07B">        self</span><span style="color:#ABB2BF">.tipo </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> tipo</span></span>
+<span class="line"><span style="color:#E5C07B">        self</span><span style="color:#ABB2BF">.nivel </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> nivel</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Al crear el objeto, pasamos los datos que pide __init__.</span></span>
+<span class="line"><span style="color:#ABB2BF">pikachu </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> Pokemon</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Electrico"</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">25</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pikachu.nombre)    </span><span style="color:#7F848E;font-style:italic"># Pikachu</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pikachu.nivel)     </span><span style="color:#7F848E;font-style:italic"># 25</span></span>
+<span class="line"></span></code></pre>
+<h3 id="qué-es-self">¿Qué es <code>self</code>?</h3>
+<p><code>self</code> es el <strong>propio objeto</strong>. Es la forma en que el objeto se refiere a sí mismo. Cuando hacés <code>self.nombre = nombre</code>, estás diciendo <em>“guardá este nombre adentro mío”</em>.</p>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 <code>self</code> siempre es el <strong>primer parámetro</strong> de los métodos, pero <strong>no lo pasás</strong> al llamarlos: Python lo hace solo. Es automático.</p>
+</div>
+<hr>
+<h2 id="-atributos-los-datos-del-objeto">📊 Atributos: los datos del objeto</h2>
+<p>Los <strong>atributos</strong> son las variables que viven dentro de un objeto (<code>self.nombre</code>, <code>self.nivel</code>…). Son sus “stats”.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#ABB2BF">pikachu </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> Pokemon</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Electrico"</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">25</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pikachu.nivel)      </span><span style="color:#7F848E;font-style:italic"># leer un atributo: 25</span></span>
+<span class="line"><span style="color:#ABB2BF">pikachu.nivel </span><span style="color:#56B6C2">=</span><span style="color:#D19A66"> 26</span><span style="color:#7F848E;font-style:italic">        # modificar un atributo</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pikachu.nivel)      </span><span style="color:#7F848E;font-style:italic"># 26</span></span>
+<span class="line"></span></code></pre>
+<p>Cada objeto tiene <strong>sus propios</strong> atributos, independientes de los demás:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#ABB2BF">pikachu </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> Pokemon</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Electrico"</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">25</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#ABB2BF">charizard </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> Pokemon</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Charizard"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Fuego"</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">50</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pikachu.nivel)      </span><span style="color:#7F848E;font-style:italic"># 25</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(charizard.nivel)    </span><span style="color:#7F848E;font-style:italic"># 50  (son distintos)</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-métodos-las-acciones-del-objeto">⚡ Métodos: las acciones del objeto</h2>
+<p>Un <strong>método</strong> es una función definida dentro de la clase. Son las “acciones” o “ataques” que el objeto puede hacer. Siempre reciben <code>self</code> primero.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">class</span><span style="color:#E5C07B"> Pokemon</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#C678DD">    def</span><span style="color:#56B6C2"> __init__</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B;font-style:italic">self</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">nombre</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">tipo</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">nivel</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#E5C07B">        self</span><span style="color:#ABB2BF">.nombre </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> nombre</span></span>
+<span class="line"><span style="color:#E5C07B">        self</span><span style="color:#ABB2BF">.tipo </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> tipo</span></span>
+<span class="line"><span style="color:#E5C07B">        self</span><span style="color:#ABB2BF">.nivel </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> nivel</span></span>
+<span class="line"><span style="color:#E5C07B">        self</span><span style="color:#ABB2BF">.hp </span><span style="color:#56B6C2">=</span><span style="color:#D19A66"> 100</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    def</span><span style="color:#61AFEF"> atacar</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B;font-style:italic">self</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">        # Un método puede usar los atributos del objeto con self.</span></span>
+<span class="line"><span style="color:#C678DD">        return</span><span style="color:#C678DD"> f</span><span style="color:#98C379">"</span><span style="color:#D19A66">{</span><span style="color:#E5C07B">self</span><span style="color:#ABB2BF">.nombre</span><span style="color:#D19A66">}</span><span style="color:#98C379"> ataca con un golpe de tipo </span><span style="color:#D19A66">{</span><span style="color:#E5C07B">self</span><span style="color:#ABB2BF">.tipo</span><span style="color:#D19A66">}</span><span style="color:#98C379">!"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    def</span><span style="color:#61AFEF"> subir_nivel</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B;font-style:italic">self</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">        # Un método puede modificar los atributos del objeto.</span></span>
+<span class="line"><span style="color:#E5C07B">        self</span><span style="color:#ABB2BF">.nivel </span><span style="color:#56B6C2">=</span><span style="color:#E5C07B"> self</span><span style="color:#ABB2BF">.nivel </span><span style="color:#56B6C2">+</span><span style="color:#D19A66"> 1</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#ABB2BF">pikachu </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> Pokemon</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Electrico"</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">25</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pikachu.</span><span style="color:#61AFEF">atacar</span><span style="color:#ABB2BF">())     </span><span style="color:#7F848E;font-style:italic"># Pikachu ataca con un golpe de tipo Electrico!</span></span>
+<span class="line"><span style="color:#ABB2BF">pikachu.</span><span style="color:#61AFEF">subir_nivel</span><span style="color:#ABB2BF">()</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pikachu.nivel)        </span><span style="color:#7F848E;font-style:italic"># 26</span></span>
+<span class="line"></span></code></pre>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 Fijate: llamás los métodos con <code>objeto.metodo()</code>. No pasás <code>self</code>, Python lo manda solo.</p>
+</div>
+<hr>
+<h2 id="️-str-cómo-se-muestra-el-objeto">🖨️ <strong>str</strong>: cómo se muestra el objeto</h2>
+<p>Por defecto, si hacés <code>print(pikachu)</code>, Python muestra algo feo como <code>&#x3C;__main__.Pokemon object at 0x7f...></code>. El método especial <code>__str__</code> define un texto lindo.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">class</span><span style="color:#E5C07B"> Pokemon</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#C678DD">    def</span><span style="color:#56B6C2"> __init__</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B;font-style:italic">self</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">nombre</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">nivel</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#E5C07B">        self</span><span style="color:#ABB2BF">.nombre </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> nombre</span></span>
+<span class="line"><span style="color:#E5C07B">        self</span><span style="color:#ABB2BF">.nivel </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> nivel</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    def</span><span style="color:#56B6C2"> __str__</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B;font-style:italic">self</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">        # Lo que devuelva esto es lo que ve el usuario con print().</span></span>
+<span class="line"><span style="color:#C678DD">        return</span><span style="color:#C678DD"> f</span><span style="color:#98C379">"</span><span style="color:#D19A66">{</span><span style="color:#E5C07B">self</span><span style="color:#ABB2BF">.nombre</span><span style="color:#D19A66">}</span><span style="color:#98C379"> (Nivel </span><span style="color:#D19A66">{</span><span style="color:#E5C07B">self</span><span style="color:#ABB2BF">.nivel</span><span style="color:#D19A66">}</span><span style="color:#98C379">)"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#ABB2BF">pikachu </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> Pokemon</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">25</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pikachu)    </span><span style="color:#7F848E;font-style:italic"># Pikachu (Nivel 25)  ← ¡mucho mejor!</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-repr-la-versión-para-programadores">🔍 <strong>repr</strong>: la versión para programadores</h2>
+<p><code>__repr__</code> es parecido a <code>__str__</code>, pero es la representación “técnica”, la que ves en el REPL o cuando un objeto está dentro de una lista. La idea es que sea precisa y útil para debuggear.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">class</span><span style="color:#E5C07B"> Pokemon</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#C678DD">    def</span><span style="color:#56B6C2"> __init__</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B;font-style:italic">self</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">nombre</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">nivel</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#E5C07B">        self</span><span style="color:#ABB2BF">.nombre </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> nombre</span></span>
+<span class="line"><span style="color:#E5C07B">        self</span><span style="color:#ABB2BF">.nivel </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> nivel</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    def</span><span style="color:#56B6C2"> __repr__</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B;font-style:italic">self</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#C678DD">        return</span><span style="color:#C678DD"> f</span><span style="color:#98C379">"Pokemon(nombre='</span><span style="color:#D19A66">{</span><span style="color:#E5C07B">self</span><span style="color:#ABB2BF">.nombre</span><span style="color:#D19A66">}</span><span style="color:#98C379">', nivel=</span><span style="color:#D19A66">{</span><span style="color:#E5C07B">self</span><span style="color:#ABB2BF">.nivel</span><span style="color:#D19A66">}</span><span style="color:#98C379">)"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#ABB2BF">pikachu </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> Pokemon</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">25</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#56B6C2">repr</span><span style="color:#ABB2BF">(pikachu))    </span><span style="color:#7F848E;font-style:italic"># Pokemon(nombre='Pikachu', nivel=25)</span></span>
+<span class="line"><span style="color:#ABB2BF">equipo </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> [pikachu]</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(equipo)           </span><span style="color:#7F848E;font-style:italic"># [Pokemon(nombre='Pikachu', nivel=25)]</span></span>
+<span class="line"></span></code></pre>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 Regla práctica: <code>__str__</code> para el usuario (lindo), <code>__repr__</code> para vos (preciso). Si solo vas a definir uno, definí <code>__repr__</code>.</p>
+</div>
+<hr>
+<h2 id="-encapsulamiento-básico">🔒 Encapsulamiento básico</h2>
+<p><strong>Encapsular</strong> es proteger los datos internos de un objeto. En Python, por convención, un atributo “privado” (que no debería tocarse desde afuera) se nombra con un <strong>guión bajo</strong> adelante.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">class</span><span style="color:#E5C07B"> Pokemon</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#C678DD">    def</span><span style="color:#56B6C2"> __init__</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B;font-style:italic">self</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">nombre</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#E5C07B">        self</span><span style="color:#ABB2BF">.nombre </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> nombre</span></span>
+<span class="line"><span style="color:#E5C07B">        self</span><span style="color:#ABB2BF">._hp </span><span style="color:#56B6C2">=</span><span style="color:#D19A66"> 100</span><span style="color:#7F848E;font-style:italic">         # _hp: "esto es interno, no lo toques directo"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    def</span><span style="color:#61AFEF"> recibir_dano</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B;font-style:italic">self</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">cantidad</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">        # La forma CORRECTA de cambiar el HP es a través de un método,</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">        # que puede validar (que no baje de 0, por ejemplo).</span></span>
+<span class="line"><span style="color:#E5C07B">        self</span><span style="color:#ABB2BF">._hp </span><span style="color:#56B6C2">=</span><span style="color:#E5C07B"> self</span><span style="color:#ABB2BF">._hp </span><span style="color:#56B6C2">-</span><span style="color:#ABB2BF"> cantidad</span></span>
+<span class="line"><span style="color:#C678DD">        if</span><span style="color:#E5C07B"> self</span><span style="color:#ABB2BF">._hp </span><span style="color:#56B6C2">&#x3C;</span><span style="color:#D19A66"> 0</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#E5C07B">            self</span><span style="color:#ABB2BF">._hp </span><span style="color:#56B6C2">=</span><span style="color:#D19A66"> 0</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    def</span><span style="color:#61AFEF"> hp_actual</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B;font-style:italic">self</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#C678DD">        return</span><span style="color:#E5C07B"> self</span><span style="color:#ABB2BF">._hp</span></span>
+<span class="line"></span></code></pre>
+<p>El guión bajo no lo “bloquea” de verdad (Python confía en vos), pero es una señal clara: <em>“accedé a esto solo a través de los métodos”</em>. En la semana 9 lo profundizamos con <code>@property</code>.</p>
+<hr>
+<h2 id="-resumen-de-la-semana">📝 Resumen de la semana</h2>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">class</span><span style="color:#E5C07B"> Pokemon</span><span style="color:#ABB2BF">:                          </span><span style="color:#7F848E;font-style:italic"># clase = molde</span></span>
+<span class="line"><span style="color:#C678DD">    def</span><span style="color:#56B6C2"> __init__</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B;font-style:italic">self</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">nombre</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">nivel</span><span style="color:#ABB2BF">):  </span><span style="color:#7F848E;font-style:italic"># constructor</span></span>
+<span class="line"><span style="color:#E5C07B">        self</span><span style="color:#ABB2BF">.nombre </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> nombre            </span><span style="color:#7F848E;font-style:italic"># atributos (datos del objeto)</span></span>
+<span class="line"><span style="color:#E5C07B">        self</span><span style="color:#ABB2BF">.nivel </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> nivel</span></span>
+<span class="line"><span style="color:#E5C07B">        self</span><span style="color:#ABB2BF">._hp </span><span style="color:#56B6C2">=</span><span style="color:#D19A66"> 100</span><span style="color:#7F848E;font-style:italic">                  # _hp: atributo "interno"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    def</span><span style="color:#61AFEF"> atacar</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B;font-style:italic">self</span><span style="color:#ABB2BF">):                   </span><span style="color:#7F848E;font-style:italic"># método (acción)</span></span>
+<span class="line"><span style="color:#C678DD">        return</span><span style="color:#C678DD"> f</span><span style="color:#98C379">"</span><span style="color:#D19A66">{</span><span style="color:#E5C07B">self</span><span style="color:#ABB2BF">.nombre</span><span style="color:#D19A66">}</span><span style="color:#98C379"> ataca!"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    def</span><span style="color:#56B6C2"> __str__</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B;font-style:italic">self</span><span style="color:#ABB2BF">):                  </span><span style="color:#7F848E;font-style:italic"># texto lindo para print()</span></span>
+<span class="line"><span style="color:#C678DD">        return</span><span style="color:#C678DD"> f</span><span style="color:#98C379">"</span><span style="color:#D19A66">{</span><span style="color:#E5C07B">self</span><span style="color:#ABB2BF">.nombre</span><span style="color:#D19A66">}</span><span style="color:#98C379"> (Nv </span><span style="color:#D19A66">{</span><span style="color:#E5C07B">self</span><span style="color:#ABB2BF">.nivel</span><span style="color:#D19A66">}</span><span style="color:#98C379">)"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">    def</span><span style="color:#56B6C2"> __repr__</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B;font-style:italic">self</span><span style="color:#ABB2BF">):                 </span><span style="color:#7F848E;font-style:italic"># texto técnico para debug</span></span>
+<span class="line"><span style="color:#C678DD">        return</span><span style="color:#C678DD"> f</span><span style="color:#98C379">"Pokemon(</span><span style="color:#D19A66">{</span><span style="color:#E5C07B">self</span><span style="color:#ABB2BF">.nombre</span><span style="color:#C678DD">!r</span><span style="color:#D19A66">}</span><span style="color:#98C379">, </span><span style="color:#D19A66">{</span><span style="color:#E5C07B">self</span><span style="color:#ABB2BF">.nivel</span><span style="color:#D19A66">}</span><span style="color:#98C379">)"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#ABB2BF">pikachu </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> Pokemon</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">25</span><span style="color:#ABB2BF">)        </span><span style="color:#7F848E;font-style:italic"># instancia (objeto)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pikachu.</span><span style="color:#61AFEF">atacar</span><span style="color:#ABB2BF">())</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pikachu)</span></span>
+<span class="line"></span></code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Concepto</th><th>Qué es</th></tr></thead><tbody><tr><td><code>class</code></td><td>El molde / plano</td></tr><tr><td>objeto / instancia</td><td>Un individuo hecho con el molde</td></tr><tr><td><code>__init__</code></td><td>El constructor (datos iniciales)</td></tr><tr><td><code>self</code></td><td>El propio objeto</td></tr><tr><td>atributo</td><td>Un dato del objeto (<code>self.x</code>)</td></tr><tr><td>método</td><td>Una acción del objeto</td></tr><tr><td><code>__str__</code></td><td>Texto lindo para el usuario</td></tr><tr><td><code>__repr__</code></td><td>Texto técnico para debug</td></tr><tr><td><code>_atributo</code></td><td>Convención de “interno/privado”</td></tr></tbody></table>
+<hr>
+<h2 id="️-y-ahora-qué">➡️ ¿Y ahora qué?</h2>
+<ol>
+<li>Resolvé <code>ejercicios.py</code> (vas de una clase básica a una con métodos de batalla).</li>
+<li>Corré los tests: <code>pytest semana-08-python-poo-introduccion/</code></li>
+<li>Jugá el <strong>creador de Pokémon personalizado</strong>:
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">python</span><span style="color:#98C379"> interactivo.py</span></span>
+<span class="line"></span></code></pre>
+</li>
+</ol>
+<div class="callout tip"><span class="et">ÁNIMO</span>
+<p>⚡ <em>“Una clase es un molde. Con un buen molde, fabricás Pokémon ilimitados.”</em></p>
+</div> <nav class="cap-nav"> <a href="/luca-journey/libro/cadenas-y-archivos"><span class="dir">← Anterior</span><br>Python: Cadenas y Archivos</a> <a class="next" href="/luca-journey/libro/poo-avanzado"><span class="dir">Siguiente →</span><br>Python: POO Avanzado</a> </nav> </main> </div> </div> <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>   <script>
+    (function () {
+      var body = document.body;
+      if (localStorage.getItem('tema') === 'dark') body.classList.add('dark');
+      var t = document.getElementById('theme-toggle');
+      function refrescar() { if (t) t.textContent = body.classList.contains('dark') ? '☀️' : '🌙'; }
+      refrescar();
+      if (t) t.addEventListener('click', function () {
+        body.classList.toggle('dark');
+        localStorage.setItem('tema', body.classList.contains('dark') ? 'dark' : 'claro');
+        refrescar();
+      });
+    })();
+  </script> </body> </html>

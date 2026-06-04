@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import datos from '../../data/ejercicios.json';
+import { u } from '../../lib/url.ts';
 
 const sets = datos.map((it, i) => ({
   slug: it.slug, titulo: it.titulo, n: i + 1,
@@ -17,7 +18,7 @@ const sets = datos.map((it, i) => ({
 
     <div class="cards indice" id="grid">
       {sets.map((s) => (
-        <a class="card" href={`/ejercicios/${s.slug}`} data-slug={s.slug} data-total={s.total} style="display:flex; align-items:center; gap:8px;">
+        <a class="card" href={u(`/ejercicios/${s.slug}`)} data-slug={s.slug} data-total={s.total} style="display:flex; align-items:center; gap:8px;">
           <span class="num">{s.n}</span>
           <span>
             <h3 style="margin:0;">{s.titulo}</h3>

@@ -1,0 +1,62 @@
+<!DOCTYPE html><html lang="es"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>La Liga — Python con Pokémon</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&display=swap"><link rel="stylesheet" href="/luca-journey/_astro/recursos.UAvNNIhJ.css"></head> <body> <div class="bg-grid" aria-hidden="true"></div> <header class="topbar"> <a class="brand-link" href="/luca-journey/"><span class="pb"></span><span class="brand">Pokédex <b>Codex</b></span></a> <div class="tools"> <a class="navlink" href="/luca-journey/">Inicio</a><a class="navlink" href="/luca-journey/libro">Libro</a><a class="navlink" href="/luca-journey/ejercicios">Ejercicios</a><a class="navlink activo" href="/luca-journey/liga">Liga</a><a class="navlink" href="/luca-journey/playground">Playground</a> <button class="theme-toggle" id="theme-toggle" type="button" title="Tema claro/oscuro">🌙</button> </div> </header> <script>(function(){const base = "/luca-journey";
+window.__BASE = base;})();</script>  <div class="wrap liga"> <section class="tarjeta"> <div class="tarjeta-top"> <div class="avatar" id="avatar">🎓</div> <div class="tarjeta-info"> <label class="t-nombre-l">Entrenador/a</label> <input class="t-nombre" id="nombre" placeholder="Tu nombre" maxlength="20"> <div class="t-rango" id="rango">Novato</div> </div> <div class="t-nivel"><span class="t-nivel-n" id="nivel">1</span><span class="t-nivel-l">nivel</span></div> </div> <div class="t-exp"> <div class="t-exp-bar"><span id="exp-fill"></span></div> <div class="t-exp-txt"><span id="exp-txt">0 EXP</span><span id="exp-next"></span></div> </div> <div class="t-stats"> <div><b id="st-ej">0</b><span>ejercicios</span></div> <div><b id="st-med">0</b><span>medallas</span></div> <div><b id="st-temas">0</b><span>temas completos</span></div> </div> </section> <h2 class="liga-h">🏅 Medallas de gimnasio</h2> <div class="medallas" id="medallas"></div> <h2 class="liga-h">📊 Progreso por tema</h2> <div class="progreso-temas" id="progreso"></div> <p class="liga-nota">Tu progreso se guarda en este navegador. Resolvé ejercicios para ganar EXP y medallas. ⚡</p> </div> <script type="application/json" id="liga-data">{"semanas":[{"slug":"python-introduccion","titulo":"Python: Introducción","exIds":["saludo","mi_pokemon_favorito","doble_nivel","suma","resta","promedio_stats","a_entero","a_texto","a_decimal","nombre_del_tipo","presentacion","ficha","hp_total","nivel_es_par","fusionar_nombres","pedir_nombre_y_saludar","pedir_nivel_y_subir","pedir_dos_numeros_y_sumar","registrar_entrenador","elegir_inicial"],"gym":"Roca","emoji":"🪨"},{"slug":"control-de-flujo","titulo":"Control de Flujo","exIds":["puede_evolucionar","estado_hp","ventaja_tipo","el_mas_fuerte","clasificar_nivel","necesita_curarse","resultado_combate","cuenta_regresiva","suma_1_a_n","factorial","contar_pares","cuantos_turnos","potencia","es_primo","primer_divisor","contar_vocales","mayor_de_tres","signo","esta_en_equipo","contar_debilitados"],"gym":"Cascada","emoji":"💧"},{"slug":"funciones","titulo":"Funciones","exIds":["calcular_dano","velocidad_efectiva","nivel_por_experiencia","experiencia_para_nivel","saludar_entrenador","aplicar_pocion","promedio_tres","total_stats","clasificar_poder","calcular_dano_con_bonus","multiplicador_efectividad","dano_final","factorial","suma_recursiva","potencia_recursiva","cuenta_regresiva_recursiva"],"gym":"Trueno","emoji":"⚡"},{"slug":"listas-y-colecciones","titulo":"Listas y Colecciones","exIds":["primer_pokemon","ultimo_pokemon","agregar_pokemon","cantidad_pokemon","esta_en_equipo","quitar_pokemon","equipo_lleno","tipos_unicos","contar_apariciones","promedio_niveles","nivel_maximo","nombres_en_mayuscula","niveles_altos","equipo_numerado","crear_pokemon","obtener_dato","subir_nivel","nombres_de","nombres_por_tipo","nombres_por_nivel_desc"],"gym":"Arcoíris","emoji":"🌈"},{"slug":"cadenas-y-archivos","titulo":"Cadenas y Archivos","exIds":["a_mayusculas","limpiar_espacios","reemplazar","separar_csv","unir_csv","invertir","cantidad_caracteres","empieza_con","primeras_letras","ultimas_letras","capitalizar","contar_subtexto","convertir_entero_seguro","escribir_texto","leer_texto","agregar_linea","contar_lineas","guardar_lista","cargar_lista","parsear_pokemon"],"gym":"Alma","emoji":"💗"},{"slug":"poo-introduccion","titulo":"POO: Introducción","exIds":["Pokemon","Entrenador","crear_pokemon_inicial","batallar","contar_debilitados"],"gym":"Pantano","emoji":"🟣"},{"slug":"poo-avanzado","titulo":"POO: Avanzado","exIds":["Pokemon","PokemonFuego","PokemonAgua","PokemonPlanta","PokemonElectrico","tiene_ventaja","multiplicador","describir_ataques","crear_por_tipo","tipos_del_equipo","equipo_balanceado","batalla_simple","cantidad_por_tipo"],"gym":"Volcán","emoji":"🔥"},{"slug":"modulos-y-pip","titulo":"Módulos y pip","exIds":["raiz_cuadrada","redondear_arriba","redondear_abajo","pi_redondeado","tirar_dado","pokemon_al_azar","mezclar","fecha_hoy","a_json","de_json","guardar_json","cargar_json","nombre_archivo","existe","resumen_pokemon"],"gym":"Tierra","emoji":"🌍"}],"totalEj":129}</script> <script>
+    (function () {
+      const data = JSON.parse(document.getElementById('liga-data').textContent);
+      const RANGOS = [[0, 'Novato'], [3, 'Aprendiz'], [6, 'Entrenador'], [10, 'Veterano'], [16, 'As'], [24, 'Líder'], [40, 'Campeón']];
+      const $ = (id) => document.getElementById(id);
+      const B = (window.__BASE || '/').replace(/\/$/, '');
+
+      // nombre
+      const nombre = $('nombre');
+      nombre.value = localStorage.getItem('liga:nombre') || '';
+      nombre.addEventListener('input', () => localStorage.setItem('liga:nombre', nombre.value));
+
+      let doneTotal = 0, temasCompletos = 0, medallas = 0;
+      const filas = [];
+      const medHtml = [];
+      for (const w of data.semanas) {
+        const done = w.exIds.filter((id) => localStorage.getItem('ej:' + w.slug + ':' + id + ':ok') === '1').length;
+        const total = w.exIds.length;
+        const completo = total > 0 && done === total;
+        doneTotal += done;
+        if (completo) { temasCompletos++; medallas++; }
+        const pct = total ? Math.round((done / total) * 100) : 0;
+        filas.push('<a class="pt-row" href="' + B + '/ejercicios/' + w.slug + '"><span class="pt-emoji">' + w.emoji + '</span>' +
+          '<span class="pt-nom">' + w.titulo + '</span><span class="pt-bar"><i style="width:' + pct + '%"></i></span>' +
+          '<span class="pt-num">' + done + '/' + total + '</span></a>');
+        medHtml.push('<div class="medalla ' + (completo ? 'ganada' : '') + '" title="Gimnasio ' + w.gym + '">' +
+          '<div class="med-ico">' + w.emoji + '</div><div class="med-nom">' + w.gym + '</div></div>');
+      }
+      $('progreso').innerHTML = filas.join('');
+      $('medallas').innerHTML = medHtml.join('');
+
+      const exp = doneTotal * 20;
+      let rango = 'Novato';
+      for (const [n, r] of RANGOS) if (medallas >= n || doneTotal >= n) rango = r;
+      // nivel: cada 100 EXP
+      const nivel = 1 + Math.floor(exp / 100);
+      const expEnNivel = exp % 100;
+      $('nivel').textContent = nivel;
+      $('rango').textContent = rango;
+      $('exp-txt').textContent = exp + ' EXP';
+      $('exp-next').textContent = (100 - expEnNivel) + ' para nivel ' + (nivel + 1);
+      $('exp-fill').style.width = expEnNivel + '%';
+      $('st-ej').textContent = doneTotal + '/' + data.totalEj;
+      $('st-med').textContent = medallas + '/' + data.semanas.length;
+      $('st-temas').textContent = temasCompletos;
+      if (medallas === data.semanas.length && data.semanas.length) { $('avatar').textContent = '🏆'; $('rango').textContent = '¡Campeón de Kanto!'; }
+    })();
+  </script>  <script>
+    (function () {
+      var body = document.body;
+      if (localStorage.getItem('tema') === 'dark') body.classList.add('dark');
+      var t = document.getElementById('theme-toggle');
+      function refrescar() { if (t) t.textContent = body.classList.contains('dark') ? '☀️' : '🌙'; }
+      refrescar();
+      if (t) t.addEventListener('click', function () {
+        body.classList.toggle('dark');
+        localStorage.setItem('tema', body.classList.contains('dark') ? 'dark' : 'claro');
+        refrescar();
+      });
+    })();
+  </script> </body> </html>

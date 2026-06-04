@@ -1,0 +1,269 @@
+<!DOCTYPE html><html lang="es"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Git: Control de Versiones — Python con Pokémon</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&display=swap"><link rel="stylesheet" href="/luca-journey/_astro/recursos.UAvNNIhJ.css"><script type="module" src="/luca-journey/_astro/hoisted.55VPuE-h.js"></script></head> <body> <div class="bg-grid" aria-hidden="true"></div> <header class="topbar"> <a class="brand-link" href="/luca-journey/"><span class="pb"></span><span class="brand">Pokédex <b>Codex</b></span></a> <div class="tools"> <a class="navlink" href="/luca-journey/">Inicio</a><a class="navlink activo" href="/luca-journey/libro">Libro</a><a class="navlink" href="/luca-journey/ejercicios">Ejercicios</a><a class="navlink" href="/luca-journey/liga">Liga</a><a class="navlink" href="/luca-journey/playground">Playground</a> <button class="theme-toggle" id="theme-toggle" type="button" title="Tema claro/oscuro">🌙</button> </div> </header> <script>(function(){const base = "/luca-journey";
+window.__BASE = base;})();</script>  <div class="wrap"> <div class="book-layout"> <aside class="book-rail"> <div class="rail-tit">Capítulos</div> <details class="grupo"> <summary><span class="g-ico">🎒</span>Introducción</summary> <a class="" href="/luca-journey/libro/introduccion"> <span class="rn">0</span><span>Cómo usar este libro</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🐧</span>Linux</summary> <a class="" href="/luca-journey/libro/linux-fundamentos"> <span class="rn">1</span><span>Linux: Fundamentos</span> </a><a class="" href="/luca-journey/libro/linux-intermedio"> <span class="rn">2</span><span>Linux: Intermedio</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🐍</span>Python</summary> <a class="" href="/luca-journey/libro/python-introduccion"> <span class="rn">3</span><span>Python: Introducción</span> </a><a class="" href="/luca-journey/libro/control-de-flujo"> <span class="rn">4</span><span>Python: Control de Flujo</span> </a><a class="" href="/luca-journey/libro/funciones"> <span class="rn">5</span><span>Python: Funciones</span> </a><a class="" href="/luca-journey/libro/listas-y-colecciones"> <span class="rn">6</span><span>Python: Listas y Colecciones</span> </a><a class="" href="/luca-journey/libro/cadenas-y-archivos"> <span class="rn">7</span><span>Python: Cadenas y Archivos</span> </a><a class="" href="/luca-journey/libro/poo-introduccion"> <span class="rn">8</span><span>Python: POO Introducción</span> </a><a class="" href="/luca-journey/libro/poo-avanzado"> <span class="rn">9</span><span>Python: POO Avanzado</span> </a><a class="" href="/luca-journey/libro/modulos-y-pip"> <span class="rn">10</span><span>Python: Módulos y pip</span> </a> </details><details class="grupo" open> <summary><span class="g-ico">🔀</span>Git</summary> <a class="activo" href="/luca-journey/libro/git"> <span class="rn">11</span><span>Git: Control de Versiones</span> </a> </details><details class="grupo"> <summary><span class="g-ico">❓</span>Ayuda</summary> <a class="" href="/luca-journey/libro/ayuda"> <span class="rn">12</span><span>Ayuda y glosario</span> </a> </details> </aside> <main class="book"> <h1>Git: Control de Versiones</h1> <div class="callout nota"><span class="et">NOTA</span>
+<p>😌 <strong>Semana relajada.</strong> Después de tanto Python, frenamos un toque para aprender <strong>Git</strong>: la herramienta que usan TODOS los programadores para guardar su trabajo. Es fácil, es útil, y te va a salvar la vida mil veces.</p>
+</div>
+<hr>
+<h2 id="-analogía-git-es-guardar-la-partida">🎮 Analogía: Git es “guardar la partida”</h2>
+<p>¿Te acordás cuando jugás Pokémon y <strong>guardás la partida</strong> antes de una pelea difícil? Si perdés, recargás y volvés al punto de guardado. 💾</p>
+<p><strong>Git es exactamente eso, pero para tu código.</strong> Cada vez que hacés un “guardado” (se llama <strong>commit</strong>), Git recuerda cómo estaba TODO tu proyecto en ese momento. ¿Rompiste algo? Volvés a un guardado anterior. ¿Querés probar una idea loca sin arruinar lo que funciona? Creás una <strong>línea temporal alternativa</strong> (una <em>branch</em>).</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>En Pokémon</th><th>En Git</th></tr></thead><tbody><tr><td>Guardar la partida</td><td>Hacer un <strong>commit</strong></td></tr><tr><td>El cartucho/partida</td><td>El <strong>repositorio</strong></td></tr><tr><td>La PC de Bill (en la nube)</td><td><strong>GitHub</strong></td></tr><tr><td>Subir Pokémon a la PC</td><td><strong>push</strong></td></tr><tr><td>Bajar Pokémon de la PC</td><td><strong>pull</strong></td></tr><tr><td>Copiar la partida de un amigo</td><td><strong>clone</strong></td></tr><tr><td>Un universo paralelo (Ultraentes)</td><td>Una <strong>branch</strong> (rama)</td></tr></tbody></table>
+<hr>
+<h2 id="-por-qué-usar-git">❓ ¿Por qué usar Git?</h2>
+<ul>
+<li>💾 <strong>Nunca más perdés tu trabajo.</strong> Cada commit es un punto seguro.</li>
+<li>⏪ <strong>Volvés atrás</strong> cuando rompés algo (y vas a romper cosas, es normal).</li>
+<li>🌿 <strong>Probás ideas</strong> sin miedo, en ramas separadas.</li>
+<li>👥 <strong>Trabajás con otros</strong> sin pisarse el código.</li>
+<li>☁️ <strong>Guardás todo en GitHub</strong>, accesible desde cualquier lado.</li>
+<li>💼 Todo programador lo usa. Saberlo es <strong>obligatorio</strong> en el mundo real.</li>
+</ul>
+<hr>
+<h2 id="️-configuración-inicial-una-sola-vez">🛠️ Configuración inicial (una sola vez)</h2>
+<p>Antes de usar Git, le decís quién sos (queda en tus commits):</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> config</span><span style="color:#D19A66"> --global</span><span style="color:#98C379"> user.name</span><span style="color:#98C379"> "Tu Nombre"</span></span>
+<span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> config</span><span style="color:#D19A66"> --global</span><span style="color:#98C379"> user.email</span><span style="color:#98C379"> "tu@email.com"</span></span>
+<span class="line"></span></code></pre>
+<p>Esto se hace <strong>una sola vez</strong> en tu computadora.</p>
+<hr>
+<h2 id="-crear-un-repositorio-git-init">📦 Crear un repositorio: git init</h2>
+<p>Un <strong>repositorio</strong> (o “repo”) es una carpeta que Git está vigilando. Para empezar a vigilar una carpeta:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#56B6C2">cd</span><span style="color:#98C379"> mi-proyecto</span></span>
+<span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> init</span></span>
+<span class="line"></span></code></pre>
+<p>Esto crea una carpeta oculta <code>.git/</code> donde Git guarda toda la historia. <strong>No la toques</strong>, es la “memoria” de Git.</p>
+<hr>
+<h2 id="-ver-el-estado-git-status">👀 Ver el estado: git status</h2>
+<p><code>git status</code> es tu mejor amigo. Te dice qué cambió, qué está listo para guardar y qué no. <strong>Usalo todo el tiempo.</strong></p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> status</span></span>
+<span class="line"></span></code></pre>
+<p>Te muestra cosas como:</p>
+<ul>
+<li><strong>Untracked files</strong>: archivos nuevos que Git todavía no sigue.</li>
+<li><strong>Changes to be committed</strong>: cambios listos para el próximo commit (en el “staging”).</li>
+<li><strong>Changes not staged</strong>: cambios que hiciste pero todavía no preparaste.</li>
+</ul>
+<hr>
+<h2 id="-los-3-pasos-de-un-guardado">🎬 Los 3 pasos de un guardado</h2>
+<p>Guardar en Git tiene 3 zonas, como preparar tu equipo antes de una batalla:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>  Working Directory  →  Staging Area  →  Repositorio</span></span>
+<span class="line"><span>  (donde trabajás)      (lo que vas        (guardado</span></span>
+<span class="line"><span>                         a guardar)          permanente)</span></span>
+<span class="line"><span>        │                    │                   │</span></span>
+<span class="line"><span>     editás            git add             git commit</span></span>
+<span class="line"><span></span></span></code></pre>
+<h3 id="1-git-add--preparar-lo-que-vas-a-guardar">1. <code>git add</code> — preparar lo que vas a guardar</h3>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> add</span><span style="color:#98C379"> pokemon.txt</span><span style="color:#7F848E;font-style:italic">        # prepara un archivo</span></span>
+<span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> add</span><span style="color:#98C379"> .</span><span style="color:#7F848E;font-style:italic">                  # prepara TODOS los cambios (el punto = "todo")</span></span>
+<span class="line"></span></code></pre>
+<p><code>git add</code> mueve tus cambios al <strong>staging area</strong>: “esto quiero guardarlo”.</p>
+<h3 id="2-git-commit--guardar-la-partida">2. <code>git commit</code> — guardar la partida</h3>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> commit</span><span style="color:#D19A66"> -m</span><span style="color:#98C379"> "Agregué a Pikachu al equipo"</span></span>
+<span class="line"></span></code></pre>
+<p><code>commit</code> crea el punto de guardado. El <code>-m</code> es el <strong>mensaje</strong>: una descripción de QUÉ hiciste. Escribí mensajes claros, tu yo del futuro te lo agradece.</p>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 Regla de oro: <code>git add</code> → <code>git commit</code>. Primero preparás, después guardás.</p>
+</div>
+<hr>
+<h2 id="-ver-la-historia-git-log">📜 Ver la historia: git log</h2>
+<p><code>git log</code> muestra todos tus commits, del más nuevo al más viejo:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> log</span></span>
+<span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> log</span><span style="color:#D19A66"> --oneline</span><span style="color:#7F848E;font-style:italic">      # versión cortita, una línea por commit</span></span>
+<span class="line"></span></code></pre>
+<p>Cada commit tiene un código único (un “hash”) y tu mensaje. Es la lista de todos tus puntos de guardado. 🗂️</p>
+<hr>
+<h2 id="-ramas-branches-líneas-temporales-alternativas">🌿 Ramas (branches): líneas temporales alternativas</h2>
+<p>Una <strong>branch</strong> (rama) es una <strong>línea temporal paralela</strong> de tu proyecto. Te deja probar cosas sin tocar lo que ya funciona. Es como entrar a un universo alternativo: si sale mal, volvés al principal y no pasó nada.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> branch</span><span style="color:#7F848E;font-style:italic">                       # muestra las ramas (la actual tiene un *)</span></span>
+<span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> branch</span><span style="color:#98C379"> nueva-aventura</span><span style="color:#7F848E;font-style:italic">        # crea una rama nueva</span></span>
+<span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> switch</span><span style="color:#98C379"> nueva-aventura</span><span style="color:#7F848E;font-style:italic">        # te cambiás a esa rama</span></span>
+<span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> switch</span><span style="color:#D19A66"> -c</span><span style="color:#98C379"> otra-rama</span><span style="color:#7F848E;font-style:italic">          # crea Y se cambia, todo junto</span></span>
+<span class="line"></span></code></pre>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 <code>git checkout nueva-aventura</code> hace lo mismo que <code>git switch</code>. <code>switch</code> es la forma nueva y más clara; vas a ver las dos por ahí.</p>
+</div>
+<p>La rama principal se suele llamar <strong><code>main</code></strong> (antes se llamaba <code>master</code>).</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>        o---o---o  nueva-aventura   ← probás cosas acá</span></span>
+<span class="line"><span>       /</span></span>
+<span class="line"><span>  o---o---o---o  main               ← lo estable queda intacto acá</span></span>
+<span class="line"><span></span></span></code></pre>
+<hr>
+<h2 id="-fusionar-ramas-git-merge">🔗 Fusionar ramas: git merge</h2>
+<p>Cuando tu experimento en la rama funcionó, lo <strong>fusionás</strong> de vuelta a <code>main</code>:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> switch</span><span style="color:#98C379"> main</span><span style="color:#7F848E;font-style:italic">              # te parás en la rama destino</span></span>
+<span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> merge</span><span style="color:#98C379"> nueva-aventura</span><span style="color:#7F848E;font-style:italic">     # traés los cambios de la otra rama</span></span>
+<span class="line"></span></code></pre>
+<p>Las dos líneas temporales se unen en una. 🤝</p>
+<hr>
+<h2 id="️-github-la-pc-de-bill-en-la-nube">☁️ GitHub: la PC de Bill en la nube</h2>
+<p><strong>GitHub</strong> es un sitio web donde guardás tus repos en internet. Es como subir tus Pokémon a la <strong>PC de Bill</strong>: quedan seguros y los podés bajar desde cualquier computadora.</p>
+<h3 id="conectar-tu-repo-con-github">Conectar tu repo con GitHub</h3>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> remote</span><span style="color:#98C379"> add</span><span style="color:#98C379"> origin</span><span style="color:#98C379"> https://github.com/usuario/repo.git</span></span>
+<span class="line"></span></code></pre>
+<p><code>origin</code> es el “apodo” de tu repo en GitHub.</p>
+<h3 id="subir-cambios-git-push">Subir cambios: git push</h3>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> push</span><span style="color:#D19A66"> -u</span><span style="color:#98C379"> origin</span><span style="color:#98C379"> main</span><span style="color:#7F848E;font-style:italic">      # la primera vez (-u recuerda la conexión)</span></span>
+<span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> push</span><span style="color:#7F848E;font-style:italic">                     # las siguientes veces, alcanza con esto</span></span>
+<span class="line"></span></code></pre>
+<h3 id="bajar-cambios-git-pull">Bajar cambios: git pull</h3>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> pull</span><span style="color:#7F848E;font-style:italic">                     # trae los cambios nuevos de GitHub</span></span>
+<span class="line"></span></code></pre>
+<h3 id="copiar-un-repo-de-internet-git-clone">Copiar un repo de internet: git clone</h3>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> clone</span><span style="color:#98C379"> https://github.com/usuario/repo.git</span></span>
+<span class="line"></span></code></pre>
+<p><code>clone</code> te baja una copia completa de un repo (con toda su historia). Así empezaste vos este curso. 😉</p>
+<hr>
+<h2 id="-gitignore-lo-que-git-debe-ignorar">🙈 .gitignore: lo que Git debe ignorar</h2>
+<p>A veces hay archivos que <strong>no</strong> querés guardar (datos temporales, contraseñas, el <code>venv</code>). Los listás en un archivo llamado <code>.gitignore</code> y Git los ignora:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span># .gitignore</span></span>
+<span class="line"><span>venv/</span></span>
+<span class="line"><span>__pycache__/</span></span>
+<span class="line"><span>*.db</span></span>
+<span class="line"><span>progreso.json</span></span>
+<span class="line"><span></span></span></code></pre>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 Este mismo curso tiene un <code>.gitignore</code>. Abrilo y mirá qué ignora.</p>
+</div>
+<hr>
+<h2 id="-el-flujo-de-trabajo-típico-memorizalo">🔄 El flujo de trabajo típico (memorizalo)</h2>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#7F848E;font-style:italic"># 1. Trabajás, editás archivos...</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># 2. Ves qué cambió</span></span>
+<span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> status</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># 3. Preparás los cambios</span></span>
+<span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> add</span><span style="color:#98C379"> .</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># 4. Guardás con un mensaje</span></span>
+<span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> commit</span><span style="color:#D19A66"> -m</span><span style="color:#98C379"> "Descripción de lo que hice"</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># 5. Subís a GitHub</span></span>
+<span class="line"><span style="color:#61AFEF">git</span><span style="color:#98C379"> push</span></span>
+<span class="line"></span></code></pre>
+<p>Este ciclo lo vas a repetir <strong>miles</strong> de veces en tu vida de programador. 🔁</p>
+<hr>
+<h2 id="-resumen-de-la-semana">📝 Resumen de la semana</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Comando</th><th>Qué hace</th></tr></thead><tbody><tr><td><code>git init</code></td><td>Empieza a vigilar una carpeta</td></tr><tr><td><code>git status</code></td><td>Muestra qué cambió</td></tr><tr><td><code>git add &#x3C;archivo></code></td><td>Prepara cambios (staging)</td></tr><tr><td><code>git add .</code></td><td>Prepara TODOS los cambios</td></tr><tr><td><code>git commit -m "msg"</code></td><td>Guarda la partida (punto de guardado)</td></tr><tr><td><code>git log</code></td><td>Muestra la historia de commits</td></tr><tr><td><code>git branch &#x3C;nombre></code></td><td>Crea una rama</td></tr><tr><td><code>git switch &#x3C;nombre></code></td><td>Cambia de rama</td></tr><tr><td><code>git switch -c &#x3C;nombre></code></td><td>Crea y cambia de rama</td></tr><tr><td><code>git merge &#x3C;rama></code></td><td>Fusiona una rama en la actual</td></tr><tr><td><code>git remote add origin &#x3C;url></code></td><td>Conecta con GitHub</td></tr><tr><td><code>git push</code></td><td>Sube a GitHub</td></tr><tr><td><code>git pull</code></td><td>Baja de GitHub</td></tr><tr><td><code>git clone &#x3C;url></code></td><td>Copia un repo de internet</td></tr></tbody></table>
+<hr>
+<h2 id="️-y-ahora-qué">➡️ ¿Y ahora qué?</h2>
+<ol>
+<li>Hacé los ejercicios de <code>ejercicios.md</code> en una carpeta de prueba (¡con Git de verdad!).</li>
+<li>Si te trabás, mirá <code>soluciones.md</code>.</li>
+<li>Jugá el <strong>simulador de Git</strong> para practicar sin miedo:
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">python</span><span style="color:#98C379"> interactivo.py</span></span>
+<span class="line"></span></code></pre>
+</li>
+</ol>
+<div class="callout tip"><span class="et">ÁNIMO</span>
+<p>⚡ <em>“Programar sin Git es como jugar Pokémon sin poder guardar la partida. Una vez que lo usás, no querés volver atrás.”</em></p>
+</div> <nav class="cap-nav"> <a href="/luca-journey/libro/modulos-y-pip"><span class="dir">← Anterior</span><br>Python: Módulos y pip</a> <a class="next" href="/luca-journey/libro/ayuda"><span class="dir">Siguiente →</span><br>Ayuda y glosario</a> </nav> </main> </div> </div> <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>   <script>
+    (function () {
+      var body = document.body;
+      if (localStorage.getItem('tema') === 'dark') body.classList.add('dark');
+      var t = document.getElementById('theme-toggle');
+      function refrescar() { if (t) t.textContent = body.classList.contains('dark') ? '☀️' : '🌙'; }
+      refrescar();
+      if (t) t.addEventListener('click', function () {
+        body.classList.toggle('dark');
+        localStorage.setItem('tema', body.classList.contains('dark') ? 'dark' : 'claro');
+        refrescar();
+      });
+    })();
+  </script> </body> </html>

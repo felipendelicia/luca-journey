@@ -51,6 +51,7 @@ const totalEj = semanas.reduce((a, w) => a + w.exIds.length, 0);
       const data = JSON.parse(document.getElementById('liga-data').textContent);
       const RANGOS = [[0, 'Novato'], [3, 'Aprendiz'], [6, 'Entrenador'], [10, 'Veterano'], [16, 'As'], [24, 'Líder'], [40, 'Campeón']];
       const $ = (id) => document.getElementById(id);
+      const B = (window.__BASE || '/').replace(/\/$/, '');
 
       // nombre
       const nombre = $('nombre');
@@ -67,7 +68,7 @@ const totalEj = semanas.reduce((a, w) => a + w.exIds.length, 0);
         doneTotal += done;
         if (completo) { temasCompletos++; medallas++; }
         const pct = total ? Math.round((done / total) * 100) : 0;
-        filas.push('<a class="pt-row" href="/ejercicios/' + w.slug + '"><span class="pt-emoji">' + w.emoji + '</span>' +
+        filas.push('<a class="pt-row" href="' + B + '/ejercicios/' + w.slug + '"><span class="pt-emoji">' + w.emoji + '</span>' +
           '<span class="pt-nom">' + w.titulo + '</span><span class="pt-bar"><i style="width:' + pct + '%"></i></span>' +
           '<span class="pt-num">' + done + '/' + total + '</span></a>');
         medHtml.push('<div class="medalla ' + (completo ? 'ganada' : '') + '" title="Gimnasio ' + w.gym + '">' +

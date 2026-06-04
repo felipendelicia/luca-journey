@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import { agrupar } from '../../lib/grupos.mjs';
+import { u } from '../../lib/url.ts';
 
 export async function getStaticPaths() {
   const caps = (await getCollection('libro')).sort((a, b) => a.data.order - b.data.order);
@@ -26,7 +27,7 @@ const grupos = agrupar(caps);
           <details class="grupo" open={g.items.some((it) => it.cap.slug === cap.slug)}>
             <summary><span class="g-ico">{g.icono}</span>{g.nombre}</summary>
             {g.items.map(({ cap: c, n }) => (
-              <a class={c.slug === cap.slug ? 'activo' : ''} href={`/libro/${c.slug}`}>
+              <a class={c.slug === cap.slug ? 'activo' : ''} href={u(`/libro/${c.slug}`)}>
                 <span class="rn">{n}</span><span>{c.data.title}</span>
               </a>
             ))}
@@ -39,11 +40,11 @@ const grupos = agrupar(caps);
         <Content />
         <nav class="cap-nav">
           {prev
-            ? <a href={`/libro/${prev.slug}`}><span class="dir">← Anterior</span><br />{prev.data.title}</a>
-            : <a href="/libro"><span class="dir">← Índice</span><br />Todos los capítulos</a>}
+            ? <a href={u(`/libro/${prev.slug}`)}><span class="dir">← Anterior</span><br />{prev.data.title}</a>
+            : <a href={u('/libro')}><span class="dir">← Índice</span><br />Todos los capítulos</a>}
           {next
-            ? <a class="next" href={`/libro/${next.slug}`}><span class="dir">Siguiente →</span><br />{next.data.title}</a>
-            : <a class="next" href="/playground"><span class="dir">Seguir →</span><br />Ir al Playground</a>}
+            ? <a class="next" href={u(`/libro/${next.slug}`)}><span class="dir">Siguiente →</span><br />{next.data.title}</a>
+            : <a class="next" href={u('/playground')}><span class="dir">Seguir →</span><br />Ir al Playground</a>}
         </nav>
       </main>
     </div>

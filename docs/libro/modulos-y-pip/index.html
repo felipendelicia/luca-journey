@@ -1,0 +1,229 @@
+<!DOCTYPE html><html lang="es"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Python: Módulos y pip — Python con Pokémon</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&display=swap"><link rel="stylesheet" href="/luca-journey/_astro/recursos.UAvNNIhJ.css"><script type="module" src="/luca-journey/_astro/hoisted.55VPuE-h.js"></script></head> <body> <div class="bg-grid" aria-hidden="true"></div> <header class="topbar"> <a class="brand-link" href="/luca-journey/"><span class="pb"></span><span class="brand">Pokédex <b>Codex</b></span></a> <div class="tools"> <a class="navlink" href="/luca-journey/">Inicio</a><a class="navlink activo" href="/luca-journey/libro">Libro</a><a class="navlink" href="/luca-journey/ejercicios">Ejercicios</a><a class="navlink" href="/luca-journey/liga">Liga</a><a class="navlink" href="/luca-journey/playground">Playground</a> <button class="theme-toggle" id="theme-toggle" type="button" title="Tema claro/oscuro">🌙</button> </div> </header> <script>(function(){const base = "/luca-journey";
+window.__BASE = base;})();</script>  <div class="wrap"> <div class="book-layout"> <aside class="book-rail"> <div class="rail-tit">Capítulos</div> <details class="grupo"> <summary><span class="g-ico">🎒</span>Introducción</summary> <a class="" href="/luca-journey/libro/introduccion"> <span class="rn">0</span><span>Cómo usar este libro</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🐧</span>Linux</summary> <a class="" href="/luca-journey/libro/linux-fundamentos"> <span class="rn">1</span><span>Linux: Fundamentos</span> </a><a class="" href="/luca-journey/libro/linux-intermedio"> <span class="rn">2</span><span>Linux: Intermedio</span> </a> </details><details class="grupo" open> <summary><span class="g-ico">🐍</span>Python</summary> <a class="" href="/luca-journey/libro/python-introduccion"> <span class="rn">3</span><span>Python: Introducción</span> </a><a class="" href="/luca-journey/libro/control-de-flujo"> <span class="rn">4</span><span>Python: Control de Flujo</span> </a><a class="" href="/luca-journey/libro/funciones"> <span class="rn">5</span><span>Python: Funciones</span> </a><a class="" href="/luca-journey/libro/listas-y-colecciones"> <span class="rn">6</span><span>Python: Listas y Colecciones</span> </a><a class="" href="/luca-journey/libro/cadenas-y-archivos"> <span class="rn">7</span><span>Python: Cadenas y Archivos</span> </a><a class="" href="/luca-journey/libro/poo-introduccion"> <span class="rn">8</span><span>Python: POO Introducción</span> </a><a class="" href="/luca-journey/libro/poo-avanzado"> <span class="rn">9</span><span>Python: POO Avanzado</span> </a><a class="activo" href="/luca-journey/libro/modulos-y-pip"> <span class="rn">10</span><span>Python: Módulos y pip</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🔀</span>Git</summary> <a class="" href="/luca-journey/libro/git"> <span class="rn">11</span><span>Git: Control de Versiones</span> </a> </details><details class="grupo"> <summary><span class="g-ico">❓</span>Ayuda</summary> <a class="" href="/luca-journey/libro/ayuda"> <span class="rn">12</span><span>Ayuda y glosario</span> </a> </details> </aside> <main class="book"> <h1>Python: Módulos y pip</h1> <div class="callout nota"><span class="et">META</span>
+<p>🎯 <strong>Meta de la semana:</strong> usar código que ya escribieron otros. Vas a aprender a importar <strong>módulos</strong> de Python, instalar <strong>librerías</strong> con pip, y hasta consultar datos <strong>reales de internet</strong> con la PokéAPI.</p>
+</div>
+<hr>
+<h2 id="-analogía-las-mt-máquinas-técnicas">🎮 Analogía: las MT (Máquinas Técnicas)</h2>
+<p>En los juegos Pokémon, las <strong>MT</strong> te enseñan ataques poderosos sin tener que entrenarlos desde cero. Las metés y listo, tu Pokémon ya sabe Rayo.</p>
+<p>Los <strong>módulos</strong> y <strong>librerías</strong> son las MT del programador: código ya hecho que <strong>importás</strong> y usás. No reinventás la rueda: aprovechás el trabajo de millones de personas. 🧠</p>
+<hr>
+<h2 id="-import-traer-un-módulo">📦 import: traer un módulo</h2>
+<p>Un <strong>módulo</strong> es un archivo de Python lleno de funciones útiles. Python trae muchos “de fábrica” (la <strong>librería estándar</strong>). Para usarlos, los importás.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> math</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(math.</span><span style="color:#61AFEF">sqrt</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">16</span><span style="color:#ABB2BF">))    </span><span style="color:#7F848E;font-style:italic"># 4.0  (raíz cuadrada)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(math.pi)          </span><span style="color:#7F848E;font-style:italic"># 3.141592653589793</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(math.</span><span style="color:#61AFEF">ceil</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">4.2</span><span style="color:#ABB2BF">))   </span><span style="color:#7F848E;font-style:italic"># 5    (redondea para arriba)</span></span>
+<span class="line"></span></code></pre>
+<h3 id="formas-de-importar">Formas de importar</h3>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> math                  </span><span style="color:#7F848E;font-style:italic"># importás todo el módulo, usás math.algo</span></span>
+<span class="line"><span style="color:#C678DD">from</span><span style="color:#ABB2BF"> math </span><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> sqrt        </span><span style="color:#7F848E;font-style:italic"># importás solo sqrt, lo usás directo</span></span>
+<span class="line"><span style="color:#C678DD">from</span><span style="color:#ABB2BF"> math </span><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> sqrt, pi    </span><span style="color:#7F848E;font-style:italic"># varios</span></span>
+<span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> math </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> m             </span><span style="color:#7F848E;font-style:italic"># le ponés un apodo: m.sqrt(16)</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-módulos-estándar-útiles">🧰 Módulos estándar útiles</h2>
+<h3 id="math--matemática"><code>math</code> — matemática</h3>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> math</span></span>
+<span class="line"><span style="color:#ABB2BF">math.</span><span style="color:#61AFEF">sqrt</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">25</span><span style="color:#ABB2BF">)     </span><span style="color:#7F848E;font-style:italic"># 5.0</span></span>
+<span class="line"><span style="color:#ABB2BF">math.</span><span style="color:#61AFEF">ceil</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">4.1</span><span style="color:#ABB2BF">)    </span><span style="color:#7F848E;font-style:italic"># 5</span></span>
+<span class="line"><span style="color:#ABB2BF">math.</span><span style="color:#61AFEF">floor</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">4.9</span><span style="color:#ABB2BF">)   </span><span style="color:#7F848E;font-style:italic"># 4</span></span>
+<span class="line"><span style="color:#ABB2BF">math.</span><span style="color:#61AFEF">pow</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">2</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">3</span><span style="color:#ABB2BF">)    </span><span style="color:#7F848E;font-style:italic"># 8.0</span></span>
+<span class="line"></span></code></pre>
+<h3 id="random--azar"><code>random</code> — azar</h3>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> random</span></span>
+<span class="line"><span style="color:#ABB2BF">random.</span><span style="color:#61AFEF">randint</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">1</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">6</span><span style="color:#ABB2BF">)               </span><span style="color:#7F848E;font-style:italic"># número al azar entre 1 y 6 (dado)</span></span>
+<span class="line"><span style="color:#ABB2BF">random.</span><span style="color:#61AFEF">choice</span><span style="color:#ABB2BF">([</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Onix"</span><span style="color:#ABB2BF">]) </span><span style="color:#7F848E;font-style:italic"># elige uno al azar de la lista</span></span>
+<span class="line"><span style="color:#ABB2BF">random.</span><span style="color:#61AFEF">shuffle</span><span style="color:#ABB2BF">(equipo)             </span><span style="color:#7F848E;font-style:italic"># mezcla la lista (la modifica)</span></span>
+<span class="line"></span></code></pre>
+<h3 id="datetime--fechas-y-horas"><code>datetime</code> — fechas y horas</h3>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">from</span><span style="color:#ABB2BF"> datetime </span><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> datetime, date</span></span>
+<span class="line"><span style="color:#ABB2BF">date.</span><span style="color:#61AFEF">today</span><span style="color:#ABB2BF">()                  </span><span style="color:#7F848E;font-style:italic"># la fecha de hoy</span></span>
+<span class="line"><span style="color:#ABB2BF">datetime.</span><span style="color:#61AFEF">now</span><span style="color:#ABB2BF">()                </span><span style="color:#7F848E;font-style:italic"># fecha y hora ahora</span></span>
+<span class="line"><span style="color:#ABB2BF">date.</span><span style="color:#61AFEF">today</span><span style="color:#ABB2BF">().</span><span style="color:#61AFEF">isoformat</span><span style="color:#ABB2BF">()      </span><span style="color:#7F848E;font-style:italic"># "2024-06-04" (texto estándar)</span></span>
+<span class="line"><span style="color:#ABB2BF">datetime.</span><span style="color:#61AFEF">now</span><span style="color:#ABB2BF">().year           </span><span style="color:#7F848E;font-style:italic"># el año actual</span></span>
+<span class="line"></span></code></pre>
+<h3 id="os-y-sys--sistema"><code>os</code> y <code>sys</code> — sistema</h3>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> os</span></span>
+<span class="line"><span style="color:#ABB2BF">os.path.</span><span style="color:#61AFEF">exists</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"datos.txt"</span><span style="color:#ABB2BF">)   </span><span style="color:#7F848E;font-style:italic"># ¿existe el archivo? True/False</span></span>
+<span class="line"><span style="color:#ABB2BF">os.path.</span><span style="color:#61AFEF">basename</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"/a/b/c.txt"</span><span style="color:#ABB2BF">)</span><span style="color:#7F848E;font-style:italic"># "c.txt" (solo el nombre)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> sys</span></span>
+<span class="line"><span style="color:#ABB2BF">sys.argv          </span><span style="color:#7F848E;font-style:italic"># lista de argumentos pasados al programa</span></span>
+<span class="line"><span style="color:#ABB2BF">sys.</span><span style="color:#61AFEF">exit</span><span style="color:#ABB2BF">()        </span><span style="color:#7F848E;font-style:italic"># termina el programa</span></span>
+<span class="line"></span></code></pre>
+<h3 id="json--guardarcargar-datos-estructurados"><code>json</code> — guardar/cargar datos estructurados</h3>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> json</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#ABB2BF">datos </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> {</span><span style="color:#98C379">"nombre"</span><span style="color:#ABB2BF">: </span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"nivel"</span><span style="color:#ABB2BF">: </span><span style="color:#D19A66">25</span><span style="color:#ABB2BF">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#ABB2BF">texto </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> json.</span><span style="color:#61AFEF">dumps</span><span style="color:#ABB2BF">(datos)        </span><span style="color:#7F848E;font-style:italic"># dict -> texto JSON</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(texto)                      </span><span style="color:#7F848E;font-style:italic"># {"nombre": "Pikachu", "nivel": 25}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#ABB2BF">recuperado </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> json.</span><span style="color:#61AFEF">loads</span><span style="color:#ABB2BF">(texto)   </span><span style="color:#7F848E;font-style:italic"># texto JSON -> dict</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(recuperado[</span><span style="color:#98C379">"nombre"</span><span style="color:#ABB2BF">])      </span><span style="color:#7F848E;font-style:italic"># Pikachu</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Guardar y cargar archivos JSON</span></span>
+<span class="line"><span style="color:#C678DD">with</span><span style="color:#56B6C2"> open</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"pokemon.json"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"w"</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> f:</span></span>
+<span class="line"><span style="color:#ABB2BF">    json.</span><span style="color:#61AFEF">dump</span><span style="color:#ABB2BF">(datos, f)</span></span>
+<span class="line"><span style="color:#C678DD">with</span><span style="color:#56B6C2"> open</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"pokemon.json"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"r"</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> f:</span></span>
+<span class="line"><span style="color:#ABB2BF">    datos </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> json.</span><span style="color:#61AFEF">load</span><span style="color:#ABB2BF">(f)</span></span>
+<span class="line"></span></code></pre>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 JSON es <strong>el formato</strong> para guardar datos estructurados. Lo vas a usar en los proyectos finales. ¡Prestale atención!</p>
+</div>
+<hr>
+<h2 id="️-crear-tu-propio-módulo">🏗️ Crear tu propio módulo</h2>
+<p>Cualquier archivo <code>.py</code> tuyo es un módulo que podés importar desde otro archivo. ¡Así organizás proyectos grandes!</p>
+<p>Archivo <code>pokeutils.py</code>:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> formatear_nombre</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66;font-style:italic">nombre</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#C678DD">    return</span><span style="color:#ABB2BF"> nombre.</span><span style="color:#61AFEF">capitalize</span><span style="color:#ABB2BF">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> es_legendario</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66;font-style:italic">nombre</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#C678DD">    return</span><span style="color:#ABB2BF"> nombre.</span><span style="color:#61AFEF">lower</span><span style="color:#ABB2BF">() </span><span style="color:#C678DD">in</span><span style="color:#ABB2BF"> [</span><span style="color:#98C379">"mewtwo"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"mew"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"articuno"</span><span style="color:#ABB2BF">]</span></span>
+<span class="line"></span></code></pre>
+<p>Archivo <code>main.py</code> (en la misma carpeta):</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> pokeutils</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pokeutils.</span><span style="color:#61AFEF">formatear_nombre</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"pikachu"</span><span style="color:#ABB2BF">))   </span><span style="color:#7F848E;font-style:italic"># Pikachu</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pokeutils.</span><span style="color:#61AFEF">es_legendario</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Mewtwo"</span><span style="color:#ABB2BF">))       </span><span style="color:#7F848E;font-style:italic"># True</span></span>
+<span class="line"></span></code></pre>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 En esta semana hay un <code>pokeutils.py</code> de ejemplo. Miralo: así se ven los módulos propios.</p>
+</div>
+<hr>
+<h2 id="-pip-instalar-librerías-externas">🛒 pip: instalar librerías externas</h2>
+<p>La librería estándar es enorme, pero a veces necesitás algo que no viene. <strong>pip</strong> es el instalador de paquetes de Python: tu PokéMart de librerías.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">pip</span><span style="color:#98C379"> install</span><span style="color:#98C379"> requests</span><span style="color:#7F848E;font-style:italic">       # instala la librería 'requests'</span></span>
+<span class="line"><span style="color:#61AFEF">pip</span><span style="color:#98C379"> install</span><span style="color:#98C379"> flask</span><span style="color:#7F848E;font-style:italic">          # instala Flask (semana 12)</span></span>
+<span class="line"><span style="color:#61AFEF">pip</span><span style="color:#98C379"> list</span><span style="color:#7F848E;font-style:italic">                   # muestra lo que tenés instalado</span></span>
+<span class="line"><span style="color:#61AFEF">pip</span><span style="color:#98C379"> uninstall</span><span style="color:#98C379"> requests</span><span style="color:#7F848E;font-style:italic">     # la desinstala</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-venv-entornos-virtuales">📦 venv: entornos virtuales</h2>
+<p>Un <strong>entorno virtual (venv)</strong> es una “cajita” aislada con sus propias librerías, separada del Python del sistema. Así cada proyecto tiene sus versiones sin pisarse.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">python3</span><span style="color:#D19A66"> -m</span><span style="color:#98C379"> venv</span><span style="color:#98C379"> venv</span><span style="color:#7F848E;font-style:italic">          # crea el entorno en la carpeta 'venv'</span></span>
+<span class="line"><span style="color:#56B6C2">source</span><span style="color:#98C379"> venv/bin/activate</span><span style="color:#7F848E;font-style:italic">      # lo activás (Linux/Mac)</span></span>
+<span class="line"><span style="color:#61AFEF">pip</span><span style="color:#98C379"> install</span><span style="color:#98C379"> requests</span><span style="color:#7F848E;font-style:italic">          # instala DENTRO del venv</span></span>
+<span class="line"><span style="color:#61AFEF">deactivate</span><span style="color:#7F848E;font-style:italic">                    # lo desactivás</span></span>
+<span class="line"></span></code></pre>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 El <code>setup.sh</code> del curso hace esto por vos. Pero ahora entendés qué hace. 😎</p>
+</div>
+<hr>
+<h2 id="-requirementstxt">📋 requirements.txt</h2>
+<p>Un archivo <code>requirements.txt</code> lista las librerías que tu proyecto necesita, para que cualquiera las instale de un saque:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>requests>=2.31</span></span>
+<span class="line"><span>flask>=3.0</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>Se instalan todas juntas con:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">pip</span><span style="color:#98C379"> install</span><span style="color:#D19A66"> -r</span><span style="color:#98C379"> requirements.txt</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-requests-consumir-una-api">🌐 requests: consumir una API</h2>
+<p>Una <strong>API</strong> es un servicio en internet que te devuelve datos. La <strong>PokéAPI</strong> (<a href="https://pokeapi.co">https://pokeapi.co</a>) tiene datos de TODOS los Pokémon, gratis.</p>
+<p>La librería <strong>requests</strong> te deja pedir esos datos:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> requests</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Pedimos los datos de Pikachu.</span></span>
+<span class="line"><span style="color:#ABB2BF">respuesta </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> requests.</span><span style="color:#61AFEF">get</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"https://pokeapi.co/api/v2/pokemon/pikachu"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># .json() convierte la respuesta a un diccionario de Python.</span></span>
+<span class="line"><span style="color:#ABB2BF">datos </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> respuesta.</span><span style="color:#61AFEF">json</span><span style="color:#ABB2BF">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(datos[</span><span style="color:#98C379">"name"</span><span style="color:#ABB2BF">])                    </span><span style="color:#7F848E;font-style:italic"># pikachu</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(datos[</span><span style="color:#98C379">"height"</span><span style="color:#ABB2BF">])                  </span><span style="color:#7F848E;font-style:italic"># altura</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(datos[</span><span style="color:#98C379">"weight"</span><span style="color:#ABB2BF">])                  </span><span style="color:#7F848E;font-style:italic"># peso</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(datos[</span><span style="color:#98C379">"types"</span><span style="color:#ABB2BF">][</span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">][</span><span style="color:#98C379">"type"</span><span style="color:#ABB2BF">][</span><span style="color:#98C379">"name"</span><span style="color:#ABB2BF">])</span><span style="color:#7F848E;font-style:italic"># electric</span></span>
+<span class="line"></span></code></pre>
+<div class="callout cuidado"><span class="et">CUIDADO</span>
+<p>⚠️ Para usar <code>requests</code> necesitás internet y tenerla instalada (<code>pip install requests</code>). El interactivo de esta semana maneja el caso de “no hay internet” sin romperse.</p>
+</div>
+<hr>
+<h2 id="-resumen-de-la-semana">📝 Resumen de la semana</h2>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#7F848E;font-style:italic"># Importar módulos estándar</span></span>
+<span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> math, random, json, os</span></span>
+<span class="line"><span style="color:#C678DD">from</span><span style="color:#ABB2BF"> datetime </span><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> date</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#ABB2BF">math.</span><span style="color:#61AFEF">sqrt</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">16</span><span style="color:#ABB2BF">)               </span><span style="color:#7F848E;font-style:italic"># 4.0</span></span>
+<span class="line"><span style="color:#ABB2BF">random.</span><span style="color:#61AFEF">choice</span><span style="color:#ABB2BF">([</span><span style="color:#98C379">"a"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"b"</span><span style="color:#ABB2BF">])  </span><span style="color:#7F848E;font-style:italic"># uno al azar</span></span>
+<span class="line"><span style="color:#ABB2BF">json.</span><span style="color:#61AFEF">dumps</span><span style="color:#ABB2BF">({</span><span style="color:#98C379">"x"</span><span style="color:#ABB2BF">: </span><span style="color:#D19A66">1</span><span style="color:#ABB2BF">})       </span><span style="color:#7F848E;font-style:italic"># '{"x": 1}'</span></span>
+<span class="line"><span style="color:#ABB2BF">date.</span><span style="color:#61AFEF">today</span><span style="color:#ABB2BF">().</span><span style="color:#61AFEF">isoformat</span><span style="color:#ABB2BF">()    </span><span style="color:#7F848E;font-style:italic"># fecha de hoy</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Módulo propio</span></span>
+<span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> pokeutils</span></span>
+<span class="line"><span style="color:#ABB2BF">pokeutils.</span><span style="color:#61AFEF">formatear_nombre</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"pikachu"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Instalar librerías</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># pip install requests</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># pip install -r requirements.txt</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Consumir una API</span></span>
+<span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> requests</span></span>
+<span class="line"><span style="color:#ABB2BF">datos </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> requests.</span><span style="color:#61AFEF">get</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"https://pokeapi.co/api/v2/pokemon/pikachu"</span><span style="color:#ABB2BF">).</span><span style="color:#61AFEF">json</span><span style="color:#ABB2BF">()</span></span>
+<span class="line"></span></code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Concepto</th><th>Para qué sirve</th></tr></thead><tbody><tr><td><code>import</code></td><td>Traer código de otros</td></tr><tr><td><code>math/random/json/os/datetime</code></td><td>Módulos estándar</td></tr><tr><td>módulo propio</td><td>Tu propio <code>.py</code> reutilizable</td></tr><tr><td><code>pip</code></td><td>Instalar librerías externas</td></tr><tr><td><code>venv</code></td><td>Entorno aislado por proyecto</td></tr><tr><td><code>requirements.txt</code></td><td>Lista de dependencias</td></tr><tr><td><code>requests</code></td><td>Pedir datos a una API</td></tr></tbody></table>
+<hr>
+<h2 id="️-y-ahora-qué">➡️ ¿Y ahora qué?</h2>
+<ol>
+<li>Resolvé <code>ejercicios.py</code>.</li>
+<li>Mirá el módulo de ejemplo <code>pokeutils.py</code>.</li>
+<li>Corré los tests: <code>pytest semana-10-python-modulos-y-pip/</code></li>
+<li>Instalá requests (<code>pip install requests</code> o <code>bash ../setup.sh</code>) y jugá la <strong>Pokédex online</strong>:
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">python</span><span style="color:#98C379"> interactivo.py</span></span>
+<span class="line"></span></code></pre>
+</li>
+</ol>
+<div class="callout tip"><span class="et">ÁNIMO</span>
+<p>⚡ <em>“El mejor programador no es el que escribe más código, sino el que sabe reusar el de los demás.”</em></p>
+</div> <nav class="cap-nav"> <a href="/luca-journey/libro/poo-avanzado"><span class="dir">← Anterior</span><br>Python: POO Avanzado</a> <a class="next" href="/luca-journey/libro/git"><span class="dir">Siguiente →</span><br>Git: Control de Versiones</a> </nav> </main> </div> </div> <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>   <script>
+    (function () {
+      var body = document.body;
+      if (localStorage.getItem('tema') === 'dark') body.classList.add('dark');
+      var t = document.getElementById('theme-toggle');
+      function refrescar() { if (t) t.textContent = body.classList.contains('dark') ? '☀️' : '🌙'; }
+      refrescar();
+      if (t) t.addEventListener('click', function () {
+        body.classList.toggle('dark');
+        localStorage.setItem('tema', body.classList.contains('dark') ? 'dark' : 'claro');
+        refrescar();
+      });
+    })();
+  </script> </body> </html>

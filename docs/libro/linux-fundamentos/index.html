@@ -1,0 +1,232 @@
+<!DOCTYPE html><html lang="es"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Linux: Fundamentos — Python con Pokémon</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&display=swap"><link rel="stylesheet" href="/luca-journey/_astro/recursos.UAvNNIhJ.css"><script type="module" src="/luca-journey/_astro/hoisted.55VPuE-h.js"></script></head> <body> <div class="bg-grid" aria-hidden="true"></div> <header class="topbar"> <a class="brand-link" href="/luca-journey/"><span class="pb"></span><span class="brand">Pokédex <b>Codex</b></span></a> <div class="tools"> <a class="navlink" href="/luca-journey/">Inicio</a><a class="navlink activo" href="/luca-journey/libro">Libro</a><a class="navlink" href="/luca-journey/ejercicios">Ejercicios</a><a class="navlink" href="/luca-journey/liga">Liga</a><a class="navlink" href="/luca-journey/playground">Playground</a> <button class="theme-toggle" id="theme-toggle" type="button" title="Tema claro/oscuro">🌙</button> </div> </header> <script>(function(){const base = "/luca-journey";
+window.__BASE = base;})();</script>  <div class="wrap"> <div class="book-layout"> <aside class="book-rail"> <div class="rail-tit">Capítulos</div> <details class="grupo"> <summary><span class="g-ico">🎒</span>Introducción</summary> <a class="" href="/luca-journey/libro/introduccion"> <span class="rn">0</span><span>Cómo usar este libro</span> </a> </details><details class="grupo" open> <summary><span class="g-ico">🐧</span>Linux</summary> <a class="activo" href="/luca-journey/libro/linux-fundamentos"> <span class="rn">1</span><span>Linux: Fundamentos</span> </a><a class="" href="/luca-journey/libro/linux-intermedio"> <span class="rn">2</span><span>Linux: Intermedio</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🐍</span>Python</summary> <a class="" href="/luca-journey/libro/python-introduccion"> <span class="rn">3</span><span>Python: Introducción</span> </a><a class="" href="/luca-journey/libro/control-de-flujo"> <span class="rn">4</span><span>Python: Control de Flujo</span> </a><a class="" href="/luca-journey/libro/funciones"> <span class="rn">5</span><span>Python: Funciones</span> </a><a class="" href="/luca-journey/libro/listas-y-colecciones"> <span class="rn">6</span><span>Python: Listas y Colecciones</span> </a><a class="" href="/luca-journey/libro/cadenas-y-archivos"> <span class="rn">7</span><span>Python: Cadenas y Archivos</span> </a><a class="" href="/luca-journey/libro/poo-introduccion"> <span class="rn">8</span><span>Python: POO Introducción</span> </a><a class="" href="/luca-journey/libro/poo-avanzado"> <span class="rn">9</span><span>Python: POO Avanzado</span> </a><a class="" href="/luca-journey/libro/modulos-y-pip"> <span class="rn">10</span><span>Python: Módulos y pip</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🔀</span>Git</summary> <a class="" href="/luca-journey/libro/git"> <span class="rn">11</span><span>Git: Control de Versiones</span> </a> </details><details class="grupo"> <summary><span class="g-ico">❓</span>Ayuda</summary> <a class="" href="/luca-journey/libro/ayuda"> <span class="rn">12</span><span>Ayuda y glosario</span> </a> </details> </aside> <main class="book"> <h1>Linux: Fundamentos</h1> <div class="callout nota"><span class="et">META</span>
+<p>🎯 <strong>Meta de la semana:</strong> moverte por tu computadora usando solo texto, sin mouse. Vas a aprender los comandos básicos de la terminal de Linux.</p>
+</div>
+<hr>
+<h2 id="-qué-es-linux">🧭 ¿Qué es Linux?</h2>
+<p><strong>Linux</strong> es un sistema operativo, igual que Windows o macOS. La diferencia es que es <strong>libre y gratuito</strong>, y lo usan casi todos los servidores del mundo, celulares Android, supercomputadoras… y casi todos los programadores.</p>
+<p>Si estás en Windows, podés usar <strong>WSL</strong> (Windows Subsystem for Linux) para tener Linux adentro de Windows. Si estás en Mac, la terminal es muy parecida.</p>
+<h3 id="-analogía-pokémon">🎮 Analogía Pokémon</h3>
+<p>Pensá en Linux como el <strong>mundo Pokémon</strong> completo: las rutas, las ciudades, los gimnasios. Vos sos el Entrenador que lo recorre.</p>
+<p>Y la <strong>terminal</strong> es tu <strong>Pokédex</strong> 📟: una herramienta de texto donde escribís comandos y el sistema te responde. Al principio parece complicada, pero es la herramienta más poderosa que vas a tener.</p>
+<hr>
+<h2 id="-la-terminal-tu-pokédex-del-sistema">📟 La terminal: tu Pokédex del sistema</h2>
+<p>La terminal (o “consola”) es una ventana donde escribís <strong>comandos</strong> y presionás Enter. El sistema ejecuta lo que pediste y te muestra el resultado.</p>
+<p>Cuando la abrís, ves algo así:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>felipe@maquina:~$</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>Eso se llama el <strong>prompt</strong>. Te dice:</p>
+<ul>
+<li><code>felipe</code> → tu usuario (el Entrenador).</li>
+<li><code>maquina</code> → el nombre de la computadora.</li>
+<li><code>~</code> → en qué carpeta estás (<code>~</code> significa “tu carpeta personal”, tu <em>home</em>).</li>
+<li><code>$</code> → “estoy listo, escribí tu comando”.</li>
+</ul>
+<h3 id="-cada-comando-es-un-ataque">🎮 Cada comando es un “ataque”</h3>
+<p>Así como Pikachu tiene <strong>Impactrueno</strong> o <strong>Ataque Rápido</strong>, vos tenés comandos. Cada uno hace una cosa específica. Aprenderlos es como aprender los movimientos de tu Pokémon: al principio pocos, después un montón.</p>
+<hr>
+<h2 id="️-el-sistema-de-archivos-el-mapa-del-mundo">🗂️ El sistema de archivos: el mapa del mundo</h2>
+<p>Todo en Linux está organizado en <strong>carpetas</strong> (también llamadas “directorios”), una adentro de otra, como cajas dentro de cajas. Esto forma un <strong>árbol</strong>.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>/                        ← la raíz de todo (la región Kanto entera)</span></span>
+<span class="line"><span>├── home/</span></span>
+<span class="line"><span>│   └── felipe/          ← tu carpeta personal (~), tu Pueblo Paleta</span></span>
+<span class="line"><span>│       ├── pokecenter/</span></span>
+<span class="line"><span>│       └── mochila/</span></span>
+<span class="line"><span>├── etc/                 ← configuración del sistema</span></span>
+<span class="line"><span>└── usr/                 ← programas instalados</span></span>
+<span class="line"><span></span></span></code></pre>
+<ul>
+<li><code>/</code> es la <strong>raíz</strong>: el punto de partida de todo.</li>
+<li><code>~</code> es tu <strong>home</strong>: tu casa, donde guardás tus cosas.</li>
+</ul>
+<hr>
+<h2 id="️-los-comandos-básicos-tus-primeros-ataques">⚔️ Los comandos básicos (tus primeros ataques)</h2>
+<h3 id="pwd--dónde-estoy"><code>pwd</code> — ¿Dónde estoy? 📍</h3>
+<p><code>pwd</code> significa <em>print working directory</em>. Te dice en qué carpeta estás parado ahora mismo. Es tu <strong>mapa del pueblo actual</strong>.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#56B6C2">pwd</span></span>
+<span class="line"></span></code></pre>
+<p>Salida de ejemplo:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>/home/felipe</span></span>
+<span class="line"><span></span></span></code></pre>
+<hr>
+<h3 id="ls--mirar-alrededor"><code>ls</code> — Mirar alrededor 👀</h3>
+<p><code>ls</code> (<em>list</em>) muestra qué hay en la carpeta actual: archivos y otras carpetas. Es como abrir los ojos y ver qué Pokémon hay en el pasto.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">ls</span></span>
+<span class="line"></span></code></pre>
+<p>Con <strong>flags</strong> (opciones) ves más detalle. Un flag es como un objeto que potencia el ataque:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">ls</span><span style="color:#D19A66"> -l</span><span style="color:#7F848E;font-style:italic">      # formato largo: permisos, tamaño, fecha</span></span>
+<span class="line"><span style="color:#61AFEF">ls</span><span style="color:#D19A66"> -a</span><span style="color:#7F848E;font-style:italic">      # muestra TODO, incluso archivos ocultos (empiezan con .)</span></span>
+<span class="line"><span style="color:#61AFEF">ls</span><span style="color:#D19A66"> -la</span><span style="color:#7F848E;font-style:italic">     # combinás los dos</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h3 id="cd--viajar-a-otra-carpeta"><code>cd</code> — Viajar a otra carpeta 🚶</h3>
+<p><code>cd</code> (<em>change directory</em>) te mueve de una carpeta a otra. Es <strong>viajar por una ruta</strong> del mapa.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#56B6C2">cd</span><span style="color:#98C379"> pokecenter</span><span style="color:#7F848E;font-style:italic">      # entrás a la carpeta pokecenter</span></span>
+<span class="line"><span style="color:#56B6C2">cd</span><span style="color:#98C379"> ..</span><span style="color:#7F848E;font-style:italic">              # subís un nivel (volvés a la carpeta de arriba)</span></span>
+<span class="line"><span style="color:#56B6C2">cd</span><span style="color:#98C379"> ~</span><span style="color:#7F848E;font-style:italic">               # volvés a tu home (tu Pueblo Paleta)</span></span>
+<span class="line"><span style="color:#56B6C2">cd</span><span style="color:#98C379"> /</span><span style="color:#7F848E;font-style:italic">               # vas a la raíz de todo</span></span>
+<span class="line"><span style="color:#56B6C2">cd</span><span style="color:#98C379"> -</span><span style="color:#7F848E;font-style:italic">               # volvés a la carpeta donde estabas antes</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h3 id="mkdir--crear-una-carpeta-️"><code>mkdir</code> — Crear una carpeta 🏗️</h3>
+<p><code>mkdir</code> (<em>make directory</em>) crea una carpeta nueva. Es como <strong>construir un edificio nuevo</strong> en el pueblo.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">mkdir</span><span style="color:#98C379"> pokecenter</span><span style="color:#7F848E;font-style:italic">           # crea la carpeta pokecenter</span></span>
+<span class="line"><span style="color:#61AFEF">mkdir</span><span style="color:#98C379"> gimnasio</span><span style="color:#98C379"> pokemart</span><span style="color:#7F848E;font-style:italic">    # crea dos carpetas de una</span></span>
+<span class="line"><span style="color:#61AFEF">mkdir</span><span style="color:#D19A66"> -p</span><span style="color:#98C379"> ruta/larga/nueva</span><span style="color:#7F848E;font-style:italic">  # crea carpetas anidadas de un saque (-p)</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h3 id="touch-y-echo--crear-archivos-️"><code>touch</code> y <code>echo</code> — Crear archivos ✍️</h3>
+<p><code>touch</code> crea un archivo vacío. <code>echo</code> imprime texto, y con <code>></code> lo podés guardar en un archivo.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">touch</span><span style="color:#98C379"> pikachu.txt</span><span style="color:#7F848E;font-style:italic">                  # crea un archivo vacío</span></span>
+<span class="line"><span style="color:#56B6C2">echo</span><span style="color:#98C379"> "Pikachu, tipo Eléctrico"</span><span style="color:#7F848E;font-style:italic">     # imprime el texto en pantalla</span></span>
+<span class="line"><span style="color:#56B6C2">echo</span><span style="color:#98C379"> "Pikachu"</span><span style="color:#ABB2BF"> > </span><span style="color:#98C379">pikachu.txt</span><span style="color:#7F848E;font-style:italic">       # escribe el texto DENTRO del archivo</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h3 id="cat--leer-un-archivo"><code>cat</code> — Leer un archivo 📖</h3>
+<p><code>cat</code> muestra el contenido de un archivo en pantalla. Es como <strong>leer la entrada de la Pokédex</strong> de un Pokémon.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">cat</span><span style="color:#98C379"> pikachu.txt</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h3 id="cp--copiar"><code>cp</code> — Copiar 📋</h3>
+<p><code>cp</code> (<em>copy</em>) hace una copia de un archivo o carpeta. Como usar una <strong>Pokéball para duplicar</strong> (bueno, casi).</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">cp</span><span style="color:#98C379"> pikachu.txt</span><span style="color:#98C379"> pikachu-copia.txt</span><span style="color:#7F848E;font-style:italic">        # copia un archivo</span></span>
+<span class="line"><span style="color:#61AFEF">cp</span><span style="color:#D19A66"> -r</span><span style="color:#98C379"> pokecenter</span><span style="color:#98C379"> pokecenter-backup</span><span style="color:#7F848E;font-style:italic">      # copia una carpeta entera (-r = recursivo)</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h3 id="mv--mover-o-renombrar"><code>mv</code> — Mover o renombrar 🚚</h3>
+<p><code>mv</code> (<em>move</em>) mueve un archivo de lugar, o lo renombra si le das un nombre nuevo.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">mv</span><span style="color:#98C379"> pikachu.txt</span><span style="color:#98C379"> mochila/</span><span style="color:#7F848E;font-style:italic">        # mueve el archivo a la carpeta mochila</span></span>
+<span class="line"><span style="color:#61AFEF">mv</span><span style="color:#98C379"> pikachu.txt</span><span style="color:#98C379"> raichu.txt</span><span style="color:#7F848E;font-style:italic">      # lo renombra (Pikachu evolucionó a Raichu ⚡)</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h3 id="rm--borrar-️-cuidado"><code>rm</code> — Borrar 🗑️ (¡CUIDADO!)</h3>
+<p><code>rm</code> (<em>remove</em>) borra archivos. <strong>En Linux NO hay papelera de reciclaje</strong>: lo que borrás, se va para siempre. Es como liberar un Pokémon: no vuelve.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">rm</span><span style="color:#98C379"> pikachu.txt</span><span style="color:#7F848E;font-style:italic">           # borra un archivo</span></span>
+<span class="line"><span style="color:#61AFEF">rm</span><span style="color:#D19A66"> -r</span><span style="color:#98C379"> pokecenter</span><span style="color:#7F848E;font-style:italic">         # borra una carpeta y todo su contenido (-r)</span></span>
+<span class="line"></span></code></pre>
+<div class="callout cuidado"><span class="et">CUIDADO</span>
+<p>⚠️ <strong>Nunca, jamás</strong> corras <code>rm -rf /</code>. Eso intenta borrar TODO el sistema. Es el “Autodestrucción” definitivo. No lo hagas nunca.</p>
+</div>
+<hr>
+<h2 id="️-rutas-absolutas-vs-relativas">🛣️ Rutas absolutas vs relativas</h2>
+<p>Una <strong>ruta</strong> es la dirección de un archivo o carpeta. Hay dos formas de escribirla:</p>
+<h3 id="ruta-absoluta--la-dirección-completa">Ruta absoluta — la dirección completa</h3>
+<p>Empieza desde la raíz <code>/</code>. Funciona desde cualquier lugar, como dar tu dirección completa con código postal.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#56B6C2">cd</span><span style="color:#98C379"> /home/felipe/pokecenter</span></span>
+<span class="line"></span></code></pre>
+<h3 id="ruta-relativa--desde-donde-estás-parado">Ruta relativa — desde donde estás parado</h3>
+<p>No empieza con <code>/</code>. Es relativa a tu posición actual, como decir “doblá a la izquierda en la esquina”.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#56B6C2">cd</span><span style="color:#98C379"> pokecenter</span><span style="color:#7F848E;font-style:italic">        # entra a pokecenter que está acá</span></span>
+<span class="line"><span style="color:#56B6C2">cd</span><span style="color:#98C379"> ../mochila</span><span style="color:#7F848E;font-style:italic">        # sube uno y entra a mochila</span></span>
+<span class="line"></span></code></pre>
+<p>Símbolos clave:</p>
+<ul>
+<li><code>.</code> → la carpeta actual (acá mismo).</li>
+<li><code>..</code> → la carpeta de arriba (el nivel anterior).</li>
+<li><code>~</code> → tu home.</li>
+<li><code>/</code> → la raíz.</li>
+</ul>
+<hr>
+<h2 id="-permisos-básicos">🔐 Permisos básicos</h2>
+<p>En Linux, cada archivo tiene <strong>permisos</strong> que dicen quién puede leerlo, escribirlo o ejecutarlo. Es como decidir quién puede entrar a tu gimnasio.</p>
+<p>Cuando corrés <code>ls -l</code>, ves algo así:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>-rwxr-xr--  1 felipe felipe  220 jun  4 10:00 pikachu.txt</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>Esa primera columna <code>-rwxr-xr--</code> son los permisos:</p>
+<ul>
+<li>Primer carácter: <code>-</code> archivo, <code>d</code> directorio.</li>
+<li>Después, en grupos de 3: <strong>dueño</strong>, <strong>grupo</strong>, <strong>otros</strong>.</li>
+<li><code>r</code> = leer (<em>read</em>), <code>w</code> = escribir (<em>write</em>), <code>x</code> = ejecutar (<em>execute</em>).</li>
+</ul>
+<p>Por ahora solo necesitás <strong>reconocerlos</strong>. En la semana 2 vas a aprender a cambiarlos con <code>chmod</code>.</p>
+<hr>
+<h2 id="-resumen-de-la-semana">📝 Resumen de la semana</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Comando</th><th>Qué hace</th><th>Analogía Pokémon</th></tr></thead><tbody><tr><td><code>pwd</code></td><td>Dice dónde estás</td><td>Mirar el mapa</td></tr><tr><td><code>ls</code></td><td>Lista archivos y carpetas</td><td>Ver qué hay alrededor</td></tr><tr><td><code>cd</code></td><td>Cambia de carpeta</td><td>Viajar por una ruta</td></tr><tr><td><code>mkdir</code></td><td>Crea una carpeta</td><td>Construir un edificio</td></tr><tr><td><code>touch</code></td><td>Crea un archivo vacío</td><td>Conseguir un objeto nuevo</td></tr><tr><td><code>echo</code></td><td>Imprime texto</td><td>Hablar</td></tr><tr><td><code>cat</code></td><td>Muestra un archivo</td><td>Leer la Pokédex</td></tr><tr><td><code>cp</code></td><td>Copia</td><td>Duplicar</td></tr><tr><td><code>mv</code></td><td>Mueve o renombra</td><td>Mudarse / evolucionar</td></tr><tr><td><code>rm</code></td><td>Borra (¡sin papelera!)</td><td>Liberar (no vuelve)</td></tr></tbody></table>
+<p><strong>Rutas:</strong> absoluta empieza con <code>/</code>, relativa desde donde estás. <code>.</code> = acá, <code>..</code> = arriba, <code>~</code> = home.</p>
+<p><strong>Permisos:</strong> <code>r</code> leer, <code>w</code> escribir, <code>x</code> ejecutar.</p>
+<hr>
+<h2 id="️-y-ahora-qué">➡️ ¿Y ahora qué?</h2>
+<ol>
+<li>Abrí <code>ejercicios.md</code> y hacé los 15 desafíos en tu terminal de verdad.</li>
+<li>Si te trabás, mirá <code>soluciones.md</code>.</li>
+<li>Jugá el <code>interactivo.py</code> para practicar sin miedo a romper nada:
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">python</span><span style="color:#98C379"> interactivo.py</span></span>
+<span class="line"></span></code></pre>
+</li>
+</ol>
+<div class="callout tip"><span class="et">ÁNIMO</span>
+<p>⚡ <em>“Todo gran Entrenador empezó sin saber usar la Pokédex. Vos ya diste el primer paso.”</em></p>
+</div> <nav class="cap-nav"> <a href="/luca-journey/libro/introduccion"><span class="dir">← Anterior</span><br>Cómo usar este libro</a> <a class="next" href="/luca-journey/libro/linux-intermedio"><span class="dir">Siguiente →</span><br>Linux: Intermedio</a> </nav> </main> </div> </div> <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>   <script>
+    (function () {
+      var body = document.body;
+      if (localStorage.getItem('tema') === 'dark') body.classList.add('dark');
+      var t = document.getElementById('theme-toggle');
+      function refrescar() { if (t) t.textContent = body.classList.contains('dark') ? '☀️' : '🌙'; }
+      refrescar();
+      if (t) t.addEventListener('click', function () {
+        body.classList.toggle('dark');
+        localStorage.setItem('tema', body.classList.contains('dark') ? 'dark' : 'claro');
+        refrescar();
+      });
+    })();
+  </script> </body> </html>

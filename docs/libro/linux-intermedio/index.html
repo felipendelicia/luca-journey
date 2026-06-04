@@ -1,0 +1,226 @@
+<!DOCTYPE html><html lang="es"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Linux: Intermedio — Python con Pokémon</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&display=swap"><link rel="stylesheet" href="/luca-journey/_astro/recursos.UAvNNIhJ.css"><script type="module" src="/luca-journey/_astro/hoisted.55VPuE-h.js"></script></head> <body> <div class="bg-grid" aria-hidden="true"></div> <header class="topbar"> <a class="brand-link" href="/luca-journey/"><span class="pb"></span><span class="brand">Pokédex <b>Codex</b></span></a> <div class="tools"> <a class="navlink" href="/luca-journey/">Inicio</a><a class="navlink activo" href="/luca-journey/libro">Libro</a><a class="navlink" href="/luca-journey/ejercicios">Ejercicios</a><a class="navlink" href="/luca-journey/liga">Liga</a><a class="navlink" href="/luca-journey/playground">Playground</a> <button class="theme-toggle" id="theme-toggle" type="button" title="Tema claro/oscuro">🌙</button> </div> </header> <script>(function(){const base = "/luca-journey";
+window.__BASE = base;})();</script>  <div class="wrap"> <div class="book-layout"> <aside class="book-rail"> <div class="rail-tit">Capítulos</div> <details class="grupo"> <summary><span class="g-ico">🎒</span>Introducción</summary> <a class="" href="/luca-journey/libro/introduccion"> <span class="rn">0</span><span>Cómo usar este libro</span> </a> </details><details class="grupo" open> <summary><span class="g-ico">🐧</span>Linux</summary> <a class="" href="/luca-journey/libro/linux-fundamentos"> <span class="rn">1</span><span>Linux: Fundamentos</span> </a><a class="activo" href="/luca-journey/libro/linux-intermedio"> <span class="rn">2</span><span>Linux: Intermedio</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🐍</span>Python</summary> <a class="" href="/luca-journey/libro/python-introduccion"> <span class="rn">3</span><span>Python: Introducción</span> </a><a class="" href="/luca-journey/libro/control-de-flujo"> <span class="rn">4</span><span>Python: Control de Flujo</span> </a><a class="" href="/luca-journey/libro/funciones"> <span class="rn">5</span><span>Python: Funciones</span> </a><a class="" href="/luca-journey/libro/listas-y-colecciones"> <span class="rn">6</span><span>Python: Listas y Colecciones</span> </a><a class="" href="/luca-journey/libro/cadenas-y-archivos"> <span class="rn">7</span><span>Python: Cadenas y Archivos</span> </a><a class="" href="/luca-journey/libro/poo-introduccion"> <span class="rn">8</span><span>Python: POO Introducción</span> </a><a class="" href="/luca-journey/libro/poo-avanzado"> <span class="rn">9</span><span>Python: POO Avanzado</span> </a><a class="" href="/luca-journey/libro/modulos-y-pip"> <span class="rn">10</span><span>Python: Módulos y pip</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🔀</span>Git</summary> <a class="" href="/luca-journey/libro/git"> <span class="rn">11</span><span>Git: Control de Versiones</span> </a> </details><details class="grupo"> <summary><span class="g-ico">❓</span>Ayuda</summary> <a class="" href="/luca-journey/libro/ayuda"> <span class="rn">12</span><span>Ayuda y glosario</span> </a> </details> </aside> <main class="book"> <h1>Linux: Intermedio</h1> <div class="callout nota"><span class="et">META</span>
+<p>🎯 <strong>Meta de la semana:</strong> dejar de ser un Entrenador novato y convertirte en uno que <strong>configura su propia base de operaciones</strong>. Vas a editar archivos, escribir tus primeros scripts, encadenar comandos y manejar procesos.</p>
+</div>
+<hr>
+<h2 id="-analogía-tu-base-de-operaciones">🎮 Analogía: tu base de operaciones</h2>
+<p>En la semana 1 aprendiste a caminar por el mundo Pokémon. Esta semana <strong>construís tu base</strong>: automatizás tareas, organizás tu información y le das poder a tu Pokédex.</p>
+<p>Un Entrenador avanzado no captura Pokémon uno por uno a mano: arma <strong>máquinas</strong> (scripts) que hacen el trabajo repetitivo por él. Eso es lo que vas a aprender.</p>
+<hr>
+<h2 id="️-el-editor-nano">✍️ El editor nano</h2>
+<p>Hasta ahora creabas archivos con <code>touch</code> y <code>echo</code>. Para escribir texto largo, usás un <strong>editor</strong>. El más fácil es <strong>nano</strong>.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">nano</span><span style="color:#98C379"> captura.txt</span></span>
+<span class="line"></span></code></pre>
+<p>Esto abre el editor. Escribís lo que quieras, y abajo ves los atajos:</p>
+<ul>
+<li><code>^O</code> (Ctrl+O) → guardar (<em>write Out</em>). Te pide confirmar el nombre, apretás Enter.</li>
+<li><code>^X</code> (Ctrl+X) → salir.</li>
+<li><code>^K</code> → cortar una línea, <code>^U</code> → pegar.</li>
+<li><code>^W</code> → buscar texto.</li>
+</ul>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 El <code>^</code> significa la tecla <strong>Ctrl</strong>. Así que <code>^X</code> = Ctrl + X.</p>
+</div>
+<hr>
+<h2 id="-variables-de-entorno">🌍 Variables de entorno</h2>
+<p>Una <strong>variable de entorno</strong> es un dato que el sistema guarda con un nombre, disponible para todos los programas. Es como tener <strong>objetos clave guardados en tu mochila</strong> que cualquier programa puede consultar.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#56B6C2">echo</span><span style="color:#E06C75"> $HOME</span><span style="color:#7F848E;font-style:italic">          # muestra la ruta de tu home</span></span>
+<span class="line"><span style="color:#56B6C2">echo</span><span style="color:#E06C75"> $USER</span><span style="color:#7F848E;font-style:italic">          # tu nombre de usuario</span></span>
+<span class="line"><span style="color:#56B6C2">echo</span><span style="color:#E06C75"> $PATH</span><span style="color:#7F848E;font-style:italic">          # las carpetas donde el sistema busca comandos</span></span>
+<span class="line"></span></code></pre>
+<p>Crear tu propia variable:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#E06C75">ENTRENADOR</span><span style="color:#56B6C2">=</span><span style="color:#98C379">"Ash"</span><span style="color:#7F848E;font-style:italic">          # creamos la variable (¡sin espacios alrededor del =!)</span></span>
+<span class="line"><span style="color:#56B6C2">echo</span><span style="color:#E06C75"> $ENTRENADOR</span><span style="color:#7F848E;font-style:italic">          # la usamos con $ adelante</span></span>
+<span class="line"><span style="color:#C678DD">export</span><span style="color:#E06C75"> ENTRENADOR</span><span style="color:#7F848E;font-style:italic">         # la hacemos visible para otros programas</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-scripts-bash-básicos">📜 Scripts bash básicos</h2>
+<p>Un <strong>script</strong> es un archivo de texto con una lista de comandos que se ejecutan en orden. Es tu <strong>máquina automática</strong>.</p>
+<p>Creá un archivo <code>hola.sh</code>:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#7F848E;font-style:italic">#!/usr/bin/env bash</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># La primera línea (el "shebang") dice qué programa ejecuta el script.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#56B6C2">echo</span><span style="color:#98C379"> "¡Hola, Entrenador!"</span></span>
+<span class="line"><span style="color:#56B6C2">echo</span><span style="color:#98C379"> "Hoy es un buen día para atrapar Pokémon."</span></span>
+<span class="line"></span></code></pre>
+<p>Para correrlo, primero le das permiso de ejecución y después lo ejecutás:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">chmod</span><span style="color:#98C379"> +x</span><span style="color:#98C379"> hola.sh</span><span style="color:#7F848E;font-style:italic">      # +x = agregar permiso de ejecución</span></span>
+<span class="line"><span style="color:#61AFEF">./hola.sh</span><span style="color:#7F848E;font-style:italic">             # ./ significa "ejecutá este archivo de acá"</span></span>
+<span class="line"></span></code></pre>
+<h3 id="variables-y-argumentos-en-scripts">Variables y argumentos en scripts</h3>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#7F848E;font-style:italic">#!/usr/bin/env bash</span></span>
+<span class="line"><span style="color:#E06C75">NOMBRE</span><span style="color:#56B6C2">=</span><span style="color:#98C379">"Pikachu"</span></span>
+<span class="line"><span style="color:#56B6C2">echo</span><span style="color:#98C379"> "Mi Pokémon es </span><span style="color:#E06C75">$NOMBRE</span><span style="color:#98C379">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># $1 es el primer argumento que le pasás al script.</span></span>
+<span class="line"><span style="color:#56B6C2">echo</span><span style="color:#98C379"> "Capturaste a: </span><span style="color:#E06C75;font-style:italic">$1</span><span style="color:#98C379">"</span></span>
+<span class="line"></span></code></pre>
+<p>Lo ejecutás así: <code>./script.sh Charizard</code> → imprime “Capturaste a: Charizard”.</p>
+<hr>
+<h2 id="️-redirección--y">➡️ Redirección: <code>></code> y <code>>></code></h2>
+<p>La <strong>redirección</strong> manda la salida de un comando a un archivo en vez de a la pantalla.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#56B6C2">echo</span><span style="color:#98C379"> "Pikachu"</span><span style="color:#ABB2BF"> > </span><span style="color:#98C379">equipo.txt</span><span style="color:#7F848E;font-style:italic">      # > CREA o REEMPLAZA el archivo</span></span>
+<span class="line"><span style="color:#56B6C2">echo</span><span style="color:#98C379"> "Charizard"</span><span style="color:#ABB2BF"> >> </span><span style="color:#98C379">equipo.txt</span><span style="color:#7F848E;font-style:italic">   # >> AGREGA al final (no borra lo anterior)</span></span>
+<span class="line"></span></code></pre>
+<div class="callout cuidado"><span class="et">CUIDADO</span>
+<p>⚠️ Cuidado: <code>></code> pisa todo lo que había. <code>>></code> suma. Confundirlos borra datos.</p>
+</div>
+<hr>
+<h2 id="-pipes">🔗 Pipes: <code>|</code></h2>
+<p>Un <strong>pipe</strong> (tubería) conecta la salida de un comando con la entrada de otro. Es como hacer que <strong>dos Pokémon combinen ataques</strong>.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">ls</span><span style="color:#ABB2BF"> | </span><span style="color:#61AFEF">wc</span><span style="color:#D19A66"> -l</span><span style="color:#7F848E;font-style:italic">         # ls lista archivos, wc -l cuenta cuántas líneas → cuántos archivos hay</span></span>
+<span class="line"><span style="color:#61AFEF">cat</span><span style="color:#98C379"> equipo.txt</span><span style="color:#ABB2BF"> | </span><span style="color:#61AFEF">sort</span><span style="color:#7F848E;font-style:italic">   # muestra el equipo ordenado alfabéticamente</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-grep-buscar-texto">🔍 grep: buscar texto</h2>
+<p><code>grep</code> busca un texto dentro de archivos o de lo que le llega por pipe. Es tu <strong>detector de Pokémon</strong>.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">grep</span><span style="color:#98C379"> "Pikachu"</span><span style="color:#98C379"> equipo.txt</span><span style="color:#7F848E;font-style:italic">          # muestra las líneas que contienen "Pikachu"</span></span>
+<span class="line"><span style="color:#61AFEF">grep</span><span style="color:#D19A66"> -i</span><span style="color:#98C379"> "pikachu"</span><span style="color:#98C379"> equipo.txt</span><span style="color:#7F848E;font-style:italic">       # -i = ignora mayúsculas/minúsculas</span></span>
+<span class="line"><span style="color:#61AFEF">grep</span><span style="color:#D19A66"> -r</span><span style="color:#98C379"> "Fuego"</span><span style="color:#98C379"> carpeta/</span><span style="color:#7F848E;font-style:italic">           # -r = busca recursivamente en una carpeta</span></span>
+<span class="line"><span style="color:#61AFEF">cat</span><span style="color:#98C379"> pokedex.txt</span><span style="color:#ABB2BF"> | </span><span style="color:#61AFEF">grep</span><span style="color:#98C379"> "Electrico"</span><span style="color:#7F848E;font-style:italic"> # buscar combinando con un pipe</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="️-find-encontrar-archivos">🗺️ find: encontrar archivos</h2>
+<p><code>grep</code> busca <strong>dentro</strong> de archivos. <code>find</code> busca <strong>los archivos en sí</strong>.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">find</span><span style="color:#98C379"> .</span><span style="color:#D19A66"> -name</span><span style="color:#98C379"> "*.txt"</span><span style="color:#7F848E;font-style:italic">           # busca todos los .txt desde la carpeta actual</span></span>
+<span class="line"><span style="color:#61AFEF">find</span><span style="color:#98C379"> ~</span><span style="color:#D19A66"> -name</span><span style="color:#98C379"> "pikachu*"</span><span style="color:#7F848E;font-style:italic">        # busca en tu home archivos que empiecen con pikachu</span></span>
+<span class="line"><span style="color:#61AFEF">find</span><span style="color:#98C379"> .</span><span style="color:#D19A66"> -type</span><span style="color:#98C379"> d</span><span style="color:#7F848E;font-style:italic">                 # busca solo carpetas (type d = directory)</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="️-procesos-ps-y-kill">⚙️ Procesos: ps y kill</h2>
+<p>Un <strong>proceso</strong> es un programa corriendo. Como un Pokémon activo en batalla.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">ps</span><span style="color:#7F848E;font-style:italic">                  # muestra tus procesos</span></span>
+<span class="line"><span style="color:#61AFEF">ps</span><span style="color:#98C379"> aux</span><span style="color:#7F848E;font-style:italic">              # muestra TODOS los procesos del sistema (mucha info)</span></span>
+<span class="line"><span style="color:#61AFEF">ps</span><span style="color:#98C379"> aux</span><span style="color:#ABB2BF"> | </span><span style="color:#61AFEF">grep</span><span style="color:#98C379"> python</span><span style="color:#7F848E;font-style:italic">   # filtra para ver solo los de python</span></span>
+<span class="line"></span></code></pre>
+<p>Si un programa se cuelga, lo “debilitás” con <code>kill</code>:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#56B6C2">kill</span><span style="color:#D19A66"> 1234</span><span style="color:#7F848E;font-style:italic">           # 1234 es el PID (número de proceso). Pedido amable de cerrar.</span></span>
+<span class="line"><span style="color:#56B6C2">kill</span><span style="color:#D19A66"> -9</span><span style="color:#D19A66"> 1234</span><span style="color:#7F848E;font-style:italic">        # -9 = cierre forzado. El "golpe crítico". Usar solo si hace falta.</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-chmod-cambiar-permisos">🔐 chmod: cambiar permisos</h2>
+<p>En la semana 1 aprendiste a <strong>leer</strong> los permisos. Ahora los <strong>cambiás</strong> con <code>chmod</code>.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">chmod</span><span style="color:#98C379"> +x</span><span style="color:#98C379"> script.sh</span><span style="color:#7F848E;font-style:italic">      # agrega permiso de ejecución (la forma más común)</span></span>
+<span class="line"><span style="color:#61AFEF">chmod</span><span style="color:#D19A66"> -x</span><span style="color:#98C379"> script.sh</span><span style="color:#7F848E;font-style:italic">      # quita el permiso de ejecución</span></span>
+<span class="line"><span style="color:#61AFEF">chmod</span><span style="color:#D19A66"> 755</span><span style="color:#98C379"> script.sh</span><span style="color:#7F848E;font-style:italic">     # forma numérica (avanzada): dueño rwx, grupo y otros r-x</span></span>
+<span class="line"></span></code></pre>
+<p>La forma numérica: cada dígito es la suma de <code>r</code>=4, <code>w</code>=2, <code>x</code>=1.</p>
+<ul>
+<li><code>7</code> = 4+2+1 = rwx (todo)</li>
+<li><code>5</code> = 4+0+1 = r-x (leer y ejecutar)</li>
+<li><code>6</code> = 4+2+0 = rw- (leer y escribir)</li>
+</ul>
+<hr>
+<h2 id="-usuarios-y-permisos-sudo">👥 Usuarios y permisos: sudo</h2>
+<p>Linux es <strong>multiusuario</strong>. El usuario todopoderoso se llama <strong>root</strong> (el Profesor Oak del sistema: tiene acceso a todo).</p>
+<p><code>sudo</code> ejecuta UN comando como root. Te pide tu contraseña.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">sudo</span><span style="color:#98C379"> apt</span><span style="color:#98C379"> update</span><span style="color:#7F848E;font-style:italic">     # actualizar la lista de programas (necesita permisos de root)</span></span>
+<span class="line"></span></code></pre>
+<div class="callout cuidado"><span class="et">CUIDADO</span>
+<p>⚠️ <code>sudo</code> es poderoso. Con gran poder viene gran responsabilidad. No corras comandos con <code>sudo</code> que no entiendas.</p>
+</div>
+<hr>
+<h2 id="-apt-instalar-programas">📦 apt: instalar programas</h2>
+<p>En Ubuntu/Debian, <code>apt</code> es el <strong>PokéMart</strong>: ahí instalás programas.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">sudo</span><span style="color:#98C379"> apt</span><span style="color:#98C379"> update</span><span style="color:#7F848E;font-style:italic">              # actualiza la lista de programas disponibles</span></span>
+<span class="line"><span style="color:#61AFEF">sudo</span><span style="color:#98C379"> apt</span><span style="color:#98C379"> install</span><span style="color:#98C379"> cowsay</span><span style="color:#7F848E;font-style:italic">      # instala un programa (en este caso, una vaca que habla)</span></span>
+<span class="line"><span style="color:#61AFEF">sudo</span><span style="color:#98C379"> apt</span><span style="color:#98C379"> remove</span><span style="color:#98C379"> cowsay</span><span style="color:#7F848E;font-style:italic">       # lo desinstala</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-ssh-conectarte-a-otra-máquina">🔌 SSH: conectarte a otra máquina</h2>
+<p><strong>SSH</strong> (<em>Secure Shell</em>) te deja controlar <strong>otra computadora</strong> por la terminal, de forma segura. Es como usar tu Pokédex para conectarte a un <strong>gimnasio remoto</strong>.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">ssh</span><span style="color:#98C379"> entrenador@192.168.1.50</span><span style="color:#7F848E;font-style:italic">      # te conectás a esa máquina con ese usuario</span></span>
+<span class="line"></span></code></pre>
+<p>Te va a pedir contraseña, y después tenés una terminal en la máquina remota. Esto es la base de cómo se administran los servidores del mundo.</p>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 Por ahora solo necesitás saber <strong>qué es</strong>. Cuando tengas un servidor (o una Raspberry Pi), lo vas a usar todo el tiempo.</p>
+</div>
+<hr>
+<h2 id="-resumen-de-la-semana">📝 Resumen de la semana</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Comando</th><th>Qué hace</th></tr></thead><tbody><tr><td><code>nano archivo</code></td><td>Edita un archivo de texto</td></tr><tr><td><code>$VARIABLE</code> / <code>export</code></td><td>Variables de entorno</td></tr><tr><td><code>chmod +x</code></td><td>Da permiso de ejecución</td></tr><tr><td><code>./script.sh</code></td><td>Ejecuta un script</td></tr><tr><td><code>></code> / <code>>></code></td><td>Redirige salida (reemplaza / agrega)</td></tr><tr><td><code>|</code> (pipe)</td><td>Conecta salida de un comando con otro</td></tr><tr><td><code>grep</code></td><td>Busca texto dentro de archivos</td></tr><tr><td><code>find</code></td><td>Busca archivos por nombre/tipo</td></tr><tr><td><code>ps</code> / <code>kill</code></td><td>Ver y cerrar procesos</td></tr><tr><td><code>sudo</code></td><td>Ejecuta como root</td></tr><tr><td><code>apt</code></td><td>Instala/desinstala programas</td></tr><tr><td><code>ssh</code></td><td>Te conecta a otra máquina</td></tr></tbody></table>
+<hr>
+<h2 id="️-y-ahora-qué">➡️ ¿Y ahora qué?</h2>
+<ol>
+<li>Hacé los ejercicios de <code>ejercicios.md</code> en tu terminal.</li>
+<li>Jugá el <code>interactivo.py</code>: te guía a escribir tu <strong>primer script bash real</strong>.
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">python</span><span style="color:#98C379"> interactivo.py</span></span>
+<span class="line"></span></code></pre>
+</li>
+<li>Poné a prueba lo aprendido con el quiz:
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">python</span><span style="color:#98C379"> quiz.py</span></span>
+<span class="line"></span></code></pre>
+</li>
+</ol>
+<div class="callout tip"><span class="et">ÁNIMO</span>
+<p>⚡ <em>“Un Entrenador que automatiza su trabajo tiene más tiempo para entrenar. Trabajá inteligente, no solo duro.”</em></p>
+</div> <nav class="cap-nav"> <a href="/luca-journey/libro/linux-fundamentos"><span class="dir">← Anterior</span><br>Linux: Fundamentos</a> <a class="next" href="/luca-journey/libro/python-introduccion"><span class="dir">Siguiente →</span><br>Python: Introducción</a> </nav> </main> </div> </div> <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>   <script>
+    (function () {
+      var body = document.body;
+      if (localStorage.getItem('tema') === 'dark') body.classList.add('dark');
+      var t = document.getElementById('theme-toggle');
+      function refrescar() { if (t) t.textContent = body.classList.contains('dark') ? '☀️' : '🌙'; }
+      refrescar();
+      if (t) t.addEventListener('click', function () {
+        body.classList.toggle('dark');
+        localStorage.setItem('tema', body.classList.contains('dark') ? 'dark' : 'claro');
+        refrescar();
+      });
+    })();
+  </script> </body> </html>

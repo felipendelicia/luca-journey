@@ -1,0 +1,247 @@
+<!DOCTYPE html><html lang="es"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Python: Cadenas y Archivos — Python con Pokémon</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&display=swap"><link rel="stylesheet" href="/luca-journey/_astro/recursos.UAvNNIhJ.css"><script type="module" src="/luca-journey/_astro/hoisted.55VPuE-h.js"></script></head> <body> <div class="bg-grid" aria-hidden="true"></div> <header class="topbar"> <a class="brand-link" href="/luca-journey/"><span class="pb"></span><span class="brand">Pokédex <b>Codex</b></span></a> <div class="tools"> <a class="navlink" href="/luca-journey/">Inicio</a><a class="navlink activo" href="/luca-journey/libro">Libro</a><a class="navlink" href="/luca-journey/ejercicios">Ejercicios</a><a class="navlink" href="/luca-journey/liga">Liga</a><a class="navlink" href="/luca-journey/playground">Playground</a> <button class="theme-toggle" id="theme-toggle" type="button" title="Tema claro/oscuro">🌙</button> </div> </header> <script>(function(){const base = "/luca-journey";
+window.__BASE = base;})();</script>  <div class="wrap"> <div class="book-layout"> <aside class="book-rail"> <div class="rail-tit">Capítulos</div> <details class="grupo"> <summary><span class="g-ico">🎒</span>Introducción</summary> <a class="" href="/luca-journey/libro/introduccion"> <span class="rn">0</span><span>Cómo usar este libro</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🐧</span>Linux</summary> <a class="" href="/luca-journey/libro/linux-fundamentos"> <span class="rn">1</span><span>Linux: Fundamentos</span> </a><a class="" href="/luca-journey/libro/linux-intermedio"> <span class="rn">2</span><span>Linux: Intermedio</span> </a> </details><details class="grupo" open> <summary><span class="g-ico">🐍</span>Python</summary> <a class="" href="/luca-journey/libro/python-introduccion"> <span class="rn">3</span><span>Python: Introducción</span> </a><a class="" href="/luca-journey/libro/control-de-flujo"> <span class="rn">4</span><span>Python: Control de Flujo</span> </a><a class="" href="/luca-journey/libro/funciones"> <span class="rn">5</span><span>Python: Funciones</span> </a><a class="" href="/luca-journey/libro/listas-y-colecciones"> <span class="rn">6</span><span>Python: Listas y Colecciones</span> </a><a class="activo" href="/luca-journey/libro/cadenas-y-archivos"> <span class="rn">7</span><span>Python: Cadenas y Archivos</span> </a><a class="" href="/luca-journey/libro/poo-introduccion"> <span class="rn">8</span><span>Python: POO Introducción</span> </a><a class="" href="/luca-journey/libro/poo-avanzado"> <span class="rn">9</span><span>Python: POO Avanzado</span> </a><a class="" href="/luca-journey/libro/modulos-y-pip"> <span class="rn">10</span><span>Python: Módulos y pip</span> </a> </details><details class="grupo"> <summary><span class="g-ico">🔀</span>Git</summary> <a class="" href="/luca-journey/libro/git"> <span class="rn">11</span><span>Git: Control de Versiones</span> </a> </details><details class="grupo"> <summary><span class="g-ico">❓</span>Ayuda</summary> <a class="" href="/luca-journey/libro/ayuda"> <span class="rn">12</span><span>Ayuda y glosario</span> </a> </details> </aside> <main class="book"> <h1>Python: Cadenas y Archivos</h1> <div class="callout nota"><span class="et">META</span>
+<p>🎯 <strong>Meta de la semana:</strong> trabajar con texto en profundidad y hacer que tus datos <strong>sobrevivan</strong> cuando cerrás el programa (guardándolos en archivos).</p>
+</div>
+<hr>
+<h2 id="-analogía-la-pokédex-que-recuerda">🎮 Analogía: la Pokédex que recuerda</h2>
+<p>Hasta ahora, cuando cerrabas tu programa, todo se borraba: tu equipo, tus capturas, todo. Era una Pokédex con amnesia. 😵</p>
+<p>Esta semana le damos <strong>memoria permanente</strong>: vas a guardar datos en <strong>archivos</strong> del disco. Apagás la compu, volvés mañana, y tu Pokédex se acuerda de todo. 💾</p>
+<hr>
+<h2 id="-métodos-de-strings-cadenas-de-texto">🔤 Métodos de strings (cadenas de texto)</h2>
+<p>Un string tiene un montón de <strong>métodos</strong> (acciones) para transformarlo. No modifican el original: <strong>devuelven uno nuevo</strong>.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#ABB2BF">nombre </span><span style="color:#56B6C2">=</span><span style="color:#98C379"> "  Pikachu  "</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(nombre.</span><span style="color:#61AFEF">upper</span><span style="color:#ABB2BF">())        </span><span style="color:#7F848E;font-style:italic"># "  PIKACHU  "   (mayúsculas)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(nombre.</span><span style="color:#61AFEF">lower</span><span style="color:#ABB2BF">())        </span><span style="color:#7F848E;font-style:italic"># "  pikachu  "   (minúsculas)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(nombre.</span><span style="color:#61AFEF">strip</span><span style="color:#ABB2BF">())        </span><span style="color:#7F848E;font-style:italic"># "Pikachu"       (saca espacios de los bordes)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(nombre.</span><span style="color:#61AFEF">replace</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"a"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"@"</span><span style="color:#ABB2BF">))  </span><span style="color:#7F848E;font-style:italic"># reemplaza</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"pikachu"</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">capitalize</span><span style="color:#ABB2BF">())    </span><span style="color:#7F848E;font-style:italic"># "Pikachu"   (primera en mayúscula)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">startswith</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Pika"</span><span style="color:#ABB2BF">))  </span><span style="color:#7F848E;font-style:italic"># True</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">endswith</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"chu"</span><span style="color:#ABB2BF">))     </span><span style="color:#7F848E;font-style:italic"># True</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">find</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"ka"</span><span style="color:#ABB2BF">))          </span><span style="color:#7F848E;font-style:italic"># 2  (posición donde aparece)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#56B6C2">len</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">))                </span><span style="color:#7F848E;font-style:italic"># 7  (longitud)</span></span>
+<span class="line"></span></code></pre>
+<h3 id="split-y-join-separar-y-unir">split y join: separar y unir</h3>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#7F848E;font-style:italic"># split: parte un texto en una lista, usando un separador.</span></span>
+<span class="line"><span style="color:#ABB2BF">linea </span><span style="color:#56B6C2">=</span><span style="color:#98C379"> "Pikachu,Electrico,25"</span></span>
+<span class="line"><span style="color:#ABB2BF">partes </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> linea.</span><span style="color:#61AFEF">split</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">","</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(partes)    </span><span style="color:#7F848E;font-style:italic"># ['Pikachu', 'Electrico', '25']</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># join: une una lista en un texto, con un separador.</span></span>
+<span class="line"><span style="color:#ABB2BF">datos </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> [</span><span style="color:#98C379">"Charizard"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Fuego"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"50"</span><span style="color:#ABB2BF">]</span></span>
+<span class="line"><span style="color:#ABB2BF">linea </span><span style="color:#56B6C2">=</span><span style="color:#98C379"> ","</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">join</span><span style="color:#ABB2BF">(datos)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(linea)     </span><span style="color:#7F848E;font-style:italic"># "Charizard,Fuego,50"</span></span>
+<span class="line"></span></code></pre>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 <code>split</code> y <code>join</code> son <strong>clave</strong> para trabajar con archivos CSV (lo vemos abajo).</p>
+</div>
+<hr>
+<h2 id="️-slicing-rebanar-strings">✂️ Slicing: rebanar strings</h2>
+<p>El <strong>slicing</strong> saca una “rebanada” de un string usando <code>[inicio:fin]</code>. El <code>fin</code> NO se incluye.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#ABB2BF">texto </span><span style="color:#56B6C2">=</span><span style="color:#98C379"> "Pikachu"</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">#        0123456     (índices)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(texto[</span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">])      </span><span style="color:#7F848E;font-style:italic"># "P"        (un carácter)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(texto[</span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">:</span><span style="color:#D19A66">4</span><span style="color:#ABB2BF">])    </span><span style="color:#7F848E;font-style:italic"># "Pika"     (del 0 al 3)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(texto[</span><span style="color:#D19A66">4</span><span style="color:#ABB2BF">:])     </span><span style="color:#7F848E;font-style:italic"># "chu"      (del 4 hasta el final)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(texto[:</span><span style="color:#D19A66">4</span><span style="color:#ABB2BF">])     </span><span style="color:#7F848E;font-style:italic"># "Pika"     (del principio al 3)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(texto[</span><span style="color:#56B6C2">-</span><span style="color:#D19A66">3</span><span style="color:#ABB2BF">:])    </span><span style="color:#7F848E;font-style:italic"># "chu"      (los últimos 3)</span></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(texto[::</span><span style="color:#56B6C2">-</span><span style="color:#D19A66">1</span><span style="color:#ABB2BF">])   </span><span style="color:#7F848E;font-style:italic"># "uhcakiP"  (al revés)</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-abrir-archivos-con-open">📂 Abrir archivos con open()</h2>
+<p><code>open()</code> abre un archivo. Le pasás el nombre y el <strong>modo</strong>:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Modo</th><th>Significa</th></tr></thead><tbody><tr><td><code>"r"</code></td><td>leer (<em>read</em>) — el archivo debe existir</td></tr><tr><td><code>"w"</code></td><td>escribir (<em>write</em>) — crea o REEMPLAZA todo</td></tr><tr><td><code>"a"</code></td><td>agregar (<em>append</em>) — escribe al final</td></tr></tbody></table>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#7F848E;font-style:italic"># Escribir (¡pisa lo que había!)</span></span>
+<span class="line"><span style="color:#ABB2BF">archivo </span><span style="color:#56B6C2">=</span><span style="color:#56B6C2"> open</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"equipo.txt"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"w"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#ABB2BF">archivo.</span><span style="color:#61AFEF">write</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Pikachu</span><span style="color:#56B6C2">\n</span><span style="color:#98C379">"</span><span style="color:#ABB2BF">)     </span><span style="color:#7F848E;font-style:italic"># \n = salto de línea</span></span>
+<span class="line"><span style="color:#ABB2BF">archivo.</span><span style="color:#61AFEF">write</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Charizard</span><span style="color:#56B6C2">\n</span><span style="color:#98C379">"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#ABB2BF">archivo.</span><span style="color:#61AFEF">close</span><span style="color:#ABB2BF">()                </span><span style="color:#7F848E;font-style:italic"># ¡siempre hay que cerrar!</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-with-la-forma-correcta-de-abrir-archivos">✅ with: la forma correcta de abrir archivos</h2>
+<p>El problema de <code>open()</code> solo es que hay que acordarse de <code>close()</code>. La forma recomendada es usar <strong><code>with</code></strong>, que cierra el archivo solo, aunque haya un error.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#7F848E;font-style:italic"># Escribir</span></span>
+<span class="line"><span style="color:#C678DD">with</span><span style="color:#56B6C2"> open</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"equipo.txt"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"w"</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> archivo:</span></span>
+<span class="line"><span style="color:#ABB2BF">    archivo.</span><span style="color:#61AFEF">write</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Pikachu</span><span style="color:#56B6C2">\n</span><span style="color:#98C379">"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#ABB2BF">    archivo.</span><span style="color:#61AFEF">write</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Charizard</span><span style="color:#56B6C2">\n</span><span style="color:#98C379">"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Al salir del 'with', el archivo se cierra automáticamente. 🎉</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Leer todo de una</span></span>
+<span class="line"><span style="color:#C678DD">with</span><span style="color:#56B6C2"> open</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"equipo.txt"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"r"</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> archivo:</span></span>
+<span class="line"><span style="color:#ABB2BF">    contenido </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> archivo.</span><span style="color:#61AFEF">read</span><span style="color:#ABB2BF">()</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(contenido)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Leer línea por línea (lo más común)</span></span>
+<span class="line"><span style="color:#C678DD">with</span><span style="color:#56B6C2"> open</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"equipo.txt"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"r"</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> archivo:</span></span>
+<span class="line"><span style="color:#C678DD">    for</span><span style="color:#ABB2BF"> linea </span><span style="color:#C678DD">in</span><span style="color:#ABB2BF"> archivo:</span></span>
+<span class="line"><span style="color:#56B6C2">        print</span><span style="color:#ABB2BF">(linea.</span><span style="color:#61AFEF">strip</span><span style="color:#ABB2BF">())   </span><span style="color:#7F848E;font-style:italic"># strip saca el \n del final</span></span>
+<span class="line"></span></code></pre>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 Usá <strong>siempre</strong> <code>with</code>. Es más corto, más seguro, y es lo que vas a ver en todos lados.</p>
+</div>
+<hr>
+<h2 id="-csv-datos-en-filas-y-columnas">📊 CSV: datos en filas y columnas</h2>
+<p>Un <strong>CSV</strong> (<em>Comma-Separated Values</em>) es un archivo de texto donde cada línea es una fila y los datos van separados por comas. Es como una mini planilla de Excel.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>nombre,tipo,nivel</span></span>
+<span class="line"><span>Pikachu,Electrico,25</span></span>
+<span class="line"><span>Charizard,Fuego,50</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>Lo podés manejar con <code>split</code> y <code>join</code>, o con el módulo <code>csv</code> de la librería estándar:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> csv</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Escribir un CSV</span></span>
+<span class="line"><span style="color:#C678DD">with</span><span style="color:#56B6C2"> open</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"pokedex.csv"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"w"</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75;font-style:italic">newline</span><span style="color:#56B6C2">=</span><span style="color:#98C379">""</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75;font-style:italic">encoding</span><span style="color:#56B6C2">=</span><span style="color:#98C379">"utf-8"</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> f:</span></span>
+<span class="line"><span style="color:#ABB2BF">    escritor </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> csv.</span><span style="color:#61AFEF">writer</span><span style="color:#ABB2BF">(f)</span></span>
+<span class="line"><span style="color:#ABB2BF">    escritor.</span><span style="color:#61AFEF">writerow</span><span style="color:#ABB2BF">([</span><span style="color:#98C379">"nombre"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"tipo"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"nivel"</span><span style="color:#ABB2BF">])   </span><span style="color:#7F848E;font-style:italic"># encabezado</span></span>
+<span class="line"><span style="color:#ABB2BF">    escritor.</span><span style="color:#61AFEF">writerow</span><span style="color:#ABB2BF">([</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Electrico"</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">25</span><span style="color:#ABB2BF">])</span></span>
+<span class="line"><span style="color:#ABB2BF">    escritor.</span><span style="color:#61AFEF">writerow</span><span style="color:#ABB2BF">([</span><span style="color:#98C379">"Charizard"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Fuego"</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">50</span><span style="color:#ABB2BF">])</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Leer un CSV</span></span>
+<span class="line"><span style="color:#C678DD">with</span><span style="color:#56B6C2"> open</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"pokedex.csv"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"r"</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75;font-style:italic">encoding</span><span style="color:#56B6C2">=</span><span style="color:#98C379">"utf-8"</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> f:</span></span>
+<span class="line"><span style="color:#ABB2BF">    lector </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> csv.</span><span style="color:#61AFEF">reader</span><span style="color:#ABB2BF">(f)</span></span>
+<span class="line"><span style="color:#C678DD">    for</span><span style="color:#ABB2BF"> fila </span><span style="color:#C678DD">in</span><span style="color:#ABB2BF"> lector:</span></span>
+<span class="line"><span style="color:#56B6C2">        print</span><span style="color:#ABB2BF">(fila)    </span><span style="color:#7F848E;font-style:italic"># cada fila es una lista: ['Pikachu', 'Electrico', '25']</span></span>
+<span class="line"></span></code></pre>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 <code>newline=""</code> y <code>encoding="utf-8"</code> son detalles que evitan problemas. Copialos siempre que uses CSV.</p>
+</div>
+<hr>
+<h2 id="️-manejo-de-excepciones-try--except">⚠️ Manejo de excepciones: try / except</h2>
+<p>Un <strong>error</strong> (excepción) puede romper tu programa: abrir un archivo que no existe, convertir “abc” a número, etc. Con <code>try</code>/<code>except</code> lo <strong>atrapás</strong> y seguís adelante.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">try</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">    # Código que PODRÍA fallar.</span></span>
+<span class="line"><span style="color:#ABB2BF">    numero </span><span style="color:#56B6C2">=</span><span style="color:#56B6C2"> int</span><span style="color:#ABB2BF">(</span><span style="color:#56B6C2">input</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Nivel: "</span><span style="color:#ABB2BF">))</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">f</span><span style="color:#98C379">"El nivel es </span><span style="color:#D19A66">{</span><span style="color:#ABB2BF">numero</span><span style="color:#D19A66">}</span><span style="color:#98C379">"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#C678DD">except</span><span style="color:#ABB2BF"> ValueError:</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">    # Esto corre SOLO si hubo un ValueError.</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Eso no es un número válido"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span></code></pre>
+<p>Atrapar errores al abrir archivos:</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">try</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#C678DD">    with</span><span style="color:#56B6C2"> open</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"noexiste.txt"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"r"</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> f:</span></span>
+<span class="line"><span style="color:#ABB2BF">        contenido </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> f.</span><span style="color:#61AFEF">read</span><span style="color:#ABB2BF">()</span></span>
+<span class="line"><span style="color:#C678DD">except</span><span style="color:#ABB2BF"> FileNotFoundError:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"El archivo no existe, creando uno nuevo..."</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#ABB2BF">    contenido </span><span style="color:#56B6C2">=</span><span style="color:#98C379"> ""</span></span>
+<span class="line"></span></code></pre>
+<p>Errores comunes que vas a atrapar:</p>
+<ul>
+<li><code>ValueError</code> → conversión inválida (<code>int("abc")</code>).</li>
+<li><code>FileNotFoundError</code> → archivo que no existe.</li>
+<li><code>KeyError</code> → clave que no está en un diccionario.</li>
+<li><code>ZeroDivisionError</code> → división por cero.</li>
+</ul>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 Atrapá <strong>errores específicos</strong> (como <code>ValueError</code>), no un <code>except:</code> pelado. Así sabés qué estás manejando.</p>
+</div>
+<hr>
+<h2 id="-resumen-de-la-semana">📝 Resumen de la semana</h2>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#7F848E;font-style:italic"># Métodos de string</span></span>
+<span class="line"><span style="color:#98C379">"  Hola  "</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">strip</span><span style="color:#ABB2BF">().</span><span style="color:#61AFEF">upper</span><span style="color:#ABB2BF">()      </span><span style="color:#7F848E;font-style:italic"># "HOLA"</span></span>
+<span class="line"><span style="color:#98C379">"a,b,c"</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">split</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">","</span><span style="color:#ABB2BF">)              </span><span style="color:#7F848E;font-style:italic"># ['a', 'b', 'c']</span></span>
+<span class="line"><span style="color:#98C379">","</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">join</span><span style="color:#ABB2BF">([</span><span style="color:#98C379">"a"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"b"</span><span style="color:#ABB2BF">])           </span><span style="color:#7F848E;font-style:italic"># "a,b"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Slicing</span></span>
+<span class="line"><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">[</span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">:</span><span style="color:#D19A66">4</span><span style="color:#ABB2BF">]                  </span><span style="color:#7F848E;font-style:italic"># "Pika"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Archivos con with</span></span>
+<span class="line"><span style="color:#C678DD">with</span><span style="color:#56B6C2"> open</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"datos.txt"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"w"</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> f:</span></span>
+<span class="line"><span style="color:#ABB2BF">    f.</span><span style="color:#61AFEF">write</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"hola</span><span style="color:#56B6C2">\n</span><span style="color:#98C379">"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">with</span><span style="color:#56B6C2"> open</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"datos.txt"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"r"</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> f:</span></span>
+<span class="line"><span style="color:#C678DD">    for</span><span style="color:#ABB2BF"> linea </span><span style="color:#C678DD">in</span><span style="color:#ABB2BF"> f:</span></span>
+<span class="line"><span style="color:#56B6C2">        print</span><span style="color:#ABB2BF">(linea.</span><span style="color:#61AFEF">strip</span><span style="color:#ABB2BF">())</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># CSV con la librería estándar</span></span>
+<span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> csv</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># csv.writer / csv.reader</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Manejo de errores</span></span>
+<span class="line"><span style="color:#C678DD">try</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#ABB2BF">    n </span><span style="color:#56B6C2">=</span><span style="color:#56B6C2"> int</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"abc"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#C678DD">except</span><span style="color:#ABB2BF"> ValueError:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"no es número"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span></code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Concepto</th><th>Para qué sirve</th></tr></thead><tbody><tr><td>métodos de string</td><td>Transformar texto</td></tr><tr><td><code>split</code> / <code>join</code></td><td>Separar / unir texto</td></tr><tr><td>slicing <code>[i:j]</code></td><td>Rebanar texto</td></tr><tr><td><code>with open()</code></td><td>Abrir archivos seguro</td></tr><tr><td>módulo <code>csv</code></td><td>Datos en filas/columnas</td></tr><tr><td><code>try</code>/<code>except</code></td><td>Atrapar errores</td></tr></tbody></table>
+<hr>
+<h2 id="️-y-ahora-qué">➡️ ¿Y ahora qué?</h2>
+<ol>
+<li>Resolvé <code>ejercicios.py</code>.</li>
+<li>Corré los tests: <code>pytest semana-07-python-cadenas-y-archivos/</code></li>
+<li>Mirá los datos de ejemplo en la carpeta <code>data/</code>.</li>
+<li>Jugá la <strong>Pokédex con persistencia</strong> (¡guarda y carga datos!):
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">python</span><span style="color:#98C379"> interactivo.py</span></span>
+<span class="line"></span></code></pre>
+</li>
+</ol>
+<div class="callout tip"><span class="et">ÁNIMO</span>
+<p>⚡ <em>“Los datos que no guardás, se los lleva el viento. Una buena Pokédex nunca olvida.”</em></p>
+</div> <nav class="cap-nav"> <a href="/luca-journey/libro/listas-y-colecciones"><span class="dir">← Anterior</span><br>Python: Listas y Colecciones</a> <a class="next" href="/luca-journey/libro/poo-introduccion"><span class="dir">Siguiente →</span><br>Python: POO Introducción</a> </nav> </main> </div> </div> <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>   <script>
+    (function () {
+      var body = document.body;
+      if (localStorage.getItem('tema') === 'dark') body.classList.add('dark');
+      var t = document.getElementById('theme-toggle');
+      function refrescar() { if (t) t.textContent = body.classList.contains('dark') ? '☀️' : '🌙'; }
+      refrescar();
+      if (t) t.addEventListener('click', function () {
+        body.classList.toggle('dark');
+        localStorage.setItem('tema', body.classList.contains('dark') ? 'dark' : 'claro');
+        refrescar();
+      });
+    })();
+  </script> </body> </html>
