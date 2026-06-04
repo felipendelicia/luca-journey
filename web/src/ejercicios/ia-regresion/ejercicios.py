@@ -1,29 +1,33 @@
-"""
-✏️ Ejercicios — ML: regresión
+"""✏️ Ejercicios — ML: regresión
 
-Clasificar predice una categoría; la REGRESIÓN predice un NÚMERO
-(ej: el CP de un Pokémon a partir de su nivel). Usamos LinearRegression.
+Clasificar predice una categoría; la REGRESIÓN predice un NÚMERO (ej: el CP de un
+Pokémon a partir de su nivel). Usamos LinearRegression. ✅ Corregir al terminar.
 """
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
 
-# 1) Entrená un modelo de regresión lineal con X e y. Devolvé el modelo.
+# Entrenar la regresión
+# Entrená un modelo de regresión lineal con X e y, y devolvé el modelo.
+# Pista: LinearRegression().fit(X, y).
 def entrenar_regresion(X, y):
-    """LinearRegression().fit(X, y)."""
+    """Devolvé una LinearRegression entrenada."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 2) Predecí el número para una fila. Devolvé un float.
+# Predecir un número
+# Predecí el número para una fila y devolvé un float. Pista: float(modelo.predict([fila])[0]).
+# Ejemplo:  con la relación y = 2x + 1  →  predecir(modelo, [10])  →  21.0
 def predecir(modelo, fila):
-    """float(modelo.predict([fila])[0])."""
+    """Devolvé la predicción de 'fila' como float."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 3) Todo junto: entrená con (X, y) y predecí 'fila'. Devolvé un float.
+# Todo junto
+# Entrená con (X, y) y predecí 'fila'. Devolvé un float.
 def entrenar_y_predecir(X, y, fila):
-    """Combiná los pasos."""
+    """Combiná entrenar + predecir."""
     # TU CÓDIGO ACÁ
     pass

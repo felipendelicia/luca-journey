@@ -1,38 +1,44 @@
-"""
-✏️ Ejercicios — ML: preparar los datos
+"""✏️ Ejercicios — ML: preparar los datos
 
 Antes de entrenar hay que preparar los datos: separar features (X) de etiquetas (y),
-dividir en entrenamiento/prueba, y a veces escalar para que todo esté en la misma medida.
+dividir en entrenamiento/prueba y a veces escalar. ✅ Corregir al terminar.
 """
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 
-# 1) Separá una matriz en X (todas las columnas menos la última) e y (la última).
+# Features y etiquetas
+# Separá una matriz en X (todas las columnas menos la última) e y (la última).
+# Pista: X = matriz[:, :-1] ; y = matriz[:, -1]. Devolvé la tupla (X, y).
 def separar_columnas(matriz):
-    """Devolvé una tupla (X, y). Pista: matriz[:, :-1] y matriz[:, -1]."""
+    """Devolvé (X, y)."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 2) Dividí en entrenamiento y prueba (25% test). Usá random_state=42 para que sea
-#    reproducible. Devolvé lo que devuelve train_test_split (4 valores).
+# Train / test
+# Dividí en entrenamiento y prueba (25% de test), con random_state=42 para que sea
+# reproducible. Devolvé los 4 valores de train_test_split.
+# Pista: return train_test_split(X, y, test_size=0.25, random_state=42).
 def dividir(X, y):
-    """return train_test_split(X, y, test_size=0.25, random_state=42)."""
+    """Devolvé X_train, X_test, y_train, y_test."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 3) Escalá los datos para que cada columna tenga media 0 y desvío 1.
+# Escalar los datos
+# Escalá para que cada columna tenga media 0 y desvío 1. Pista: StandardScaler().fit_transform(X).
 def escalar(X):
-    """Usá StandardScaler().fit_transform(X). Devolvé el array escalado."""
+    """Devolvé el array escalado."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 4) ¿Cuántas features (columnas) tiene X? Devolvé un int.
+# ¿Cuántas features?
+# Devolvé cuántas features (columnas) tiene X, como int. Pista: X.shape[1].
+# Ejemplo:  una X de 5 filas y 3 columnas  →  3
 def cantidad_features(X):
-    """Pista: X.shape[1]."""
+    """Devolvé la cantidad de columnas de X (int)."""
     # TU CÓDIGO ACÁ
     pass

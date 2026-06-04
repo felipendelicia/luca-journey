@@ -1,29 +1,33 @@
-"""
-✏️ Ejercicios — ML: árboles de decisión
+"""✏️ Ejercicios — ML: árboles de decisión
 
-Un árbol de decisión aprende reglas tipo "si ataque > 25 entonces Fuego". Es fácil
-de entender y te dice qué tan IMPORTANTE fue cada feature para decidir.
+Un árbol aprende reglas tipo "si ataque > 25 entonces Fuego". Es fácil de entender y
+te dice qué tan IMPORTANTE fue cada feature para decidir. ✅ Corregir al terminar.
 """
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
 
 
-# 1) Entrená un árbol de decisión. Usá random_state=0 para que sea reproducible.
+# Entrenar el árbol
+# Entrená un árbol de decisión con random_state=0 (para que sea reproducible).
+# Pista: DecisionTreeClassifier(random_state=0).fit(X, y).
 def entrenar_arbol(X, y):
-    """DecisionTreeClassifier(random_state=0).fit(X, y)."""
+    """Devolvé un árbol entrenado."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 2) Clasificá una fila con el árbol. Devolvé un int.
+# Clasificar con el árbol
+# Clasificá una fila y devolvé un int. Pista: int(modelo.predict([fila])[0]).
 def clasificar(modelo, fila):
-    """int(modelo.predict([fila])[0])."""
+    """Devolvé la categoría de 'fila' (int)."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 3) Devolvé la importancia de cada feature (una lista de floats).
+# Importancia de las features
+# Devolvé la importancia de cada feature como lista de floats. Pista: list(modelo.feature_importances_).
+# Ejemplo:  si solo la 1ra feature decide  →  [1.0, 0.0]
 def importancias(modelo):
-    """Pista: list(modelo.feature_importances_)."""
+    """Devolvé la lista de importancias."""
     # TU CÓDIGO ACÁ
     pass
