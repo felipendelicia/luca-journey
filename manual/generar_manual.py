@@ -73,23 +73,56 @@ def construir_toc(capitulos):
         )
     return (
         '<section class="toc">'
-        "<h1>Índice</h1>"
+        '<h2 class="toc-t">Índice</h2>'
         f"<ul>{''.join(items)}</ul>"
         "</section>"
     )
 
 
+def construir_rail(capitulos):
+    """El riel lateral de navegación (estilo aparato Pokédex). Solo se ve en pantalla."""
+    enlaces = "".join(
+        f'<a href="#{c["id"]}"><span class="rn">{c["num"] or "&bull;"}</span>'
+        f'<span>{_sin_tags(c["resto"])}</span></a>'
+        for c in capitulos
+    )
+    return (
+        '<aside class="rail">'
+        '<div class="device">'
+        '<div class="lens"></div>'
+        '<div class="leds"><i></i><i></i><i></i></div>'
+        '<div class="dev-tt">Pokédex &middot; Codex</div>'
+        "</div>"
+        f"<nav>{enlaces}</nav>"
+        "</aside>"
+    )
+
+
 def construir_portada():
-    """La portada del libro."""
+    """La portada/hero del libro."""
     return (
         '<section class="portada">'
-        '<div class="pokeball"></div>'
-        "<h1>Python con Pokémon</h1>"
-        '<p class="sub">El libro del curso · Aprendé a programar desde cero</p>'
-        '<p class="sub">y convertite en Campeón de Kanto 🏆</p>'
-        '<p class="pie">Manual y libro de Python · Generado con generar_manual.py</p>'
+        '<div class="pokeball reveal d1"></div>'
+        '<p class="kick reveal d2">El libro del curso</p>'
+        '<h1 class="reveal d2">Python con Pokémon</h1>'
+        '<p class="sub reveal d3">Aprendé a programar desde cero, paso a paso, '
+        "con Linux, Python y mucha aventura.</p>"
+        '<p class="sub reveal d4">Y convertite en Campeón de Kanto 🏆</p>'
+        '<p class="pie reveal d5">Manual + libro de Python &middot; generar_manual.py</p>'
         "</section>"
     )
+
+
+# Tipografías distintivas (se cargan en el navegador; en el PDF hay buenos respaldos).
+FUENTES = (
+    '<link rel="preconnect" href="https://fonts.googleapis.com">'
+    '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
+    '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?'
+    "family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&"
+    "family=Hanken+Grotesk:wght@400;500;600;700;800&"
+    "family=JetBrains+Mono:wght@400;500;700&"
+    "family=Silkscreen:wght@400;700&display=swap\">"
+)
 
 
 def construir_html():
@@ -101,15 +134,29 @@ def construir_html():
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Python con Pokémon — El libro del curso</title>
+{FUENTES}
 <style>{estilos}</style>
 </head>
 <body>
+<div class="bg-grid" aria-hidden="true"></div>
+<header class="topbar">
+  <span class="pb"></span>
+  <span class="brand">Pokédex <b>Codex</b></span>
+  <span class="meta">Python con Pokémon</span>
+  <div class="progress"></div>
+</header>
+<div class="wrap">
+{construir_rail(capitulos)}
+<main class="book">
 {construir_portada()}
 {construir_toc(capitulos)}
 {cuerpo}
 <p class="cierre">⚡ "El mejor momento para empezar a programar fue ayer.
 El segundo mejor momento es ahora." ⚡<br>¡A atraparlos a todos!</p>
+</main>
+</div>
 </body>
 </html>"""
 

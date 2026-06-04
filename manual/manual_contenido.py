@@ -58,7 +58,7 @@ cap_intro = capitulo(
     ol(
         "📖 <strong>Leé</strong> la teoría de la semana (también podés leer este libro).",
         "✏️ <strong>Resolvé</strong> los ejercicios (escribí tu código donde dice <code># TU CÓDIGO ACÁ</code>).",
-        "🧪 <strong>Probá</strong> con los tests (ver capítulo 15).",
+        "🧪 <strong>Probá</strong> con los tests (ver capítulo 18).",
         "🎮 <strong>Jugá</strong> el <code>interactivo.py</code> de la semana.",
         "🏋️ <strong>Entrená</strong> esa semana en la Liga para ganar EXP.",
     ),
@@ -596,10 +596,10 @@ cap14 = capitulo(
 #  Capítulo 15 — Mapa del curso (índice de temas)
 # ======================================================================
 cap15 = capitulo(
-    "cap-15", "15. Mapa de temas del curso",
+    "cap-15", "17. Mapa de temas del curso",
     p("Estos son <strong>todos los temas</strong> del curso, semana por semana. Cada semana tiene su teoría, ejercicios, soluciones, tests y un programa interactivo."),
 
-    h2("15.1. Fase 1 — Linux 🐧", "fase-linux"),
+    h2("17.1. Fase 1 — Linux 🐧", "fase-linux"),
     tabla(
         ["Semana", "Temas"],
         [
@@ -608,7 +608,7 @@ cap15 = capitulo(
         ],
     ),
 
-    h2("15.2. Fase 2 — Python básico 🐍", "fase-py-basico"),
+    h2("17.2. Fase 2 — Python básico 🐍", "fase-py-basico"),
     tabla(
         ["Semana", "Temas"],
         [
@@ -620,10 +620,10 @@ cap15 = capitulo(
         ],
     ),
 
-    h2("15.3. Descanso — Git 🔀", "fase-git"),
+    h2("17.3. Descanso — Git 🔀", "fase-git"),
     p("<strong>Git: Control de Versiones</strong> — <code>init</code>, <code>add</code>, <code>commit</code>, <code>log</code>, ramas (<code>branch/switch/merge</code>), GitHub, <code>push/pull/clone</code>, <code>.gitignore</code>. Pensada para hacerse después de la semana 7."),
 
-    h2("15.4. Fase 3 — Python avanzado 🧬", "fase-py-avanzado"),
+    h2("17.4. Fase 3 — Python avanzado 🧬", "fase-py-avanzado"),
     tabla(
         ["Semana", "Temas"],
         [
@@ -633,7 +633,7 @@ cap15 = capitulo(
         ],
     ),
 
-    h2("15.5. Fase 4 — Proyectos 🏆", "fase-proyectos"),
+    h2("17.5. Fase 4 — Proyectos 🏆", "fase-proyectos"),
     ul(
         "<strong>Semana 11 — Agenda del Entrenador:</strong> app de consola modular con persistencia en JSON.",
         "<strong>Semana 12 — Pokédex Web:</strong> web con Flask + PokéAPI.",
@@ -648,8 +648,8 @@ cap15 = capitulo(
 #  Capítulo 16 — Tests, FAQ y glosario
 # ======================================================================
 cap16 = capitulo(
-    "cap-16", "16. Tests, preguntas frecuentes y glosario",
-    h2("16.1. Cómo correr los tests", "tests"),
+    "cap-16", "18. Tests, preguntas frecuentes y glosario",
+    h2("18.1. Cómo correr los tests", "tests"),
     p("Los <strong>tests</strong> te dicen si tus ejercicios están bien. Usamos <strong>pytest</strong>:"),
     code('''
         pytest                                   # todos los tests
@@ -660,13 +660,13 @@ cap16 = capitulo(
     prueban las soluciones; la Liga los corre contra TU <code>ejercicios.py</code> para
     darte EXP.""", "nota"),
 
-    h2("16.2. Preguntas frecuentes", "faq"),
+    h2("18.2. Preguntas frecuentes", "faq"),
     p("<strong>¿Por dónde empiezo?</strong> Por la Liga: <code>python aventura.py</code>. Después seguí la semana 01."),
     p("<strong>Me sale \"command not found: python\".</strong> Probá con <code>python3</code>."),
     p("<strong>Los tests me dan rojo. ¿Está mal?</strong> Significa que tu solución todavía no es correcta. Leé el error (está en español), corregí y volvé a probar. Es normal."),
     p("<strong>¿Puedo ver las soluciones?</strong> Sí, pero intentá primero vos. Mirar sin intentar es como usar un truco: ganás pero no aprendés."),
 
-    h2("16.3. Glosario", "glosario"),
+    h2("18.3. Glosario", "glosario"),
     tabla(
         ["Palabra", "Qué significa"],
         [
@@ -682,8 +682,165 @@ cap16 = capitulo(
 )
 
 
+# ======================================================================
+#  Capítulo 15 — Linux: la terminal (semana 1 del curso)
+# ======================================================================
+cap_linux1 = capitulo(
+    "cap-linux1", "15. Linux: la terminal",
+    p("""Esta parte cubre <strong>Linux</strong>, que en el curso ves en las semanas
+    1 y 2 (antes de Python). La <strong>terminal</strong> es una ventana donde
+    escribís comandos de texto y la computadora te responde."""),
+    caja("""Pensá en la terminal como la <strong>Pokédex de tu sistema</strong>: una
+    herramienta de texto, al principio rara, pero la más poderosa que vas a tener.
+    Cada comando es un "ataque".""", "pokemon"),
+
+    h2("15.1. Moverte por las carpetas", "linux-mover"),
+    p("Tres comandos para ubicarte y viajar entre carpetas:"),
+    code('''
+        pwd            # ¿dónde estoy? muestra la carpeta actual
+        ls             # ver qué hay acá (archivos y carpetas)
+        ls -l          # en formato largo (permisos, tamaño, fecha)
+        ls -a          # incluye archivos ocultos (empiezan con .)
+        cd pokecenter  # entrar a una carpeta
+        cd ..          # subir un nivel
+        cd ~           # ir a tu carpeta personal (home)
+    ''', lang="bash"),
+
+    h2("15.2. Crear, copiar y borrar", "linux-crear"),
+    code('''
+        mkdir pokecenter        # crear una carpeta
+        mkdir -p a/b/c          # crear carpetas anidadas de una
+        touch pikachu.txt       # crear un archivo vacío
+        echo "Electrico" > pikachu.txt   # escribir texto en un archivo
+        cat pikachu.txt         # mostrar el contenido de un archivo
+        cp pikachu.txt copia.txt   # copiar un archivo
+        cp -r carpeta copia        # copiar una carpeta entera
+        mv pikachu.txt raichu.txt  # renombrar (o mover)
+        rm pikachu.txt          # borrar un archivo
+        rm -r carpeta           # borrar una carpeta y todo lo de adentro
+    ''', lang="bash"),
+    caja("""En Linux <strong>no hay papelera de reciclaje</strong>: lo que borrás con
+    <code>rm</code>, se va para siempre. Revisá siempre antes de borrar.""", "cuidado"),
+
+    h2("15.3. Rutas absolutas y relativas", "linux-rutas"),
+    p("""Una <strong>ruta absoluta</strong> empieza en la raíz <code>/</code> y vale
+    desde cualquier lado. Una <strong>ruta relativa</strong> parte de donde estás parado."""),
+    code('''
+        cd /home/ash/pokecenter   # ruta absoluta (empieza con /)
+        cd pokecenter/gimnasio    # ruta relativa (desde acá)
+    ''', lang="bash"),
+    ul(
+        "<code>.</code> &rarr; la carpeta actual",
+        "<code>..</code> &rarr; la carpeta de arriba",
+        "<code>~</code> &rarr; tu home",
+        "<code>/</code> &rarr; la raíz de todo",
+    ),
+
+    h2("15.4. Permisos básicos", "linux-permisos"),
+    p("Cada archivo tiene permisos. Al correr <code>ls -l</code> ves algo como <code>-rwxr-xr--</code>:"),
+    ul(
+        "<code>r</code> = leer, <code>w</code> = escribir, <code>x</code> = ejecutar.",
+        "Se agrupan de a 3: <strong>dueño</strong>, <strong>grupo</strong> y <strong>otros</strong>.",
+    ),
+    p("En la próxima parte vas a aprender a cambiarlos con <code>chmod</code>."),
+
+    h2("15.5. Resumen", "linux-resumen-1"),
+    tabla(
+        ["Comando", "Qué hace"],
+        [
+            ["<code>pwd</code>", "Dice en qué carpeta estás"],
+            ["<code>ls</code>", "Lista archivos y carpetas"],
+            ["<code>cd</code>", "Cambia de carpeta"],
+            ["<code>mkdir</code>", "Crea una carpeta"],
+            ["<code>touch</code> / <code>echo</code>", "Crea / escribe archivos"],
+            ["<code>cat</code>", "Muestra un archivo"],
+            ["<code>cp</code> / <code>mv</code>", "Copia / mueve o renombra"],
+            ["<code>rm</code>", "Borra (¡sin papelera!)"],
+        ],
+    ),
+)
+
+
+# ======================================================================
+#  Capítulo 16 — Linux: comandos intermedios (semana 2 del curso)
+# ======================================================================
+cap_linux2 = capitulo(
+    "cap-linux2", "16. Linux: comandos intermedios",
+    p("Ahora que te movés por la terminal, sumamos superpoderes: editar archivos, encadenar comandos, buscar, y automatizar con scripts."),
+
+    h2("16.1. Editar con nano", "linux-nano"),
+    p("<code>nano</code> es un editor de texto simple dentro de la terminal:"),
+    code("nano notas.txt   # Ctrl+O para guardar, Ctrl+X para salir", lang="bash"),
+
+    h2("16.2. Redirección y pipes", "linux-pipes"),
+    p("Podés mandar la salida de un comando a un archivo, o encadenar comandos:"),
+    code('''
+        echo "Pikachu" > equipo.txt    # > CREA o REEMPLAZA el archivo
+        echo "Charizard" >> equipo.txt # >> AGREGA al final
+        cat equipo.txt | sort          # | (pipe) conecta dos comandos
+        ls | wc -l                     # cuenta cuántos archivos hay
+    ''', lang="bash"),
+    caja("Ojo: <code>&gt;</code> pisa todo lo que había; <code>&gt;&gt;</code> agrega. No los confundas.", "cuidado"),
+
+    h2("16.3. Buscar: grep y find", "linux-buscar"),
+    code('''
+        grep "Fuego" pokedex.txt    # busca TEXTO dentro de un archivo
+        grep -i "fuego" pokedex.txt # -i ignora mayúsculas/minúsculas
+        find . -name "*.txt"        # busca ARCHIVOS por nombre
+    ''', lang="bash"),
+
+    h2("16.4. Procesos y permisos", "linux-procesos"),
+    code('''
+        ps aux              # lista los procesos en ejecución
+        ps aux | grep python   # filtra los de python
+        kill 1234           # cierra el proceso con ese número (PID)
+        chmod +x script.sh  # da permiso de EJECUCIÓN
+        chmod 755 script.sh # forma numérica (rwx r-x r-x)
+    ''', lang="bash"),
+
+    h2("16.5. Tu primer script bash", "linux-scripts"),
+    p("Un <strong>script</strong> es un archivo con una lista de comandos. Es tu máquina automática:"),
+    code('''
+        #!/usr/bin/env bash
+        # La primera línea (shebang) dice que esto es un script bash.
+        echo "¡Hola, Entrenador!"
+        echo "Capturaste a: $1"   # $1 es el primer argumento
+    ''', lang="bash"),
+    p("Para correrlo, le das permiso y lo ejecutás:"),
+    code('''
+        chmod +x saludo.sh
+        ./saludo.sh Snorlax    # ./ = "ejecutá este archivo de acá"
+    ''', lang="bash"),
+
+    h2("16.6. Instalar programas y SSH", "linux-apt-ssh"),
+    code('''
+        sudo apt update             # actualiza la lista de programas
+        sudo apt install cowsay     # instala un programa
+        ssh entrenador@192.168.1.50 # te conectás a otra máquina
+    ''', lang="bash"),
+    caja("""<code>sudo</code> ejecuta un comando como administrador (root). Es
+    poderoso: no corras con <code>sudo</code> cosas que no entendés.""", "nota"),
+
+    h2("16.7. Resumen", "linux-resumen-2"),
+    tabla(
+        ["Comando", "Qué hace"],
+        [
+            ["<code>nano</code>", "Edita un archivo de texto"],
+            ["<code>&gt;</code> / <code>&gt;&gt;</code>", "Redirige (reemplaza / agrega)"],
+            ["<code>|</code>", "Conecta la salida de un comando con otro"],
+            ["<code>grep</code> / <code>find</code>", "Busca texto / archivos"],
+            ["<code>ps</code> / <code>kill</code>", "Ver / cerrar procesos"],
+            ["<code>chmod</code>", "Cambia permisos"],
+            ["<code>apt</code> / <code>ssh</code>", "Instala programas / conecta a otra máquina"],
+        ],
+    ),
+)
+
+
 # Lista final de capítulos, en orden.
 CAPITULOS = [
     cap_intro, cap1, cap2, cap3, cap4, cap5, cap6, cap7, cap8,
-    cap9, cap10, cap11, cap12, cap13, cap14, cap15, cap16,
+    cap9, cap10, cap11, cap12, cap13, cap14,
+    cap_linux1, cap_linux2,
+    cap15, cap16,
 ]

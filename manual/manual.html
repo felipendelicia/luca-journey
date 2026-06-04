@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python con Pokémon — El libro del curso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&display=swap">
+<style>
+:root{
+  --paper:#f6efe1; --paper-2:#fffdf7; --card:#fffaf0;
+  --ink:#211f2b; --ink-soft:#5a5667; --ink-mute:#8a8597;
+  --red:#e3350d; --red-deep:#b21807; --red-ink:#7a1206;
+  --yellow:#ffcb05; --yellow-deep:#e0a800;
+  --teal:#0ea5a0; --teal-deep:#0b7c78;
+  --blue:#2f5fd0;
+  --line:#e7dcc4; --line-2:#efe6d2;
+  --code-bg:#282C34;
+  --shadow-sm:0 2px 6px rgba(40,30,10,.07);
+  --shadow:0 14px 40px -18px rgba(60,40,10,.35);
+  --shadow-lg:0 30px 70px -30px rgba(60,30,10,.5);
+  --font-display:"Bricolage Grotesque","Hanken Grotesk",system-ui,sans-serif;
+  --font-body:"Hanken Grotesk",system-ui,"Segoe UI",sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,"DejaVu Sans Mono",monospace;
+  --font-pixel:"Silkscreen","JetBrains Mono",monospace;
+  --maxw:1180px; --readw:720px;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--font-body); font-size:17px; line-height:1.68;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+
+/* ===== Tipografía base ===== */
+h1,h2,h3{font-family:var(--font-display); font-weight:800; letter-spacing:-.02em; line-height:1.1;}
+p{margin:.7em 0;}
+strong{color:var(--red-ink); font-weight:700;}
+a{color:var(--teal-deep); text-decoration:none;}
+
+/* Código en línea */
+p code,li code,td code,h2 code,h3 code,figcaption code{
+  font-family:var(--font-mono); font-size:.82em; font-weight:500;
+  background:#fff; color:var(--red-deep);
+  border:1px solid var(--line); border-radius:6px; padding:.06em .4em;
+}
+
+/* ===== Encabezados de sección ===== */
+h1.cap{
+  display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto auto;
+  column-gap:18px; align-items:center; margin:0 0 .7em;
+  padding-bottom:.5rem; border-bottom:3px solid var(--ink);
+}
+.cap-kicker{
+  grid-column:2; grid-row:1; align-self:end;
+  font-family:var(--font-pixel); font-size:10px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--red); margin-bottom:2px;
+}
+.cap-num{
+  grid-column:1; grid-row:1 / span 2; align-self:center;
+  font-family:var(--font-pixel); font-size:24px; color:#fff;
+  background:var(--red); width:62px; height:62px; border-radius:16px;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 0 0 4px var(--paper),0 0 0 6px var(--red), var(--shadow-sm);
+}
+.cap-ttl{grid-column:2; grid-row:2; font-size:2.05rem; color:var(--ink);}
+
+h2{
+  font-size:1.42rem; color:var(--red-deep); margin:2.2rem 0 .5rem;
+  padding-left:.7rem; position:relative;
+}
+h2::before{
+  content:""; position:absolute; left:0; top:.18em; bottom:.18em; width:5px;
+  border-radius:3px; background:linear-gradient(var(--yellow),var(--red));
+}
+h3{font-size:1.12rem; color:var(--ink); margin:1.4rem 0 .35rem;}
+
+ul,ol{margin:.6em 0; padding-left:1.3em;}
+li{margin:.32em 0;}
+li::marker{color:var(--red);}
+
+/* ===== Ventanas de código ===== */
+figure.code{
+  margin:1.2em 0; border-radius:14px; overflow:hidden;
+  background:var(--code-bg); box-shadow:var(--shadow);
+  border:1px solid rgba(0,0,0,.25);
+}
+.code-bar{
+  display:flex; align-items:center; gap:10px;
+  padding:9px 14px; background:rgba(255,255,255,.05);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.code-bar .dots{display:flex; gap:7px;}
+.code-bar .dots i{width:11px; height:11px; border-radius:50%; display:block;}
+.code-bar .dots i:nth-child(1){background:#ff5f56;}
+.code-bar .dots i:nth-child(2){background:#ffbd2e;}
+.code-bar .dots i:nth-child(3){background:#27c93f;}
+.code-lang{
+  margin-left:auto; font-family:var(--font-pixel); font-size:9px;
+  letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.55);
+}
+.highlight{margin:0; padding:16px 18px; overflow-x:auto; background:transparent !important;}
+.highlight pre{
+  margin:0; font-family:var(--font-mono); font-size:13.5px; line-height:1.6;
+  white-space:pre-wrap; word-wrap:break-word; color:#e8eaf2;
+}
+
+/* ===== Cajas de aviso ===== */
+.callout{
+  position:relative; margin:1.2em 0; padding:14px 16px 14px 18px;
+  border-radius:13px; background:var(--card); border:1px solid var(--line);
+  border-left:5px solid var(--ink-mute); box-shadow:var(--shadow-sm);
+  display:flex; flex-direction:column; gap:6px;
+}
+.callout .et{
+  align-self:flex-start; font-family:var(--font-pixel); font-size:9px;
+  letter-spacing:.1em; color:#fff; padding:4px 9px; border-radius:7px;
+}
+.callout-body{display:block;}
+.callout p{margin:.2em 0;}
+.nota{background:#eef5fd; border-color:#bcd8f5; border-left-color:var(--blue);}
+.nota .et{background:var(--blue);}
+.tip{background:#ecfaf1; border-color:#bce7cd; border-left-color:var(--teal-deep);}
+.tip .et{background:var(--teal-deep);}
+.cuidado{background:#fff6e2; border-color:#f3dca0; border-left-color:var(--yellow-deep);}
+.cuidado .et{background:var(--yellow-deep);}
+.clave{background:#fdeef6; border-color:#f3c6df; border-left-color:#c43d8b;}
+.clave .et{background:#c43d8b;}
+.pokemon{background:#feefe9; border-color:#f6c9b6; border-left-color:var(--red);}
+.pokemon .et{background:var(--red);}
+
+/* ===== Tablas ===== */
+.tabla-wrap{margin:1.1em 0; overflow-x:auto; border-radius:12px; box-shadow:var(--shadow-sm);}
+table{border-collapse:collapse; width:100%; background:var(--paper-2); font-size:.92rem;}
+th,td{padding:9px 13px; text-align:left; border-bottom:1px solid var(--line);}
+th{
+  background:var(--ink); color:#fff; font-family:var(--font-display);
+  font-weight:700; font-size:.82rem; letter-spacing:.02em; border-bottom:none;
+}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:nth-child(even){background:#fbf5e9;}
+
+/* ===== Índice (contenidos) ===== */
+.toc{
+  margin:0 0 2rem; padding:26px 28px; border-radius:18px;
+  background:var(--paper-2); border:1px solid var(--line); box-shadow:var(--shadow-sm);
+}
+.toc h2.toc-t{
+  font-family:var(--font-display); font-size:1.5rem; color:var(--ink);
+  margin:0 0 .8rem; padding:0; }
+.toc h2.toc-t::before{display:none;}
+.toc ul{list-style:none; padding:0; margin:0;}
+.toc > ul > li{margin:.5rem 0;}
+.toc > ul > li > a{font-family:var(--font-display); font-weight:700; color:var(--ink); font-size:1.02rem;}
+.toc ul ul{padding-left:1.1rem; margin:.2rem 0 .6rem; border-left:2px dotted var(--line);}
+.toc ul ul li{margin:.18rem 0;}
+.toc ul ul a{color:var(--ink-soft); font-size:.92rem;}
+.toc a:hover{color:var(--red);}
+
+.cierre{
+  text-align:center; color:var(--ink-mute); font-style:italic; margin:3rem 0 1rem;
+  font-size:.95rem;
+}
+
+/* =====================================================================
+   PANTALLA — la experiencia rica de navegador
+   ===================================================================== */
+@media screen{
+  body{padding-top:54px;}
+
+  /* fondo con grilla de puntos + leve glow */
+  .bg-grid{
+    position:fixed; inset:0; z-index:-2; pointer-events:none;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(227,53,13,.10), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(14,165,160,.10), transparent 60%),
+      radial-gradient(rgba(120,100,60,.16) 1px, transparent 1.4px);
+    background-size:auto,auto,22px 22px;
+  }
+
+  /* barra superior fija con progreso de lectura */
+  .topbar{
+    position:fixed; top:0; left:0; right:0; z-index:50; height:54px;
+    display:flex; align-items:center; gap:14px; padding:0 20px;
+    background:rgba(246,239,225,.82); backdrop-filter:saturate(1.4) blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .pb{
+    width:22px; height:22px; border-radius:50%; border:3px solid var(--ink);
+    background:linear-gradient(to bottom,var(--red) 50%,#fff 50%); position:relative; flex:0 0 auto;
+  }
+  .topbar .pb::after{content:""; position:absolute; inset:8px; margin:auto; width:4px; height:4px; border-radius:50%; background:var(--ink); top:7px; left:7px;}
+  .topbar .brand{font-family:var(--font-pixel); font-size:11px; letter-spacing:.14em; color:var(--ink); text-transform:uppercase;}
+  .topbar .brand b{color:var(--red);}
+  .topbar .meta{margin-left:auto; font-family:var(--font-pixel); font-size:9px; letter-spacing:.1em; color:var(--ink-mute);}
+  .progress{
+    position:absolute; left:0; bottom:-1px; height:3px; width:100%;
+    background:linear-gradient(90deg,var(--red),var(--yellow),var(--teal));
+    transform-origin:0 50%; transform:scaleX(0);
+    animation:grow linear both; animation-timeline:scroll(root block);
+  }
+  @keyframes grow{to{transform:scaleX(1);}}
+
+  /* layout con riel lateral */
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:34px 24px 80px;
+        display:grid; grid-template-columns:248px minmax(0,1fr); gap:46px;}
+  .rail{position:sticky; top:78px; align-self:start; height:max-content;}
+  .rail .device{
+    background:var(--ink); color:#fff; border-radius:18px; padding:16px;
+    box-shadow:var(--shadow); margin-bottom:16px; position:relative; overflow:hidden;
+  }
+  .rail .device::before{content:""; position:absolute; inset:0;
+    background:repeating-linear-gradient(transparent 0 3px, rgba(255,255,255,.025) 3px 4px);}
+  .rail .lens{
+    width:54px; height:54px; border-radius:50%;
+    background:radial-gradient(circle at 32% 30%, #cdeafe 0 14%, #3aa0ee 38%, #1357a8 78%);
+    border:4px solid #eaf4ff; box-shadow:0 0 0 3px var(--ink),0 6px 14px rgba(0,0,0,.4);
+    position:relative;
+  }
+  .rail .leds{display:flex; gap:7px; margin-top:14px;}
+  .rail .leds i{width:10px; height:10px; border-radius:50%;}
+  .rail .leds i:nth-child(1){background:#ff5f56;}
+  .rail .leds i:nth-child(2){background:var(--yellow);}
+  .rail .leds i:nth-child(3){background:#27c93f;}
+  .rail .dev-tt{font-family:var(--font-pixel); font-size:9px; letter-spacing:.12em; color:rgba(255,255,255,.6); margin-top:14px;}
+  .rail nav{font-size:.86rem; max-height:60vh; overflow:auto; padding-right:4px;}
+  .rail nav a{
+    display:flex; gap:9px; align-items:center; padding:6px 8px; border-radius:9px;
+    color:var(--ink-soft); margin:1px 0;
+  }
+  .rail nav a .rn{
+    font-family:var(--font-pixel); font-size:9px; color:#fff; background:var(--ink-mute);
+    width:22px; height:20px; border-radius:6px; display:flex; align-items:center; justify-content:center; flex:0 0 auto;
+  }
+  .rail nav a:hover{background:#fff; color:var(--ink); box-shadow:var(--shadow-sm);}
+  .rail nav a:hover .rn{background:var(--red);}
+
+  .book{min-width:0; max-width:var(--readw);}
+  .book h1.cap{scroll-margin-top:74px;}
+  .book h2{scroll-margin-top:70px;}
+
+  /* el riel desaparece en pantallas chicas */
+  @media (max-width:920px){
+    .wrap{grid-template-columns:1fr; gap:0;}
+    .rail{display:none;}
+    .book{max-width:none;}
+  }
+
+  /* portada estilo consola Pokédex */
+  .portada{
+    position:relative; margin:0 0 2.4rem; padding:54px 40px 48px; overflow:hidden;
+    border-radius:24px; color:#fff; text-align:center;
+    background:
+      radial-gradient(120% 120% at 50% -20%, #ff6a3d 0%, #e3350d 32%, #9d1505 72%, #5e0d04 100%);
+    box-shadow:var(--shadow-lg);
+  }
+  .portada::after{content:""; position:absolute; inset:0; pointer-events:none;
+    background:repeating-linear-gradient(transparent 0 3px, rgba(0,0,0,.05) 3px 4px);
+    mix-blend-mode:overlay;}
+  .portada .pokeball{
+    width:108px; height:108px; border-radius:50%; margin:0 auto 22px;
+    background:linear-gradient(to bottom,#fff 0 46%,var(--ink) 46% 54%,#fff 54%);
+    border:7px solid var(--ink); position:relative;
+    box-shadow:0 14px 30px rgba(0,0,0,.35);
+  }
+  .portada .pokeball::after{content:""; position:absolute; top:50%; left:50%;
+    width:30px; height:30px; border-radius:50%; background:#fff; border:7px solid var(--ink);
+    transform:translate(-50%,-50%);}
+  .portada .kick{font-family:var(--font-pixel); font-size:11px; letter-spacing:.3em; color:var(--yellow); text-transform:uppercase;}
+  .portada h1{
+    font-size:clamp(2.4rem,6vw,4rem); margin:.3rem 0 .2rem; color:#fff;
+    text-shadow:0 3px 0 rgba(0,0,0,.18); letter-spacing:-.03em;
+  }
+  .portada .sub{font-size:1.06rem; opacity:.95; margin:.25rem 0; max-width:560px; margin-inline:auto;}
+  .portada .pie{margin-top:26px; font-family:var(--font-pixel); font-size:9px; letter-spacing:.14em; opacity:.8;}
+
+  /* aparición escalonada al cargar */
+  .reveal{opacity:0; transform:translateY(16px); animation:rise .8s cubic-bezier(.2,.75,.25,1) forwards;}
+  .d1{animation-delay:.05s;} .d2{animation-delay:.14s;} .d3{animation-delay:.23s;}
+  .d4{animation-delay:.32s;} .d5{animation-delay:.41s;}
+  @keyframes rise{to{opacity:1; transform:none;}}
+
+  figure.code:hover{transform:translateY(-2px); box-shadow:var(--shadow-lg); transition:transform .25s, box-shadow .25s;}
+  .callout{transition:transform .2s;}
+  .callout:hover{transform:translateX(2px);}
+}
+
+/* =====================================================================
+   IMPRESIÓN — el libro limpio y paginado (WeasyPrint)
+   ===================================================================== */
+@media print{
+  @page{
+    size:A4; margin:2cm 1.7cm 1.8cm;
+    @bottom-center{content:counter(page); color:#9aa0a6; font-size:9pt;}
+    @top-right{content:"Python con Pokémon"; color:#c9ced4; font-size:8.5pt;}
+  }
+  @page:first{margin:0; @bottom-center{content:none;} @top-right{content:none;}}
+  body{font-size:10.5pt; background:#fff; padding:0;}
+  .bg-grid,.topbar,.rail{display:none !important;}
+  .wrap{display:block; max-width:none; margin:0; padding:0;}
+  .book{max-width:none;}
+  p{text-align:justify;}
+
+  .portada{
+    height:100vh; color:#fff; text-align:center; padding-top:7cm; page-break-after:always;
+    background:linear-gradient(160deg,#b5121b,#d62828 55%,#f25c54);
+  }
+  .portada .pokeball{width:120px; height:120px; border-radius:50%;
+    border:8px solid #2a2a2a; margin:0 auto 1cm; background:linear-gradient(to bottom,#ee1515 50%,#fff 50%);}
+  .portada .pokeball::after{display:none;}
+  .portada h1{font-size:30pt; margin:.3cm 0;}
+  .portada .kick{font-size:11pt; letter-spacing:.2em; color:#ffe; }
+  .portada .sub{font-size:13pt;}
+
+  .toc{page-break-after:always; box-shadow:none; border:none; padding:0;}
+  h1.cap{page-break-before:always; display:block; border-bottom:3px solid #0b5fa5; color:#0b5fa5;}
+  .cap-kicker{display:inline; font-family:inherit; color:#b21807; font-size:10pt; letter-spacing:.05em; margin-right:.4em;}
+  .cap-num{display:inline; background:none; color:#0b5fa5; box-shadow:none; width:auto; height:auto; font-family:inherit; font-size:21pt;}
+  .cap-num::after{content:". ";}
+  .cap-ttl{display:inline; font-size:21pt; color:#0b5fa5;}
+  h2{color:#11497e;} h2::before{background:#ffcb05;}
+  figure.code,.callout,.tabla-wrap,table{box-shadow:none;}
+  figure.code:hover{transform:none;}
+}
+
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: #ffffcc }
+.highlight { background: #282C34; color: #ABB2BF }
+.highlight .c { color: #7F848E } /* Comment */
+.highlight .err { color: #ABB2BF } /* Error */
+.highlight .esc { color: #ABB2BF } /* Escape */
+.highlight .g { color: #ABB2BF } /* Generic */
+.highlight .k { color: #C678DD } /* Keyword */
+.highlight .l { color: #ABB2BF } /* Literal */
+.highlight .n { color: #E06C75 } /* Name */
+.highlight .o { color: #56B6C2 } /* Operator */
+.highlight .x { color: #ABB2BF } /* Other */
+.highlight .p { color: #ABB2BF } /* Punctuation */
+.highlight .ch { color: #7F848E } /* Comment.Hashbang */
+.highlight .cm { color: #7F848E } /* Comment.Multiline */
+.highlight .cp { color: #7F848E } /* Comment.Preproc */
+.highlight .cpf { color: #7F848E } /* Comment.PreprocFile */
+.highlight .c1 { color: #7F848E } /* Comment.Single */
+.highlight .cs { color: #7F848E } /* Comment.Special */
+.highlight .gd { color: #ABB2BF } /* Generic.Deleted */
+.highlight .ge { color: #ABB2BF } /* Generic.Emph */
+.highlight .ges { color: #ABB2BF } /* Generic.EmphStrong */
+.highlight .gr { color: #ABB2BF } /* Generic.Error */
+.highlight .gh { color: #ABB2BF } /* Generic.Heading */
+.highlight .gi { color: #ABB2BF } /* Generic.Inserted */
+.highlight .go { color: #ABB2BF } /* Generic.Output */
+.highlight .gp { color: #ABB2BF } /* Generic.Prompt */
+.highlight .gs { color: #ABB2BF } /* Generic.Strong */
+.highlight .gu { color: #ABB2BF } /* Generic.Subheading */
+.highlight .gt { color: #ABB2BF } /* Generic.Traceback */
+.highlight .kc { color: #E5C07B } /* Keyword.Constant */
+.highlight .kd { color: #C678DD } /* Keyword.Declaration */
+.highlight .kn { color: #C678DD } /* Keyword.Namespace */
+.highlight .kp { color: #C678DD } /* Keyword.Pseudo */
+.highlight .kr { color: #C678DD } /* Keyword.Reserved */
+.highlight .kt { color: #E5C07B } /* Keyword.Type */
+.highlight .ld { color: #ABB2BF } /* Literal.Date */
+.highlight .m { color: #D19A66 } /* Literal.Number */
+.highlight .s { color: #98C379 } /* Literal.String */
+.highlight .na { color: #E06C75 } /* Name.Attribute */
+.highlight .nb { color: #E5C07B } /* Name.Builtin */
+.highlight .nc { color: #E5C07B } /* Name.Class */
+.highlight .no { color: #E06C75 } /* Name.Constant */
+.highlight .nd { color: #61AFEF } /* Name.Decorator */
+.highlight .ni { color: #E06C75 } /* Name.Entity */
+.highlight .ne { color: #E06C75 } /* Name.Exception */
+.highlight .nf { color: #61AFEF; font-weight: bold } /* Name.Function */
+.highlight .nl { color: #E06C75 } /* Name.Label */
+.highlight .nn { color: #E06C75 } /* Name.Namespace */
+.highlight .nx { color: #E06C75 } /* Name.Other */
+.highlight .py { color: #E06C75 } /* Name.Property */
+.highlight .nt { color: #E06C75 } /* Name.Tag */
+.highlight .nv { color: #E06C75 } /* Name.Variable */
+.highlight .ow { color: #56B6C2 } /* Operator.Word */
+.highlight .pm { color: #ABB2BF } /* Punctuation.Marker */
+.highlight .w { color: #ABB2BF } /* Text.Whitespace */
+.highlight .mb { color: #D19A66 } /* Literal.Number.Bin */
+.highlight .mf { color: #D19A66 } /* Literal.Number.Float */
+.highlight .mh { color: #D19A66 } /* Literal.Number.Hex */
+.highlight .mi { color: #D19A66 } /* Literal.Number.Integer */
+.highlight .mo { color: #D19A66 } /* Literal.Number.Oct */
+.highlight .sa { color: #98C379 } /* Literal.String.Affix */
+.highlight .sb { color: #98C379 } /* Literal.String.Backtick */
+.highlight .sc { color: #98C379 } /* Literal.String.Char */
+.highlight .dl { color: #98C379 } /* Literal.String.Delimiter */
+.highlight .sd { color: #98C379 } /* Literal.String.Doc */
+.highlight .s2 { color: #98C379 } /* Literal.String.Double */
+.highlight .se { color: #98C379 } /* Literal.String.Escape */
+.highlight .sh { color: #98C379 } /* Literal.String.Heredoc */
+.highlight .si { color: #98C379 } /* Literal.String.Interpol */
+.highlight .sx { color: #98C379 } /* Literal.String.Other */
+.highlight .sr { color: #98C379 } /* Literal.String.Regex */
+.highlight .s1 { color: #98C379 } /* Literal.String.Single */
+.highlight .ss { color: #98C379 } /* Literal.String.Symbol */
+.highlight .bp { color: #E5C07B } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #56B6C2; font-weight: bold } /* Name.Function.Magic */
+.highlight .vc { color: #E06C75 } /* Name.Variable.Class */
+.highlight .vg { color: #E06C75 } /* Name.Variable.Global */
+.highlight .vi { color: #E06C75 } /* Name.Variable.Instance */
+.highlight .vm { color: #E06C75 } /* Name.Variable.Magic */
+.highlight .il { color: #D19A66 } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="bg-grid" aria-hidden="true"></div>
+<header class="topbar">
+  <span class="pb"></span>
+  <span class="brand">Pokédex <b>Codex</b></span>
+  <span class="meta">Python con Pokémon</span>
+  <div class="progress"></div>
+</header>
+<div class="wrap">
+<aside class="rail"><div class="device"><div class="lens"></div><div class="leds"><i></i><i></i><i></i></div><div class="dev-tt">Pokédex &middot; Codex</div></div><nav><a href="#cap-intro"><span class="rn">0</span><span>Cómo usar este libro y el curso</span></a><a href="#cap-1"><span class="rn">1</span><span>Tu primer programa en Python</span></a><a href="#cap-2"><span class="rn">2</span><span>Variables y tipos de datos</span></a><a href="#cap-3"><span class="rn">3</span><span>Operadores</span></a><a href="#cap-4"><span class="rn">4</span><span>Cadenas de texto (strings)</span></a><a href="#cap-5"><span class="rn">5</span><span>Pedir datos: input()</span></a><a href="#cap-6"><span class="rn">6</span><span>Condicionales: if / elif / else</span></a><a href="#cap-7"><span class="rn">7</span><span>Bucles: while y for</span></a><a href="#cap-8"><span class="rn">8</span><span>Funciones</span></a><a href="#cap-9"><span class="rn">9</span><span>Listas y tuplas</span></a><a href="#cap-10"><span class="rn">10</span><span>Diccionarios y conjuntos</span></a><a href="#cap-11"><span class="rn">11</span><span>Archivos y manejo de errores</span></a><a href="#cap-12"><span class="rn">12</span><span>Programación orientada a objetos (POO)</span></a><a href="#cap-13"><span class="rn">13</span><span>POO avanzado: herencia y polimorfismo</span></a><a href="#cap-14"><span class="rn">14</span><span>Módulos, pip y entornos virtuales</span></a><a href="#cap-linux1"><span class="rn">15</span><span>Linux: la terminal</span></a><a href="#cap-linux2"><span class="rn">16</span><span>Linux: comandos intermedios</span></a><a href="#cap-15"><span class="rn">17</span><span>Mapa de temas del curso</span></a><a href="#cap-16"><span class="rn">18</span><span>Tests, preguntas frecuentes y glosario</span></a></nav></aside>
+<main class="book">
+<section class="portada"><div class="pokeball reveal d1"></div><p class="kick reveal d2">El libro del curso</p><h1 class="reveal d2">Python con Pokémon</h1><p class="sub reveal d3">Aprendé a programar desde cero, paso a paso, con Linux, Python y mucha aventura.</p><p class="sub reveal d4">Y convertite en Campeón de Kanto 🏆</p><p class="pie reveal d5">Manual + libro de Python &middot; generar_manual.py</p></section>
+<section class="toc"><h2 class="toc-t">Índice</h2><ul><li><a href="#cap-intro">0. Cómo usar este libro y el curso</a><ul><li><a href="#que-es">0.1. ¿Qué es este proyecto?</a></li><li><a href="#instalacion">0.2. Instalación</a></li><li><a href="#liga">0.3. La Liga Pokémon: jugá tu progreso</a></li><li><a href="#metodo">0.4. El método: cómo trabajar cada semana</a></li></ul></li><li><a href="#cap-1">1. Tu primer programa en Python</a><ul><li><a href="#print">1.1. print(): mostrar cosas en pantalla</a></li><li><a href="#repl">1.2. El REPL: probar al instante</a></li><li><a href="#comentarios">1.3. Comentarios</a></li></ul></li><li><a href="#cap-2">2. Variables y tipos de datos</a><ul><li><a href="#variables">2.1. Variables</a></li><li><a href="#tipos">2.2. Los cuatro tipos básicos</a></li><li><a href="#fstrings">2.3. f-strings: armar texto con variables</a></li></ul></li><li><a href="#cap-3">3. Operadores</a><ul><li><a href="#aritmeticos">3.1. Operadores aritméticos</a></li><li><a href="#comparacion">3.2. Operadores de comparación</a></li><li><a href="#logicos">3.3. Operadores lógicos</a></li></ul></li><li><a href="#cap-4">4. Cadenas de texto (strings)</a><ul><li><a href="#split-join">4.1. split y join</a></li><li><a href="#slicing">4.2. Slicing: rebanar texto</a></li></ul></li><li><a href="#cap-5">5. Pedir datos: input()</a><ul><li><a href="#conversion">5.1. Conversión de tipos</a></li></ul></li><li><a href="#cap-6">6. Condicionales: if / elif / else</a></li><li><a href="#cap-7">7. Bucles: while y for</a><ul><li><a href="#while">7.1. while: repetir mientras...</a></li><li><a href="#for">7.2. for y range()</a></li><li><a href="#break-continue">7.3. break y continue</a></li></ul></li><li><a href="#cap-8">8. Funciones</a><ul><li><a href="#return">8.1. return: devolver un resultado</a></li><li><a href="#defecto">8.2. Valores por defecto</a></li><li><a href="#recursion">8.3. Recursión</a></li></ul></li><li><a href="#cap-9">9. Listas y tuplas</a><ul><li><a href="#comprensiones">9.1. Comprensiones de listas</a></li><li><a href="#tuplas">9.2. Tuplas</a></li></ul></li><li><a href="#cap-10">10. Diccionarios y conjuntos</a><ul><li><a href="#sets">10.1. Conjuntos (sets)</a></li><li><a href="#resumen-colecciones">10.2. Resumen de colecciones</a></li></ul></li><li><a href="#cap-11">11. Archivos y manejo de errores</a><ul><li><a href="#try-except">11.1. try / except</a></li></ul></li><li><a href="#cap-12">12. Programación orientada a objetos (POO)</a></li><li><a href="#cap-13">13. POO avanzado: herencia y polimorfismo</a></li><li><a href="#cap-14">14. Módulos, pip y entornos virtuales</a></li><li><a href="#cap-linux1">15. Linux: la terminal</a><ul><li><a href="#linux-mover">15.1. Moverte por las carpetas</a></li><li><a href="#linux-crear">15.2. Crear, copiar y borrar</a></li><li><a href="#linux-rutas">15.3. Rutas absolutas y relativas</a></li><li><a href="#linux-permisos">15.4. Permisos básicos</a></li><li><a href="#linux-resumen-1">15.5. Resumen</a></li></ul></li><li><a href="#cap-linux2">16. Linux: comandos intermedios</a><ul><li><a href="#linux-nano">16.1. Editar con nano</a></li><li><a href="#linux-pipes">16.2. Redirección y pipes</a></li><li><a href="#linux-buscar">16.3. Buscar: grep y find</a></li><li><a href="#linux-procesos">16.4. Procesos y permisos</a></li><li><a href="#linux-scripts">16.5. Tu primer script bash</a></li><li><a href="#linux-apt-ssh">16.6. Instalar programas y SSH</a></li><li><a href="#linux-resumen-2">16.7. Resumen</a></li></ul></li><li><a href="#cap-15">17. Mapa de temas del curso</a><ul><li><a href="#fase-linux">17.1. Fase 1 — Linux 🐧</a></li><li><a href="#fase-py-basico">17.2. Fase 2 — Python básico 🐍</a></li><li><a href="#fase-git">17.3. Descanso — Git 🔀</a></li><li><a href="#fase-py-avanzado">17.4. Fase 3 — Python avanzado 🧬</a></li><li><a href="#fase-proyectos">17.5. Fase 4 — Proyectos 🏆</a></li></ul></li><li><a href="#cap-16">18. Tests, preguntas frecuentes y glosario</a><ul><li><a href="#tests">18.1. Cómo correr los tests</a></li><li><a href="#faq">18.2. Preguntas frecuentes</a></li><li><a href="#glosario">18.3. Glosario</a></li></ul></li></ul></section>
+<h1 id="cap-intro" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">0</span><span class="cap-ttl">Cómo usar este libro y el curso</span></h1><p>¡Bienvenido! Este libro tiene <strong>dos caras</strong>. Por un lado es el
+    <strong>manual</strong> del proyecto: te explica cómo instalarlo y cómo avanzar.
+    Por otro lado es un <strong>libro de Python</strong>: a partir del capítulo 1
+    podés aprender el lenguaje desde cero, con ejemplos y ejercicios.</p><p>Todo está pensado para alguien que <strong>nunca programó</strong>. No hace
+    falta saber nada de antes. Vamos con calma y con temática Pokémon. 🐍</p><h2 id="que-es">0.1. ¿Qué es este proyecto?</h2><p>Es un curso completo de <strong>Linux</strong> y <strong>Python</strong>,
+    dividido en 12 semanas (más una semana de descanso de Git) y 4 proyectos finales.
+    Cada concepto se explica con una analogía Pokémon, cada ejercicio usa Pokémon, y
+    cada proyecto es algo que un Entrenador usaría de verdad.</p><h2 id="instalacion">0.2. Instalación</h2><p>Abrí una terminal dentro de la carpeta del proyecto y corré:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span></figcaption><div class="highlight"><pre><span></span>bash<span class="w"> </span>setup.sh
+</pre></div>
+</figure><p>Eso crea un <em>entorno virtual</em> e instala lo necesario. Después, cada vez que trabajes, activalo:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span></figcaption><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>venv/bin/activate
+</pre></div>
+</figure><div class="callout cuidado"><span class="et">CUIDADO</span><span class="callout-body">Si <code>setup.sh</code> falla, abrilo: está comentado línea por línea.
+    Las dos primeras semanas son de Linux y no necesitan Python para los ejercicios
+    de terminal.</span></div><h2 id="liga">0.3. La Liga Pokémon: jugá tu progreso</h2><p>La mejor forma de hacer el curso. En vez de "hacer la tarea", subís de nivel.
+    Abrila con:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span></figcaption><div class="highlight"><pre><span></span>python<span class="w"> </span>aventura.py
+</pre></div>
+</figure><p>Desde ese centro de mando podés:</p><ul><li>🎴 Ver tu <strong>Tarjeta de Entrenador</strong> (nivel, EXP, rango).</li><li>🏋️ <strong>Entrenar</strong> una semana: corre <em>tus</em> ejercicios y te da EXP por cada test que pasás.</li><li>🏅 Ganar las <strong>8 medallas de gimnasio</strong> y desbloquear logros.</li><li>🔥 Mantener tu <strong>racha</strong> diaria y ver el mapa de la región.</li></ul><p>Cuando consigas las 8 medallas, <strong>¡sos Campeón de Kanto!</strong> 🏆</p><h2 id="metodo">0.4. El método: cómo trabajar cada semana</h2><ol><li>📖 <strong>Leé</strong> la teoría de la semana (también podés leer este libro).</li><li>✏️ <strong>Resolvé</strong> los ejercicios (escribí tu código donde dice <code># TU CÓDIGO ACÁ</code>).</li><li>🧪 <strong>Probá</strong> con los tests (ver capítulo 18).</li><li>🎮 <strong>Jugá</strong> el <code>interactivo.py</code> de la semana.</li><li>🏋️ <strong>Entrená</strong> esa semana en la Liga para ganar EXP.</li></ol><div class="callout tip"><span class="et">TIP</span><span class="callout-body"><strong>Regla de oro:</strong> equivocarse es parte del juego. Escribí el
+    código vos mismo, no copies y pegues: tipear te enseña.</span></div><h1 id="cap-1" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">1</span><span class="cap-ttl">Tu primer programa en Python</span></h1><p><strong>Python</strong> es un lenguaje de programación: la forma en que le
+    damos órdenes a la computadora. Es famoso porque se lee casi como inglés y es
+    ideal para aprender.</p><div class="callout pokemon"><span class="et">ANALOGÍA POKÉMON</span><span class="callout-body">Pensá en Python como el <strong>idioma de los Entrenadores</strong>. Vos
+    escribís instrucciones (el código) y la computadora las obedece, como un Pokémon
+    bien entrenado.</span></div><h2 id="print">1.1. print(): mostrar cosas en pantalla</h2><p>La instrucción <code>print()</code> muestra texto en la pantalla. Es lo primero que hace todo programador:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;¡Hola, mundo Pokémon!&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Elegí a Pikachu como inicial&quot;</span><span class="p">)</span>
+</pre></div>
+</figure><p>Podés mostrar varias cosas separándolas con comas:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mi Pokémon es&quot;</span><span class="p">,</span> <span class="s2">&quot;Charizard&quot;</span><span class="p">)</span>   <span class="c1"># Mi Pokémon es Charizard</span>
+</pre></div>
+</figure><h2 id="repl">1.2. El REPL: probar al instante</h2><p>Si escribís <code>python3</code> en la terminal, se abre el <strong>REPL</strong>:
+    un modo interactivo donde probás cosas y ves el resultado al toque. El símbolo
+    <code>&gt;&gt;&gt;</code> es su prompt.</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span>
+<span class="mi">4</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hola&quot;</span><span class="p">)</span>
+<span class="n">Hola</span>
+</pre></div>
+</figure><p>Para salir del REPL escribís <code>exit()</code>. Para programas de verdad, escribís el código en un archivo <code>.py</code> y lo corrés con <code>python3 archivo.py</code>.</p><h2 id="comentarios">1.3. Comentarios</h2><p>Un <strong>comentario</strong> es texto que Python ignora. Sirve para explicar tu código. Empieza con <code>#</code>:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="c1"># Esto es un comentario, Python no lo ejecuta.</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hola&quot;</span><span class="p">)</span>   <span class="c1"># también se puede comentar al final de una línea</span>
+</pre></div>
+</figure><div class="callout tip"><span class="et">TIP</span><span class="callout-body">Comentar bien tu código es de buen programador. Tu yo del futuro te lo agradece.</span></div><h1 id="cap-2" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">2</span><span class="cap-ttl">Variables y tipos de datos</span></h1><h2 id="variables">2.1. Variables</h2><p>Una <strong>variable</strong> guarda un dato con un nombre, para usarlo después.
+    Es como una <strong>Pokéball</strong>: adentro guardás algo y le ponés una etiqueta.</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">nombre</span> <span class="o">=</span> <span class="s2">&quot;Pikachu&quot;</span>      <span class="c1"># guardamos un texto</span>
+<span class="n">nivel</span> <span class="o">=</span> <span class="mi">25</span>              <span class="c1"># guardamos un número</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nombre</span><span class="p">)</span>           <span class="c1"># Pikachu</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nivel</span><span class="p">)</span>            <span class="c1"># 25</span>
+</pre></div>
+</figure><p>El nombre va a la izquierda del <code>=</code>, el valor a la derecha. Usá guiones bajos para separar palabras y no empieces con números:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">pokemon_inicial</span> <span class="o">=</span> <span class="s2">&quot;Charmander&quot;</span>   <span class="c1"># ✅ bien</span>
+<span class="c1"># 3pokemon = &quot;no&quot;                # ❌ mal: no puede empezar con número</span>
+</pre></div>
+</figure><h2 id="tipos">2.2. Los cuatro tipos básicos</h2><div class="tabla-wrap"><table><thead><tr><th>Tipo</th><th>Qué es</th><th>Ejemplo</th></tr></thead><tbody><tr><td><code>int</code></td><td>Número entero</td><td><code>nivel = 25</code></td></tr><tr><td><code>float</code></td><td>Número con decimales</td><td><code>peso = 6.0</code></td></tr><tr><td><code>str</code></td><td>Texto (entre comillas)</td><td><code>nombre = "Pikachu"</code></td></tr><tr><td><code>bool</code></td><td>Verdadero o falso</td><td><code>es_legendario = False</code></td></tr></tbody></table></div><p>Para ver el tipo de un valor, usás <code>type()</code>:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="mi">25</span><span class="p">))</span>         <span class="c1"># &lt;class &#39;int&#39;&gt;</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="s2">&quot;Pikachu&quot;</span><span class="p">))</span>  <span class="c1"># &lt;class &#39;str&#39;&gt;</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="mf">6.0</span><span class="p">))</span>        <span class="c1"># &lt;class &#39;float&#39;&gt;</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>       <span class="c1"># &lt;class &#39;bool&#39;&gt;</span>
+</pre></div>
+</figure><div class="callout cuidado"><span class="et">CUIDADO</span><span class="callout-body">Los valores <code>bool</code> se escriben con mayúscula:
+    <code>True</code> y <code>False</code>.</span></div><h2 id="fstrings">2.3. f-strings: armar texto con variables</h2><p>Un <strong>f-string</strong> deja meter variables dentro de un texto poniendo una <code>f</code> antes de las comillas y las variables entre <code>{llaves}</code>:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">nombre</span> <span class="o">=</span> <span class="s2">&quot;Pikachu&quot;</span>
+<span class="n">nivel</span> <span class="o">=</span> <span class="mi">25</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mi </span><span class="si">{</span><span class="n">nombre</span><span class="si">}</span><span class="s2"> es nivel </span><span class="si">{</span><span class="n">nivel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>   <span class="c1"># Mi Pikachu es nivel 25</span>
+</pre></div>
+</figure><div class="callout clave"><span class="et">CONCEPTO CLAVE</span><span class="callout-body">Los f-strings son la forma recomendada de armar texto. ¡Usalos siempre!</span></div><h1 id="cap-3" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">3</span><span class="cap-ttl">Operadores</span></h1><h2 id="aritmeticos">3.1. Operadores aritméticos</h2><div class="tabla-wrap"><table><thead><tr><th>Operador</th><th>Hace</th><th>Ejemplo</th><th>Resultado</th></tr></thead><tbody><tr><td><code>+</code></td><td>Suma</td><td><code>10 + 5</code></td><td>15</td></tr><tr><td><code>-</code></td><td>Resta</td><td><code>10 - 5</code></td><td>5</td></tr><tr><td><code>*</code></td><td>Multiplicación</td><td><code>10 * 5</code></td><td>50</td></tr><tr><td><code>/</code></td><td>División (con decimales)</td><td><code>10 / 4</code></td><td>2.5</td></tr><tr><td><code>//</code></td><td>División entera</td><td><code>10 // 4</code></td><td>2</td></tr><tr><td><code>%</code></td><td>Resto (módulo)</td><td><code>10 % 4</code></td><td>2</td></tr><tr><td><code>**</code></td><td>Potencia</td><td><code>2 ** 3</code></td><td>8</td></tr></tbody></table></div><div class="callout tip"><span class="et">TIP</span><span class="callout-body">El operador <code>%</code> (módulo) es súper útil: un número es par si
+    <code>numero % 2 == 0</code>.</span></div><h2 id="comparacion">3.2. Operadores de comparación</h2><p>Devuelven <code>True</code> o <code>False</code>:</p><div class="tabla-wrap"><table><thead><tr><th>Operador</th><th>Significa</th></tr></thead><tbody><tr><td><code>==</code></td><td>igual a</td></tr><tr><td><code>!=</code></td><td>distinto de</td></tr><tr><td><code>&gt;</code> &nbsp; <code>&lt;</code></td><td>mayor / menor que</td></tr><tr><td><code>&gt;=</code> &nbsp; <code>&lt;=</code></td><td>mayor o igual / menor o igual</td></tr></tbody></table></div><div class="callout cuidado"><span class="et">CUIDADO</span><span class="callout-body"><strong>¡Ojo!</strong> <code>=</code> asigna (guarda en una variable);
+    <code>==</code> compara. No los confundas.</span></div><h2 id="logicos">3.3. Operadores lógicos</h2><p>Combinan condiciones: <code>and</code> (ambas), <code>or</code> (al menos una), <code>not</code> (invierte).</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">nivel</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">tipo</span> <span class="o">=</span> <span class="s2">&quot;Fuego&quot;</span>
+<span class="k">if</span> <span class="n">nivel</span> <span class="o">&gt;=</span> <span class="mi">25</span> <span class="ow">and</span> <span class="n">tipo</span> <span class="o">==</span> <span class="s2">&quot;Fuego&quot;</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;¡Charmander evoluciona a Charmeleon!&quot;</span><span class="p">)</span>
+</pre></div>
+</figure><h1 id="cap-4" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">4</span><span class="cap-ttl">Cadenas de texto (strings)</span></h1><p>Un <strong>string</strong> es texto, siempre entre comillas. Tiene muchos <strong>métodos</strong> (acciones) para transformarlo. No cambian el original: devuelven uno nuevo.</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">nombre</span> <span class="o">=</span> <span class="s2">&quot;  Pikachu  &quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nombre</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>     <span class="c1"># &quot;  PIKACHU  &quot;  (mayúsculas)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nombre</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>     <span class="c1"># &quot;  pikachu  &quot;  (minúsculas)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nombre</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>     <span class="c1"># &quot;Pikachu&quot;      (saca espacios de los bordes)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;pikachu&quot;</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>   <span class="c1"># &quot;Pikachu&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pikachu&quot;</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Pika&quot;</span><span class="p">))</span>  <span class="c1"># True</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;Pikachu&quot;</span><span class="p">))</span>     <span class="c1"># 7  (longitud)</span>
+</pre></div>
+</figure><h2 id="split-join">4.1. split y join</h2><p><code>split</code> parte un texto en una lista; <code>join</code> une una lista en un texto. Son clave para los archivos CSV:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">linea</span> <span class="o">=</span> <span class="s2">&quot;Pikachu,Electrico,25&quot;</span>
+<span class="n">partes</span> <span class="o">=</span> <span class="n">linea</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>     <span class="c1"># [&#39;Pikachu&#39;, &#39;Electrico&#39;, &#39;25&#39;]</span>
+
+<span class="n">datos</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Charizard&quot;</span><span class="p">,</span> <span class="s2">&quot;Fuego&quot;</span><span class="p">,</span> <span class="s2">&quot;50&quot;</span><span class="p">]</span>
+<span class="n">linea</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datos</span><span class="p">)</span>       <span class="c1"># &quot;Charizard,Fuego,50&quot;</span>
+</pre></div>
+</figure><h2 id="slicing">4.2. Slicing: rebanar texto</h2><p>El <strong>slicing</strong> saca una rebanada con <code>[inicio:fin]</code>. El <code>fin</code> NO se incluye:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">texto</span> <span class="o">=</span> <span class="s2">&quot;Pikachu&quot;</span>
+<span class="c1">#        0123456</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">texto</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>    <span class="c1"># &quot;Pika&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">texto</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>     <span class="c1"># &quot;chu&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">texto</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:])</span>    <span class="c1"># &quot;chu&quot;  (los últimos 3)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">texto</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>   <span class="c1"># &quot;uhcakiP&quot;  (al revés)</span>
+</pre></div>
+</figure><h1 id="cap-5" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">5</span><span class="cap-ttl">Pedir datos: input()</span></h1><p><code>input()</code> pausa el programa y espera que el usuario escriba algo y apriete Enter:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">nombre</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;¿Cómo se llama tu Pokémon? &quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;¡Hola, </span><span class="si">{</span><span class="n">nombre</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+</pre></div>
+</figure><div class="callout cuidado"><span class="et">CUIDADO</span><span class="callout-body"><strong>MUY IMPORTANTE:</strong> <code>input()</code> SIEMPRE devuelve
+    texto (str), aunque el usuario escriba un número. Si querés un número, hay que
+    convertirlo.</span></div><h2 id="conversion">5.1. Conversión de tipos</h2><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">nivel_texto</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;¿Nivel? &quot;</span><span class="p">)</span>   <span class="c1"># esto es str, ej &quot;25&quot;</span>
+<span class="n">nivel</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nivel_texto</span><span class="p">)</span>          <span class="c1"># ahora es int: 25</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nivel</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span>                  <span class="c1"># 30</span>
+
+<span class="c1"># Forma compacta, muy común:</span>
+<span class="n">edad</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;¿Tu edad? &quot;</span><span class="p">))</span>
+</pre></div>
+</figure><p>Funciones de conversión: <code>int("25")</code>, <code>float("6.5")</code>, <code>str(25)</code>.</p><h1 id="cap-6" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">6</span><span class="cap-ttl">Condicionales: if / elif / else</span></h1><p><code>if</code> ejecuta un bloque solo si una condición es verdadera. <code>elif</code> agrega más condiciones, y <code>else</code> es el "si no".</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">hp</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="k">if</span> <span class="n">hp</span> <span class="o">&gt;</span> <span class="mi">70</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tu Pokémon está sano 💚&quot;</span><span class="p">)</span>
+<span class="k">elif</span> <span class="n">hp</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tu Pokémon está cansado 💛&quot;</span><span class="p">)</span>
+<span class="k">elif</span> <span class="n">hp</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;¡Está grave! ❤️&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Se debilitó 💀&quot;</span><span class="p">)</span>
+</pre></div>
+</figure><div class="callout clave"><span class="et">CONCEPTO CLAVE</span><span class="callout-body"><strong>La indentación importa.</strong> El código "adentro" del
+    <code>if</code> va con 4 espacios de sangría. Python usa esa sangría para saber
+    qué está adentro y qué afuera. No es decorativo: es obligatorio.</span></div><p>Python revisa las condiciones de arriba hacia abajo y entra en la <strong>primera</strong> verdadera; las demás las ignora.</p><h1 id="cap-7" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">7</span><span class="cap-ttl">Bucles: while y for</span></h1><h2 id="while">7.1. while: repetir mientras...</h2><p><code>while</code> repite un bloque mientras una condición sea verdadera:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">hp_rival</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="k">while</span> <span class="n">hp_rival</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Atacás. HP del rival: </span><span class="si">{</span><span class="n">hp_rival</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">hp_rival</span> <span class="o">=</span> <span class="n">hp_rival</span> <span class="o">-</span> <span class="mi">20</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;¡Ganaste la batalla! 🏆&quot;</span><span class="p">)</span>
+</pre></div>
+</figure><div class="callout cuidado"><span class="et">CUIDADO</span><span class="callout-body">¡Cuidado con los bucles infinitos! Si la condición nunca se vuelve falsa,
+    el programa no termina nunca. Asegurate de que algo cambie adentro (acá, el HP baja).</span></div><h2 id="for">7.2. for y range()</h2><p><code>for</code> recorre una secuencia de valores. <code>range()</code> genera números, ideal para repetir N veces:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>           <span class="c1"># 0, 1, 2, 3, 4</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pokéball número </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">nivel</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">):</span>   <span class="c1"># del 1 al 10 (el 11 NO se incluye)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">nivel</span><span class="p">)</span>
+
+<span class="n">equipo</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Pikachu&quot;</span><span class="p">,</span> <span class="s2">&quot;Charizard&quot;</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">pokemon</span> <span class="ow">in</span> <span class="n">equipo</span><span class="p">:</span>       <span class="c1"># recorre una lista</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tengo a </span><span class="si">{</span><span class="n">pokemon</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</figure><div class="callout nota"><span class="et">NOTA</span><span class="callout-body">Recordá: <code>range(5)</code> da <code>0, 1, 2, 3, 4</code> (empieza en 0, termina antes del 5).</span></div><h2 id="break-continue">7.3. break y continue</h2><p><code>break</code> corta el bucle por completo; <code>continue</code> saltea el resto de esta vuelta y pasa a la siguiente:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">pokemon</span> <span class="ow">in</span> <span class="n">equipo</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">pokemon</span> <span class="o">==</span> <span class="s2">&quot;Mewtwo&quot;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;¡Lo encontramos!&quot;</span><span class="p">)</span>
+        <span class="k">break</span>          <span class="c1"># salimos del for</span>
+</pre></div>
+</figure><h1 id="cap-8" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">8</span><span class="cap-ttl">Funciones</span></h1><p>Una <strong>función</strong> es un bloque de código con nombre que escribís
+    una vez y usás muchas. Es como un ataque que tu Pokémon aprende una vez y usa mil veces.</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">saludar</span><span class="p">(</span><span class="n">nombre</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;¡Hola, </span><span class="si">{</span><span class="n">nombre</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+
+<span class="n">saludar</span><span class="p">(</span><span class="s2">&quot;Ash&quot;</span><span class="p">)</span>      <span class="c1"># ¡Hola, Ash!</span>
+<span class="n">saludar</span><span class="p">(</span><span class="s2">&quot;Misty&quot;</span><span class="p">)</span>    <span class="c1"># ¡Hola, Misty!</span>
+</pre></div>
+</figure><h2 id="return">8.1. return: devolver un resultado</h2><p><code>return</code> hace que la función devuelva un valor para usarlo después:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">calcular_dano</span><span class="p">(</span><span class="n">ataque</span><span class="p">,</span> <span class="n">defensa</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">ataque</span> <span class="o">-</span> <span class="n">defensa</span>
+
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">calcular_dano</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">resultado</span><span class="p">)</span>    <span class="c1"># 30</span>
+</pre></div>
+</figure><div class="callout clave"><span class="et">CONCEPTO CLAVE</span><span class="callout-body"><strong>print vs return:</strong> <code>print</code> solo MUESTRA;
+    <code>return</code> DEVUELVE un valor que podés seguir usando. Si querés usar el
+    resultado después, usá <code>return</code>.</span></div><h2 id="defecto">8.2. Valores por defecto</h2><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">atacar</span><span class="p">(</span><span class="n">nombre</span><span class="p">,</span> <span class="n">dano</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>     <span class="c1"># dano vale 10 si no se especifica</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nombre</span><span class="si">}</span><span class="s2"> hizo </span><span class="si">{</span><span class="n">dano</span><span class="si">}</span><span class="s2"> de daño&quot;</span><span class="p">)</span>
+
+<span class="n">atacar</span><span class="p">(</span><span class="s2">&quot;Pikachu&quot;</span><span class="p">)</span>        <span class="c1"># Pikachu hizo 10 de daño</span>
+<span class="n">atacar</span><span class="p">(</span><span class="s2">&quot;Charizard&quot;</span><span class="p">,</span> <span class="mi">35</span><span class="p">)</span>  <span class="c1"># Charizard hizo 35 de daño</span>
+</pre></div>
+</figure><h2 id="recursion">8.3. Recursión</h2><p>Una función puede llamarse a sí misma. Siempre necesita un <strong>caso base</strong> que la frene:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">factorial</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>           <span class="c1"># caso base</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">n</span> <span class="o">*</span> <span class="n">factorial</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>   <span class="c1"># caso recursivo</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">factorial</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>    <span class="c1"># 120</span>
+</pre></div>
+</figure><h1 id="cap-9" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">9</span><span class="cap-ttl">Listas y tuplas</span></h1><p>Una <strong>lista</strong> es una colección ordenada y modificable. Se escribe entre corchetes. Es como tu equipo Pokémon:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">equipo</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Pikachu&quot;</span><span class="p">,</span> <span class="s2">&quot;Charizard&quot;</span><span class="p">,</span> <span class="s2">&quot;Snorlax&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">equipo</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>    <span class="c1"># Pikachu  (¡los índices empiezan en 0!)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">equipo</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>   <span class="c1"># Snorlax  (el último)</span>
+
+<span class="n">equipo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Mewtwo&quot;</span><span class="p">)</span>     <span class="c1"># agrega al final</span>
+<span class="n">equipo</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;Charizard&quot;</span><span class="p">)</span>  <span class="c1"># borra por valor</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">equipo</span><span class="p">))</span>          <span class="c1"># cantidad de elementos</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pikachu&quot;</span> <span class="ow">in</span> <span class="n">equipo</span><span class="p">)</span>  <span class="c1"># ¿está? -&gt; True</span>
+</pre></div>
+</figure><h2 id="comprensiones">9.1. Comprensiones de listas</h2><p>Arman una lista nueva en una sola línea. Muy <code>pythónico</code>:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">niveles</span> <span class="o">=</span> <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">15</span><span class="p">]</span>
+<span class="n">dobles</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="o">*</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">niveles</span><span class="p">]</span>          <span class="c1"># [50, 100, 80, 30]</span>
+<span class="n">altos</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">niveles</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="mi">40</span><span class="p">]</span>    <span class="c1"># [50, 40]  (con filtro)</span>
+</pre></div>
+</figure><h2 id="tuplas">9.2. Tuplas</h2><p>Una <strong>tupla</strong> es como una lista pero <strong>inmutable</strong> (no se puede cambiar). Se usa para datos fijos. Se escribe con paréntesis:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">coordenada</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">coordenada</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>    <span class="c1"># 10</span>
+<span class="c1"># coordenada[0] = 5     # ❌ ERROR: una tupla no se modifica</span>
+</pre></div>
+</figure><h1 id="cap-10" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">10</span><span class="cap-ttl">Diccionarios y conjuntos</span></h1><p>Un <strong>diccionario</strong> guarda pares <strong>clave: valor</strong>. Es como una Pokédex: buscás por nombre y obtenés los datos:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">pikachu</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;nombre&quot;</span><span class="p">:</span> <span class="s2">&quot;Pikachu&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tipo&quot;</span><span class="p">:</span> <span class="s2">&quot;Electrico&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nivel&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pikachu</span><span class="p">[</span><span class="s2">&quot;nombre&quot;</span><span class="p">])</span>        <span class="c1"># Pikachu</span>
+<span class="n">pikachu</span><span class="p">[</span><span class="s2">&quot;nivel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">26</span>           <span class="c1"># cambiar un valor</span>
+<span class="n">pikachu</span><span class="p">[</span><span class="s2">&quot;ataque&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">55</span>          <span class="c1"># agregar una clave nueva</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pikachu</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;defensa&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>  <span class="c1"># .get devuelve un default si no está</span>
+</pre></div>
+</figure><p>Para recorrerlo, usá <code>.items()</code>:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">clave</span><span class="p">,</span> <span class="n">valor</span> <span class="ow">in</span> <span class="n">pikachu</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">clave</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">valor</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</figure><h2 id="sets">10.1. Conjuntos (sets)</h2><p>Un <strong>set</strong> guarda elementos únicos, sin repetidos. Ideal para sacar duplicados:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">capturados</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Pikachu&quot;</span><span class="p">,</span> <span class="s2">&quot;Pidgey&quot;</span><span class="p">,</span> <span class="s2">&quot;Pikachu&quot;</span><span class="p">,</span> <span class="s2">&quot;Rattata&quot;</span><span class="p">]</span>
+<span class="n">unicos</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">capturados</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">unicos</span><span class="p">))</span>    <span class="c1"># 3 (sin contar el Pikachu repetido)</span>
+</pre></div>
+</figure><h2 id="resumen-colecciones">10.2. Resumen de colecciones</h2><div class="tabla-wrap"><table><thead><tr><th>Colección</th><th>Símbolo</th><th>Característica</th></tr></thead><tbody><tr><td>Lista</td><td><code>[ ]</code></td><td>Ordenada, modificable</td></tr><tr><td>Tupla</td><td><code>( )</code></td><td>Ordenada, inmutable</td></tr><tr><td>Set</td><td><code>{ }</code></td><td>Única, sin orden</td></tr><tr><td>Diccionario</td><td><code>{clave: valor}</code></td><td>Pares clave-valor</td></tr></tbody></table></div><h1 id="cap-11" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">11</span><span class="cap-ttl">Archivos y manejo de errores</span></h1><p>Para que tus datos sobrevivan al cerrar el programa, los guardás en <strong>archivos</strong>. La forma recomendada es con <code>with</code>, que cierra el archivo solo:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="c1"># Escribir (¡el modo &quot;w&quot; pisa lo que había!)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;equipo.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">archivo</span><span class="p">:</span>
+    <span class="n">archivo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Pikachu</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>     <span class="c1"># \n = salto de línea</span>
+    <span class="n">archivo</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Charizard</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Leer línea por línea</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;equipo.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">archivo</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">linea</span> <span class="ow">in</span> <span class="n">archivo</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">linea</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>   <span class="c1"># strip saca el \n del final</span>
+</pre></div>
+</figure><div class="callout nota"><span class="et">NOTA</span><span class="callout-body">Modos de <code>open()</code>: <code>"r"</code> leer, <code>"w"</code>
+    escribir (reemplaza), <code>"a"</code> agregar al final.</span></div><h2 id="try-except">11.1. try / except</h2><p>Un error puede romper tu programa. Con <code>try</code>/<code>except</code> lo atrapás y seguís adelante:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">numero</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Nivel: &quot;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;El nivel es </span><span class="si">{</span><span class="n">numero</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Eso no es un número válido&quot;</span><span class="p">)</span>
+</pre></div>
+</figure><div class="callout tip"><span class="et">TIP</span><span class="callout-body">Atrapá errores específicos (como <code>ValueError</code> o
+    <code>FileNotFoundError</code>), no un <code>except:</code> pelado.</span></div><h1 id="cap-12" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">12</span><span class="cap-ttl">Programación orientada a objetos (POO)</span></h1><p>La POO te deja crear tus propios "moldes". Una <strong>clase</strong> es el
+    molde (la especie Pikachu); un <strong>objeto</strong> es un individuo hecho con
+    ese molde (tu Pikachu concreto).</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pokemon</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nombre</span><span class="p">,</span> <span class="n">tipo</span><span class="p">,</span> <span class="n">nivel</span><span class="p">):</span>
+        <span class="c1"># self es el propio objeto. Guardamos sus datos (atributos).</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nombre</span> <span class="o">=</span> <span class="n">nombre</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tipo</span> <span class="o">=</span> <span class="n">tipo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nivel</span> <span class="o">=</span> <span class="n">nivel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hp</span> <span class="o">=</span> <span class="mi">100</span>
+
+    <span class="k">def</span> <span class="nf">atacar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>                 <span class="c1"># un método (una acción)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2"> ataca con tipo </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tipo</span><span class="si">}</span><span class="s2">!&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>                <span class="c1"># texto lindo para print()</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2"> (Nivel </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nivel</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+<span class="n">pikachu</span> <span class="o">=</span> <span class="n">Pokemon</span><span class="p">(</span><span class="s2">&quot;Pikachu&quot;</span><span class="p">,</span> <span class="s2">&quot;Electrico&quot;</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pikachu</span><span class="o">.</span><span class="n">atacar</span><span class="p">())</span>   <span class="c1"># Pikachu ataca con tipo Electrico!</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pikachu</span><span class="p">)</span>            <span class="c1"># Pikachu (Nivel 25)</span>
+</pre></div>
+</figure><div class="callout clave"><span class="et">CONCEPTO CLAVE</span><span class="callout-body"><code>__init__</code> es el <strong>constructor</strong>: se ejecuta
+    automáticamente al crear el objeto. <code>self</code> es el propio objeto y va
+    como primer parámetro de los métodos (pero no lo pasás al llamarlos).</span></div><h1 id="cap-13" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">13</span><span class="cap-ttl">POO avanzado: herencia y polimorfismo</span></h1><p>La <strong>herencia</strong> deja que una clase hija reciba todo lo de una clase padre, y agregue o cambie lo suyo:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Pokemon</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nombre</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nombre</span> <span class="o">=</span> <span class="n">nombre</span>
+    <span class="k">def</span> <span class="nf">atacar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2"> usa un ataque normal&quot;</span>
+
+<span class="k">class</span> <span class="nc">PokemonFuego</span><span class="p">(</span><span class="n">Pokemon</span><span class="p">):</span>       <span class="c1"># hereda de Pokemon</span>
+    <span class="k">def</span> <span class="nf">atacar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>              <span class="c1"># SOBRESCRIBE el método (polimorfismo)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2"> usa Lanzallamas! 🔥&quot;</span>
+
+<span class="n">equipo</span> <span class="o">=</span> <span class="p">[</span><span class="n">PokemonFuego</span><span class="p">(</span><span class="s2">&quot;Charizard&quot;</span><span class="p">),</span> <span class="n">Pokemon</span><span class="p">(</span><span class="s2">&quot;Rattata&quot;</span><span class="p">)]</span>
+<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">equipo</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">atacar</span><span class="p">())</span>   <span class="c1"># cada uno responde a su manera</span>
+</pre></div>
+</figure><div class="callout clave"><span class="et">CONCEPTO CLAVE</span><span class="callout-body"><strong>Polimorfismo</strong> = "muchas formas": el mismo método
+    (<code>atacar</code>) se comporta distinto según la clase. Así evitás llenar el
+    código de <code>if tipo == ...</code>.</span></div><p>También existen <code>super()</code> (llamar al padre), <code>@property</code> (usar un método como atributo) y las clases abstractas con el módulo <code>abc</code>. Lo ves en detalle en la semana 9 del curso.</p><h1 id="cap-14" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">14</span><span class="cap-ttl">Módulos, pip y entornos virtuales</span></h1><p>Un <strong>módulo</strong> es código ya hecho que importás. Python trae muchos de fábrica (la librería estándar):</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">16</span><span class="p">))</span>                 <span class="c1"># 4.0</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;Pikachu&quot;</span><span class="p">,</span> <span class="s2">&quot;Onix&quot;</span><span class="p">]))</span>  <span class="c1"># uno al azar</span>
+</pre></div>
+</figure><p>También podés crear tus propios módulos (cualquier archivo <code>.py</code>) e importarlos, e instalar librerías externas con <strong>pip</strong>:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span></figcaption><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>requests
+</pre></div>
+</figure><div class="callout nota"><span class="et">NOTA</span><span class="callout-body">Un <strong>entorno virtual</strong> (<code>venv</code>) es una cajita
+    aislada con las librerías de tu proyecto, separada del Python del sistema. El
+    <code>setup.sh</code> del curso lo crea por vos.</span></div><p>Y con <code>requests</code> podés traer datos reales de internet, como de la PokéAPI:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
+<span class="n">datos</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://pokeapi.co/api/v2/pokemon/pikachu&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">datos</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>    <span class="c1"># pikachu</span>
+</pre></div>
+</figure><h1 id="cap-linux1" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">15</span><span class="cap-ttl">Linux: la terminal</span></h1><p>Esta parte cubre <strong>Linux</strong>, que en el curso ves en las semanas
+    1 y 2 (antes de Python). La <strong>terminal</strong> es una ventana donde
+    escribís comandos de texto y la computadora te responde.</p><div class="callout pokemon"><span class="et">ANALOGÍA POKÉMON</span><span class="callout-body">Pensá en la terminal como la <strong>Pokédex de tu sistema</strong>: una
+    herramienta de texto, al principio rara, pero la más poderosa que vas a tener.
+    Cada comando es un "ataque".</span></div><h2 id="linux-mover">15.1. Moverte por las carpetas</h2><p>Tres comandos para ubicarte y viajar entre carpetas:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span></figcaption><div class="highlight"><pre><span></span><span class="nb">pwd</span><span class="w">            </span><span class="c1"># ¿dónde estoy? muestra la carpeta actual</span>
+ls<span class="w">             </span><span class="c1"># ver qué hay acá (archivos y carpetas)</span>
+ls<span class="w"> </span>-l<span class="w">          </span><span class="c1"># en formato largo (permisos, tamaño, fecha)</span>
+ls<span class="w"> </span>-a<span class="w">          </span><span class="c1"># incluye archivos ocultos (empiezan con .)</span>
+<span class="nb">cd</span><span class="w"> </span>pokecenter<span class="w">  </span><span class="c1"># entrar a una carpeta</span>
+<span class="nb">cd</span><span class="w"> </span>..<span class="w">          </span><span class="c1"># subir un nivel</span>
+<span class="nb">cd</span><span class="w"> </span>~<span class="w">           </span><span class="c1"># ir a tu carpeta personal (home)</span>
+</pre></div>
+</figure><h2 id="linux-crear">15.2. Crear, copiar y borrar</h2><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span></figcaption><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>pokecenter<span class="w">        </span><span class="c1"># crear una carpeta</span>
+mkdir<span class="w"> </span>-p<span class="w"> </span>a/b/c<span class="w">          </span><span class="c1"># crear carpetas anidadas de una</span>
+touch<span class="w"> </span>pikachu.txt<span class="w">       </span><span class="c1"># crear un archivo vacío</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Electrico&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>pikachu.txt<span class="w">   </span><span class="c1"># escribir texto en un archivo</span>
+cat<span class="w"> </span>pikachu.txt<span class="w">         </span><span class="c1"># mostrar el contenido de un archivo</span>
+cp<span class="w"> </span>pikachu.txt<span class="w"> </span>copia.txt<span class="w">   </span><span class="c1"># copiar un archivo</span>
+cp<span class="w"> </span>-r<span class="w"> </span>carpeta<span class="w"> </span>copia<span class="w">        </span><span class="c1"># copiar una carpeta entera</span>
+mv<span class="w"> </span>pikachu.txt<span class="w"> </span>raichu.txt<span class="w">  </span><span class="c1"># renombrar (o mover)</span>
+rm<span class="w"> </span>pikachu.txt<span class="w">          </span><span class="c1"># borrar un archivo</span>
+rm<span class="w"> </span>-r<span class="w"> </span>carpeta<span class="w">           </span><span class="c1"># borrar una carpeta y todo lo de adentro</span>
+</pre></div>
+</figure><div class="callout cuidado"><span class="et">CUIDADO</span><span class="callout-body">En Linux <strong>no hay papelera de reciclaje</strong>: lo que borrás con
+    <code>rm</code>, se va para siempre. Revisá siempre antes de borrar.</span></div><h2 id="linux-rutas">15.3. Rutas absolutas y relativas</h2><p>Una <strong>ruta absoluta</strong> empieza en la raíz <code>/</code> y vale
+    desde cualquier lado. Una <strong>ruta relativa</strong> parte de donde estás parado.</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span></figcaption><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>/home/ash/pokecenter<span class="w">   </span><span class="c1"># ruta absoluta (empieza con /)</span>
+<span class="nb">cd</span><span class="w"> </span>pokecenter/gimnasio<span class="w">    </span><span class="c1"># ruta relativa (desde acá)</span>
+</pre></div>
+</figure><ul><li><code>.</code> &rarr; la carpeta actual</li><li><code>..</code> &rarr; la carpeta de arriba</li><li><code>~</code> &rarr; tu home</li><li><code>/</code> &rarr; la raíz de todo</li></ul><h2 id="linux-permisos">15.4. Permisos básicos</h2><p>Cada archivo tiene permisos. Al correr <code>ls -l</code> ves algo como <code>-rwxr-xr--</code>:</p><ul><li><code>r</code> = leer, <code>w</code> = escribir, <code>x</code> = ejecutar.</li><li>Se agrupan de a 3: <strong>dueño</strong>, <strong>grupo</strong> y <strong>otros</strong>.</li></ul><p>En la próxima parte vas a aprender a cambiarlos con <code>chmod</code>.</p><h2 id="linux-resumen-1">15.5. Resumen</h2><div class="tabla-wrap"><table><thead><tr><th>Comando</th><th>Qué hace</th></tr></thead><tbody><tr><td><code>pwd</code></td><td>Dice en qué carpeta estás</td></tr><tr><td><code>ls</code></td><td>Lista archivos y carpetas</td></tr><tr><td><code>cd</code></td><td>Cambia de carpeta</td></tr><tr><td><code>mkdir</code></td><td>Crea una carpeta</td></tr><tr><td><code>touch</code> / <code>echo</code></td><td>Crea / escribe archivos</td></tr><tr><td><code>cat</code></td><td>Muestra un archivo</td></tr><tr><td><code>cp</code> / <code>mv</code></td><td>Copia / mueve o renombra</td></tr><tr><td><code>rm</code></td><td>Borra (¡sin papelera!)</td></tr></tbody></table></div><h1 id="cap-linux2" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">16</span><span class="cap-ttl">Linux: comandos intermedios</span></h1><p>Ahora que te movés por la terminal, sumamos superpoderes: editar archivos, encadenar comandos, buscar, y automatizar con scripts.</p><h2 id="linux-nano">16.1. Editar con nano</h2><p><code>nano</code> es un editor de texto simple dentro de la terminal:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span></figcaption><div class="highlight"><pre><span></span>nano<span class="w"> </span>notas.txt<span class="w">   </span><span class="c1"># Ctrl+O para guardar, Ctrl+X para salir</span>
+</pre></div>
+</figure><h2 id="linux-pipes">16.2. Redirección y pipes</h2><p>Podés mandar la salida de un comando a un archivo, o encadenar comandos:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span></figcaption><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Pikachu&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>equipo.txt<span class="w">    </span><span class="c1"># &gt; CREA o REEMPLAZA el archivo</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Charizard&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>equipo.txt<span class="w"> </span><span class="c1"># &gt;&gt; AGREGA al final</span>
+cat<span class="w"> </span>equipo.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w">          </span><span class="c1"># | (pipe) conecta dos comandos</span>
+ls<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="w">                     </span><span class="c1"># cuenta cuántos archivos hay</span>
+</pre></div>
+</figure><div class="callout cuidado"><span class="et">CUIDADO</span><span class="callout-body">Ojo: <code>&gt;</code> pisa todo lo que había; <code>&gt;&gt;</code> agrega. No los confundas.</span></div><h2 id="linux-buscar">16.3. Buscar: grep y find</h2><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span></figcaption><div class="highlight"><pre><span></span>grep<span class="w"> </span><span class="s2">&quot;Fuego&quot;</span><span class="w"> </span>pokedex.txt<span class="w">    </span><span class="c1"># busca TEXTO dentro de un archivo</span>
+grep<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;fuego&quot;</span><span class="w"> </span>pokedex.txt<span class="w"> </span><span class="c1"># -i ignora mayúsculas/minúsculas</span>
+find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.txt&quot;</span><span class="w">        </span><span class="c1"># busca ARCHIVOS por nombre</span>
+</pre></div>
+</figure><h2 id="linux-procesos">16.4. Procesos y permisos</h2><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span></figcaption><div class="highlight"><pre><span></span>ps<span class="w"> </span>aux<span class="w">              </span><span class="c1"># lista los procesos en ejecución</span>
+ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>python<span class="w">   </span><span class="c1"># filtra los de python</span>
+<span class="nb">kill</span><span class="w"> </span><span class="m">1234</span><span class="w">           </span><span class="c1"># cierra el proceso con ese número (PID)</span>
+chmod<span class="w"> </span>+x<span class="w"> </span>script.sh<span class="w">  </span><span class="c1"># da permiso de EJECUCIÓN</span>
+chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span>script.sh<span class="w"> </span><span class="c1"># forma numérica (rwx r-x r-x)</span>
+</pre></div>
+</figure><h2 id="linux-scripts">16.5. Tu primer script bash</h2><p>Un <strong>script</strong> es un archivo con una lista de comandos. Es tu máquina automática:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span></figcaption><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1"># La primera línea (shebang) dice que esto es un script bash.</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;¡Hola, Entrenador!&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Capturaste a: </span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># $1 es el primer argumento</span>
+</pre></div>
+</figure><p>Para correrlo, le das permiso y lo ejecutás:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span></figcaption><div class="highlight"><pre><span></span>chmod<span class="w"> </span>+x<span class="w"> </span>saludo.sh
+./saludo.sh<span class="w"> </span>Snorlax<span class="w">    </span><span class="c1"># ./ = &quot;ejecutá este archivo de acá&quot;</span>
+</pre></div>
+</figure><h2 id="linux-apt-ssh">16.6. Instalar programas y SSH</h2><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span></figcaption><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w">             </span><span class="c1"># actualiza la lista de programas</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>cowsay<span class="w">     </span><span class="c1"># instala un programa</span>
+ssh<span class="w"> </span>entrenador@192.168.1.50<span class="w"> </span><span class="c1"># te conectás a otra máquina</span>
+</pre></div>
+</figure><div class="callout nota"><span class="et">NOTA</span><span class="callout-body"><code>sudo</code> ejecuta un comando como administrador (root). Es
+    poderoso: no corras con <code>sudo</code> cosas que no entendés.</span></div><h2 id="linux-resumen-2">16.7. Resumen</h2><div class="tabla-wrap"><table><thead><tr><th>Comando</th><th>Qué hace</th></tr></thead><tbody><tr><td><code>nano</code></td><td>Edita un archivo de texto</td></tr><tr><td><code>&gt;</code> / <code>&gt;&gt;</code></td><td>Redirige (reemplaza / agrega)</td></tr><tr><td><code>|</code></td><td>Conecta la salida de un comando con otro</td></tr><tr><td><code>grep</code> / <code>find</code></td><td>Busca texto / archivos</td></tr><tr><td><code>ps</code> / <code>kill</code></td><td>Ver / cerrar procesos</td></tr><tr><td><code>chmod</code></td><td>Cambia permisos</td></tr><tr><td><code>apt</code> / <code>ssh</code></td><td>Instala programas / conecta a otra máquina</td></tr></tbody></table></div><h1 id="cap-15" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">17</span><span class="cap-ttl">Mapa de temas del curso</span></h1><p>Estos son <strong>todos los temas</strong> del curso, semana por semana. Cada semana tiene su teoría, ejercicios, soluciones, tests y un programa interactivo.</p><h2 id="fase-linux">17.1. Fase 1 — Linux 🐧</h2><div class="tabla-wrap"><table><thead><tr><th>Semana</th><th>Temas</th></tr></thead><tbody><tr><td>01 — Fundamentos</td><td>Terminal, navegación, <code>ls cd pwd mkdir rm cp mv cat echo</code>, rutas, permisos</td></tr><tr><td>02 — Intermedio</td><td><code>nano</code>, variables, scripts bash, <code>&gt; &gt;&gt; |</code>, <code>grep find ps kill chmod apt</code>, SSH</td></tr></tbody></table></div><h2 id="fase-py-basico">17.2. Fase 2 — Python básico 🐍</h2><div class="tabla-wrap"><table><thead><tr><th>Semana</th><th>Temas</th></tr></thead><tbody><tr><td>03 — Introducción</td><td>Variables, tipos, <code>print</code>, <code>input</code>, f-strings</td></tr><tr><td>04 — Control de flujo</td><td><code>if/elif/else</code>, comparadores, lógicos, <code>while/for/range</code>, <code>break/continue</code></td></tr><tr><td>05 — Funciones</td><td><code>def</code>, parámetros, <code>return</code>, scope, <code>lambda</code>, recursión</td></tr><tr><td>06 — Listas y colecciones</td><td>Listas, tuplas, sets, diccionarios, comprensiones, <code>enumerate</code>, <code>zip</code></td></tr><tr><td>07 — Cadenas y archivos</td><td>Métodos de string, slicing, <code>open</code>, CSV, <code>try/except</code></td></tr></tbody></table></div><h2 id="fase-git">17.3. Descanso — Git 🔀</h2><p><strong>Git: Control de Versiones</strong> — <code>init</code>, <code>add</code>, <code>commit</code>, <code>log</code>, ramas (<code>branch/switch/merge</code>), GitHub, <code>push/pull/clone</code>, <code>.gitignore</code>. Pensada para hacerse después de la semana 7.</p><h2 id="fase-py-avanzado">17.4. Fase 3 — Python avanzado 🧬</h2><div class="tabla-wrap"><table><thead><tr><th>Semana</th><th>Temas</th></tr></thead><tbody><tr><td>08 — POO introducción</td><td>Clases, <code>__init__</code>, atributos, métodos, <code>self</code>, <code>__str__</code>, <code>__repr__</code></td></tr><tr><td>09 — POO avanzado</td><td>Herencia, <code>super()</code>, polimorfismo, <code>@property</code>, clases abstractas (<code>abc</code>)</td></tr><tr><td>10 — Módulos y pip</td><td><code>import</code>, módulos estándar, módulos propios, <code>pip</code>, <code>venv</code>, <code>requests</code></td></tr></tbody></table></div><h2 id="fase-proyectos">17.5. Fase 4 — Proyectos 🏆</h2><ul><li><strong>Semana 11 — Agenda del Entrenador:</strong> app de consola modular con persistencia en JSON.</li><li><strong>Semana 12 — Pokédex Web:</strong> web con Flask + PokéAPI.</li><li><strong>proyectos/pokedex-cli:</strong> Pokédex de consola con sprites ASCII y favoritos.</li><li><strong>proyectos/batalla-pokemon:</strong> simulador con tipos, PP y estados alterados.</li><li><strong>proyectos/agenda-entrenador</strong> y <strong>proyectos/pokedex-web:</strong> versiones pulidas.</li></ul><h1 id="cap-16" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">18</span><span class="cap-ttl">Tests, preguntas frecuentes y glosario</span></h1><h2 id="tests">18.1. Cómo correr los tests</h2><p>Los <strong>tests</strong> te dicen si tus ejercicios están bien. Usamos <strong>pytest</strong>:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span></figcaption><div class="highlight"><pre><span></span>pytest<span class="w">                                   </span><span class="c1"># todos los tests</span>
+pytest<span class="w"> </span>semana-04-python-control-de-flujo/<span class="w">   </span><span class="c1"># una semana</span>
+pytest<span class="w"> </span>semana-05-python-funciones/test_ejercicios.py<span class="w"> </span>-v<span class="w">   </span><span class="c1"># con detalle</span>
+</pre></div>
+</figure><div class="callout nota"><span class="et">NOTA</span><span class="callout-body">🟢 Verde = aprobado. 🔴 Rojo = revisá tu solución. Por defecto los tests
+    prueban las soluciones; la Liga los corre contra TU <code>ejercicios.py</code> para
+    darte EXP.</span></div><h2 id="faq">18.2. Preguntas frecuentes</h2><p><strong>¿Por dónde empiezo?</strong> Por la Liga: <code>python aventura.py</code>. Después seguí la semana 01.</p><p><strong>Me sale "command not found: python".</strong> Probá con <code>python3</code>.</p><p><strong>Los tests me dan rojo. ¿Está mal?</strong> Significa que tu solución todavía no es correcta. Leé el error (está en español), corregí y volvé a probar. Es normal.</p><p><strong>¿Puedo ver las soluciones?</strong> Sí, pero intentá primero vos. Mirar sin intentar es como usar un truco: ganás pero no aprendés.</p><h2 id="glosario">18.3. Glosario</h2><div class="tabla-wrap"><table><thead><tr><th>Palabra</th><th>Qué significa</th></tr></thead><tbody><tr><td>Terminal</td><td>La ventana donde escribís comandos de texto.</td></tr><tr><td>Variable</td><td>Una "caja con nombre" donde guardás un dato.</td></tr><tr><td>Función</td><td>Un bloque de código con nombre que podés reusar.</td></tr><tr><td>Test</td><td>Un programa que revisa si tu código funciona bien.</td></tr><tr><td>EXP</td><td>Puntos de experiencia que ganás en la Liga al pasar tests.</td></tr><tr><td>Commit</td><td>Un punto de guardado de tu código en Git.</td></tr><tr><td>venv</td><td>Entorno virtual: cajita aislada con las librerías del curso.</td></tr></tbody></table></div>
+<p class="cierre">⚡ "El mejor momento para empezar a programar fue ayer.
+El segundo mejor momento es ahora." ⚡<br>¡A atraparlos a todos!</p>
+</main>
+</div>
+</body>
+</html>
