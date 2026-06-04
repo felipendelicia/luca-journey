@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block titulo %}Agregar Pokémon{% endblock %}
+
+{% block contenido %}
+<h1>➕ Agregar un Pokémon</h1>
+
+{% if error %}
+<p class="error">⚠️ {{ error }}</p>
+{% endif %}
+
+<p class="ayuda">
+    💡 Escribí el nombre y tocá <strong>"Autocompletar desde PokéAPI"</strong> para
+    traer los datos reales automáticamente (necesita internet).
+</p>
+
+<form method="POST" class="formulario">
+    <label>
+        Nombre *
+        <input type="text" name="nombre" id="nombre" required placeholder="pikachu">
+    </label>
+
+    <button type="button" id="btn-autocompletar" class="boton boton-secundario">
+        🌐 Autocompletar desde PokéAPI
+    </button>
+    <span id="estado-api" class="estado-api"></span>
+
+    <label>
+        Tipo
+        <input type="text" name="tipo" id="tipo" placeholder="electric">
+    </label>
+
+    <label>
+        Nivel
+        <input type="number" name="nivel" id="nivel" value="1" min="1" max="100">
+    </label>
+
+    <label>
+        Altura (m)
+        <input type="text" name="altura" id="altura" placeholder="0.4">
+    </label>
+
+    <label>
+        Peso (kg)
+        <input type="text" name="peso" id="peso" placeholder="6.0">
+    </label>
+
+    <label>
+        Descripción
+        <textarea name="descripcion" id="descripcion" rows="2"></textarea>
+    </label>
+
+    <button type="submit" class="boton boton-grande">💾 Guardar</button>
+</form>
+
+<script>
+// Autocompletado: consulta la API interna /api/buscar/<nombre>, que a su vez
+// consulta la PokéAPI, y rellena el formulario con los datos.
+document.getElementById("btn-autocompletar").addEventListener("click", function () {
+    const nombre = document.getElementById("nombre").value.trim();
+    const estado = document.getElementById("estado-api");
+    if (!nombre) {
+        estado.textContent = "Escribí un nombre primero.";
+        return;
+    }
+    estado.textContent = "Buscando...";
+    fetch("/api/buscar/" + encodeURIComponent(nombre.toLowerCase()))
+        .then(function (resp) {
+            if (!resp.ok) throw new Error("No encontrado");
+            return resp.json();
+        })
+        .then(function (datos) {
+            document.getElementById("nombre").value = datos.nombre || nombre;
+            document.getElementById("tipo").value = datos.tipo || "";
+            document.getElementById("altura").value = datos.altura || "";
+            document.getElementById("peso").value = datos.peso || "";
+            document.getElementById("descripcion").value = datos.descripcion || "";
+            estado.textContent = "✅ Datos cargados.";
+        })
+        .catch(function () {
+            estado.textContent = "❌ No se encontró (o no hay internet). Completá a mano.";
+        });
+});
+</script>
+{% endblock %}

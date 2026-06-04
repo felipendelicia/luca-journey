@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block titulo %}Pokédex Web — Inicio{% endblock %}
+
+{% block contenido %}
+<h1>📋 Tu Pokédex</h1>
+
+<form method="GET" class="buscador">
+    <input type="text" name="q" value="{{ query }}" placeholder="Buscar por nombre o tipo...">
+    <button type="submit" class="boton">🔎 Buscar</button>
+    {% if query %}<a class="boton boton-secundario" href="{{ url_for('index') }}">Limpiar</a>{% endif %}
+</form>
+
+{% if pokemons %}
+<div class="grilla">
+    {% for p in pokemons %}
+    <article class="tarjeta tipo-{{ (p.tipo or '')|lower }}">
+        <div class="numero">#{{ '%03d' % p.id }}</div>
+        <h2>{{ p.nombre }}</h2>
+        <p class="tipo-badge">{{ p.tipo or 'Desconocido' }}</p>
+        <p class="nivel">Nivel {{ p.nivel }}</p>
+        <a class="boton" href="{{ url_for('detalle', pokemon_id=p.id) }}">Ver detalle</a>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="vacio">
+    {% if query %}
+    <p>No se encontró ningún Pokémon para "{{ query }}". 🔍</p>
+    {% else %}
+    <p>Todavía no guardaste ningún Pokémon. 🥚</p>
+    {% endif %}
+    <a class="boton boton-grande" href="{{ url_for('agregar') }}">➕ Agregar</a>
+</div>
+{% endif %}
+{% endblock %}

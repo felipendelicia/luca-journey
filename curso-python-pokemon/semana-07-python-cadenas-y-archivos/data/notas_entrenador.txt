@@ -1,0 +1,10 @@
+Diario del Entrenador
+=====================
+
+Dia 1: Empece mi aventura en Pueblo Paleta. El Profesor Oak me dio un Pikachu.
+Dia 3: Capture un Pidgey en la Ruta 1. Lo llame "Plumas".
+Dia 7: Gane mi primera medalla en el Gimnasio de Ciudad Plateada (tipo Roca).
+Dia 12: Pikachu evoluciono... no, en realidad se nego. Igual lo quiero.
+Dia 20: El equipo ya tiene 6 Pokemon. Hora de organizarse mejor.
+
+Nota: usar la Pokedex con persistencia para no olvidarme de nada.

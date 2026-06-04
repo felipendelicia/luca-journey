@@ -1,0 +1,7 @@
+# Dependencias del curso completo.
+# Instalá todo con:  pip install -r requirements.txt
+# (o corré:  bash setup.sh)
+
+requests>=2.31    # Para consumir la PokéAPI (semana 10 en adelante)
+flask>=3.0        # Para el proyecto web final (semana 12)
+pytest>=8.0       # Para correr los tests de todo el curso

@@ -1,0 +1,7 @@
+# Dependencias de la Pokédex Web (versión pulida).
+# Instalá con:  pip install -r requirements.txt
+
+flask>=3.0        # framework web
+requests>=2.31    # para consultar la PokéAPI
+pytest>=8.0       # para los tests
+# (SQLite ya viene con Python, no hace falta instalarlo)
