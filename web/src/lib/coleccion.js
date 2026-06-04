@@ -8,7 +8,7 @@ const set = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 export const BALLS_POR_EJERCICIO = 2;
 export const REGALO_DIARIO = 5;
 export const PROB_SHINY = 0.01; // 1% de que un salvaje sea shiny ✨
-export const COSTO_EVOLUCION = 3; // cuántos repetidos consume evolucionar
+export const COSTO_EVOLUCION = 3; // cuántos hacen falta para evolucionar (te queda 1 del pre-evolucionado)
 
 // Pokémon insignia de cada tema (id de la PokéAPI).
 export const INSIGNIAS = {
@@ -104,11 +104,12 @@ export function evolucionesPosibles(evoMap) {
   return res;
 }
 
-// Evoluciona: consume COSTO_EVOLUCION del 'from' y suma 1 del 'to'.
+// Evoluciona: necesitás COSTO_EVOLUCION del 'from'; consume uno menos (te queda 1 del
+// pre-evolucionado) y suma 1 del 'to'. Ej: 3 Bulbasaur -> 1 Bulbasaur + 1 Ivysaur.
 export function evolucionar(fromId, toId, evoMap) {
   const at = get('col:atrapados', {});
   if ((at[fromId] || 0) < COSTO_EVOLUCION || !(evoMap[fromId] || []).includes(toId)) return false;
-  at[fromId] -= COSTO_EVOLUCION;
+  at[fromId] -= COSTO_EVOLUCION - 1;
   if (at[fromId] <= 0) delete at[fromId];
   at[toId] = (at[toId] || 0) + 1;
   set('col:atrapados', at);
@@ -127,9 +128,19 @@ export function regaloDisponible() {
   return localStorage.getItem('col:regalo') !== new Date().toISOString().slice(0, 10);
 }
 
-// Tirá una Pokéball: atrapás un salvaje al azar de las regiones desbloqueadas.
-// Se permiten REPETIDOS, así que siempre hay algo para atrapar.
-export function tirar(pokemon, temas) {
+// Elige un Pokémon del pool con probabilidad proporcional a su peso (rareza):
+// los comunes (peso alto) salen más seguido; los raros/legendarios (peso bajo), menos.
+function elegirPonderado(pool, pesos) {
+  let total = 0;
+  for (const p of pool) total += pesos[p.id] || 1;
+  let r = Math.random() * total;
+  for (const p of pool) { r -= pesos[p.id] || 1; if (r <= 0) return p; }
+  return pool[pool.length - 1];
+}
+
+// Tirá una Pokéball: atrapás un salvaje de las regiones desbloqueadas, ponderado por
+// rareza (puede aparecer cualquiera, pero con probabilidades distintas). Permite repetidos.
+export function tirar(pokemon, temas, pesos = {}) {
   let balls = get('col:balls', 0);
   if (balls <= 0) return { error: 'sin-balls' };
   // salvajes solo de las regiones desbloqueadas (hacés ejercicios de una región
@@ -137,7 +148,10 @@ export function tirar(pokemon, temas) {
   const regiones = regionesDesbloqueadas(temas);
   const pool = pokemon.filter((p) => regiones.has(p.region));
   if (!pool.length) return { error: 'vacio' };
-  const elegido = pool[Math.floor(Math.random() * pool.length)];
+  const elegido = elegirPonderado(pool, pesos);
+  // probabilidad de que apareciera justo este (su peso sobre el total del pool)
+  const totalPeso = pool.reduce((a, p) => a + (pesos[p.id] || 1), 0);
+  const prob = (pesos[elegido.id] || 1) / totalPeso;
   const at = get('col:atrapados', {});
   at[elegido.id] = (at[elegido.id] || 0) + 1;
   balls--;
@@ -150,5 +164,5 @@ export function tirar(pokemon, temas) {
   }
   set('col:balls', balls);
   set('col:atrapados', at);
-  return { pokemon: elegido, cantidad: at[elegido.id], repetido: at[elegido.id] > 1, shiny, nuevoShiny, balls };
+  return { pokemon: elegido, cantidad: at[elegido.id], repetido: at[elegido.id] > 1, shiny, nuevoShiny, balls, prob };
 }

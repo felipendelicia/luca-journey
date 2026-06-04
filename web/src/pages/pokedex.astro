@@ -75,7 +75,7 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       const posibles = evolucionesPosibles(D.evoluciones);
       const sec = $('evoluciones-sec');
       if (!posibles.length) { sec.innerHTML = ''; return; }
-      sec.innerHTML = '<h2 class="liga-h">🧬 Evoluciones disponibles <small>— usás 3 repetidos</small></h2><div class="evo-grid">' +
+      sec.innerHTML = '<h2 class="liga-h">🧬 Evoluciones disponibles <small>— necesitás 3 · te queda 1 del original</small></h2><div class="evo-grid">' +
         posibles.map((e) => {
           const ops = e.opciones.map((to) =>
             '<button class="evo-btn" data-from="' + e.from + '" data-to="' + to + '">' +

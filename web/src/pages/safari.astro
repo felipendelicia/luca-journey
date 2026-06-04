@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import datos from '../data/ejercicios.json';
 import pokemon from '../data/pokemon.json';
+import pesos from '../data/rarezas.json';
 import { u } from '../lib/url.ts';
 
 const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.ejercicios.map((e) => ({ id: e.id })) }));
@@ -31,7 +32,7 @@ const total = pokemon.length;
     </div>
   </div>
 
-  <script type="application/json" id="safari-data" set:html={JSON.stringify({ pokemon, temas })}></script>
+  <script type="application/json" id="safari-data" set:html={JSON.stringify({ pokemon, temas, pesos })}></script>
   <script>
     import { sincronizar, tirar as lanzar, estado, reclamarRegalo, regaloDisponible, regionesDesbloqueadas, spriteUrl } from '../lib/coleccion.js';
     import { sonarCaptura, sonarShiny } from '../lib/sonidos.js';
@@ -85,7 +86,7 @@ const total = pokemon.length;
     let animando = false;
     async function lanzarBall() {
       if (animando) return;
-      const r = lanzar(D.pokemon, D.temas);
+      const r = lanzar(D.pokemon, D.temas, D.pesos);
       if (r.error === 'sin-balls') { $('msg').textContent = 'Te quedaste sin Pokéballs. Resolvé ejercicios o volvé mañana por el regalo. 💪'; return; }
       if (r.error) { $('msg').textContent = 'Hacé un ejercicio para desbloquear Pokémon salvajes. 💪'; return; }
       animando = true;
@@ -119,8 +120,11 @@ const total = pokemon.length;
       const titulo = r.shiny
         ? '✨ ¡Un <b>' + p.nombre + '</b> SHINY! ✨'
         : (r.repetido ? '¡Otro <b>' + p.nombre + '</b>! Ya tenés <b>' + r.cantidad + '</b>' : '¡Atrapaste a <b>' + p.nombre + '</b>!');
+      const pct = (r.prob * 100).toFixed(r.prob < 0.01 ? 2 : 1);
       const txt = document.createElement('div');
-      txt.className = 'captura-txt'; txt.innerHTML = titulo + ' <span class="cap-n">Nº ' + p.id + '</span>';
+      txt.className = 'captura-txt';
+      txt.innerHTML = titulo + ' <span class="cap-n">Nº ' + p.id + '</span>' +
+        '<span class="cap-prob">🎲 probabilidad de aparición: <b>' + pct + '%</b></span>';
       arena.querySelector('.escena').appendChild(txt);
       $('msg').textContent = r.shiny ? '🌟 ¡INCREÍBLE! Un shiny aparece 1 de cada 100 veces.' : '';
       animando = false; refrescar();
