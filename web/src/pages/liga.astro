@@ -47,6 +47,9 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
       </div>
     </section>
 
+    <h2 class="liga-h">🏆 Logros <span class="reg-estado" id="logros-n"></span></h2>
+    <div class="logros-grid" id="logros"></div>
+
     {regiones.map((r) => (
       <section class="region" data-region={r.id}>
         <h2 class="liga-h">{({ kanto: '🔴', johto: '⚪', hoenn: '🟢', sinnoh: '🔵' })[r.id] || '🔵'} Región {r.nombre} <small>— {r.sub}</small> <span class="reg-estado" data-reg={r.id}></span></h2>
@@ -54,9 +57,6 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
         <div class="progreso-temas" data-progreso={r.id}></div>
       </section>
     ))}
-
-    <h2 class="liga-h">🏆 Logros <span class="reg-estado" id="logros-n"></span></h2>
-    <div class="logros-grid" id="logros"></div>
 
     <p class="liga-nota">Tu progreso se guarda en este navegador. Completá los 8 temas de una región para ser su Campeón. 🏆</p>
   </div>
