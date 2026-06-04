@@ -422,3 +422,17 @@ body.shiny-flash{ animation:shinyFlash .7s ease; }
 .safari-regiones{ color:var(--ink-soft); font-size:.9rem; margin:.2rem 0 .6rem; }
 .safari-regiones .bloq{ color:var(--ink-mute); }
 .safari-regiones small{ color:var(--ink-mute); }
+
+/* evoluciones */
+.evo-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:12px; margin:.6rem 0 1.4rem; }
+.evo-card{ display:flex; align-items:center; gap:8px; background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:10px 12px; box-shadow:var(--shadow-sm); flex-wrap:wrap; }
+.evo-de{ display:flex; flex-direction:column; align-items:center; }
+.evo-de img{ width:52px; height:52px; image-rendering:pixelated; }
+.evo-de span{ font-size:.78rem; }
+.evo-flecha{ font-size:22px; color:var(--red); }
+.evo-ops{ display:flex; gap:6px; flex-wrap:wrap; }
+.evo-btn{ display:flex; flex-direction:column; align-items:center; gap:2px; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:6px 8px; cursor:pointer; font-size:.72rem; color:var(--ink); }
+.evo-btn:hover{ border-color:#27c93f; box-shadow:var(--shadow-sm); }
+.evo-btn img{ width:44px; height:44px; image-rendering:pixelated; }
+.evo-card.evolucionando{ animation:evoFlash .5s ease; }
+@keyframes evoFlash{ 0%,100%{ filter:none } 50%{ filter:brightness(2.6) saturate(0) } }

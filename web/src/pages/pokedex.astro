@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import datos from '../data/ejercicios.json';
 import pokemon from '../data/pokemon.json';
+import evoluciones from '../data/evoluciones.json';
 import { u } from '../lib/url.ts';
 
 const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.ejercicios.map((e) => ({ id: e.id })) }));
@@ -26,52 +27,70 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       </div>
     </div>
     <p class="dex-sinresultados" id="sinres" hidden>Ningún Pokémon coincide.</p>
+    <div id="evoluciones-sec"></div>
     <div id="secciones"></div>
   </div>
 
-  <script type="application/json" id="dex-data" set:html={JSON.stringify({ pokemon, temas, regiones: REGIONES })}></script>
+  <script type="application/json" id="dex-data" set:html={JSON.stringify({ pokemon, temas, regiones: REGIONES, evoluciones })}></script>
   <script>
-    import { sincronizar, estado, spriteUrl } from '../lib/coleccion.js';
+    import { sincronizar, estado, spriteUrl, evolucionesPosibles, evolucionar } from '../lib/coleccion.js';
+    import { sonarExito } from '../lib/sonidos.js';
 
     const D = JSON.parse(document.getElementById('dex-data').textContent);
     sincronizar(D.temas);
-    const st = estado();
-    const at = st.atrapados, shiny = st.shiny;
-
-    // contadores por región + shinies
-    let cont = D.regiones.map(([id, label]) => {
-      const total = D.pokemon.filter((p) => p.region === id).length;
-      const tengo = D.pokemon.filter((p) => p.region === id && at[p.id]).length;
-      return '<div class="cc"><span>' + label + '</span><b>' + tengo + ' / ' + total + '</b></div>';
-    }).join('');
-    cont += '<div class="cc"><span>✨ Shiny</span><b>' + shiny.size + '</b></div>';
-    document.getElementById('contadores').innerHTML = cont;
-
-    // grilla por región
-    const secciones = D.regiones.map(([id, label]) => {
-      const celdas = D.pokemon.filter((p) => p.region === id).map((p) => {
-        const n = at[p.id] || 0;
-        const esShiny = shiny.has(p.id);
-        const attrs = 'data-num="' + p.id + '" data-nombre="' + p.nombre.toLowerCase() + '"';
-        if (n > 0) {
-          return '<div class="poke tengo' + (esShiny ? ' es-shiny' : '') + '" ' + attrs + ' title="' + p.nombre + '">' +
-            '<img loading="lazy" src="' + spriteUrl(p.id, esShiny) + '" alt="' + p.nombre + '" />' +
-            (esShiny ? '<span class="poke-shiny">✨</span>' : '') +
-            (n > 1 ? '<span class="poke-x">x' + n + '</span>' : '') +
-            '<span class="poke-nom">' + p.nombre + '</span></div>';
-        }
-        return '<div class="poke falta" ' + attrs + ' title="???">' +
-          '<img loading="lazy" src="' + spriteUrl(p.id) + '" alt="?" />' +
-          '<span class="poke-nom">Nº ' + p.id + '</span></div>';
-      }).join('');
-      return '<div class="dex-seccion"><h2 class="liga-h">' + label + '</h2><div class="poke-grid">' + celdas + '</div></div>';
-    }).join('');
-    document.getElementById('secciones').innerHTML = secciones;
-
-    // buscador + filtros (por nombre/número, tengo/falta/shiny)
-    const buscar = document.getElementById('buscar');
-    const sinres = document.getElementById('sinres');
+    const nombreDe = Object.fromEntries(D.pokemon.map((p) => [p.id, p.nombre]));
+    const $ = (id) => document.getElementById(id);
+    const buscar = $('buscar'), sinres = $('sinres');
     let filtro = 'todos';
+
+    function contadores(at, shiny) {
+      let c = D.regiones.map(([id, label]) => {
+        const total = D.pokemon.filter((p) => p.region === id).length;
+        const tengo = D.pokemon.filter((p) => p.region === id && at[p.id]).length;
+        return '<div class="cc"><span>' + label + '</span><b>' + tengo + ' / ' + total + '</b></div>';
+      }).join('');
+      c += '<div class="cc"><span>✨ Shiny</span><b>' + shiny.size + '</b></div>';
+      $('contadores').innerHTML = c;
+    }
+
+    function grilla(at, shiny) {
+      $('secciones').innerHTML = D.regiones.map(([id, label]) => {
+        const celdas = D.pokemon.filter((p) => p.region === id).map((p) => {
+          const n = at[p.id] || 0;
+          const esShiny = shiny.has(p.id);
+          const attrs = 'data-num="' + p.id + '" data-nombre="' + p.nombre.toLowerCase() + '"';
+          if (n > 0) {
+            return '<div class="poke tengo' + (esShiny ? ' es-shiny' : '') + '" ' + attrs + ' title="' + p.nombre + '">' +
+              '<img loading="lazy" src="' + spriteUrl(p.id, esShiny) + '" alt="' + p.nombre + '" />' +
+              (esShiny ? '<span class="poke-shiny">✨</span>' : '') + (n > 1 ? '<span class="poke-x">x' + n + '</span>' : '') +
+              '<span class="poke-nom">' + p.nombre + '</span></div>';
+          }
+          return '<div class="poke falta" ' + attrs + ' title="???"><img loading="lazy" src="' + spriteUrl(p.id) + '" alt="?" /><span class="poke-nom">Nº ' + p.id + '</span></div>';
+        }).join('');
+        return '<div class="dex-seccion"><h2 class="liga-h">' + label + '</h2><div class="poke-grid">' + celdas + '</div></div>';
+      }).join('');
+    }
+
+    function evolucionesUI() {
+      const posibles = evolucionesPosibles(D.evoluciones);
+      const sec = $('evoluciones-sec');
+      if (!posibles.length) { sec.innerHTML = ''; return; }
+      sec.innerHTML = '<h2 class="liga-h">🧬 Evoluciones disponibles <small>— usás 3 repetidos</small></h2><div class="evo-grid">' +
+        posibles.map((e) => {
+          const ops = e.opciones.map((to) =>
+            '<button class="evo-btn" data-from="' + e.from + '" data-to="' + to + '">' +
+            '<img src="' + spriteUrl(to) + '" alt="' + (nombreDe[to] || to) + '" /><span>' + (nombreDe[to] || ('Nº ' + to)) + '</span></button>').join('');
+          return '<div class="evo-card"><div class="evo-de"><img src="' + spriteUrl(e.from) + '" alt="' + nombreDe[e.from] + '" />' +
+            '<span>' + nombreDe[e.from] + ' <b>x' + e.cantidad + '</b></span></div><span class="evo-flecha">→</span><div class="evo-ops">' + ops + '</div></div>';
+        }).join('') + '</div>';
+      sec.querySelectorAll('.evo-btn').forEach((b) => b.addEventListener('click', () => {
+        if (evolucionar(+b.dataset.from, +b.dataset.to, D.evoluciones)) {
+          b.closest('.evo-card').classList.add('evolucionando');
+          sonarExito();
+          setTimeout(pintar, 480);
+        }
+      }));
+    }
 
     function aplicar() {
       const q = buscar.value.trim().toLowerCase();
@@ -82,23 +101,28 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
         if (filtro === 'tengo') pasa = c.classList.contains('tengo');
         else if (filtro === 'falta') pasa = c.classList.contains('falta');
         else if (filtro === 'shiny') pasa = c.classList.contains('es-shiny');
-        const ok = txt && pasa;
-        c.style.display = ok ? '' : 'none';
-        if (ok) visibles++;
+        const ok = txt && pasa; c.style.display = ok ? '' : 'none'; if (ok) visibles++;
       });
       document.querySelectorAll('.dex-seccion').forEach((s) => {
-        const algo = [...s.querySelectorAll('.poke')].some((c) => c.style.display !== 'none');
-        s.style.display = algo ? '' : 'none';
+        const algo = [...s.querySelectorAll('.poke')].some((c) => c.style.display !== 'none'); s.style.display = algo ? '' : 'none';
       });
       sinres.hidden = visibles > 0;
+    }
+
+    function pintar() {
+      const st = estado();
+      contadores(st.atrapados, st.shiny);
+      grilla(st.atrapados, st.shiny);
+      evolucionesUI();
+      aplicar();
     }
 
     buscar.addEventListener('input', aplicar);
     document.querySelectorAll('.dex-f').forEach((b) => b.addEventListener('click', () => {
       document.querySelectorAll('.dex-f').forEach((x) => x.classList.remove('activo'));
-      b.classList.add('activo');
-      filtro = b.dataset.f;
-      aplicar();
+      b.classList.add('activo'); filtro = b.dataset.f; aplicar();
     }));
+
+    pintar();
   </script>
 </Base>

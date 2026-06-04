@@ -8,6 +8,7 @@ const set = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 export const BALLS_POR_EJERCICIO = 2;
 export const REGALO_DIARIO = 5;
 export const PROB_SHINY = 0.01; // 1% de que un salvaje sea shiny ✨
+export const COSTO_EVOLUCION = 3; // cuántos repetidos consume evolucionar
 
 // Pokémon insignia de cada tema (id de la PokéAPI).
 export const INSIGNIAS = {
@@ -85,6 +86,27 @@ export function sincronizar(temas) {
   set('col:hitos', [...hitos]);
   set('col:atrapados', at);
   return nuevo;
+}
+
+// ¿Qué Pokémon podés evolucionar? (tenés COSTO_EVOLUCION o más y existe evolución).
+export function evolucionesPosibles(evoMap) {
+  const at = get('col:atrapados', {});
+  const res = [];
+  for (const [id, n] of Object.entries(at)) {
+    if (n >= COSTO_EVOLUCION && evoMap[id]) res.push({ from: Number(id), cantidad: n, opciones: evoMap[id] });
+  }
+  return res;
+}
+
+// Evoluciona: consume COSTO_EVOLUCION del 'from' y suma 1 del 'to'.
+export function evolucionar(fromId, toId, evoMap) {
+  const at = get('col:atrapados', {});
+  if ((at[fromId] || 0) < COSTO_EVOLUCION || !(evoMap[fromId] || []).includes(toId)) return false;
+  at[fromId] -= COSTO_EVOLUCION;
+  if (at[fromId] <= 0) delete at[fromId];
+  at[toId] = (at[toId] || 0) + 1;
+  set('col:atrapados', at);
+  return true;
 }
 
 // Regalo diario: +5 Pokéballs una vez por día.
