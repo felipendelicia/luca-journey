@@ -7,7 +7,8 @@ No corren pytest de verdad: el evaluador usa un 'runner' falso.
 from datetime import date
 
 from liga import (
-    datos, progreso, medallas, logros, almacen, evaluador, tarjeta, mapa, hub
+    datos, progreso, medallas, logros, almacen, evaluador, tarjeta, mapa, hub,
+    jugador, combates,
 )
 
 
@@ -183,6 +184,31 @@ def test_evaluar_semana_linux_no_setea_modulo():
     assert "CURSO_MODULO" not in capturado["env"]
 
 
+def test_parsear_fallos():
+    texto = (
+        "FAILED semana-03/test_ejercicios.py::test_saludo - "
+        "AssertionError: saludo() debería devolver 'X'\n"
+        "FAILED a/b.py::test_suma_de_dos\n"
+        "5 passed, 2 failed in 0.1s\n"
+    )
+    fallos = evaluador.parsear_fallos(texto)
+    # Nombre legible (sin 'test_', con espacios) y pista sin el prefijo del error.
+    assert ("saludo", "saludo() debería devolver 'X'") in fallos
+    assert ("suma de dos", "") in fallos
+
+
+def test_evaluar_detallado_devuelve_fallos():
+    semana = datos.semana_por_id(3)
+
+    def fake(args, env):
+        return ("FAILED x.py::test_suma - AssertionError: debería dar 15\n"
+                "18 passed, 2 failed in 0.1s")
+
+    d = evaluador.evaluar_semana_detallado(semana, runner=fake)
+    assert d["passed"] == 18 and d["total"] == 20
+    assert d["fallos"] == [("suma", "debería dar 15")]
+
+
 # ----------------------------------------------------------------------
 #  hub.procesar_resultado (orquestación)
 # ----------------------------------------------------------------------
@@ -209,6 +235,81 @@ def test_proximo_paso():
     assert hub.proximo_paso(e)["id"] == 1
     _completar(e, 1)
     assert hub.proximo_paso(e)["id"] == 2
+
+
+# ----------------------------------------------------------------------
+#  Selector de capítulos jugables
+# ----------------------------------------------------------------------
+def test_jugables_tienen_interactivo():
+    js = jugador.jugables()
+    assert len(js) >= 10, "Deberían existir al menos 10 capítulos jugables"
+    assert all(jugador.tiene_interactivo(c) for c in js)
+
+
+def test_marcar_jugado_no_duplica():
+    e = progreso.estado_inicial()
+    assert hub.marcar_jugado(e, 3) is True
+    assert hub.marcar_jugado(e, 3) is False, "No debería duplicar"
+    assert e["jugados"] == ["3"]
+
+
+def test_proximo_jugable_avanza():
+    e = progreso.estado_inicial()
+    primero = hub.proximo_jugable(e)
+    assert primero is not None
+    hub.marcar_jugado(e, primero["id"])
+    assert hub.ya_jugado(e, primero["id"]) is True
+    assert hub.proximo_jugable(e)["id"] != primero["id"]
+
+
+def test_proximo_jugable_todos_completos():
+    e = progreso.estado_inicial()
+    for c in jugador.jugables():
+        hub.marcar_jugado(e, c["id"])
+    assert hub.proximo_jugable(e) is None
+
+
+# ----------------------------------------------------------------------
+#  Combates de gimnasio
+# ----------------------------------------------------------------------
+def test_combate_se_desbloquea_con_medalla():
+    e = progreso.estado_inicial()
+    roca = combates.combate_por_id("roca")
+    assert combates.disponible(e, roca) is False
+    e["medallas"].append("roca")
+    assert combates.disponible(e, roca) is True
+
+
+def test_combate_a_objetivo_tiene_filtro():
+    obj = combates.combate_a_objetivo(combates.combate_por_id("cascada"))
+    assert obj["dir"] == "combates"
+    assert obj["objetivo"] == "desafios"
+    assert obj["filtro"] == "cascada"
+
+
+def test_procesar_combate_ganado_da_exp():
+    e = progreso.estado_inicial()
+    roca = combates.combate_por_id("roca")
+    resumen = hub.procesar_combate(e, roca, 1, 1, hoy=date(2026, 6, 1))
+    assert resumen["gano"] is True
+    assert resumen["exp_ganada"] == combates.EXP_POR_COMBATE
+    assert "roca" in e["bosses"]
+
+
+def test_procesar_combate_perdido_no_marca():
+    e = progreso.estado_inicial()
+    roca = combates.combate_por_id("roca")
+    resumen = hub.procesar_combate(e, roca, 0, 1, hoy=date(2026, 6, 1))
+    assert resumen["gano"] is False
+    assert e["bosses"] == []
+
+
+def test_logro_domador_con_todos_los_bosses():
+    e = progreso.estado_inicial()
+    for c in combates.COMBATES:
+        e["bosses"].append(c["id"])
+    nuevos = logros.chequear_nuevos(e)
+    assert any(l["id"] == "domador" for l in nuevos)
 
 
 # ----------------------------------------------------------------------

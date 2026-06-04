@@ -4,7 +4,7 @@ liga.logros — Logros (achievements) que se desbloquean al cumplir hitos.
 Cada logro tiene una función 'check(estado)' que devuelve True cuando se cumple.
 """
 
-from . import progreso, medallas
+from . import progreso, medallas, combates
 
 
 # Cada logro: id, nombre, emoji, descripción y la condición para desbloquearlo.
@@ -85,6 +85,13 @@ LOGROS = [
         "emoji": "🔀",
         "desc": "Completaste la misión bonus de Git.",
         "check": lambda e: progreso.semana_completa(e, "git"),
+    },
+    {
+        "id": "domador",
+        "nombre": "Domador de Gimnasios",
+        "emoji": "⚔️",
+        "desc": "Venciste a los 8 líderes de gimnasio.",
+        "check": lambda e: combates.todos_vencidos(e),
     },
 ]
 

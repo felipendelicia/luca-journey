@@ -113,14 +113,12 @@ python aventura.py
 
 La **Liga Pokémon** convierte todo el curso en un juego con un objetivo: **ser Campeón de Kanto**. 🥇
 
-- 🎴 **Tarjeta de Entrenador** con tu nivel, EXP y rango.
-- 🏋️ **Entrenás** una semana: la Liga corre **tus** ejercicios y te da **EXP** por cada test que pasás.
-- 🆙 **Subís de nivel** a medida que sumás EXP.
-- 🏅 **8 medallas de gimnasio** (Roca, Cascada, Trueno...) que ganás al completar las semanas.
-- ✨ **Logros** que se desbloquean (Primera Victoria, Imparable, ¡Campeón!).
-- 🔥 **Racha diaria**: volvé cada día y mantené la llama encendida.
-- 🗺️ **Mapa de la región** que se desbloquea con tu avance.
-- 🔀 **Misión bonus de Git** para relajar entre clases.
+- 🎮 **Elegís el capítulo que querés jugar** (lanza su juego interactivo). Si tenés progreso, **continuás donde lo dejaste**; si lo completaste, lo **reintentás**.
+- 🏋️ **Entrenás** una semana: la Liga corre **tus** ejercicios y te da **EXP** por cada test que pasás. Si algo falla, te dice **qué ejercicio** y una pista.
+- ⚔️ **Combates de gimnasio**: con una medalla, retás al líder con un desafío integrador más difícil.
+- 🎴 **Tarjeta de Entrenador** con tu nivel, EXP y rango. 🆙 **Subís de nivel**.
+- 🏅 **8 medallas de gimnasio** (Roca, Cascada, Trueno...) y ✨ **logros** desbloqueables.
+- 🔥 **Racha diaria**, 🗺️ **mapa de la región** y 🔀 **misión bonus de Git**.
 
 Tu progreso se guarda solo en `progreso.json`. **Es la forma recomendada de avanzar:** abrís `aventura.py`, ves qué semana toca, hacés los ejercicios de esa carpeta, y volvés a "Entrenar" para cobrar tu EXP. 🎮
 
@@ -191,6 +189,7 @@ python semana-03-python-introduccion/interactivo.py
 
 ## 📚 Más recursos
 
+- 📘 **Leé el libro del curso online:** [Python con Pokémon](https://felipendelicia.github.io/luca-journey/) — un libro completo que enseña Linux y Python desde cero (también en PDF: [`manual/manual.pdf`](manual/manual.pdf)).
 - 🗺️ Mirá el [ROADMAP.md](ROADMAP.md) para ver el mapa completo del viaje.
 - 🔗 Revisá [recursos.md](recursos.md) para links de documentación, la PokéAPI y videos recomendados.
 

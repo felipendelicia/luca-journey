@@ -45,14 +45,15 @@ cap_intro = capitulo(
     p("""La mejor forma de hacer el curso. En vez de "hacer la tarea", subís de nivel.
     Abrila con:"""),
     code("python aventura.py", lang="bash"),
-    p("Desde ese centro de mando podés:"),
+    p("Desde ese único archivo (tu centro de mando) podés:"),
     ul(
-        "🎴 Ver tu <strong>Tarjeta de Entrenador</strong> (nivel, EXP, rango).",
-        "🏋️ <strong>Entrenar</strong> una semana: corre <em>tus</em> ejercicios y te da EXP por cada test que pasás.",
-        "🏅 Ganar las <strong>8 medallas de gimnasio</strong> y desbloquear logros.",
-        "🔥 Mantener tu <strong>racha</strong> diaria y ver el mapa de la región.",
+        "🎮 <strong>Elegir un capítulo para jugar</strong>: lanza el juego interactivo de esa semana. Si tenés progreso, <strong>continuás donde lo dejaste</strong>; si ya lo completaste, te ofrece <strong>reintentarlo</strong>.",
+        "🏋️ <strong>Entrenar</strong> una semana: corre <em>tus</em> ejercicios y te da EXP por cada test que pasás. Si algo falla, te dice <strong>qué ejercicio</strong> y una pista.",
+        "⚔️ <strong>Combates de gimnasio</strong>: con una medalla en mano, retás al líder con un desafío integrador más difícil.",
+        "🎴 Ver tu <strong>Tarjeta de Entrenador</strong>, 🏅 las <strong>8 medallas</strong>, ✨ los <strong>logros</strong> y 🗺️ el mapa.",
+        "🔥 Mantener tu <strong>racha</strong> diaria.",
     ),
-    p("Cuando consigas las 8 medallas, <strong>¡sos Campeón de Kanto!</strong> 🏆"),
+    p("Cuando consigas las 8 medallas (y venzas a los 8 líderes), <strong>¡sos Campeón de Kanto!</strong> 🏆"),
 
     h2("0.4. El método: cómo trabajar cada semana", "metodo"),
     ol(

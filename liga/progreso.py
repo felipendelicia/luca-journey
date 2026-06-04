@@ -16,7 +16,7 @@ Todas las funciones son puras (no tocan archivos), así son fáciles de testear.
 
 from datetime import date, timedelta
 
-from . import datos
+from . import datos, combates
 
 
 def estado_inicial(nombre="Entrenador"):
@@ -26,6 +26,8 @@ def estado_inicial(nombre="Entrenador"):
         "semanas": {},
         "medallas": [],
         "logros": [],
+        "jugados": [],          # ids de capítulos jugados/completados
+        "bosses": [],           # ids de combates de gimnasio vencidos
         "racha": 0,
         "ultima_actividad": None,
     }
@@ -47,6 +49,8 @@ def exp_total(estado):
         # Bonus si la semana está completa (todos los tests pasados).
         if total_tests > 0 and passed >= total_tests:
             total += datos.BONUS_SEMANA_COMPLETA
+    # EXP extra por cada combate de gimnasio vencido.
+    total += len(estado.get("bosses", [])) * combates.EXP_POR_COMBATE
     return total
 
 

@@ -6,7 +6,10 @@ La función 'procesar_resultado' (pura, sin input/print) hace toda la lógica de
 devuelve un resumen de lo que cambió. La función 'jugar' es la interfaz.
 """
 
-from . import datos, progreso, medallas, logros, almacen, evaluador, tarjeta, mapa
+from . import (
+    datos, progreso, medallas, logros, almacen, evaluador, tarjeta, mapa, jugador,
+    combates,
+)
 
 
 def procesar_resultado(estado, semana_id, passed, total, hoy=None):
@@ -72,6 +75,21 @@ def _mostrar_resumen(resumen):
         print(f"  {l['emoji']} ¡LOGRO DESBLOQUEADO: {l['nombre']}! — {l['desc']}")
 
 
+def _mostrar_fallos(fallos):
+    """Muestra los ejercicios que todavía no pasan, con una pista cada uno."""
+    if not fallos:
+        return
+    print(f"\n  📋 Te faltan {len(fallos)} ejercicio(s):")
+    for nombre, pista in fallos[:10]:
+        if pista:
+            print(f"   ✗ {nombre} — {pista}")
+        else:
+            print(f"   ✗ {nombre}")
+    if len(fallos) > 10:
+        print(f"   ...y {len(fallos) - 10} más.")
+    print("  💡 Corregí tu ejercicios.py y volvé a entrenar para ganar la EXP.")
+
+
 def _entrenar(estado):
     """Submenú para elegir una semana y correr sus tests."""
     print("\n🏋️  ENTRENAR — ¿qué semana querés intentar?")
@@ -92,13 +110,14 @@ def _entrenar(estado):
         print(f"\n   📝 Corriendo los tests de la semana {semana['id']}...")
     print("   (esto puede tardar unos segundos)")
 
-    passed, total = evaluador.evaluar_semana(semana)
-    if total == 0:
+    res = evaluador.evaluar_semana_detallado(semana)
+    if res["total"] == 0:
         print("   ⚠️ No se pudo evaluar (¿pytest instalado? ¿la carpeta tiene tests?).")
         return
 
-    resumen = procesar_resultado(estado, semana["id"], passed, total)
+    resumen = procesar_resultado(estado, semana["id"], res["passed"], res["total"])
     _mostrar_resumen(resumen)
+    _mostrar_fallos(res["fallos"])
     almacen.guardar(estado)
 
 
@@ -107,16 +126,179 @@ def _entrenar_bonus(estado, ruta=None):
     bonus = datos.bonus_por_id("git")
     print(f"\n🔀  MISIÓN BONUS: {bonus['nombre']}")
     print("   Un respiro entre tanto Python. Corramos el simulador de Git...")
-    passed, total = evaluador.evaluar_semana(bonus)
-    if total == 0:
+    res = evaluador.evaluar_semana_detallado(bonus)
+    if res["total"] == 0:
         print("   ⚠️ No se pudo evaluar (¿pytest instalado?).")
         return
-    resumen = procesar_resultado(estado, "git", passed, total)
+    resumen = procesar_resultado(estado, "git", res["passed"], res["total"])
     _mostrar_resumen(resumen)
+    _mostrar_fallos(res["fallos"])
     if ruta:
         almacen.guardar(estado, ruta)
     else:
         almacen.guardar(estado)
+
+
+# ======================================================================
+#  Jugar capítulos (lanzar los interactivos)
+# ======================================================================
+def marcar_jugado(estado, cid):
+    """Marca un capítulo como completado (si no lo estaba). Devuelve True si lo agregó."""
+    cid = str(cid)
+    jugados = estado.setdefault("jugados", [])
+    if cid in jugados:
+        return False
+    jugados.append(cid)
+    return True
+
+
+def ya_jugado(estado, cid):
+    return str(cid) in estado.get("jugados", [])
+
+
+def proximo_jugable(estado):
+    """Primer capítulo jugable que todavía no está completado, o None si están todos."""
+    for c in jugador.jugables():
+        if not ya_jugado(estado, c["id"]):
+            return c
+    return None
+
+
+def _guardar(estado, ruta):
+    almacen.guardar(estado, ruta) if ruta else almacen.guardar(estado)
+
+
+def _jugar_capitulo(estado, capitulo, ruta=None):
+    """Lanza el juego interactivo de un capítulo, con continuar/reintentar."""
+    if ya_jugado(estado, capitulo["id"]):
+        try:
+            r = input(f"   Ya completaste «{capitulo['nombre']}». ¿Reintentar? (s/n) ")
+        except (EOFError, KeyboardInterrupt):
+            return
+        if not r.strip().lower().startswith("s"):
+            return
+
+    print(f"\n🎮 Lanzando: {capitulo['emoji']} {capitulo['nombre']}")
+    print("   (cuando termines el juego, volvés a la Liga)\n")
+    ok = jugador.lanzar(capitulo)
+    if not ok:
+        print("   ⚠️ Este capítulo no tiene juego interactivo.")
+        return
+
+    # Al volver del juego, preguntamos si lo completó (si no estaba ya marcado).
+    if not ya_jugado(estado, capitulo["id"]):
+        try:
+            r = input("\n   ¿Completaste este capítulo? (s/n) ")
+        except (EOFError, KeyboardInterrupt):
+            return
+        if r.strip().lower().startswith("s"):
+            marcar_jugado(estado, capitulo["id"])
+            _guardar(estado, ruta)
+            print("   ✅ ¡Capítulo completado! Tu progreso quedó guardado.")
+
+
+def _continuar(estado, ruta=None):
+    """Continúa en el primer capítulo sin completar."""
+    siguiente = proximo_jugable(estado)
+    if siguiente is None:
+        print("\n🏆 ¡Ya jugaste todos los capítulos! Elegí uno para reintentar.")
+        _elegir_capitulo(estado, ruta)
+        return
+    _jugar_capitulo(estado, siguiente, ruta)
+
+
+def _elegir_capitulo(estado, ruta=None):
+    """Menú para elegir qué capítulo jugar."""
+    print("\n🎮  ELEGÍ UN CAPÍTULO PARA JUGAR:")
+    jugables = jugador.jugables()
+    for i, c in enumerate(jugables, start=1):
+        marca = "✅" if ya_jugado(estado, c["id"]) else "▶ "
+        print(f"   {marca} {i:>2}) {c['emoji']} {c['nombre']}")
+    try:
+        eleccion = input("   Número (o Enter para volver) > ").strip()
+    except (EOFError, KeyboardInterrupt):
+        return
+    if not eleccion.isdigit():
+        return
+    idx = int(eleccion) - 1
+    if 0 <= idx < len(jugables):
+        _jugar_capitulo(estado, jugables[idx], ruta)
+    else:
+        print("   ⚠️ Número fuera de rango.")
+
+
+def procesar_combate(estado, combate, passed, total, hoy=None):
+    """Aplica el resultado de un combate de gimnasio. Devuelve un resumen."""
+    exp_antes = progreso.exp_total(estado)
+    nivel_antes = progreso.nivel_desde_exp(exp_antes)
+    gano = total > 0 and passed >= total
+
+    recien = False
+    if gano and combate["id"] not in estado.setdefault("bosses", []):
+        estado["bosses"].append(combate["id"])
+        recien = True
+
+    progreso.actualizar_racha(estado, hoy)
+    logros_nuevos = logros.chequear_nuevos(estado)
+
+    exp_despues = progreso.exp_total(estado)
+    return {
+        "gano": gano,
+        "recien": recien,
+        "exp_ganada": exp_despues - exp_antes,
+        "subio_nivel": progreso.nivel_desde_exp(exp_despues) > nivel_antes,
+        "nivel_despues": progreso.nivel_desde_exp(exp_despues),
+        "logros_nuevos": logros_nuevos,
+        "passed": passed,
+        "total": total,
+    }
+
+
+def _combates(estado, ruta=None):
+    """Menú de combates de gimnasio (jefes integradores)."""
+    disponibles = combates.disponibles(estado)
+    if not disponibles:
+        print("\n⚔️  Todavía no desbloqueaste ningún combate.")
+        print("   Ganá medallas (completá las semanas) para retar a los líderes.")
+        return
+
+    print("\n⚔️  COMBATES DE GIMNASIO — retá a un líder (resolvé combates/desafios.py):")
+    for i, c in enumerate(disponibles, start=1):
+        estado_txt = "✅ vencido" if combates.vencido(estado, c["id"]) else "⚔️ disponible"
+        print(f"   {i:>2}) {c['emoji']} vs {c['lider']} — {c['reto']}  [{estado_txt}]")
+
+    try:
+        eleccion = input("   Número (o Enter para volver) > ").strip()
+    except (EOFError, KeyboardInterrupt):
+        return
+    if not eleccion.isdigit():
+        return
+    idx = int(eleccion) - 1
+    if not (0 <= idx < len(disponibles)):
+        print("   ⚠️ Número fuera de rango.")
+        return
+
+    combate = disponibles[idx]
+    print(f"\n   🥊 Combate contra {combate['lider']}... evaluando tu desafío.")
+    objetivo = combates.combate_a_objetivo(combate)
+    res = evaluador.evaluar_semana_detallado(objetivo)
+    if res["total"] == 0:
+        print("   ⚠️ No se pudo evaluar (¿pytest instalado?).")
+        return
+
+    resumen = procesar_combate(estado, combate, res["passed"], res["total"])
+    if resumen["gano"]:
+        print(f"   🏆 ¡VENCISTE A {combate['lider'].upper()}! {combate['emoji']}")
+        if resumen["exp_ganada"] > 0:
+            print(f"   ⭐ ¡Ganaste {resumen['exp_ganada']} EXP!")
+        if resumen["subio_nivel"]:
+            print(f"   🆙 ¡Subiste al nivel {resumen['nivel_despues']}!")
+        for l in resumen["logros_nuevos"]:
+            print(f"   {l['emoji']} ¡LOGRO: {l['nombre']}! — {l['desc']}")
+    else:
+        print(f"   💪 Todavía no. Pasaste {res['passed']}/{res['total']} del desafío.")
+        _mostrar_fallos(res["fallos"])
+    _guardar(estado, ruta)
 
 
 def _ver_medallas(estado):
@@ -152,45 +334,52 @@ def jugar(ruta=None):
     print(tarjeta.render(estado))
 
     while True:
-        siguiente = proximo_paso(estado)
-        if siguiente:
-            print(f"\n🎯 Próximo objetivo: Semana {siguiente['id']} — {siguiente['nombre']}")
+        # Mostramos en qué capítulo continuar (el primero sin completar).
+        siguiente_juego = proximo_jugable(estado)
+        if siguiente_juego:
+            print(f"\n🎯 Continuá en: {siguiente_juego['emoji']} {siguiente_juego['nombre']}")
         else:
-            print("\n🏆 ¡Completaste todas las semanas! Sos una leyenda.")
+            print("\n🏆 ¡Jugaste todos los capítulos! Sos una leyenda. (Podés reintentar)")
 
         print("\n¿Qué querés hacer?")
-        print("   1) 🏋️  Entrenar (correr tests y ganar EXP)")
-        print("   2) 🎴  Ver mi tarjeta de entrenador")
-        print("   3) 🗺️  Ver el mapa de la región")
-        print("   4) 🏅  Ver mis medallas")
-        print("   5) ✨  Ver mis logros")
-        print("   6) 🔀  Misión bonus: Git (semana de descanso)")
-        print("   7) 💾  Salir (se guarda solo)")
+        print("   1) ▶️   Continuar (jugar el próximo capítulo)")
+        print("   2) 🎮  Elegir un capítulo para jugar")
+        print("   3) 🏋️  Entrenar (correr tests y ganar EXP)")
+        print("   4) ⚔️   Combates de gimnasio (jefes)")
+        print("   5) 🎴  Ver mi tarjeta de entrenador")
+        print("   6) 🗺️  Ver el mapa de la región")
+        print("   7) 🏅  Ver mis medallas")
+        print("   8) ✨  Ver mis logros")
+        print("   9) 🔀  Misión bonus: Git (semana de descanso)")
+        print("  10) 💾  Salir (se guarda solo)")
 
         try:
             opcion = input("Opción > ").strip()
         except (EOFError, KeyboardInterrupt):
-            almacen.guardar(estado) if not ruta else almacen.guardar(estado, ruta)
+            _guardar(estado, ruta)
             print("\n¡Hasta la próxima, Entrenador! 👋")
             return
 
         if opcion == "1":
-            _entrenar(estado)
+            _continuar(estado, ruta)
         elif opcion == "2":
-            print(tarjeta.render(estado))
+            _elegir_capitulo(estado, ruta)
         elif opcion == "3":
-            print(mapa.render(estado))
+            _entrenar(estado)
         elif opcion == "4":
-            _ver_medallas(estado)
+            _combates(estado, ruta)
         elif opcion == "5":
-            _ver_logros(estado)
+            print(tarjeta.render(estado))
         elif opcion == "6":
-            _entrenar_bonus(estado, ruta)
+            print(mapa.render(estado))
         elif opcion == "7":
-            if ruta:
-                almacen.guardar(estado, ruta)
-            else:
-                almacen.guardar(estado)
+            _ver_medallas(estado)
+        elif opcion == "8":
+            _ver_logros(estado)
+        elif opcion == "9":
+            _entrenar_bonus(estado, ruta)
+        elif opcion == "10":
+            _guardar(estado, ruta)
             print("💾 Progreso guardado. ¡Seguí así! 👋")
             return
         else:

@@ -30,9 +30,12 @@ import sys
 import manual_lib
 import manual_contenido
 
-RAIZ = os.path.dirname(os.path.abspath(__file__))
+RAIZ = os.path.dirname(os.path.abspath(__file__))            # carpeta manual/
+REPO = os.path.dirname(RAIZ)                                 # raíz del repo
 SALIDA_HTML = os.path.join(RAIZ, "manual.html")
 SALIDA_PDF = os.path.join(RAIZ, "manual.pdf")
+# Copia del libro para publicarlo con GitHub Pages (sirve docs/index.html).
+SALIDA_DOCS = os.path.join(REPO, "docs", "index.html")
 
 # Los emojis quedan lindos en el navegador (manual.html), pero WeasyPrint no tiene
 # fuente de emoji a color y los dibuja como cuadritos. Por eso, SOLO para el PDF
@@ -209,6 +212,12 @@ def generar():
     with open(SALIDA_HTML, "w", encoding="utf-8") as f:
         f.write(html)
     print(f"✓ HTML generado: {SALIDA_HTML}")
+
+    # 1b) Copia para GitHub Pages (docs/index.html en la raíz del repo).
+    os.makedirs(os.path.dirname(SALIDA_DOCS), exist_ok=True)
+    with open(SALIDA_DOCS, "w", encoding="utf-8") as f:
+        f.write(html)
+    print(f"✓ Copia para GitHub Pages: {SALIDA_DOCS}")
 
     # 2) Generamos el PDF con el mejor motor disponible.
     print("➤ Generando PDF...")
