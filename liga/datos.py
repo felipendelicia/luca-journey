@@ -15,18 +15,18 @@ sumás a estas listas.
 #                tests que ya vienen hechos (semanas de Linux y proyectos).
 #   archivo   -> qué test correr (None = toda la carpeta)
 SEMANAS = [
-    {"id": 1,  "dir": "semana-01-linux-fundamentos",        "nombre": "Linux: Fundamentos",     "emoji": "🐧", "objetivo": None,         "archivo": None},
-    {"id": 2,  "dir": "semana-02-linux-intermedio",         "nombre": "Linux: Intermedio",      "emoji": "🐧", "objetivo": None,         "archivo": None},
-    {"id": 3,  "dir": "semana-03-python-introduccion",      "nombre": "Python: Introducción",   "emoji": "⚡", "objetivo": "ejercicios", "archivo": "test_ejercicios.py"},
-    {"id": 4,  "dir": "semana-04-python-control-de-flujo",  "nombre": "Control de Flujo",       "emoji": "⚡", "objetivo": "ejercicios", "archivo": "test_ejercicios.py"},
-    {"id": 5,  "dir": "semana-05-python-funciones",         "nombre": "Funciones",              "emoji": "⚡", "objetivo": "ejercicios", "archivo": "test_ejercicios.py"},
-    {"id": 6,  "dir": "semana-06-python-listas-y-colecciones", "nombre": "Listas y Colecciones", "emoji": "⚡", "objetivo": "ejercicios", "archivo": "test_ejercicios.py"},
-    {"id": 7,  "dir": "semana-07-python-cadenas-y-archivos","nombre": "Cadenas y Archivos",     "emoji": "⚡", "objetivo": "ejercicios", "archivo": "test_ejercicios.py"},
-    {"id": 8,  "dir": "semana-08-python-poo-introduccion",  "nombre": "POO: Introducción",      "emoji": "🔥", "objetivo": "ejercicios", "archivo": "test_ejercicios.py"},
-    {"id": 9,  "dir": "semana-09-python-poo-avanzado",      "nombre": "POO: Avanzado",          "emoji": "🔥", "objetivo": "ejercicios", "archivo": "test_ejercicios.py"},
-    {"id": 10, "dir": "semana-10-python-modulos-y-pip",     "nombre": "Módulos y pip",          "emoji": "🔥", "objetivo": "ejercicios", "archivo": "test_ejercicios.py"},
-    {"id": 11, "dir": "semana-11-python-proyecto-integrador","nombre": "Proyecto: Agenda",      "emoji": "🛠️", "objetivo": None,         "archivo": None},
-    {"id": 12, "dir": "semana-12-python-proyecto-final",    "nombre": "Proyecto: Pokédex Web",  "emoji": "🌐", "objetivo": None,         "archivo": None},
+    {"id": 1,  "dir": "curso/semana-01-linux-fundamentos",        "nombre": "Linux: Fundamentos",     "emoji": "🐧", "objetivo": None,         "archivo": None},
+    {"id": 2,  "dir": "curso/semana-02-linux-intermedio",         "nombre": "Linux: Intermedio",      "emoji": "🐧", "objetivo": None,         "archivo": None},
+    {"id": 3,  "dir": "curso/semana-03-python-introduccion",      "nombre": "Python: Introducción",   "emoji": "⚡", "objetivo": "ejercicios", "archivo": "test_ejercicios.py"},
+    {"id": 4,  "dir": "curso/semana-04-python-control-de-flujo",  "nombre": "Control de Flujo",       "emoji": "⚡", "objetivo": "ejercicios", "archivo": "test_ejercicios.py"},
+    {"id": 5,  "dir": "curso/semana-05-python-funciones",         "nombre": "Funciones",              "emoji": "⚡", "objetivo": "ejercicios", "archivo": "test_ejercicios.py"},
+    {"id": 6,  "dir": "curso/semana-06-python-listas-y-colecciones", "nombre": "Listas y Colecciones", "emoji": "⚡", "objetivo": "ejercicios", "archivo": "test_ejercicios.py"},
+    {"id": 7,  "dir": "curso/semana-07-python-cadenas-y-archivos","nombre": "Cadenas y Archivos",     "emoji": "⚡", "objetivo": "ejercicios", "archivo": "test_ejercicios.py"},
+    {"id": 8,  "dir": "curso/semana-08-python-poo-introduccion",  "nombre": "POO: Introducción",      "emoji": "🔥", "objetivo": "ejercicios", "archivo": "test_ejercicios.py"},
+    {"id": 9,  "dir": "curso/semana-09-python-poo-avanzado",      "nombre": "POO: Avanzado",          "emoji": "🔥", "objetivo": "ejercicios", "archivo": "test_ejercicios.py"},
+    {"id": 10, "dir": "curso/semana-10-python-modulos-y-pip",     "nombre": "Módulos y pip",          "emoji": "🔥", "objetivo": "ejercicios", "archivo": "test_ejercicios.py"},
+    {"id": 11, "dir": "curso/semana-11-python-proyecto-integrador","nombre": "Proyecto: Agenda",      "emoji": "🛠️", "objetivo": None,         "archivo": None},
+    {"id": 12, "dir": "curso/semana-12-python-proyecto-final",    "nombre": "Proyecto: Pokédex Web",  "emoji": "🌐", "objetivo": None,         "archivo": None},
 ]
 
 # Las 8 medallas de gimnasio de Kanto. Cada una se gana al completar sus semanas.
@@ -44,7 +44,7 @@ GIMNASIOS = [
 # Misiones BONUS: no forman parte de la escalera de gimnasios, pero dan EXP y un
 # logro especial. La semana de Git es un descanso entre las clases de Python.
 BONUS = [
-    {"id": "git", "dir": "semana-git-control-de-versiones", "nombre": "Git: Control de Versiones", "emoji": "🔀", "objetivo": None, "archivo": None},
+    {"id": "git", "dir": "curso/semana-git-control-de-versiones", "nombre": "Git: Control de Versiones", "emoji": "🔀", "objetivo": None, "archivo": None},
 ]
 
 # Cuánta EXP da cada test que pasás.

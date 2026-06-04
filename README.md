@@ -153,12 +153,12 @@ pytest
 
 **Correr los tests de una semana específica:**
 ```bash
-pytest semana-04-python-control-de-flujo/
+pytest curso/semana-04-python-control-de-flujo/
 ```
 
 **Correr un archivo de test puntual, mostrando todo el detalle:**
 ```bash
-pytest semana-05-python-funciones/test_ejercicios.py -v
+pytest curso/semana-05-python-funciones/test_ejercicios.py -v
 ```
 
 > 🟢 Verde = aprobado. 🔴 Rojo = revisá tu solución. Los mensajes de error están en español para ayudarte.
@@ -170,7 +170,7 @@ pytest semana-05-python-funciones/test_ejercicios.py -v
 Los archivos `interactivo.py` son programas para jugar y aprender. Se corren así:
 
 ```bash
-python semana-03-python-introduccion/interactivo.py
+python curso/semana-03-python-introduccion/interactivo.py
 ```
 
 (En algunos sistemas el comando es `python3` en vez de `python`.)
@@ -181,7 +181,7 @@ python semana-03-python-introduccion/interactivo.py
 
 1. 📦 Corré `bash setup.sh` para preparar todo.
 2. 🏆 Abrí la **Liga Pokémon** con `python aventura.py` — es tu centro de mando.
-3. 📖 Andá a `semana-01-linux-fundamentos/` y abrí `teoria.md`. Leelo con calma.
+3. 📖 Andá a `curso/semana-01-linux-fundamentos/` y abrí `teoria.md`. Leelo con calma.
 4. ✏️ Hacé los ejercicios (`ejercicios.md` o `ejercicios.py`).
 5. 🎮 Jugá el `interactivo.py` de la semana para reforzar.
 6. 🏋️ Volvé a `python aventura.py` y elegí **Entrenar** esa semana para ganar **EXP** y medallas.
