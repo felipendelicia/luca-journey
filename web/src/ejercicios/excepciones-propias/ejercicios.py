@@ -1,34 +1,42 @@
-"""
-✏️ Ejercicios — Excepciones personalizadas
+"""✏️ Ejercicios — Excepciones personalizadas
 
 Además de los errores de Python, podés crear los TUYOS heredando de Exception.
-Le dan un nombre claro a los problemas de tu programa.
+Le dan un nombre claro a los problemas de tu programa. ✅ Corregir al terminar.
 """
 
 
-# 1) Definí EquipoLlenoError: su mensaje por defecto debe ser "equipo lleno".
+# Tu propia excepción
+# Definí EquipoLlenoError: su mensaje por defecto debe ser "equipo lleno".
+# Pista: en __init__, llamá a super().__init__("equipo lleno").
 class EquipoLlenoError(Exception):
     def __init__(self):
-        # TU CÓDIGO ACÁ: llamá a super().__init__("equipo lleno")
+        # TU CÓDIGO ACÁ
         pass
 
 
-# 2) Definí EntrenadorError: guardá un atributo 'codigo' además del mensaje.
+# Excepción con datos extra
+# Definí EntrenadorError: además del mensaje, guardá un atributo 'codigo'.
+# Pista: super().__init__(mensaje) y self.codigo = codigo.
 class EntrenadorError(Exception):
     def __init__(self, mensaje, codigo):
-        # TU CÓDIGO ACÁ: super().__init__(mensaje) y self.codigo = codigo
+        # TU CÓDIGO ACÁ
         pass
 
 
-# 3) Agregá un Pokémon al equipo. Si ya hay 6, lanzá EquipoLlenoError().
+# Usar tu excepción
+# Agregá un Pokémon al equipo. Si ya hay 6, lanzá EquipoLlenoError(). Sino agregalo y
+# devolvé el equipo.
+# Ejemplo:  agregar(["Pikachu"], "Eevee")  →  ["Pikachu", "Eevee"]
 def agregar(equipo, pokemon):
-    """if len(equipo) >= 6: raise EquipoLlenoError(). Sino agregalo y devolvé el equipo."""
+    """Agregá el Pokémon, o lanzá EquipoLlenoError si ya hay 6."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 4) Lanzá un EntrenadorError con el mensaje "acceso denegado" y el código recibido.
+# Lanzar con datos
+# Lanzá un EntrenadorError con el mensaje "acceso denegado" y el 'codigo' recibido.
+# Pista: raise EntrenadorError("acceso denegado", codigo).
 def fallar(codigo):
-    """raise EntrenadorError("acceso denegado", codigo)."""
+    """Lanzá un EntrenadorError("acceso denegado", codigo)."""
     # TU CÓDIGO ACÁ
     pass
