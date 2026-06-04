@@ -39,6 +39,15 @@ const SEMANAS = [
   ['flask-rest-crud', 'Flask: API REST (CRUD)', 'hoenn'],
   ['consumir-api', 'Consumir una API', 'hoenn'],
   ['pokedex-api', 'Proyecto: Pokédex API', 'hoenn'],
+  // Sinnoh — bases de datos (SQLite)
+  ['sql-intro', 'SQL: leer datos', 'sinnoh'],
+  ['sql-crear', 'SQL: crear e insertar', 'sinnoh'],
+  ['sql-select', 'SQL: filtrar y ordenar', 'sinnoh'],
+  ['sql-agregaciones', 'SQL: agregaciones y GROUP BY', 'sinnoh'],
+  ['sql-update-delete', 'SQL: actualizar y borrar', 'sinnoh'],
+  ['sql-join', 'SQL: relaciones y JOIN', 'sinnoh'],
+  ['sqlite-python', 'SQLite desde Python', 'sinnoh'],
+  ['proyecto-db', 'Proyecto: Pokédex en SQLite', 'sinnoh'],
 ];
 const IGNORAR = new Set(['ejercicios.py', 'soluciones.py', 'test_ejercicios.py']);
 const leer = (p) => (fs.existsSync(p) ? fs.readFileSync(p, 'utf-8') : null);
@@ -51,6 +60,7 @@ function paquetesDe(textos) {
   if (/\b(import pandas|from pandas)\b/.test(todo) || /\bpd\./.test(todo)) pk.push('pandas');
   if (/\b(import matplotlib|from matplotlib|matplotlib\.pyplot)\b/.test(todo) || /\bplt\./.test(todo)) pk.push('matplotlib');
   if (/\b(import flask|from flask)\b/.test(todo) || /\bFlask\(/.test(todo)) pk.push('flask');
+  if (/\bimport sqlite3\b|\bsqlite3\./.test(todo)) pk.push('sqlite3');
   return pk;
 }
 

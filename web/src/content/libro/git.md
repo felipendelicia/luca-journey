@@ -1,6 +1,6 @@
 ---
 title: "Git: Control de Versiones"
-order: 400
+order: 600
 ---
 
 > 😌 **Capítulo relajado.** Después de tanto Python, frenamos un toque para aprender **Git**: la herramienta que usan TODOS los programadores para guardar su trabajo. Es fácil, es útil, y te va a salvar la vida mil veces.

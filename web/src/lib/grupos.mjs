@@ -27,6 +27,14 @@ export const GRUPOS = [
       'flask-post', 'flask-rest-crud', 'consumir-api', 'pokedex-api',
     ],
   },
+  {
+    nombre: 'Bases de datos',
+    icono: '🗄️',
+    slugs: [
+      'sql-intro', 'sql-crear', 'sql-select', 'sql-agregaciones',
+      'sql-update-delete', 'sql-join', 'sqlite-python', 'proyecto-db',
+    ],
+  },
   { nombre: 'Git', icono: '🔀', slugs: ['git'] },
   { nombre: 'Ayuda', icono: '❓', slugs: ['ayuda'] },
 ];

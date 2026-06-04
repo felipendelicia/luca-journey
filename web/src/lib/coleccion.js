@@ -21,8 +21,10 @@ export const INSIGNIAS = {
   'api-http-json': 252, 'flask-primera-app': 255, 'flask-json': 258,
   'flask-parametros': 280, 'flask-post': 304, 'flask-rest-crud': 376,
   'consumir-api': 351, 'pokedex-api': 373,
+  'sql-intro': 81, 'sql-crear': 100, 'sql-select': 82, 'sql-agregaciones': 101,
+  'sql-update-delete': 125, 'sql-join': 233, 'sqlite-python': 239, 'proyecto-db': 243,
 };
-export const LEGENDARIOS = { kanto: 150, johto: 249, hoenn: 384 };
+export const LEGENDARIOS = { kanto: 150, johto: 249, hoenn: 384, sinnoh: 251 };
 
 export const spriteUrl = (id, shiny = false) =>
   `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${shiny ? 'shiny/' : ''}${id}.png`;

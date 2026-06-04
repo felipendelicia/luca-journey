@@ -80,6 +80,7 @@ const grupos = agrupar(caps);
         if (/\bpandas\b|\bpd\./.test(codigo)) pkgs.push('pandas');
         const usaPlot = /\bmatplotlib\b|\bplt\./.test(codigo);
         if (usaPlot) pkgs.push('matplotlib');
+        if (/\bimport sqlite3\b|\bsqlite3\./.test(codigo)) pkgs.push('sqlite3');
         const usaFlask = /\bflask\b|\bFlask\(/.test(codigo);
         if (usaFlask) pkgs.push('micropip');
         if (pkgs.length) { out.innerHTML = '<span class="lbl">SALIDA</span>⏳ cargando librerías…'; await py.loadPackage(pkgs); }
