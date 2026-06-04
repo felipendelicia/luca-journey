@@ -1,31 +1,35 @@
-"""
-✏️ Ejercicios — Flask: métodos y POST
+"""✏️ Ejercicios — Flask: métodos y POST
 
-Hasta ahora solo leímos datos (GET). Con POST el cliente nos ENVÍA datos
-(en JSON). Se leen con request.json.
+Hasta ahora solo leíamos datos (GET). Con POST el cliente nos ENVÍA datos (en JSON),
+que se leen con request.json. ✅ Corregir al terminar.
 """
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
 
-# 1) En "/eco" (POST), devolvé el mismo JSON que te mandaron.
-#    Pista: request.json tiene los datos recibidos.
+# Eco (POST)
+# En "/eco" (POST), devolvé el mismo JSON que te mandaron. Pista: request.json.
+# Ejemplo:  POST /eco con {"x": 1}  →  {"x": 1}
 @app.route("/eco", methods=["POST"])
 def eco():
-    # TU CÓDIGO ACÁ (return jsonify(request.json))
+    # TU CÓDIGO ACÁ  (return jsonify(request.json))
     pass
 
 
-# 2) En "/sumar" (POST), recibís {"a": .., "b": ..} y devolvés {"suma": a+b}.
+# Sumar (POST)
+# En "/sumar" (POST) recibís {"a": .., "b": ..} y devolvés {"suma": a + b}.
+# Ejemplo:  POST /sumar con {"a": 3, "b": 4}  →  {"suma": 7}
 @app.route("/sumar", methods=["POST"])
 def sumar():
     # TU CÓDIGO ACÁ
     pass
 
 
-# 3) En "/crear" (POST), recibís {"nombre": ..} y devolvés {"creado": <nombre>}
-#    con el código de estado 201 (creado). Pista: return jsonify(...), 201
+# Crear (POST + 201)
+# En "/crear" (POST) recibís {"nombre": ..} y devolvés {"creado": <nombre>} con el
+# código de estado 201 (creado). Pista: return jsonify(...), 201.
+# Ejemplo:  POST /crear con {"nombre": "Mew"}  →  {"creado": "Mew"}  (estado 201)
 @app.route("/crear", methods=["POST"])
 def crear():
     # TU CÓDIGO ACÁ

@@ -1,56 +1,68 @@
-"""
-✏️ Ejercicios — APIs: HTTP y JSON
+"""✏️ Ejercicios — APIs: HTTP y JSON
 
-Las APIs hablan en JSON. Acá practicás convertir entre Python y JSON,
-y armar respuestas, usando el módulo json.
+Las APIs hablan en JSON. Practicás convertir entre Python y JSON y armar respuestas,
+usando el módulo json. ✅ Corregir al terminar.
 """
 import json
 
 
-# 1) Convertí un diccionario de Python a texto JSON. Usá json.dumps.
+# Dict a JSON
+# Convertí un diccionario (o lista) de Python a texto JSON. Pista: json.dumps.
+# Ejemplo:  a_json({"nombre": "Pikachu"})  →  '{"nombre": "Pikachu"}'
 def a_json(dato):
-    """Recibí un dict/list y devolvé su representación en texto JSON (str)."""
+    """Devolvé el dato como texto JSON (str)."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 2) Convertí un texto JSON a un objeto de Python. Usá json.loads.
+# JSON a objeto
+# Convertí un texto JSON a un objeto de Python. Pista: json.loads.
+# Ejemplo:  de_json('{"nivel": 25}')  →  {"nivel": 25}
 def de_json(texto):
-    """Recibí un str JSON y devolvé el dict/list de Python."""
+    """Devolvé el dict/list de Python a partir del JSON."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 3) Recibí el texto JSON de un Pokémon y devolvé su 'nombre'.
+# Extraer el nombre
+# Recibís el JSON de un Pokémon y devolvés su 'nombre'.
+# Ejemplo:  extraer_nombre('{"nombre": "Pikachu", "nivel": 25}')  →  "Pikachu"
 def extraer_nombre(texto):
-    """texto es algo como '{"nombre": "Pikachu", "nivel": 25}'. Devolvé el nombre."""
+    """Devolvé el 'nombre' del Pokémon del JSON."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 4) Devolvé True si el código de estado HTTP es de éxito (200 a 299).
+# ¿Respuesta exitosa?
+# Devolvé True si el código de estado HTTP es de éxito (entre 200 y 299).
+# Ejemplo:  es_exito(200)  →  True   ·   es_exito(404)  →  False
 def es_exito(status):
-    """Para 200 o 201 devolvé True; para 404 o 500 devolvé False."""
+    """Devolvé True si status está entre 200 y 299."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 5) Armá la respuesta de la API: un dict con 'nombre' y 'nivel'.
+# Armar la respuesta
+# Devolvé un diccionario con 'nombre' y 'nivel'.
+# Ejemplo:  armar_respuesta("Pikachu", 25)  →  {"nombre": "Pikachu", "nivel": 25}
 def armar_respuesta(nombre, nivel):
     """Devolvé {"nombre": nombre, "nivel": nivel}."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 6) Recibí el JSON de una LISTA de Pokémon y devolvé la lista de nombres.
+# Lista de nombres
+# Recibís el JSON de una LISTA de Pokémon y devolvés solo sus nombres.
+# Ejemplo:  nombres('[{"nombre":"Pikachu"}, {"nombre":"Eevee"}]')  →  ["Pikachu", "Eevee"]
 def nombres(texto):
-    """texto es un JSON como '[{"nombre":"Pikachu"}, {"nombre":"Eevee"}]'.
-    Devolvé ['Pikachu', 'Eevee']."""
+    """Devolvé la lista de nombres de los Pokémon del JSON."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 7) Recibí el JSON de una lista de Pokémon (con 'nivel') y devolvé la suma de niveles.
+# Sumar niveles
+# Recibís el JSON de una lista de Pokémon (con 'nivel') y devolvés la suma de los niveles.
+# Ejemplo:  total_niveles('[{"nivel":10}, {"nivel":20}]')  →  30
 def total_niveles(texto):
     """Sumá el 'nivel' de cada Pokémon de la lista."""
     # TU CÓDIGO ACÁ
