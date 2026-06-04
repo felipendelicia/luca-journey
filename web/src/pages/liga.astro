@@ -1,6 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
 import datos from '../data/ejercicios.json';
+import pokemon from '../data/pokemon.json';
+
+const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
 
 const BADGES = {
   kanto: [['Roca', '🪨'], ['Cascada', '💧'], ['Trueno', '⚡'], ['Arcoíris', '🌈'], ['Alma', '💗'], ['Pantano', '🟣'], ['Volcán', '🔥'], ['Tierra', '🌍']],
@@ -32,7 +35,7 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
   <div class="wrap liga">
     <section class="tarjeta">
       <div class="tarjeta-top">
-        <div class="avatar" id="avatar">🎓</div>
+        <div class="avatar" id="avatar" title="Elegí tu foto de perfil">🎓<span class="avatar-cam">📷</span></div>
         <div class="tarjeta-info">
           <label class="t-nombre-l">Entrenador/a</label>
           <input class="t-nombre" id="nombre" placeholder="Tu nombre" maxlength="20" />
@@ -63,6 +66,15 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
     ))}
 
     <p class="liga-nota">Tu progreso se guarda en este navegador. Completá los 8 temas de una región para ser su Campeón. 🏆</p>
+
+    <div class="av-modal" id="avatar-modal" hidden>
+      <div class="av-card">
+        <div class="av-head"><b>📷 Elegí tu foto de perfil</b><button class="av-x" id="av-cerrar" type="button">✕</button></div>
+        <p class="av-sub" id="av-sub"></p>
+        <div class="av-grid" id="avatar-grid"></div>
+        <button class="btn-sec" id="av-reset" type="button">↺ Usar emoji 🎓</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -79,7 +91,7 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
     ).join('');
   </script>
 
-  <script type="application/json" id="liga-data" set:html={JSON.stringify({ regiones, totalEj })}></script>
+  <script type="application/json" id="liga-data" set:html={JSON.stringify({ regiones, totalEj, nombres })}></script>
   <script is:inline>
     (function () {
       const data = JSON.parse(document.getElementById('liga-data').textContent);
@@ -126,9 +138,51 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
       document.getElementById('st-med').textContent = medallas + '/' + (data.regiones.length * 8);
       document.getElementById('st-reg').textContent = regionesCompletas + '/' + data.regiones.length;
       if (regionesCompletas === data.regiones.length && data.regiones.length) {
-        document.getElementById('avatar').textContent = '🏆';
         document.getElementById('rango').textContent = '¡Maestro Pokémon!';
       }
+    })();
+  </script>
+
+  <script is:inline>
+    (function () {
+      const D = JSON.parse(document.getElementById('liga-data').textContent);
+      const nombres = D.nombres || {};
+      const sprite = (id) => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + id + '.png';
+      const av = document.getElementById('avatar');
+      const modal = document.getElementById('avatar-modal');
+      const grid = document.getElementById('avatar-grid');
+      const sub = document.getElementById('av-sub');
+      const atrapados = () => { try { return JSON.parse(localStorage.getItem('col:atrapados')) || {}; } catch { return {}; } };
+
+      function pintar() {
+        const id = localStorage.getItem('col:avatar');
+        const cam = '<span class="avatar-cam">📷</span>';
+        av.innerHTML = (id && atrapados()[id]) ? '<img src="' + sprite(id) + '" alt="avatar" />' + cam : '🎓' + cam;
+      }
+      function cerrar() { modal.hidden = true; }
+      function abrir() {
+        const at = atrapados();
+        const ids = Object.keys(at).sort((a, b) => a - b);
+        if (!ids.length) {
+          sub.textContent = 'Todavía no atrapaste ninguno. ¡Andá al Safari! 🎒';
+          grid.innerHTML = '';
+        } else {
+          sub.textContent = 'Tocá un Pokémon para usarlo de foto.';
+          grid.innerHTML = ids.map((id) =>
+            '<button class="av-poke" type="button" data-id="' + id + '" title="' + (nombres[id] || ('Nº ' + id)) + '">' +
+            '<img loading="lazy" src="' + sprite(id) + '" alt="' + (nombres[id] || id) + '" /></button>').join('');
+          grid.querySelectorAll('.av-poke').forEach((b) => b.addEventListener('click', () => {
+            localStorage.setItem('col:avatar', b.dataset.id); pintar(); cerrar();
+          }));
+        }
+        modal.hidden = false;
+      }
+
+      av.addEventListener('click', abrir);
+      document.getElementById('av-cerrar').addEventListener('click', cerrar);
+      document.getElementById('av-reset').addEventListener('click', () => { localStorage.removeItem('col:avatar'); pintar(); cerrar(); });
+      modal.addEventListener('click', (e) => { if (e.target === modal) cerrar(); });
+      pintar();
     })();
   </script>
 </Base>
