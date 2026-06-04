@@ -379,3 +379,34 @@ body.dark .poke.es-shiny{ background:linear-gradient(180deg,#2c2814,var(--paper-
 .dex-f{ font-size:.82rem; padding:7px 13px; border:1px solid var(--line); border-radius:999px; background:var(--paper-2); color:var(--ink); cursor:pointer; }
 .dex-f:hover{ border-color:var(--red); }
 .dex-f.activo{ background:var(--red); color:#fff; border-color:var(--red); }
+
+/* ===== Safari: animación de captura ===== */
+.escena{ position:relative; width:100%; height:100%; min-height:240px; display:flex; align-items:center; justify-content:center; }
+.escena .captura-txt{ position:absolute; bottom:10px; left:0; right:0; text-align:center; font-size:1.05rem; }
+.wild{ width:150px; height:150px; image-rendering:pixelated; }
+.wild.silueta{ filter:brightness(0); opacity:.85; animation:aparece .5s ease, flota 1.6s ease-in-out infinite; }
+@keyframes aparece{ 0%{transform:translateY(40px) scale(.5); opacity:0} 100%{transform:translateY(0) scale(1); opacity:.85} }
+@keyframes flota{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.wild.absorbido{ animation:absorber .35s ease forwards; }
+@keyframes absorber{ to{ transform:scale(.1) translateY(36px); opacity:0; filter:brightness(2.5) } }
+.wild.revelado{ filter:drop-shadow(0 8px 12px rgba(0,0,0,.25)); animation:salir .55s cubic-bezier(.2,1.5,.4,1); }
+.wild.revelado.shiny{ animation:salir .55s cubic-bezier(.2,1.5,.4,1), brilloW 1s ease-in-out infinite .55s; }
+@keyframes salir{ 0%{transform:scale(.2); opacity:0} 60%{transform:scale(1.18)} 100%{transform:scale(1); opacity:1} }
+@keyframes brilloW{ 0%,100%{filter:drop-shadow(0 0 12px gold)} 50%{filter:drop-shadow(0 0 26px #fff) drop-shadow(0 0 20px gold)} }
+.pokeball{ position:absolute; width:46px; height:46px; border-radius:50%; border:3px solid #1f1f1f; top:46%; left:50%;
+  background:linear-gradient(#e93b3b 0 44%, #1f1f1f 44% 56%, #f3f3f3 56% 100%); box-shadow:0 3px 6px rgba(0,0,0,.35); transform:translate(-50%,-50%); }
+.pokeball::after{ content:''; position:absolute; top:50%; left:50%; width:14px; height:14px; border-radius:50%; background:#fff; border:3px solid #1f1f1f; transform:translate(-50%,-50%); }
+.pokeball.lanza{ opacity:0; }
+.pokeball.vuela{ animation:arco .48s ease-out forwards; }
+@keyframes arco{ 0%{ left:10%; top:88%; opacity:1; transform:translate(-50%,-50%) rotate(0) scale(.8) } 100%{ left:50%; top:46%; transform:translate(-50%,-50%) rotate(540deg) scale(1) } }
+.pokeball.tambalea{ animation:tambaleo .56s ease-in-out; }
+@keyframes tambaleo{ 0%,100%{ transform:translate(-50%,-50%) rotate(0) } 25%{ transform:translate(-62%,-46%) rotate(-24deg) } 75%{ transform:translate(-38%,-46%) rotate(24deg) } }
+.pokeball.abre{ animation:abrir .4s ease forwards; }
+@keyframes abrir{ 0%{ transform:translate(-50%,-50%) scale(1); opacity:1 } 100%{ transform:translate(-50%,-150%) scale(.5); opacity:0 } }
+.arena-pasto.flash{ animation:flashBlanco .34s ease; }
+@keyframes flashBlanco{ 0%,100%{ filter:none } 50%{ filter:brightness(2.4) } }
+.estrella{ position:absolute; left:50%; top:46%; font-size:20px; pointer-events:none; animation:estallar .85s ease-out forwards; z-index:2; }
+.estrella.oro{ font-size:26px; }
+@keyframes estallar{ 0%{ transform:translate(-50%,-50%) scale(.2); opacity:1 } 100%{ transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.1); opacity:0 } }
+body.shiny-flash{ animation:shinyFlash .7s ease; }
+@keyframes shinyFlash{ 0%{ background:var(--paper) } 18%{ background:#fff3a8 } 34%{ background:#ffe06a } 100%{ background:var(--paper) } }

@@ -33,6 +33,7 @@ const total = pokemon.length;
   <script type="application/json" id="safari-data" set:html={JSON.stringify({ pokemon, temas })}></script>
   <script>
     import { sincronizar, tirar as lanzar, estado, reclamarRegalo, regaloDisponible, spriteUrl } from '../lib/coleccion.js';
+    import { sonarCaptura, sonarShiny } from '../lib/sonidos.js';
 
     const D = JSON.parse(document.getElementById('safari-data').textContent);
     const $ = (id) => document.getElementById(id);
@@ -61,20 +62,63 @@ const total = pokemon.length;
       refrescar();
     });
 
-    $('tirar').addEventListener('click', () => {
+    const esperar = (ms) => new Promise((res) => setTimeout(res, ms));
+    function estrellas(arena, dorado) {
+      for (let i = 0; i < 16; i++) {
+        const s = document.createElement('span');
+        s.className = 'estrella' + (dorado ? ' oro' : '');
+        const ang = (Math.PI * 2 * i) / 16, dist = 80 + Math.random() * 70;
+        s.style.setProperty('--dx', Math.cos(ang) * dist + 'px');
+        s.style.setProperty('--dy', Math.sin(ang) * dist + 'px');
+        s.textContent = dorado ? '✨' : '⭐';
+        arena.appendChild(s);
+        setTimeout(() => s.remove(), 900);
+      }
+    }
+
+    let animando = false;
+    async function lanzarBall() {
+      if (animando) return;
       const r = lanzar(D.pokemon, D.temas);
       if (r.error === 'sin-balls') { $('msg').textContent = 'Te quedaste sin Pokéballs. Resolvé ejercicios o volvé mañana por el regalo. 💪'; return; }
       if (r.error) { $('msg').textContent = 'Hacé un ejercicio para desbloquear Pokémon salvajes. 💪'; return; }
-      const p = r.pokemon;
+      animando = true;
+      const btn = $('tirar'); btn.disabled = true;
+      const p = r.pokemon, arena = $('arena');
+      $('msg').textContent = '¡Un Pokémon salvaje apareció!';
+      arena.innerHTML =
+        '<div class="escena">' +
+        '<img class="wild silueta" src="' + spriteUrl(p.id, r.shiny) + '" alt="?" />' +
+        '<div class="pokeball lanza" id="pb"></div></div>';
+      const wild = arena.querySelector('.wild'), pb = $('pb');
+
+      await esperar(650);                 // el salvaje salta en el pasto
+      pb.classList.remove('lanza'); pb.classList.add('vuela');  // tirás la ball (arco)
+      await esperar(480);
+      pb.classList.remove('vuela'); pb.classList.add('piso');
+      wild.classList.add('absorbido'); arena.classList.add('flash');  // lo absorbe
+      await esperar(360); arena.classList.remove('flash');
+      $('msg').textContent = '¿La atrapará?';
+      for (let i = 0; i < 3; i++) {       // 3 tambaleos de suspenso
+        pb.classList.add('tambalea'); await esperar(560); pb.classList.remove('tambalea'); await esperar(150);
+      }
+      // ¡atrapado!
+      pb.classList.add('abre');
+      wild.classList.remove('silueta', 'absorbido');
+      wild.classList.add('revelado'); if (r.shiny) wild.classList.add('shiny');
+      estrellas(arena.querySelector('.escena'), r.shiny);
+      if (r.shiny) { document.body.classList.add('shiny-flash'); setTimeout(() => document.body.classList.remove('shiny-flash'), 700); sonarShiny(); }
+      else sonarCaptura();
+
       const titulo = r.shiny
         ? '✨ ¡Un <b>' + p.nombre + '</b> SHINY! ✨'
         : (r.repetido ? '¡Otro <b>' + p.nombre + '</b>! Ya tenés <b>' + r.cantidad + '</b>' : '¡Atrapaste a <b>' + p.nombre + '</b>!');
-      $('arena').innerHTML =
-        '<div class="captura' + (r.repetido ? ' repe' : '') + (r.shiny ? ' shiny' : '') + '">' +
-        '<img src="' + spriteUrl(p.id, r.shiny) + '" alt="' + p.nombre + '" />' +
-        '<div class="captura-txt">' + titulo + ' <span class="cap-n">Nº ' + p.id + '</span></div></div>';
-      $('msg').textContent = r.shiny ? '🌟 ¡Qué suerte! Un shiny aparece 1 de cada 100 veces.' : '';
-      refrescar();
-    });
+      const txt = document.createElement('div');
+      txt.className = 'captura-txt'; txt.innerHTML = titulo + ' <span class="cap-n">Nº ' + p.id + '</span>';
+      arena.querySelector('.escena').appendChild(txt);
+      $('msg').textContent = r.shiny ? '🌟 ¡INCREÍBLE! Un shiny aparece 1 de cada 100 veces.' : '';
+      animando = false; refrescar();
+    }
+    $('tirar').addEventListener('click', lanzarBall);
   </script>
 </Base>

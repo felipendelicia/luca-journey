@@ -78,6 +78,7 @@ const payload = {
     import { python } from '@codemirror/lang-python';
     import { oneDark } from '@codemirror/theme-one-dark';
     import runnerPy from '../../../lib/runner.py?raw';
+    import { sonarExito, sonarError } from '../../../lib/sonidos.js';
 
     const data = JSON.parse(document.getElementById('ej-data').textContent);
     const KEY = (id) => 'ej:' + data.slug + ':' + id;
@@ -126,8 +127,9 @@ const payload = {
 
     function render(tests, carga) {
       const box = document.getElementById('result');
-      if (carga) { box.innerHTML = '<div class="ejer-err">⚠️ El código no se pudo ejecutar:<br><code>' + esc(carga) + '</code></div>'; return; }
+      if (carga) { box.innerHTML = '<div class="ejer-err">⚠️ El código no se pudo ejecutar:<br><code>' + esc(carga) + '</code></div>'; sonarError(); return; }
       const tot = tests.length, ok = tests.filter((t) => t.ok).length, todo = tot > 0 && ok === tot;
+      if (todo) sonarExito(); else sonarError();
       localStorage.setItem(KEY(data.exId) + ':ok', todo ? '1' : '0');
       let h = '<div class="ejer-resumen ' + (todo ? 'win' : '') + '">' + ok + ' / ' + tot + ' tests' + (todo ? ' · +' + (ok * 10) + ' EXP · ¡COMPLETO! 🏅' : '') + '</div><ul class="ejer-lista">';
       for (const t of tests) h += '<li class="' + (t.ok ? 'ok' : 'no') + '"><span class="ic">' + (t.ok ? '✅' : '❌') + '</span><code>' + esc(t.name) + '</code>' + (t.msg ? '<div class="m">' + esc(t.msg) + '</div>' : '') + '</li>';
