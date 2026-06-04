@@ -12,12 +12,16 @@ imprimir (PDF) se vuelve un libro limpio y paginado.
 """
 
 import html as _html
+import os
 import re
 import textwrap
 
 from pygments import highlight
 from pygments.lexers import PythonLexer, BashLexer
 from pygments.formatters import HtmlFormatter
+
+# Raíz del repo (un nivel arriba de manual/), para leer las teorías del curso.
+_REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def _make_formatter():
@@ -116,6 +120,101 @@ def reto(enunciado, solucion):
         f'<div class="reto-sol-body">{solucion}</div></details>'
         "</div>"
     )
+
+
+# ----------------------------------------------------------------------
+#  Generar un capítulo desde un teoria.md del curso
+# ----------------------------------------------------------------------
+def _codeblock_html(codigo, lang, lang_default):
+    """Convierte un bloque de código del teoria.md en una ventana resaltada."""
+    lang = (lang or "").lower().strip() or lang_default
+    usar = "bash" if lang in ("bash", "sh", "shell", "console") else "python"
+    return code(codigo, lang=usar)
+
+
+_BLOCKQUOTE = re.compile(r"<blockquote>\s*(.*?)\s*</blockquote>", re.S)
+# Emoji al inicio de una cita (para sacarlo y elegir el tipo de caja).
+_EMOJI_INI = re.compile(
+    r"(<p>)\s*[\U0001F000-\U0001FAFF☀-➿⬀-⯿️‍]+\s*"
+)
+
+
+def _blockquote_a_callout(m):
+    """Convierte un blockquote del markdown en una caja de aviso del libro."""
+    inner = m.group(1).strip()
+    if "⚠" in inner:
+        tipo, etiqueta = "cuidado", "CUIDADO"
+    elif "💡" in inner:
+        tipo, etiqueta = "tip", "TIP"
+    elif "🎯" in inner:
+        tipo, etiqueta = "nota", "META"
+    elif "⚡" in inner:
+        tipo, etiqueta = "tip", "ÁNIMO"
+    else:
+        tipo, etiqueta = "nota", "NOTA"
+    inner = _EMOJI_INI.sub(r"\1", inner, count=1)
+    return (
+        f'<div class="callout {tipo}"><span class="et">{etiqueta}</span>'
+        f'<span class="callout-body">{inner}</span></div>'
+    )
+
+
+def desde_teoria(cid, ruta_relativa, lang_default="python", titulo=None):
+    """
+    Crea un capítulo del libro a partir de un archivo teoria.md del curso.
+    Convierte el markdown al estilo del libro: ventanas de código resaltadas,
+    cajas de aviso (desde los blockquotes) y tablas. Así el libro contiene todo
+    el contenido de las teorías y se mantiene sincronizado con ellas.
+    """
+    import markdown as _md
+
+    ruta = os.path.join(_REPO, ruta_relativa)
+    with open(ruta, "r", encoding="utf-8") as f:
+        md = f.read()
+
+    # Título: lo tomamos del primer encabezado '# ...'.
+    m = re.search(r"^#\s+(.*)$", md, re.M)
+    h1 = m.group(1).strip() if m else cid
+    if titulo is None:
+        titulo = h1.split(" — ")[-1].strip() if " — " in h1 else re.sub(r"^[\W_]+", "", h1).strip()
+    # Sacamos esa primera línea del markdown (el título va en el encabezado del capítulo).
+    md = re.sub(r"^#\s+.*$", "", md, count=1, flags=re.M)
+
+    # 1) Guardamos los bloques de código y los reemplazamos por marcadores.
+    bloques = []
+
+    def _stash(mm):
+        bloques.append((mm.group(1), mm.group(2)))
+        return f"\n\nZZCODE{len(bloques) - 1}ZZ\n\n"
+
+    sin_codigo = re.sub(r"```([\w+-]*)\n(.*?)```", _stash, md, flags=re.S)
+
+    # 1b) Python-Markdown exige una línea en blanco ANTES de una lista. Las teorías
+    #     a veces ponen la lista pegada al párrafo, así que la insertamos nosotros.
+    sin_codigo = re.sub(
+        r"(?m)^(?![ \t]*(?:[-*+]|\d+\.)\s)(.+\S)\n([ \t]*(?:[-*+]|\d+\.)\s)",
+        r"\1\n\n\2",
+        sin_codigo,
+    )
+
+    # 2) Markdown a HTML (con tablas e ids en los encabezados).
+    cuerpo = _md.markdown(sin_codigo, extensions=["tables", "toc"])
+
+    # 3) Reinsertamos los bloques de código ya resaltados.
+    for i, (lang, cod) in enumerate(bloques):
+        ventana = _codeblock_html(cod, lang, lang_default)
+        cuerpo = cuerpo.replace(f"<p>ZZCODE{i}ZZ</p>", ventana).replace(f"ZZCODE{i}ZZ", ventana)
+
+    # 4) Blockquotes -> cajas de aviso; tablas -> con contenedor scrollable.
+    cuerpo = _BLOCKQUOTE.sub(_blockquote_a_callout, cuerpo)
+    cuerpo = cuerpo.replace("<table>", '<div class="tabla-wrap"><table>').replace(
+        "</table>", "</table></div>"
+    )
+
+    # 5) Prefijamos los ids de los encabezados para que sean únicos entre capítulos.
+    cuerpo = re.sub(r'\bid="([^"]+)"', rf'id="{cid}-\1"', cuerpo)
+
+    return capitulo(cid, titulo, cuerpo)
 
 
 def tabla(headers, filas):

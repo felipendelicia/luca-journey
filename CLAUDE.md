@@ -12,23 +12,29 @@ El proyecto tiene un **libro-manual** en la carpeta **`manual/`**, en dos format
 Linux y Python desde cero.
 
 - **NO se editan `manual.html` ni `manual.pdf` a mano.** Se generan.
-- El **contenido** está en `manual/manual_contenido.py` (capítulos escritos en **HTML**).
-- Los **estilos y herramientas** (CSS, cajas, resaltado de código) están en `manual/manual_lib.py`.
-- Para regenerar ambos: `python manual/generar_manual.py`
-  (usa **WeasyPrint** para el PDF y **Pygments** para resaltar el código;
-  si falta WeasyPrint, prueba con Chrome headless o LibreOffice).
+- **La teoría del libro SALE de los `curso/semana-*/teoria.md`.** Los capítulos de
+  Linux/Python/Git se generan automáticamente desde esos archivos (con
+  `manual_lib.desde_teoria`, que convierte el markdown al estilo del libro). Para
+  cambiar la enseñanza de un tema, **editá su `teoria.md`** y regenerá; NO dupliques
+  contenido en `manual_contenido.py`.
+- En `manual/manual_contenido.py` solo van a mano la **introducción**, el **mapa de
+  temas** y la **página de ayuda/glosario**, más la lista `CAPITULOS` (su orden define
+  el orden y la numeración del libro).
+- Los **estilos y herramientas** (CSS, cajas, resaltado, conversor de teoría) están en
+  `manual/manual_lib.py`.
+- Para regenerar todo: `python manual/generar_manual.py`
+  (usa **WeasyPrint** para el PDF y **Pygments** para el código; produce además
+  `docs/index.html` y `docs/recursos.html` para GitHub Pages).
 - Dependencias de mantenimiento (no las necesita el alumno):
   `pip install -r manual/requirements-dev.txt`.
 
 **Siempre que cambie el proyecto de una forma que afecte cómo se usa o qué
-contiene, actualizá `manual/manual_contenido.py` y regenerá el manual.** Por ejemplo:
+contiene, actualizá lo que corresponda y regenerá el manual.** Por ejemplo:
 
-- Agregar / quitar / renombrar una semana o un tema (actualizá el cap. "Mapa de temas").
-- Cambiar la estructura de carpetas o los archivos de cada semana.
-- Cambiar cómo se instala o se corre el curso (`setup.sh`, comandos).
-- Cambiar la Liga Pokémon (`aventura.py`): EXP, medallas, logros, menús.
-- Agregar / cambiar un proyecto en `proyectos/`.
-- Mejorar o ampliar la parte de enseñanza (capítulos de Linux y Python).
+- Cambiar la teoría de un tema → editá `curso/semana-*/teoria.md` y regenerá.
+- Agregar / quitar / renombrar una semana → actualizá `CAPITULOS` y el "Mapa de temas".
+- Cambiar cómo se instala/corre el curso (`setup.sh`, comandos) → la intro/ayuda.
+- Cambiar la Liga (`aventura.py`) o un proyecto → la intro/mapa.
 
 La **numeración de capítulos y secciones es automática**: la asigna
 `generar_manual.renumerar()` según el ORDEN de la lista `CAPITULOS`. Para reordenar
