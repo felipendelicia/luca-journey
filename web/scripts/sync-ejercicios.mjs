@@ -11,18 +11,38 @@ const SRC = path.resolve(HERE, '..', 'src', 'ejercicios');
 const OUT = path.resolve(HERE, '..', 'src', 'data');
 fs.mkdirSync(OUT, { recursive: true });
 
+// [slug, título, region]
 const SEMANAS = [
-  ['python-introduccion', 'Python: Introducción'],
-  ['control-de-flujo', 'Control de Flujo'],
-  ['funciones', 'Funciones'],
-  ['listas-y-colecciones', 'Listas y Colecciones'],
-  ['cadenas-y-archivos', 'Cadenas y Archivos'],
-  ['poo-introduccion', 'POO: Introducción'],
-  ['poo-avanzado', 'POO: Avanzado'],
-  ['modulos-y-pip', 'Módulos y pip'],
+  ['python-introduccion', 'Python: Introducción', 'kanto'],
+  ['control-de-flujo', 'Control de Flujo', 'kanto'],
+  ['funciones', 'Funciones', 'kanto'],
+  ['listas-y-colecciones', 'Listas y Colecciones', 'kanto'],
+  ['cadenas-y-archivos', 'Cadenas y Archivos', 'kanto'],
+  ['poo-introduccion', 'POO: Introducción', 'kanto'],
+  ['poo-avanzado', 'POO: Avanzado', 'kanto'],
+  ['modulos-y-pip', 'Módulos y pip', 'kanto'],
+  // Johto — análisis de datos
+  ['numpy-arrays', 'NumPy: Arrays', 'johto'],
+  ['numpy-calculo', 'NumPy: Cálculo numérico', 'johto'],
+  ['pandas-series-dataframe', 'pandas: Series y DataFrame', 'johto'],
+  ['pandas-seleccion', 'pandas: Selección y filtrado', 'johto'],
+  ['pandas-limpieza', 'pandas: Limpieza de datos', 'johto'],
+  ['pandas-groupby', 'pandas: Agrupar y combinar', 'johto'],
+  ['matplotlib', 'matplotlib: Gráficos', 'johto'],
+  ['analisis-integrador', 'Análisis integrador', 'johto'],
 ];
 const IGNORAR = new Set(['ejercicios.py', 'soluciones.py', 'test_ejercicios.py']);
 const leer = (p) => (fs.existsSync(p) ? fs.readFileSync(p, 'utf-8') : null);
+
+// Paquetes de Pyodide que hay que cargar según lo que importe el código.
+function paquetesDe(textos) {
+  const todo = textos.join('\n');
+  const pk = [];
+  if (/\b(import numpy|from numpy)\b/.test(todo) || /\bnp\./.test(todo)) pk.push('numpy');
+  if (/\b(import pandas|from pandas)\b/.test(todo) || /\bpd\./.test(todo)) pk.push('pandas');
+  if (/\b(import matplotlib|from matplotlib|matplotlib\.pyplot)\b/.test(todo) || /\bplt\./.test(todo)) pk.push('matplotlib');
+  return pk;
+}
 
 // Divide el ejercicios.py en preamble + bloques (cada def/class top-level con su comentario)
 function dividir(src) {
@@ -89,12 +109,12 @@ function mapearTests(testSrc, ejercicios) {
 }
 
 const data = [];
-SEMANAS.forEach(([slug, titulo], i) => {
+SEMANAS.forEach(([slug, titulo, region], i) => {
   const base = path.join(SRC, slug);
   const ejSrc = leer(path.join(base, 'ejercicios.py'));
   const test = leer(path.join(base, 'test_ejercicios.py'));
   const solucion = leer(path.join(base, 'soluciones.py'));
-  if (!ejSrc || !test) { console.warn('faltan archivos en', slug); return; }
+  if (!ejSrc || !test) { console.warn('(falta, lo salto)', slug); return; }
 
   const extra = {};
   for (const f of fs.readdirSync(base)) {
@@ -108,9 +128,10 @@ SEMANAS.forEach(([slug, titulo], i) => {
     const solMap = new Map(sol.ejercicios.map((e) => [e.name, e.starter]));
     ejercicios.forEach((e) => { e.solucion = solMap.get(e.name) || ''; });
   }
+  const packages = paquetesDe([ejSrc, test, solucion || '', ...Object.values(extra)]);
   const conTests = ejercicios.filter((e) => e.tests.length).length;
-  data.push({ slug, titulo, orden: i, preamble, test, solucion, extra, ejercicios });
-  console.log(`✓ ${slug.padEnd(22)} ${ejercicios.length} ejercicios (${conTests} con tests)`);
+  data.push({ slug, titulo, region: region || 'kanto', packages, orden: i, preamble, test, solucion, extra, ejercicios });
+  console.log(`✓ ${slug.padEnd(24)} [${region}] ${ejercicios.length} ej (${conTests} c/test)${packages.length ? ' pkg:' + packages.join(',') : ''}`);
 });
 
 fs.writeFileSync(path.join(OUT, 'ejercicios.json'), JSON.stringify(data));

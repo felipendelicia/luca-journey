@@ -20,6 +20,7 @@ const next = w.ejercicios[n + 1];
 const desc = ex.prompt.split('\n').slice(1).join(' ').trim();
 const payload = {
   slug: w.slug, preamble: w.preamble, test: w.test, extra: w.extra,
+  packages: w.packages || [],
   exId: ex.id, exTests: ex.tests, starter: ex.starter, solucion: ex.solucion || '',
   ejercicios: w.ejercicios.map((e) => ({ id: e.id, starter: e.starter })),
 };
@@ -107,7 +108,11 @@ const payload = {
     async function getPy() {
       if (!pyReady) {
         estado('⏳ Cargando Python + pytest (~20s la primera vez)…');
-        pyReady = (async () => { const py = await window.loadPyodide(); await py.loadPackage('pytest'); return py; })();
+        pyReady = (async () => {
+          const py = await window.loadPyodide();
+          await py.loadPackage(['pytest', ...(data.packages || [])]);
+          return py;
+        })();
       }
       const py = await pyReady;
       if (!cargado) { await py.runPythonAsync(runnerPy); cargado = true; }
