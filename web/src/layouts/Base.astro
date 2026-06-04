@@ -133,13 +133,14 @@ const nav = [
   <script is:inline>
     (function () {
       var body = document.body;
-      if (localStorage.getItem('tema') === 'dark') body.classList.add('dark');
+      // por defecto: CRT oscuro. 'claro' = modo claro.
+      if (localStorage.getItem('tema') === 'claro') body.classList.add('claro');
       var t = document.getElementById('theme-toggle');
-      function refrescar() { if (t) t.textContent = body.classList.contains('dark') ? '☀️' : '🌙'; }
+      function refrescar() { if (t) t.textContent = body.classList.contains('claro') ? '🌙' : '☀️'; }
       refrescar();
       if (t) t.addEventListener('click', function () {
-        body.classList.toggle('dark');
-        localStorage.setItem('tema', body.classList.contains('dark') ? 'dark' : 'claro');
+        body.classList.toggle('claro');
+        localStorage.setItem('tema', body.classList.contains('claro') ? 'claro' : 'oscuro');
         refrescar();
       });
       var s = document.getElementById('sonido-toggle');

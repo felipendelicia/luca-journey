@@ -532,13 +532,16 @@ body.shiny-flash{ animation:shinyFlash .7s ease; }
   --font-pixel:"Press Start 2P","JetBrains Mono",monospace;
   --font-crt:"VT323","JetBrains Mono",monospace;
 }
-/* el toggle 🌙 ahora cambia a fósforo ÁMBAR (modo nocturno CRT) */
-body.dark{
-  --paper:#0a0805; --paper-2:#15100a; --card:#171109;
-  --ink:#ffe0ab; --ink-soft:#e0a850; --ink-mute:#8a6a3a;
-  --red:#ff7a33; --red-deep:#ff9a4d; --red-ink:#ffb070;
-  --neon:#ffc24d; --neon-dim:#e09a30; --line:#3a2a14; --line-2:#241a0e;
-  --teal:#ffcf6a; --teal-deep:#ffcf6a;
+/* el toggle ☀️ cambia a MODO CLARO (terminal de día) */
+body.claro{
+  --paper:#eef1e8; --paper-2:#ffffff; --card:#f7f9f2;
+  --ink:#16241c; --ink-soft:#3c5a46; --ink-mute:#6f8a78;
+  --red:#e3350d; --red-deep:#b21807; --red-ink:#9d1505;
+  --yellow:#e0a800; --yellow-deep:#b88a00;
+  --teal:#0b9c84; --teal-deep:#0b9c84; --blue:#2f5fd0;
+  --neon:#1f9d3a; --neon-dim:#3fb85a;
+  --line:#d4dbc9; --line-2:#e3e8d8;
+  --code-bg:#0b1411;
 }
 
 body{
@@ -599,12 +602,13 @@ body::after{ content:""; position:fixed; inset:0; z-index:9998; pointer-events:n
   text-transform:uppercase; color:#06140c; background:var(--neon); border:0; border-radius:5px;
   padding:14px 20px; box-shadow:0 5px 0 #1c8f33, 0 10px 22px -8px rgba(93,255,122,.5); }
 .btn-grande:hover{ transform:translateY(2px); box-shadow:0 3px 0 #1c8f33, 0 8px 18px -8px rgba(93,255,122,.5); }
-.btn-grande.sec{ background:transparent; color:var(--neon); border:2px solid var(--neon);
-  box-shadow:0 5px 0 rgba(43,214,79,.4); }
-.btn-grande.sec:hover{ background:rgba(93,255,122,.08); }
+/* secundario = ROJO Pokéball */
+.btn-grande.sec{ background:transparent; color:var(--red-deep); border:2px solid var(--red);
+  box-shadow:0 5px 0 rgba(177,24,7,.45); text-shadow:0 0 8px rgba(255,65,51,.4); }
+.btn-grande.sec:hover{ background:rgba(255,65,51,.1); color:var(--red); }
 .btn-sec, .btn{ font-family:var(--font-mono); font-weight:700; text-transform:uppercase; letter-spacing:.04em;
   background:var(--paper-2); color:var(--ink); border:1px solid var(--line); border-radius:5px; }
-.btn-sec:hover{ border-color:var(--neon); color:var(--neon); box-shadow:0 0 12px rgba(93,255,122,.3); }
+.btn-sec:hover{ border-color:var(--red); color:var(--red-deep); box-shadow:0 0 12px rgba(255,65,51,.3); }
 
 /* ── paneles tipo "pantalla" (cards y similares) ── */
 .card,.cc,.dex-seccion,.tarjeta,.region,.logro,.ay-region,.evo-card,.tr-lado,.av-card,.auth-card,
@@ -666,3 +670,48 @@ body.dark .poke.falta img{ filter:grayscale(1) brightness(.72) sepia(1) hue-rota
 .tarjeta{ box-shadow:0 0 0 1px rgba(255,65,51,.18), inset 0 0 70px rgba(0,0,0,.55), var(--shadow); position:relative; overflow:hidden; }
 .tarjeta::before{ content:""; position:absolute; inset:0; pointer-events:none;
   background:repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0 3px, rgba(0,0,0,.14) 3px 4px); }
+
+/* ── callouts en CRT (oscuros, legibles) ── */
+.callout{ background:var(--paper-2); border:1px solid var(--line); border-left-width:3px; }
+.callout p{ color:var(--ink); }
+.callout > .et{ color:#04140a; font-weight:700; text-shadow:none; }
+.callout.nota{ background:rgba(86,184,255,.07); border-color:rgba(86,184,255,.28); border-left-color:var(--blue); }
+.callout.nota > .et{ background:var(--blue); }
+.callout.tip{ background:rgba(93,255,122,.06); border-color:rgba(93,255,122,.28); border-left-color:var(--neon); }
+.callout.tip > .et{ background:var(--neon); }
+.callout.cuidado{ background:rgba(255,226,61,.07); border-color:rgba(255,226,61,.28); border-left-color:var(--yellow-deep); }
+.callout.cuidado > .et{ background:var(--yellow); }
+
+/* ── tablas en CRT ── */
+.book table{ background:var(--paper-2); border:1px solid var(--line); box-shadow:var(--shadow-sm); }
+.book th{ background:#0b2016; color:var(--neon); border-bottom:1px solid var(--line);
+  font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.03em;
+  text-shadow:0 0 6px rgba(93,255,122,.3); }
+.book td{ color:var(--ink); border-bottom:1px solid var(--line); }
+.book tbody tr:nth-child(even){ background:rgba(93,255,122,.04); }
+.book tbody tr:hover{ background:rgba(93,255,122,.07); }
+
+/* ── MODO CLARO: atenuar efectos CRT, mantener legibilidad ── */
+body.claro::after{ background:repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.035) 2px 3px); animation:none; }
+body.claro .bg-grid{ background:
+  radial-gradient(1100px 620px at 78% -12%, rgba(227,53,13,.07), transparent 60%),
+  radial-gradient(900px 520px at -8% 112%, rgba(11,156,132,.07), transparent 60%),
+  #eef1e8; }
+body.claro .bg-grid::after{ background:none; }
+body.claro a, body.claro h1, body.claro .brand, body.claro .brand b,
+body.claro .card h3, body.claro .liga-h, body.claro .book th,
+body.claro .navlink:hover, body.claro code{ text-shadow:none; }
+body.claro .pb{ box-shadow:0 1px 3px rgba(0,0,0,.18); }
+body.claro .card::before{ opacity:.1; }
+body.claro code{ background:#eafbee; color:#1c7d31; border-color:#bfe6c8; }
+body.claro ::selection{ background:var(--red); color:#fff; }
+body.claro .btn-grande{ color:#fff; box-shadow:0 5px 0 #157a2c, 0 8px 18px -10px rgba(31,157,58,.5); }
+body.claro .btn-grande:hover{ box-shadow:0 3px 0 #157a2c, 0 6px 14px -10px rgba(31,157,58,.5); }
+body.claro .btn-grande.sec{ text-shadow:none; }
+body.claro .book th{ background:#eaf4ec; color:#1a7d33; }
+body.claro .callout > .et{ color:#fff; }
+body.claro .topbar{ background:rgba(238,241,232,.9); box-shadow:0 2px 0 rgba(31,157,58,.12), 0 8px 24px -20px rgba(0,0,0,.3); }
+/* hero siempre oscuro (es una "pantalla") -> su texto siempre claro */
+body.claro .hero-home .kick{ color:#7dffa0; }
+body.claro .hero-home p{ color:#bfe6c8; }
+body.claro .hero-home h1{ color:#eafff0; }
