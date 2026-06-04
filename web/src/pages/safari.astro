@@ -14,12 +14,12 @@ const total = pokemon.length;
       <h1>🎒 Safari Pokémon</h1>
       <a class="navlink" href={u('/pokedex')}>📕 Ver mi Pokédex</a>
     </div>
-    <p>Tirá Pokéballs para atrapar Pokémon salvajes. Ganás Pokéballs <strong>resolviendo ejercicios</strong> (+2 c/u) y con el <strong>regalo diario</strong> (+5). ⚡</p>
+    <p>Tirá Pokéballs para atrapar Pokémon salvajes. Ganás Pokéballs <strong>resolviendo ejercicios</strong> (+2 c/u) y con el <strong>regalo cada 20 min</strong> (+5). ⚡</p>
 
     <div class="safari-barra">
       <div class="ss-item"><span class="ss-ico">🔴</span><b id="balls">0</b><span class="ss-lbl">Pokéballs</span></div>
       <div class="ss-item"><span class="ss-ico">📕</span><b id="colN">0</b><span class="ss-lbl">de {total}</span></div>
-      <button class="btn-regalo" id="regalo">🎁 Regalo diario</button>
+      <button class="btn-regalo" id="regalo">🎁 Regalo (+5)</button>
     </div>
     <p class="safari-regiones" id="regiones"></p>
 
@@ -65,9 +65,11 @@ const total = pokemon.length;
 
     $('regalo').addEventListener('click', () => {
       const n = reclamarRegalo();
-      if (n) $('msg').textContent = '🎁 ¡Regalo diario! +' + n + ' Pokéballs';
+      if (n) $('msg').textContent = '🎁 ¡Regalo! +' + n + ' Pokéballs · volvé en 20 min';
       refrescar();
     });
+    // el botón reaparece solo cuando se cumple el cooldown (sin recargar)
+    setInterval(() => { if (regaloDisponible() && $('regalo').style.display === 'none') refrescar(); }, 20000);
 
     const esperar = (ms) => new Promise((res) => setTimeout(res, ms));
     function estrellas(arena, dorado) {
@@ -87,7 +89,7 @@ const total = pokemon.length;
     async function lanzarBall() {
       if (animando) return;
       const r = lanzar(D.pokemon, D.temas, D.pesos);
-      if (r.error === 'sin-balls') { $('msg').textContent = 'Te quedaste sin Pokéballs. Resolvé ejercicios o volvé mañana por el regalo. 💪'; return; }
+      if (r.error === 'sin-balls') { $('msg').textContent = 'Te quedaste sin Pokéballs. Resolvé ejercicios o esperá el regalo (cada 20 min). 💪'; return; }
       if (r.error) { $('msg').textContent = 'Hacé un ejercicio para desbloquear Pokémon salvajes. 💪'; return; }
       animando = true;
       const btn = $('tirar'); btn.disabled = true;

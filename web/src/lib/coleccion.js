@@ -6,7 +6,8 @@ const get = (k, def) => { try { const v = JSON.parse(localStorage.getItem(k)); r
 const set = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 
 export const BALLS_POR_EJERCICIO = 2;
-export const REGALO_DIARIO = 5;
+export const REGALO_BALLS = 5;                     // Pokéballs por regalo
+export const REGALO_COOLDOWN_MS = 20 * 60 * 1000;  // cada 20 minutos
 export const PROB_SHINY = 0.01; // 1% de que un salvaje sea shiny ✨
 export const COSTO_EVOLUCION = 3; // cuántos hacen falta para evolucionar (te queda 1 del pre-evolucionado)
 
@@ -116,16 +117,17 @@ export function evolucionar(fromId, toId, evoMap) {
   return true;
 }
 
-// Regalo diario: +5 Pokéballs una vez por día.
+// Regalo: +5 Pokéballs cada 20 minutos (col:regalo guarda el timestamp ms del último).
 export function reclamarRegalo() {
-  const hoy = new Date().toISOString().slice(0, 10);
-  if (localStorage.getItem('col:regalo') === hoy) return 0;
-  localStorage.setItem('col:regalo', hoy);
-  set('col:balls', get('col:balls', 0) + REGALO_DIARIO);
-  return REGALO_DIARIO;
+  const ult = Number(localStorage.getItem('col:regalo')) || 0;
+  if (Date.now() - ult < REGALO_COOLDOWN_MS) return 0;
+  localStorage.setItem('col:regalo', String(Date.now()));
+  set('col:balls', get('col:balls', 0) + REGALO_BALLS);
+  return REGALO_BALLS;
 }
 export function regaloDisponible() {
-  return localStorage.getItem('col:regalo') !== new Date().toISOString().slice(0, 10);
+  const ult = Number(localStorage.getItem('col:regalo')) || 0;
+  return Date.now() - ult >= REGALO_COOLDOWN_MS;
 }
 
 // Elige un Pokémon del pool con probabilidad proporcional a su peso (rareza):
