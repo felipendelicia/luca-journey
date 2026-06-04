@@ -1,6 +1,0 @@
-# Dependencias de la Pokédex Web (Semana 12).
-# Instalá con:  pip install -r requirements.txt
-
-flask>=3.0        # el framework web
-requests>=2.31    # para consultar la PokéAPI (autocompletado)
-pytest>=8.0       # para correr los tests

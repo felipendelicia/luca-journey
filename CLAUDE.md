@@ -1,48 +1,38 @@
-# Instrucciones del proyecto — Curso de Python con Pokémon
+# Instrucciones del proyecto — Python con Pokémon (plataforma web)
 
-Curso de programación (Linux + Python) para un adolescente principiante, en
-español argentino y con temática Pokémon. Incluye un sistema de gamificación
-llamado **La Liga Pokémon** (`aventura.py`).
+App web del curso de **Linux + Python** (temática Pokémon, español argentino, para
+principiantes absolutos). Todo corre **en el navegador con Pyodide**. El proyecto es
+**solo la app Astro en `web/`**: el curso Python viejo, el manual estático y la Liga de
+consola fueron migrados a la web y eliminados (quedan en el historial de git).
 
-## 🌐 EN MIGRACIÓN: la plataforma web (Astro)
+## Estructura
 
-El proyecto se está migrando a una **app web con Astro** en la carpeta **`web/`**, que
-va a ser la forma principal de usar el curso (libro, playground, ejercicios en vivo y
-Liga web, todo en el navegador).
+- **`web/`** — la app Astro (lo único que se mantiene).
+  - `src/content/libro/*.md` — la **teoría del libro**. ÚNICA fuente: se edita acá.
+    Orden por frontmatter `order`; la agrupación del índice/riel está en `src/lib/grupos.mjs`.
+  - `src/ejercicios/<tema>/` — `ejercicios.py`, `soluciones.py`, `test_ejercicios.py`
+    (+ helpers) de cada tema. Son la fuente real de los ejercicios.
+  - `src/pages/` — `index`, `libro/[...slug]`, `ejercicios/[slug]/[ex]`, `liga`,
+    `playground`, `recursos`.
+  - `src/lib/runner.py` — corre **pytest en Pyodide** para corregir ejercicios.
+  - `src/lib/url.ts` (`u()`) — prefija los links con el base path de Pages.
+  - `scripts/sync-ejercicios.mjs` — divide cada `ejercicios.py` por función/clase, mapea
+    los tests por símbolo, y arma `src/data/ejercicios.json` (corre solo en dev/build).
+- **`docs/`** — el build publicado en GitHub Pages. **NO se edita a mano**; lo genera el build.
+- **`screenshots/`** — capturas usadas en el README.
 
-- **Ya NO se genera PDF.** El manual en PDF fue eliminado; no lo recrees.
-- **El contenido teórico vive en `web/src/content/libro/*.md`** (content collections de
-  Astro). Esa es la **única fuente** del libro: se edita ahí. Los `curso/semana-*/teoria.md`
-  quedaron **obsoletos** (no los mantengas como fuente del libro).
-- El sitio estático viejo (`manual/` → `docs/`) queda como legacy hasta que la app de
-  Astro lo reemplace en el deploy. No le pongas más esfuerzo salvo necesidad puntual.
-- Dev de la web: `cd web && npm run dev` (Astro, con hot-reload). Build: `npm run build`.
+## Comandos (desde `web/`)
 
-> El **curso en sí** (carpetas `curso/semana-*` con `ejercicios.py`, `soluciones.py`,
-> `test_*.py`, `interactivo.py`) sigue siendo el código real del curso y la fuente de
-> los ejercicios/tests. Eso NO se migra: la web lo consume.
+- `npm run dev` — dev server (base `/`, hot-reload), en `http://localhost:4321`.
+- `npm run build` — build a `../docs` con base `/luca-journey` (lo que sirve GitHub Pages).
 
-## 🔁 Coherencia general
+## Reglas
 
-Cuando cambies contenido del curso, revisá que sigan coherentes:
-
-- `README.md` — presentación y tabla de semanas.
-- `ROADMAP.md` — mapa visual y checklist de progreso.
-- `liga/datos.py` — registro de semanas y gimnasios de la Liga.
-- `manual/manual_contenido.py` → `manual/manual.html` + `manual/manual.pdf` — el libro-manual.
-
-## ✅ Tests
-
-Antes de dar por terminado un cambio, corré `pytest` desde la raíz y dejá todo
-en verde. Los tests de cada semana prueban `soluciones.py` por defecto; la Liga
-los corre contra `ejercicios.py` con la variable `CURSO_MODULO=ejercicios`.
-
-## 🧱 Convenciones técnicas
-
-- `pytest.ini` usa `--import-mode=importlib` para permitir nombres de archivo
-  repetidos entre semanas (`interactivo.py`, `test_ejercicios.py`, etc.).
-- Los paquetes (semanas 11-12, proyectos, `liga/`) usan **nombres únicos** para
-  no chocar al importar (`agenda`, `agenda_entrenador`, `pokedex_web`,
-  `pokedex_app`, `liga`, etc.). Mantené esa unicidad si agregás paquetes.
-- Archivos generados (no versionar, ya están en `.gitignore`): `venv/`,
-  `__pycache__/`, `progreso.json`, `*.db`. **Excepción:** `manual.pdf` SÍ se versiona.
+- **Teoría:** editá `web/src/content/libro/*.md`. No dupliques contenido en otro lado.
+- **Ejercicios:** editá los `.py` en `web/src/ejercicios/<tema>/`; el build regenera el JSON.
+- **Links internos:** usá `u('/ruta')` (de `src/lib/url.ts`), nunca hardcodees `/...`,
+  porque en Pages el sitio vive bajo `/luca-journey/`. En scripts de cliente usá `window.__BASE`.
+- **Deploy:** `npm run build` actualiza `docs/`; commiteá `docs/` junto con los cambios de `web/`.
+- **Correr Python en el navegador** es siempre vía Pyodide (CDN). Los ejercicios usan
+  `loadPackage('pytest')`; el código del libro/playground usa CodeMirror + Pyodide.
+- Tras tocar la UI, verificá con un screenshot del dev server antes de dar por hecho un cambio.

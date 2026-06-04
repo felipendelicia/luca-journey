@@ -5,7 +5,6 @@
   "private": true,
   "description": "Plataforma web del curso Python con Pokémon (Astro)",
   "scripts": {
-    "sync": "node scripts/sync-content.mjs",
     "dev": "npm run prep && astro dev",
     "build": "node scripts/sync-ejercicios.mjs && DEPLOY_BASE=/luca-journey astro build && rm -rf ../docs/astro",
     "preview": "astro preview",

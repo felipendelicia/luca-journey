@@ -1,3 +1,0 @@
-# Dependencias de la semana 10.
-# Instalá con:  pip install -r requirements.txt
-requests>=2.31    # Para consultar la PokéAPI en interactivo.py

@@ -1,22 +1,9 @@
-# Entorno virtual
-venv/
-.venv/
+# Node / Astro (la app vive en web/)
+node_modules/
+.astro/
+dist/
 
-# Caché de Python
-__pycache__/
-*.pyc
-*.pyo
-
-# Caché de pytest
-.pytest_cache/
-
-# Datos generados por las apps (no se versionan)
-agenda_datos.json
-pokedex_datos.json
-pokedex.db
-mi_pokedex.csv
-favoritos.json
-*.db
-
-# Sistema
+# Sistema / editores
 .DS_Store
+*.log
+__pycache__/
