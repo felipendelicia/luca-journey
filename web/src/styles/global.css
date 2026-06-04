@@ -27,8 +27,8 @@ h1,h2,h3{font-family:var(--font-display); font-weight:800; letter-spacing:-.02em
 a{color:var(--teal-deep); text-decoration:none;}
 p{margin:.7em 0;}
 strong{color:var(--red-ink);}
-code{font-family:var(--font-mono); font-size:.85em; background:#eef1f4; color:var(--red-deep);
-  border:1px solid var(--line-2); border-radius:6px; padding:.06em .4em;}
+code{font-family:var(--font-mono); font-size:.85em; background:#fbe7e1; color:var(--red-deep);
+  border:1px solid #f2cdc1; border-radius:6px; padding:.06em .4em;}
 
 /* fondo con grilla de puntos */
 .bg-grid{position:fixed; inset:0; z-index:-2; pointer-events:none;
@@ -222,3 +222,9 @@ body.dark .book-rail a:hover, body.dark .book-rail a.activo{ background:var(--ca
 .grupo-idx{ margin-bottom:18px; }
 .grupo-idx > summary{ font-size:1.18rem; padding:10px 4px; border-bottom:2px solid var(--line); border-radius:0; margin-bottom:12px; }
 .grupo-idx > summary .g-count{ margin-right:6px; }
+
+/* el <code> dentro de un bloque NO debe llevar el estilo del chip inline */
+pre code, pre.astro-code code, .cw code{
+  background:transparent !important; border:0 !important; padding:0 !important;
+  color:inherit; font-size:inherit; border-radius:0;
+}

@@ -68,8 +68,8 @@ const grupos = agrupar(caps);
       try {
         const py = await getPy(out);
         out.innerHTML = '<span class="lbl">SALIDA</span>';
-        py.setStdout({ batched: (s) => out.appendChild(document.createTextNode(s)) });
-        py.setStderr({ batched: (s) => { const e = document.createElement('span'); e.className = 'err'; e.textContent = s; out.appendChild(e); } });
+        py.setStdout({ batched: (s) => out.appendChild(document.createTextNode(s + '\n')) });
+        py.setStderr({ batched: (s) => { const e = document.createElement('span'); e.className = 'err'; e.textContent = s + '\n'; out.appendChild(e); } });
         py.setStdin({ stdin: () => { const v = window.prompt('input():'); return v === null ? '' : v; } });
         await py.runPythonAsync(codigo);
       } catch (err) {
