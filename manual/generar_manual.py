@@ -58,6 +58,36 @@ def _sin_tags(texto):
     return re.sub(r"<[^>]+>", "", texto).strip()
 
 
+def renumerar(capitulos):
+    """
+    Asigna los números de capítulo y de sección SEGÚN EL ORDEN de la lista.
+    Así, para reordenar el libro, basta con reordenar CAPITULOS: los números
+    (1, 2, 3... y 3.1, 3.2...) se recalculan solos y nunca se desincronizan.
+    """
+    for i, cap in enumerate(capitulos):
+        nuevo = str(i)
+        # 1) Número del capítulo (en el badge cap-num del encabezado).
+        cap["html"] = cap["html"].replace(
+            f'<span class="cap-num">{cap["num"]}</span>',
+            f'<span class="cap-num">{nuevo}</span>', 1,
+        )
+        cap["num"] = nuevo
+        cap["titulo"] = f"{nuevo}. {cap['resto']}"
+
+        # 2) Número de cada sección h2 (la forma i.j).
+        contador = {"n": 0}
+
+        def _renum_h2(m, n=nuevo, c=contador):
+            c["n"] += 1
+            texto = re.sub(r"^\s*\d+\.\d+\.\s*", "", m.group(2))
+            return f'{m.group(1)}{n}.{c["n"]}. {texto}{m.group(3)}'
+
+        cap["html"] = re.sub(
+            r'(<h2 id="[^"]+"[^>]*>)(.*?)(</h2>)', _renum_h2, cap["html"], flags=re.S
+        )
+    return capitulos
+
+
 def construir_toc(capitulos):
     """Arma el índice (TOC) con enlaces a cada capítulo y sus secciones."""
     items = []
@@ -130,7 +160,8 @@ FUENTES = (
 
 def construir_html():
     """Arma el documento HTML completo (standalone)."""
-    capitulos = manual_contenido.CAPITULOS
+    # Numeramos los capítulos/secciones según el orden de la lista (Linux primero).
+    capitulos = renumerar(manual_contenido.CAPITULOS)
     cuerpo = "".join(cap["html"] for cap in capitulos)
     estilos = manual_lib.CSS + "\n" + manual_lib.css_pygments()
     return f"""<!DOCTYPE html>

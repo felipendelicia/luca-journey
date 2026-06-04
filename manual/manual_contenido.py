@@ -63,7 +63,7 @@ cap_intro = capitulo(
     ol(
         "📖 <strong>Leé</strong> la teoría de la semana (o el capítulo de este libro).",
         "✏️ <strong>Resolvé</strong> los ejercicios (escribí tu código donde dice <code># TU CÓDIGO ACÁ</code>).",
-        "🧪 <strong>Probá</strong> con los tests (ver capítulo 18).",
+        '🧪 <strong>Probá</strong> con los tests (ver el <a href="#cap-16">capítulo de tests</a>).',
         "🎮 <strong>Jugá</strong> el <code>interactivo.py</code> de la semana.",
         "🏋️ <strong>Entrená</strong> esa semana en la Liga para ganar EXP.",
     ),
@@ -242,7 +242,7 @@ cap2 = capitulo(
     '''),
     caja("""Cuidado con un error común: <code>"25"</code> (con comillas) es <strong>texto</strong>,
     no un número. <code>25 + 5</code> da <code>30</code>, pero <code>"25" + "5"</code> da
-    <code>"255"</code> (pega los textos). El capítulo 5 explica cómo convertir entre tipos.""", "cuidado"),
+    <code>"255"</code> (pega los textos). El <a href="#cap-5">capítulo de input</a> explica cómo convertir entre tipos.""", "cuidado"),
 
     h2("2.3. f-strings: armar texto con variables", "fstrings"),
     p("""Muchas veces querés mezclar texto con el valor de tus variables. La forma más
@@ -322,7 +322,7 @@ cap3 = capitulo(
 
     h2("3.2. Operadores de comparación", "comparacion"),
     p("""Comparan dos valores y devuelven un <strong>bool</strong>
-    (<code>True</code> o <code>False</code>). Son la base de las decisiones (capítulo 6):"""),
+    (<code>True</code> o <code>False</code>). Son la base de las decisiones (ver <a href="#cap-6">condicionales</a>):"""),
     tabla(
         ["Operador", "Significa", "Ejemplo", "Resultado"],
         [
@@ -409,7 +409,7 @@ cap4 = capitulo(
     caja("""<strong>Los índices empiezan en 0</strong>, no en 1. Entonces, en
     <code>"Pikachu"</code>, la <code>P</code> está en la posición 0, la <code>i</code>
     en la 1, etc. Y <code>[-1]</code> es el último carácter. Esto vale también para
-    listas (capítulo 9).""", "clave"),
+    listas (ver <a href="#cap-9">listas y tuplas</a>).""", "clave"),
 
     h2("4.2. Métodos de strings", "string-metodos"),
     p("""Un <strong>método</strong> es una acción que un dato sabe hacer. Se llama con
@@ -442,7 +442,7 @@ cap4 = capitulo(
     h2("4.3. split y join", "split-join"),
     p("""<code>split</code> <strong>parte</strong> un texto en una lista usando un
     separador. <code>join</code> hace lo contrario: <strong>une</strong> una lista en
-    un texto. Son clave para trabajar con archivos CSV (capítulo 11):"""),
+    un texto. Son clave para trabajar con archivos CSV (ver <a href="#cap-11">archivos</a>):"""),
     code('''
         linea = "Pikachu,Electrico,25"
         partes = linea.split(",")
@@ -532,8 +532,9 @@ cap5 = capitulo(
         print(f"En 5 años vas a tener {edad + 5} años.")
     '''),
     caja("""Si la persona escribe algo que no es un número (como "diez") y vos hacés
-    <code>int(...)</code>, Python tira un <code>ValueError</code>. En el capítulo 11
-    vas a aprender a manejar ese error con <code>try</code>/<code>except</code>.""", "nota"),
+    <code>int(...)</code>, Python tira un <code>ValueError</code>. Más adelante, en el
+    <a href="#cap-11">capítulo de archivos y errores</a>, vas a aprender a manejar ese
+    error con <code>try</code>/<code>except</code>.""", "nota"),
 )
 
 
@@ -594,7 +595,7 @@ cap6 = capitulo(
     imprime "cansado" y se saltea los demás."""),
 
     h2("6.4. Combinar condiciones", "if-logicos"),
-    p("""Podés usar <code>and</code>, <code>or</code> y <code>not</code> (capítulo 3)
+    p("""Podés usar <code>and</code>, <code>or</code> y <code>not</code> (ver <a href="#cap-3">operadores</a>)
     dentro de un <code>if</code> para decisiones más ricas:"""),
     code('''
         nivel = 30
@@ -797,7 +798,7 @@ cap8 = capitulo(
     (guardar, sumar, comparar...). Si querés <em>usar</em> el resultado después, usá
     <code>return</code>. Apenas Python ejecuta un <code>return</code>, sale de la función.""", "clave"),
     h3("Devolver varios valores"),
-    p("Una función puede devolver más de un valor (en realidad devuelve una tupla, capítulo 9):"),
+    p('Una función puede devolver más de un valor (en realidad devuelve una tupla, ver <a href="#cap-9">listas y tuplas</a>):'),
     code('''
         def stats(nivel):
             hp = nivel * 3
@@ -915,7 +916,7 @@ cap9 = capitulo(
             ["<code>x in lista</code>", "¿x está en la lista?"],
         ],
     ),
-    p("Y por supuesto, recorrés una lista con un <code>for</code> (capítulo 7):"),
+    p('Y por supuesto, recorrés una lista con un <code>for</code> (ver <a href="#cap-7">bucles</a>):'),
     code('''
         niveles = [25, 50, 40]
         total = 0
@@ -1103,8 +1104,8 @@ cap11 = capitulo(
     h2("11.2. CSV: datos en filas y columnas", "csv"),
     p("""Un <strong>CSV</strong> (valores separados por comas) es un archivo donde cada
     línea es una fila y los datos van separados por comas. Es como una mini planilla.
-    Lo podés manejar con <code>split</code>/<code>join</code> (capítulo 4) o con el
-    módulo <code>csv</code>:"""),
+    Lo podés manejar con <code>split</code>/<code>join</code> (ver <a href="#cap-4">cadenas</a>)
+    o con el módulo <code>csv</code>:"""),
     code('''
         import csv
 
@@ -1724,10 +1725,16 @@ cap16 = capitulo(
 )
 
 
-# Lista final de capítulos, en orden.
+# Lista final de capítulos, EN ORDEN DE LECTURA.
+# Los números de capítulo y de sección los asigna automáticamente el generador
+# (generar_manual.renumerar), según esta posición. Para reordenar el libro,
+# cambiá el orden de esta lista: los números se recalculan solos.
+# Linux va primero (es la base), después Python, y al final el mapa y la ayuda.
 CAPITULOS = [
-    cap_intro, cap1, cap2, cap3, cap4, cap5, cap6, cap7, cap8,
-    cap9, cap10, cap11, cap12, cap13, cap14,
-    cap_linux1, cap_linux2,
-    cap15, cap16,
+    cap_intro,                       # 0 — cómo usar el libro
+    cap_linux1, cap_linux2,          # Linux (la base)
+    cap1, cap2, cap3, cap4, cap5,    # Python básico
+    cap6, cap7, cap8, cap9, cap10, cap11,
+    cap12, cap13, cap14,             # Python avanzado
+    cap15, cap16,                    # mapa del curso + tests/FAQ
 ]

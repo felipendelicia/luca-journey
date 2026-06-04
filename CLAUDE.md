@@ -30,10 +30,13 @@ contiene, actualizá `manual/manual_contenido.py` y regenerá el manual.** Por e
 - Agregar / cambiar un proyecto en `proyectos/`.
 - Mejorar o ampliar la parte de enseñanza (capítulos de Linux y Python).
 
-OJO con la **numeración de capítulos**: está hardcodeada en los títulos
-(`"15. Linux..."`) y en las secciones (`"15.1. ..."`). Si insertás un capítulo en
-el medio, renumerá los siguientes y revisá las referencias cruzadas
-(`grep "capítulo 1" manual/manual_contenido.py`).
+La **numeración de capítulos y secciones es automática**: la asigna
+`generar_manual.renumerar()` según el ORDEN de la lista `CAPITULOS`. Para reordenar
+el libro (o insertar un capítulo), solo cambiá el orden de esa lista; los números
+(1, 2... y 3.1, 3.2...) se recalculan solos. Los números que escribas en los títulos
+de `capitulo()`/`h2()` son solo placeholders: el generador los reemplaza.
+Para **referencias cruzadas** usá enlaces por id estable
+(`<a href="#cap-7">bucles</a>`), nunca "capítulo N", así no se rompen al reordenar.
 
 El libro tiene un **índice automático** y una sección "Mapa de temas del curso":
 mantené ese mapa sincronizado con las semanas reales.
