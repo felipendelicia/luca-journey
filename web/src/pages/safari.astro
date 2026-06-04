@@ -120,7 +120,7 @@ const total = pokemon.length;
       const titulo = r.shiny
         ? '✨ ¡Un <b>' + p.nombre + '</b> SHINY! ✨'
         : (r.repetido ? '¡Otro <b>' + p.nombre + '</b>! Ya tenés <b>' + r.cantidad + '</b>' : '¡Atrapaste a <b>' + p.nombre + '</b>!');
-      const pct = (r.prob * 100).toFixed(r.prob < 0.01 ? 2 : 1);
+      const pct = (r.prob * 100).toFixed(2);   // 0.00–100.00 (2 decimales)
       const txt = document.createElement('div');
       txt.className = 'captura-txt';
       txt.innerHTML = titulo + ' <span class="cap-n">Nº ' + p.id + '</span>' +
