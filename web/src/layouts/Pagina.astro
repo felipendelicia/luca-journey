@@ -1,0 +1,11 @@
+---
+import Base from './Base.astro';
+const { frontmatter } = Astro.props;
+---
+<Base title={frontmatter.title} active={frontmatter.active || ''}>
+  <div class="wrap">
+    <main class="book recursos" style="margin:0 auto;">
+      <slot />
+    </main>
+  </div>
+</Base>
