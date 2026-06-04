@@ -1,42 +1,51 @@
-"""
-✏️ Ejercicios — SQL: filtrar y ordenar
+"""✏️ Ejercicios — SQL: filtrar y ordenar
 
 WHERE para filtrar, ORDER BY para ordenar, LIKE para buscar texto, LIMIT para cortar.
-La tabla 'pokemon' tiene: nombre, nivel, tipo.
+La tabla 'pokemon' tiene: nombre, nivel, tipo. ✅ Corregir al terminar.
 """
 import sqlite3
 
 
-# 1) Nombres de los Pokémon de un tipo dado. Usá WHERE.
+# Filtrar por tipo
+# Devolvé los nombres de los Pokémon de un tipo dado. Usá WHERE con parámetro (?).
+# Ejemplo:  de_tipo(con, "Fuego")  →  ["Charizard", "Vulpix"]
 def de_tipo(conexion, tipo):
-    """Devolvé una lista de nombres donde tipo = el pedido. Usá parámetros (?)."""
+    """Devolvé los nombres donde tipo = el pedido."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 2) Nombres de los Pokémon con nivel >= mínimo, ordenados de mayor a menor nivel.
+# Los fuertes, ordenados
+# Nombres con nivel >= mínimo, ordenados de mayor a menor nivel.
+# Pista: WHERE nivel >= ? ORDER BY nivel DESC.
+# Ejemplo:  fuertes(con, 50)  →  ["Charizard", "Snorlax"]
 def fuertes(conexion, minimo):
-    """WHERE nivel >= ? ORDER BY nivel DESC."""
+    """Devolvé los nombres con nivel >= mínimo, de mayor a menor."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 3) Todos los nombres ordenados por nivel descendente.
+# Ordenar por nivel
+# Devolvé todos los nombres ordenados por nivel descendente. Pista: ORDER BY nivel DESC.
 def ordenados_por_nivel(conexion):
-    """ORDER BY nivel DESC."""
+    """Devolvé los nombres ordenados por nivel (mayor a menor)."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 4) Nombres que empiezan con una letra dada. Usá LIKE (ej: 'C%').
+# Empiezan con…
+# Devolvé los nombres que empiezan con una letra dada. Pista: WHERE nombre LIKE ? (letra + '%').
+# Ejemplo:  empiezan_con(con, "C")  →  ["Charizard", "Charmander"]
 def empiezan_con(conexion, letra):
-    """WHERE nombre LIKE ?  (pasale letra + '%')."""
+    """Devolvé los nombres que empiezan con 'letra'."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 5) Los n Pokémon de mayor nivel (nombres). Usá ORDER BY ... LIMIT.
+# Top n
+# Devolvé los n Pokémon de mayor nivel (nombres). Pista: ORDER BY nivel DESC LIMIT ?.
+# Ejemplo:  top(con, 2)  →  los 2 de mayor nivel
 def top(conexion, n):
-    """ORDER BY nivel DESC LIMIT ?."""
+    """Devolvé los nombres de los n de mayor nivel."""
     # TU CÓDIGO ACÁ
     pass

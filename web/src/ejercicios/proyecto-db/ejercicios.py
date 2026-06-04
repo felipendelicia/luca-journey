@@ -1,50 +1,57 @@
-"""
-✏️ Ejercicios — Proyecto: Pokédex en SQLite
+"""✏️ Ejercicios — Proyecto: Pokédex en SQLite
 
-Tu Pokédex guardada en una base de datos. Junta todo Sinnoh: crear, insertar,
-consultar, agrupar — desde Python. Tabla 'pokemon' (nombre, tipo, nivel).
+Tu Pokédex guardada en una base de datos. Junta todo Sinnoh: crear, insertar, consultar
+y agrupar — desde Python. Tabla 'pokemon' (nombre, tipo, nivel). ✅ Corregir al terminar.
 """
 import sqlite3
 
 
-# 1) Creá la base con la tabla 'pokemon' (nombre TEXT, tipo TEXT, nivel INTEGER)
-#    y devolvé la conexión.
+# Crear la Pokédex
+# Creá la base con la tabla 'pokemon' (nombre TEXT, tipo TEXT, nivel INTEGER) y devolvé
+# la conexión.
 def crear_pokedex():
     """Devolvé una conexión con la tabla 'pokemon' lista."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 2) Agregá un Pokémon y confirmá (commit).
+# Agregar un Pokémon
+# Insertá un Pokémon y confirmá (commit). Pista: INSERT con (?) + commit.
 def agregar(conexion, nombre, tipo, nivel):
-    """INSERT con parámetros + commit."""
+    """Insertá (nombre, tipo, nivel) y hacé commit."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 3) Devolvé los nombres de todos, ordenados alfabéticamente.
+# Listar (ordenado)
+# Devolvé los nombres de todos, ordenados alfabéticamente. Pista: SELECT nombre ... ORDER BY nombre.
 def listar(conexion):
-    """SELECT nombre ... ORDER BY nombre. Devolvé una lista."""
+    """Devolvé la lista de nombres ordenada."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 4) Devolvé los nombres de un tipo dado.
+# Por tipo
+# Devolvé los nombres de un tipo dado. Pista: WHERE tipo = ?.
+# Ejemplo:  por_tipo(con, "Fuego")  →  ["Charizard", "Vulpix"]
 def por_tipo(conexion, tipo):
-    """WHERE tipo = ?. Devolvé una lista de nombres."""
+    """Devolvé los nombres de ese 'tipo'."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 5) Devolvé el NOMBRE del Pokémon de mayor nivel.
+# El más fuerte
+# Devolvé el NOMBRE del Pokémon de mayor nivel. Pista: ORDER BY nivel DESC LIMIT 1 → fetchone()[0].
 def el_mas_fuerte(conexion):
-    """ORDER BY nivel DESC LIMIT 1 -> .fetchone()[0]."""
+    """Devolvé el nombre del de mayor nivel."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 6) ¿Cuántos hay de cada tipo? Devolvé un dict {tipo: cantidad}.
+# Cuántos por tipo
+# Devolvé un dict {tipo: cantidad}. Pista: SELECT tipo, COUNT(*) ... GROUP BY tipo.
+# Ejemplo:  cuantos_por_tipo(con)  →  {"Fuego": 2, "Electrico": 1}
 def cuantos_por_tipo(conexion):
-    """GROUP BY tipo."""
+    """Devolvé un dict {tipo: cantidad}."""
     # TU CÓDIGO ACÁ
     pass

@@ -1,34 +1,41 @@
-"""
-✏️ Ejercicios — SQL: crear e insertar
+"""✏️ Ejercicios — SQL: crear e insertar
 
 Creamos tablas (CREATE TABLE) y metemos datos (INSERT). La conexión te llega vacía.
+✅ Corregir al terminar.
 """
 import sqlite3
 
 
-# 1) Creá una tabla 'entrenadores' con columnas: nombre (TEXT) y medallas (INTEGER).
+# Crear una tabla
+# Creá una tabla 'entrenadores' con columnas: nombre (TEXT) y medallas (INTEGER).
+# Pista: conexion.execute("CREATE TABLE entrenadores (nombre TEXT, medallas INTEGER)").
 def crear_tabla(conexion):
-    """Ejecutá un CREATE TABLE entrenadores (nombre TEXT, medallas INTEGER)."""
+    """Creá la tabla 'entrenadores'."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 2) Insertá UN entrenador en la tabla 'entrenadores' (ya creada).
+# Insertar uno
+# Insertá UN entrenador en la tabla (ya creada). Usá parámetros (?) por seguridad.
+# Pista: conexion.execute("INSERT INTO entrenadores VALUES (?, ?)", (nombre, medallas)).
 def insertar(conexion, nombre, medallas):
-    """INSERT INTO entrenadores VALUES (?, ?). Usá parámetros (?) por seguridad."""
+    """Insertá un entrenador (nombre, medallas)."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 3) Insertá VARIOS entrenadores de una. 'filas' es una lista de tuplas (nombre, medallas).
+# Insertar varios
+# Insertá VARIOS entrenadores de una. 'filas' es una lista de tuplas (nombre, medallas).
+# Pista: conexion.executemany("INSERT INTO entrenadores VALUES (?, ?)", filas).
 def insertar_varios(conexion, filas):
-    """Usá conexion.executemany(...)."""
+    """Insertá todas las filas de una."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 4) Creá la tabla 'pokemon' (nombre TEXT, nivel INTEGER) e insertá a Pikachu nivel 25.
+# Crear + insertar
+# Creá la tabla 'pokemon' (nombre TEXT, nivel INTEGER) e insertá a ('Pikachu', 25).
 def crear_pokedex(conexion):
-    """Creá la tabla y meté un Pokémon: ('Pikachu', 25)."""
+    """Creá la tabla y meté ('Pikachu', 25)."""
     # TU CÓDIGO ACÁ
     pass

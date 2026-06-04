@@ -1,49 +1,55 @@
-"""
-✏️ Ejercicios — SQL: agregaciones y GROUP BY
+"""✏️ Ejercicios — SQL: agregaciones y GROUP BY
 
-Resumir datos: COUNT, SUM, AVG, MAX, y agrupar con GROUP BY.
-Tabla 'pokemon' (nombre, nivel, tipo).
+Resumir datos: COUNT, SUM, AVG, MAX, y agrupar con GROUP BY. Tabla 'pokemon'
+(nombre, nivel, tipo). ✅ Corregir al terminar.
 """
 import sqlite3
 
 
-# 1) ¿Cuántos Pokémon hay? Usá COUNT(*). Devolvé un int.
+# Total (COUNT)
+# Devolvé cuántos Pokémon hay (un int). Pista: SELECT COUNT(*) ... .fetchone()[0].
 def total(conexion):
-    """SELECT COUNT(*) ... .fetchone()[0]."""
+    """Devolvé la cantidad de Pokémon (int)."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 2) Nivel promedio de todos. Usá AVG(nivel). Devolvé el número.
+# Promedio (AVG)
+# Devolvé el nivel promedio de todos. Pista: SELECT AVG(nivel) ...
 def nivel_promedio(conexion):
-    """SELECT AVG(nivel) ..."""
+    """Devolvé el nivel promedio."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 3) Nivel máximo. Usá MAX(nivel).
+# Máximo (MAX)
+# Devolvé el nivel más alto. Pista: SELECT MAX(nivel) ...
 def nivel_maximo(conexion):
-    """SELECT MAX(nivel) ..."""
+    """Devolvé el nivel máximo."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 4) Suma de todos los niveles. Usá SUM(nivel).
+# Suma (SUM)
+# Devolvé la suma de todos los niveles. Pista: SELECT SUM(nivel) ...
 def suma_niveles(conexion):
-    """SELECT SUM(nivel) ..."""
+    """Devolvé la suma de los niveles."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 5) ¿Cuántos Pokémon hay de cada tipo? Devolvé un dict {tipo: cantidad}.
+# Cuántos por tipo (GROUP BY)
+# Devolvé un dict {tipo: cantidad}. Pista: SELECT tipo, COUNT(*) ... GROUP BY tipo.
+# Ejemplo:  cuantos_por_tipo(con)  →  {"Electrico": 2, "Fuego": 1}
 def cuantos_por_tipo(conexion):
-    """GROUP BY tipo. Armá un dict a partir de SELECT tipo, COUNT(*) ... GROUP BY tipo."""
+    """Devolvé un dict {tipo: cantidad}."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# 6) Nivel promedio por tipo. Devolvé un dict {tipo: promedio}.
+# Promedio por tipo
+# Devolvé un dict {tipo: promedio}. Pista: SELECT tipo, AVG(nivel) ... GROUP BY tipo.
 def promedio_por_tipo(conexion):
-    """SELECT tipo, AVG(nivel) ... GROUP BY tipo."""
+    """Devolvé un dict {tipo: nivel promedio}."""
     # TU CÓDIGO ACÁ
     pass
