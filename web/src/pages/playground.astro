@@ -1,0 +1,106 @@
+---
+import Base from '../layouts/Base.astro';
+
+const inicial = `print("¡Hola, mundo Pokémon!")
+
+nombre = "Pikachu"
+nivel = 25
+print(f"Mi {nombre} es nivel {nivel}")
+
+for i in range(1, 4):
+    print(f"Pokéball número {i}")
+`;
+
+const ejemplos = [
+  ['Saludo', 'nombre = input("¿Tu nombre? ")\nprint(f"¡Hola, {nombre}!")'],
+  ['Bucle', 'for n in range(1, 11):\n    print(n, "x 7 =", n * 7)'],
+  ['Función', 'def dano(ataque, defensa):\n    return max(ataque - defensa, 1)\n\nprint("Daño:", dano(50, 20))'],
+  ['Lista', 'equipo = ["Pikachu", "Charizard", "Snorlax"]\nfor p in equipo:\n    print("Tengo a", p)'],
+  ['Diccionario', 'pikachu = {"tipo": "Electrico", "nivel": 25}\nprint(pikachu["tipo"])'],
+];
+const data = { inicial, ejemplos };
+---
+<Base title="Playground — Python con Pokémon" active="Playground">
+  <main class="wrap pg">
+    <div class="pg-titulo"><span class="pg-badge">🎮</span><h1>Playground de Python</h1></div>
+    <p>Escribí código Python y tocá <strong>Ejecutar</strong>. Corre de verdad en tu navegador
+    (no se instala nada). La primera ejecución descarga Python (~15s); después es instantáneo.</p>
+
+    <div class="pg-ejemplos" id="ejemplos"></div>
+
+    <div class="pg-panel">
+      <div class="pg-bar">
+        <span class="dots"><i></i><i></i><i></i></span>
+        <span class="lbl">python</span>
+        <button class="pg-run" id="run" type="button">▶ Ejecutar</button>
+      </div>
+      <div id="editor"></div>
+      <div class="pg-out" id="out"><span class="lbl">SALIDA</span></div>
+    </div>
+    <p class="pg-status" id="status"></p>
+    <p style="color:var(--ink-mute);font-size:.9rem">💡 Si tu código usa <code>input()</code>, te va a aparecer una ventanita para escribir la respuesta.</p>
+  </main>
+
+  <script type="application/json" id="pg-data" set:html={JSON.stringify(data)}></script>
+  <script is:inline src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+
+  <script>
+    import { EditorView, basicSetup } from 'codemirror';
+    import { python } from '@codemirror/lang-python';
+    import { oneDark } from '@codemirror/theme-one-dark';
+
+    const data = JSON.parse(document.getElementById('pg-data').textContent);
+
+    const view = new EditorView({
+      doc: data.inicial,
+      extensions: [basicSetup, python(), oneDark],
+      parent: document.getElementById('editor'),
+    });
+
+    // Botones de ejemplos
+    const ejWrap = document.getElementById('ejemplos');
+    for (const [nombre, codigo] of data.ejemplos) {
+      const b = document.createElement('button');
+      b.className = 'pg-ej'; b.type = 'button'; b.textContent = nombre;
+      b.addEventListener('click', () => {
+        view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: codigo } });
+        view.focus();
+      });
+      ejWrap.appendChild(b);
+    }
+
+    const out = document.getElementById('out');
+    const status = document.getElementById('status');
+    const runBtn = document.getElementById('run');
+
+    let pyReady = null;
+    async function getPy() {
+      if (!pyReady) {
+        status.textContent = '⏳ Cargando Python en el navegador (la primera vez tarda ~15s)…';
+        pyReady = window.loadPyodide();
+      }
+      const py = await pyReady;
+      status.textContent = '';
+      return py;
+    }
+
+    async function run() {
+      out.innerHTML = '<span class="lbl">SALIDA</span>';
+      runBtn.disabled = true;
+      try {
+        const py = await getPy();
+        py.setStdout({ batched: (s) => out.appendChild(document.createTextNode(s)) });
+        py.setStderr({ batched: (s) => { const e = document.createElement('span'); e.className = 'err'; e.textContent = s; out.appendChild(e); } });
+        py.setStdin({ stdin: () => { const v = window.prompt('input():'); return v === null ? '' : v; } });
+        await py.runPythonAsync(view.state.doc.toString());
+      } catch (err) {
+        const e = document.createElement('span'); e.className = 'err';
+        e.textContent = '\n' + (err && err.message ? err.message : err);
+        out.appendChild(e);
+      } finally {
+        runBtn.disabled = false;
+      }
+    }
+    runBtn.addEventListener('click', run);
+  </script>
+</Base>

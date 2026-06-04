@@ -1,0 +1,34 @@
+---
+import Base from '../layouts/Base.astro';
+
+const cards = [
+  ['🎮', 'Playground', 'Escribí y ejecutá Python en el navegador, sin instalar nada.', '/playground'],
+  ['📖', 'El libro', 'Toda la teoría del curso (Linux + Python). — Próximamente acá', '/playground'],
+  ['🏋️', 'Ejercicios en vivo', 'Resolvé y corregí tus ejercicios en el navegador. — En camino', '/playground'],
+  ['🏆', 'La Liga', 'EXP, medallas y progreso. — En camino', '/playground'],
+  ['📚', 'Repositorio', 'Código, curso y la Liga Pokémon en GitHub.', 'https://github.com/felipendelicia/luca-journey'],
+];
+---
+<Base title="Python con Pokémon — Plataforma" active="Inicio">
+  <main class="wrap">
+    <section class="hero-home">
+      <p class="kick">La plataforma del curso</p>
+      <h1>Python con Pokémon</h1>
+      <p>Aprendé a programar desde cero — Linux, Python y mucha aventura — directo en tu navegador. 🏆</p>
+      <div class="cta">
+        <a class="btn-grande" href="/playground">🎮 Probar Python ya</a>
+        <a class="btn-grande sec" href="https://github.com/felipendelicia/luca-journey">⭐ Ver en GitHub</a>
+      </div>
+    </section>
+
+    <div class="cards">
+      {cards.map(([ico, t, d, href]) => (
+        <a class="card" href={href}>
+          <div class="ico">{ico}</div>
+          <h3>{t}</h3>
+          <p>{d}</p>
+        </a>
+      ))}
+    </div>
+  </main>
+</Base>

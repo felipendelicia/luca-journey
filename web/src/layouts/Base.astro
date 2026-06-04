@@ -1,0 +1,48 @@
+---
+import '../styles/global.css';
+const { title = 'Python con Pokémon', active = '' } = Astro.props;
+const nav = [
+  ['Inicio', '/'],
+  ['Playground', '/playground'],
+];
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Silkscreen:wght@400;700&display=swap" />
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand-link" href="/"><span class="pb"></span><span class="brand">Pokédex <b>Codex</b></span></a>
+    <div class="tools">
+      {nav.map(([t, h]) => (
+        <a class={'navlink' + (t === active ? ' activo' : '')} href={h}>{t}</a>
+      ))}
+      <button class="theme-toggle" id="theme-toggle" type="button" title="Tema claro/oscuro">🌙</button>
+    </div>
+  </header>
+
+  <slot />
+
+  <script is:inline>
+    (function () {
+      var body = document.body;
+      if (localStorage.getItem('tema') === 'dark') body.classList.add('dark');
+      var t = document.getElementById('theme-toggle');
+      function refrescar() { if (t) t.textContent = body.classList.contains('dark') ? '☀️' : '🌙'; }
+      refrescar();
+      if (t) t.addEventListener('click', function () {
+        body.classList.toggle('dark');
+        localStorage.setItem('tema', body.classList.contains('dark') ? 'dark' : 'claro');
+        refrescar();
+      });
+    })();
+  </script>
+</body>
+</html>
