@@ -1,5 +1,11 @@
 # 🔴⚪ Curso de Programación y Linux con Pokémon 🐍
 
+[![tests](https://github.com/felipendelicia/luca-journey/actions/workflows/tests.yml/badge.svg)](https://github.com/felipendelicia/luca-journey/actions/workflows/tests.yml)
+[![📖 libro online](https://img.shields.io/badge/%F0%9F%93%96_libro-online-e3350d)](https://felipendelicia.github.io/luca-journey/)
+![Python](https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-WSL-FCC624?logo=linux&logoColor=black)
+![license](https://img.shields.io/badge/license-MIT-green)
+
 ```
                 ___________
            ,-~""           ""~-,

@@ -1,0 +1,25 @@
+name: tests
+
+# Corre todos los tests del curso en cada push y en cada pull request.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bajar el código
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: pip install pytest flask requests
+
+      - name: Correr los tests
+        run: pytest -q
