@@ -104,6 +104,8 @@ export function regaloDisponible() {
 export function tirar(pokemon, temas) {
   let balls = get('col:balls', 0);
   if (balls <= 0) return { error: 'sin-balls' };
+  // salvajes solo de las regiones desbloqueadas (hacés ejercicios de una región
+  // para que aparezcan sus Pokémon). Se permiten repetidos.
   const regiones = regionesDesbloqueadas(temas);
   const pool = pokemon.filter((p) => regiones.has(p.region));
   if (!pool.length) return { error: 'vacio' };

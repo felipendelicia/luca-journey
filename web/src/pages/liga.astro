@@ -53,8 +53,25 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
       </section>
     ))}
 
+    <h2 class="liga-h">🏆 Logros <span class="reg-estado" id="logros-n"></span></h2>
+    <div class="logros-grid" id="logros"></div>
+
     <p class="liga-nota">Tu progreso se guarda en este navegador. Completá los 8 temas de una región para ser su Campeón. 🏆</p>
   </div>
+
+  <script>
+    import { evaluar } from '../lib/logros.js';
+    const D = JSON.parse(document.getElementById('liga-data').textContent);
+    const temas = D.regiones.flatMap((r) => r.temas.map((t) => ({ slug: t.slug, region: r.id, ejercicios: t.exIds.map((id) => ({ id })) })));
+    const logros = evaluar(temas);
+    const hechos = logros.filter((l) => l.cumplido).length;
+    document.getElementById('logros-n').textContent = hechos + ' / ' + logros.length;
+    document.getElementById('logros').innerHTML = logros.map((l) =>
+      '<div class="logro ' + (l.cumplido ? 'hecho' : '') + '" title="' + l.desc + '">' +
+      '<span class="logro-ico">' + l.ico + '</span>' +
+      '<div class="logro-txt"><b>' + l.nombre + '</b><span>' + l.desc + '</span></div></div>'
+    ).join('');
+  </script>
 
   <script type="application/json" id="liga-data" set:html={JSON.stringify({ regiones, totalEj })}></script>
   <script is:inline>

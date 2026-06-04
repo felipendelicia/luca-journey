@@ -410,3 +410,15 @@ body.dark .poke.es-shiny{ background:linear-gradient(180deg,#2c2814,var(--paper-
 @keyframes estallar{ 0%{ transform:translate(-50%,-50%) scale(.2); opacity:1 } 100%{ transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.1); opacity:0 } }
 body.shiny-flash{ animation:shinyFlash .7s ease; }
 @keyframes shinyFlash{ 0%{ background:var(--paper) } 18%{ background:#fff3a8 } 34%{ background:#ffe06a } 100%{ background:var(--paper) } }
+
+/* logros */
+.logros-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; margin:.6rem 0 1.4rem; }
+.logro{ display:flex; align-items:center; gap:10px; background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:10px 12px; opacity:.5; filter:grayscale(.7); }
+.logro.hecho{ opacity:1; filter:none; border-color:#bce7cd; box-shadow:var(--shadow-sm); }
+.logro-ico{ font-size:26px; flex:0 0 auto; }
+.logro-txt{ display:flex; flex-direction:column; min-width:0; }
+.logro-txt b{ font-size:.92rem; } .logro-txt span{ font-size:.78rem; color:var(--ink-mute); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+/* safari: regiones desbloqueadas */
+.safari-regiones{ color:var(--ink-soft); font-size:.9rem; margin:.2rem 0 .6rem; }
+.safari-regiones .bloq{ color:var(--ink-mute); }
+.safari-regiones small{ color:var(--ink-mute); }

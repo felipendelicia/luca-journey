@@ -20,6 +20,7 @@ const total = pokemon.length;
       <div class="ss-item"><span class="ss-ico">📕</span><b id="colN">0</b><span class="ss-lbl">de {total}</span></div>
       <button class="btn-regalo" id="regalo">🎁 Regalo diario</button>
     </div>
+    <p class="safari-regiones" id="regiones"></p>
 
     <div class="safari-arena">
       <div class="arena-pasto" id="arena">
@@ -32,18 +33,23 @@ const total = pokemon.length;
 
   <script type="application/json" id="safari-data" set:html={JSON.stringify({ pokemon, temas })}></script>
   <script>
-    import { sincronizar, tirar as lanzar, estado, reclamarRegalo, regaloDisponible, spriteUrl } from '../lib/coleccion.js';
+    import { sincronizar, tirar as lanzar, estado, reclamarRegalo, regaloDisponible, regionesDesbloqueadas, spriteUrl } from '../lib/coleccion.js';
     import { sonarCaptura, sonarShiny } from '../lib/sonidos.js';
 
     const D = JSON.parse(document.getElementById('safari-data').textContent);
     const $ = (id) => document.getElementById(id);
+    const REGN = { kanto: '🔴 Kanto', johto: '⚪ Johto', hoenn: '🟢 Hoenn' };
 
     function refrescar() {
       const e = estado();
       $('balls').textContent = e.balls;
-      $('colN').textContent = e.atrapados.size;
+      $('colN').textContent = e.unicos;
       $('tirar').disabled = e.balls <= 0;
       $('regalo').style.display = regaloDisponible() ? '' : 'none';
+      const d = regionesDesbloqueadas(D.temas);
+      $('regiones').innerHTML = 'Aparecen: ' +
+        ['kanto', 'johto', 'hoenn'].map((r) => d.has(r) ? '<b>' + REGN[r] + '</b>' : '<span class="bloq">' + REGN[r] + ' 🔒</span>').join(' · ') +
+        ' &nbsp;<small>(hacé ejercicios de una región para desbloquearla)</small>';
     }
 
     // otorga lo pendiente (balls por ejercicios, capturas por hitos)
