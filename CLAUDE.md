@@ -4,26 +4,36 @@ Curso de programación (Linux + Python) para un adolescente principiante, en
 español argentino y con temática Pokémon. Incluye un sistema de gamificación
 llamado **La Liga Pokémon** (`aventura.py`).
 
-## 📘 REGLA PRINCIPAL: mantené el manual actualizado
+## 📘 REGLA PRINCIPAL: mantené el manual/libro actualizado
 
-El proyecto tiene un **manual para novatos** en la raíz: `manual.pdf`.
+El proyecto tiene un **libro-manual** en la raíz, en dos formatos:
+`manual.html` (para el navegador, con emojis a color) y `manual.pdf`. Es a la vez
+el manual del curso **y** un libro de Python para aprender el lenguaje.
 
-- **NO se edita a mano.** El PDF se genera desde `manual_fuente.md` (Markdown).
-- Para regenerarlo: `python generar_manual.py` (usa LibreOffice).
+- **NO se editan `manual.html` ni `manual.pdf` a mano.** Se generan.
+- El **contenido** está en `manual_contenido.py` (capítulos escritos en **HTML**).
+- Los **estilos y herramientas** (CSS, cajas, resaltado de código) están en `manual_lib.py`.
+- Para regenerar ambos: `python generar_manual.py`
+  (usa **WeasyPrint** para el PDF y **Pygments** para resaltar el código;
+  si falta WeasyPrint, prueba con Chrome headless o LibreOffice).
+- Dependencias de mantenimiento (no las necesita el alumno):
+  `pip install weasyprint pygments`.
 
 **Siempre que cambie el proyecto de una forma que afecte cómo se usa o qué
-contiene, actualizá `manual_fuente.md` y regenerá `manual.pdf`.** Por ejemplo:
+contiene, actualizá `manual_contenido.py` y regenerá el manual.** Por ejemplo:
 
-- Agregar / quitar / renombrar una semana o un tema.
+- Agregar / quitar / renombrar una semana o un tema (actualizá el cap. "Mapa de temas").
 - Cambiar la estructura de carpetas o los archivos de cada semana.
 - Cambiar cómo se instala o se corre el curso (`setup.sh`, comandos).
 - Cambiar la Liga Pokémon (`aventura.py`): EXP, medallas, logros, menús.
 - Agregar / cambiar un proyecto en `proyectos/`.
+- Mejorar o ampliar la parte de enseñanza de Python (capítulos 1 a 14).
 
-El manual tiene un **índice de todos los temas** (sección "Mapa de temas"):
-mantenelo sincronizado con las semanas reales del curso.
+El libro tiene un **índice automático** y una sección "Mapa de temas del curso":
+mantené ese mapa sincronizado con las semanas reales.
 
-Después de regenerar, **commiteá `manual_fuente.md` y `manual.pdf` juntos**.
+Después de regenerar, **commiteá `manual_contenido.py`, `manual_lib.py`,
+`manual.html` y `manual.pdf` juntos**.
 
 ## 🔁 Coherencia general
 
@@ -32,7 +42,7 @@ Cuando cambies contenido del curso, revisá que sigan coherentes:
 - `README.md` — presentación y tabla de semanas.
 - `ROADMAP.md` — mapa visual y checklist de progreso.
 - `liga/datos.py` — registro de semanas y gimnasios de la Liga.
-- `manual_fuente.md` + `manual.pdf` — el manual.
+- `manual_contenido.py` → `manual.html` + `manual.pdf` — el libro-manual.
 
 ## ✅ Tests
 

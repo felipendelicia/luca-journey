@@ -1,0 +1,6 @@
+# Dependencias para MANTENER el proyecto (no las necesita el alumno).
+# Sirven para regenerar el libro-manual:  python generar_manual.py
+# Instalá con:  pip install -r requirements-dev.txt
+
+weasyprint>=60    # convierte el HTML del manual a PDF (con estilos)
+pygments>=2.15    # resalta la sintaxis del código en el manual
