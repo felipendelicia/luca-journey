@@ -1,202 +1,191 @@
-"""
-✏️ Semana 03 — Ejercicios: Python Introducción
+"""✏️ Ejercicios — Python: Introducción
 
-Completá cada función donde dice '# TU CÓDIGO ACÁ'. Borrá el 'pass' (o el
-'return None') cuando escribas tu solución.
-
-Para probar TUS soluciones:
-  1. Abrí test_ejercicios.py
-  2. Cambiá la línea  modulo = _cargar("soluciones")  por  modulo = _cargar("ejercicios")
-  3. Corré: pytest semana-03-python-introduccion/
-
-Las soluciones completas están en soluciones.py (¡miralas recién después de intentar!).
+Completá cada función donde dice '# TU CÓDIGO ACÁ' y borrá el 'pass'.
+Tocá ✅ Corregir para probar. ¡Arrancás tu viaje en Kanto! 🔴
 """
 
 
-# ----------------------------------------------------------------------
-# Ejercicio 1: Devolvé el texto "¡Hola, mundo Pokémon!"
-# ----------------------------------------------------------------------
+# Tu primer ¡Hola!
+# Devolvé (con return) el texto EXACTO: ¡Hola, mundo Pokémon!
+# Ojo con las comillas y los signos ¡ !
+# Ejemplo:  saludo()  →  "¡Hola, mundo Pokémon!"
 def saludo():
-    """Devolvé exactamente el texto: ¡Hola, mundo Pokémon!"""
+    """Devolvé el texto: ¡Hola, mundo Pokémon!"""
     # TU CÓDIGO ACÁ
     pass
 
 
-# ----------------------------------------------------------------------
-# Ejercicio 2: Devolvé el nombre de tu Pokémon favorito (un str cualquiera).
-# ----------------------------------------------------------------------
+# Tu Pokémon favorito
+# Devolvé un texto con el nombre de cualquier Pokémon que te guste.
+# Ejemplo:  mi_pokemon_favorito()  →  "Gengar"   (el que vos quieras)
 def mi_pokemon_favorito():
-    """Devolvé un string con el nombre de un Pokémon (el que quieras)."""
+    """Devolvé un string con el nombre de un Pokémon."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# ----------------------------------------------------------------------
-# Ejercicio 3: Devolvé el doble del nivel recibido.
-# ----------------------------------------------------------------------
+# Subida de nivel doble
+# Recibís un 'nivel' y devolvés su doble (nivel × 2).
+# Ejemplo:  doble_nivel(25)  →  50
 def doble_nivel(nivel):
-    """Recibí un número 'nivel' y devolvé su doble."""
+    """Devolvé el doble de 'nivel'."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# ----------------------------------------------------------------------
-# Ejercicio 4: Sumá dos números y devolvé el resultado.
-# ----------------------------------------------------------------------
+# Sumar puntos
+# Devolvé la suma de los dos números 'a' y 'b'.
+# Ejemplo:  suma(3, 4)  →  7
 def suma(a, b):
-    """Devolvé la suma de a y b."""
+    """Devolvé a + b."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# ----------------------------------------------------------------------
-# Ejercicio 5: Restá b a a y devolvé el resultado.
-# ----------------------------------------------------------------------
+# Daño recibido
+# Devolvé 'a' menos 'b' (por ejemplo, el HP que queda tras un golpe).
+# Ejemplo:  resta(100, 30)  →  70
 def resta(a, b):
-    """Devolvé a menos b."""
+    """Devolvé a - b."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# ----------------------------------------------------------------------
-# Ejercicio 6: Devolvé el promedio de tres stats (ataque, defensa, velocidad).
-# ----------------------------------------------------------------------
+# Promedio de stats
+# Sumá ataque, defensa y velocidad, y dividí por 3.
+# Ejemplo:  promedio_stats(90, 60, 30)  →  60.0
 def promedio_stats(ataque, defensa, velocidad):
-    """Devolvé el promedio de los tres números (sumá y dividí por 3)."""
+    """Devolvé el promedio de los tres números."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# ----------------------------------------------------------------------
-# Ejercicio 7: Convertí un texto a número entero y devolvelo.
-# ----------------------------------------------------------------------
+# Texto a número entero
+# Convertí un texto como "25" en el número entero 25. Pista: int(...)
+# Ejemplo:  a_entero("25")  →  25
 def a_entero(texto):
-    """Recibí un str como '25' y devolvé el int 25."""
+    """Convertí 'texto' a int y devolvelo."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# ----------------------------------------------------------------------
-# Ejercicio 8: Convertí un número a texto y devolvelo.
-# ----------------------------------------------------------------------
+# Número a texto
+# Convertí un número en su versión de texto. Pista: str(...)
+# Ejemplo:  a_texto(25)  →  "25"
 def a_texto(numero):
-    """Recibí un número y devolvelo como str."""
+    """Convertí 'numero' a str y devolvelo."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# ----------------------------------------------------------------------
-# Ejercicio 9: Convertí un texto a número decimal (float) y devolvelo.
-# ----------------------------------------------------------------------
+# Texto a decimal
+# Convertí un texto como "6.5" en el número decimal 6.5. Pista: float(...)
+# Ejemplo:  a_decimal("6.5")  →  6.5
 def a_decimal(texto):
-    """Recibí un str como '6.5' y devolvé el float 6.5."""
+    """Convertí 'texto' a float y devolvelo."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# ----------------------------------------------------------------------
-# Ejercicio 10: Devolvé el NOMBRE del tipo de dato del valor recibido.
-# Pista: type(valor).__name__ te da 'int', 'str', etc.
-# ----------------------------------------------------------------------
+# ¿De qué tipo es?
+# Devolvé el NOMBRE del tipo de dato del valor: 'int', 'str', 'float' o 'bool'.
+# Pista: type(valor).__name__
+# Ejemplo:  nombre_del_tipo(25)  →  "int"
 def nombre_del_tipo(valor):
-    """Devolvé el nombre del tipo: 'int', 'str', 'float' o 'bool'."""
+    """Devolvé el nombre del tipo de 'valor'."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# ----------------------------------------------------------------------
-# Ejercicio 11: Armá una presentación con un f-string.
-# Para nombre="Pikachu", nivel=25 → "Mi Pikachu es nivel 25"
-# ----------------------------------------------------------------------
+# Carta de presentación
+# Con un f-string, devolvé: Mi <nombre> es nivel <nivel>
+# Ejemplo:  presentacion("Pikachu", 25)  →  "Mi Pikachu es nivel 25"
 def presentacion(nombre, nivel):
-    """Devolvé: Mi <nombre> es nivel <nivel>  (usá un f-string)."""
+    """Devolvé 'Mi <nombre> es nivel <nivel>' usando un f-string."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# ----------------------------------------------------------------------
-# Ejercicio 12: Armá una ficha de varias líneas con un f-string.
-# Debe devolver exactamente (con saltos de línea \n):
-#   Nombre: Pikachu
-#   Tipo: Electrico
-#   Nivel: 25
-# ----------------------------------------------------------------------
+# Ficha del Pokémon
+# Devolvé una ficha de 3 líneas (separadas con \n):
+#   Nombre: <nombre>
+#   Tipo: <tipo>
+#   Nivel: <nivel>
+# Ejemplo:  ficha("Pikachu", "Electrico", 25)  →  "Nombre: Pikachu\nTipo: Electrico\nNivel: 25"
 def ficha(nombre, tipo, nivel):
     """Devolvé una ficha de 3 líneas con nombre, tipo y nivel."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# ----------------------------------------------------------------------
-# Ejercicio 13: Calculá el HP total. Cada poción cura 20 puntos.
-# total = hp_actual + cantidad_pociones * 20
-# ----------------------------------------------------------------------
+# Curar con pociones
+# Cada poción cura 20 HP. Devolvé el HP total: hp_actual + pociones × 20.
+# Ejemplo:  hp_total(50, 3)  →  110
 def hp_total(hp_actual, cantidad_pociones):
-    """Devolvé el HP total sumando 20 por cada poción."""
+    """Devolvé hp_actual + cantidad_pociones * 20."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# ----------------------------------------------------------------------
-# Ejercicio 14: Devolvé True si el nivel es par, False si es impar.
-# Pista: un número es par si nivel % 2 == 0
-# ----------------------------------------------------------------------
+# ¿Nivel par?
+# Devolvé True si el nivel es par, y False si es impar. Pista: nivel % 2 == 0
+# Ejemplo:  nivel_es_par(24)  →  True
 def nivel_es_par(nivel):
-    """Devolvé True si el nivel es par, False si no."""
+    """Devolvé True si 'nivel' es par, False si no."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# ----------------------------------------------------------------------
-# Ejercicio 15: Fusioná dos nombres en uno solo (concatenación).
-# Para "Char" y "izard" → "Charizard"
-# ----------------------------------------------------------------------
+# Fusión de nombres
+# Pegá (concatená) dos textos en uno solo.
+# Ejemplo:  fusionar_nombres("Char", "izard")  →  "Charizard"
 def fusionar_nombres(parte1, parte2):
-    """Devolvé los dos textos pegados (concatenados)."""
+    """Devolvé parte1 y parte2 pegados."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# ----------------------------------------------------------------------
-# EJERCICIOS CON input() — estos interactúan con el usuario.
-# (En los tests se simula lo que el usuario escribe.)
-# ----------------------------------------------------------------------
-
-# Ejercicio 16: Pedí el nombre del Pokémon con input() y devolvé un saludo.
-# Si el usuario escribe "Pikachu" → devolvé "¡Hola, Pikachu!"
+# Saludo interactivo
+# Pedí un nombre con input() y devolvé '¡Hola, <nombre>!'.
+# Ejemplo:  el usuario escribe "Pikachu"  →  "¡Hola, Pikachu!"
 def pedir_nombre_y_saludar():
-    """Usá input() para pedir un nombre y devolvé '¡Hola, <nombre>!'."""
+    """input() para pedir un nombre y devolver '¡Hola, <nombre>!'."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# Ejercicio 17: Pedí el nivel (texto) con input(), convertilo a int y devolvé
-# el nivel + 1 (el Pokémon subió un nivel). Si escribe "25" → devolvé 26.
+# Subir de nivel
+# Pedí un nivel con input(), convertilo a int y devolvé nivel + 1.
+# Ejemplo:  el usuario escribe "25"  →  26
 def pedir_nivel_y_subir():
-    """Pedí un nivel con input(), convertilo a int y devolvé nivel + 1."""
+    """Pedí un nivel con input(), pasalo a int y devolvé nivel + 1."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# Ejercicio 18: Pedí DOS números con input(), convertilos y devolvé su suma.
+# Sumar lo que te digan
+# Pedí DOS números con input(), convertilos a int y devolvé su suma.
+# Ejemplo:  el usuario escribe "10" y "15"  →  25
 def pedir_dos_numeros_y_sumar():
-    """Pedí dos números con input(), convertilos a int y devolvé la suma."""
+    """Pedí dos números con input(), pasalos a int y devolvé la suma."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# Ejercicio 19: Pedí nombre y ciudad con input() y devolvé una presentación.
-# Para "Ash" y "Pueblo Paleta" → "Soy Ash de Pueblo Paleta"
+# Registro de Entrenador
+# Pedí nombre y ciudad con input() y devolvé 'Soy <nombre> de <ciudad>'.
+# Ejemplo:  "Ash" y "Pueblo Paleta"  →  "Soy Ash de Pueblo Paleta"
 def registrar_entrenador():
     """Pedí nombre y ciudad con input() y devolvé 'Soy <nombre> de <ciudad>'."""
     # TU CÓDIGO ACÁ
     pass
 
 
-# Ejercicio 20: Pedí un texto con input() y MOSTRALO con print() en mayúsculas
-# dentro de un mensaje. Para "pikachu" debe imprimir: "Elegiste a PIKACHU"
-# (Usá print, no return.)
+# Elegir tu inicial
+# Pedí un Pokémon con input() e IMPRIMÍ (con print) 'Elegiste a <NOMBRE EN MAYÚSCULAS>'.
+# Pista: .upper() pone el texto en mayúsculas. Usá print, no return.
+# Ejemplo:  el usuario escribe "pikachu"  →  imprime  Elegiste a PIKACHU
 def elegir_inicial():
-    """Pedí un Pokémon con input() e imprimí 'Elegiste a <NOMBRE-EN-MAYUSCULAS>'."""
+    """Pedí un Pokémon con input() e imprimí 'Elegiste a <NOMBRE>' en mayúsculas."""
     # TU CÓDIGO ACÁ
     pass
