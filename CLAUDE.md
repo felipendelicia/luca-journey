@@ -4,51 +4,23 @@ Curso de programación (Linux + Python) para un adolescente principiante, en
 español argentino y con temática Pokémon. Incluye un sistema de gamificación
 llamado **La Liga Pokémon** (`aventura.py`).
 
-## 📘 REGLA PRINCIPAL: mantené el manual/libro actualizado
+## 🌐 EN MIGRACIÓN: la plataforma web (Astro)
 
-El proyecto tiene un **libro-manual** en la carpeta **`manual/`**, en dos formatos:
-`manual/manual.html` (para el navegador, con emojis a color y diseño completo) y
-`manual/manual.pdf`. Es a la vez el manual del curso **y** un libro que enseña
-Linux y Python desde cero.
+El proyecto se está migrando a una **app web con Astro** en la carpeta **`web/`**, que
+va a ser la forma principal de usar el curso (libro, playground, ejercicios en vivo y
+Liga web, todo en el navegador).
 
-- **NO se editan `manual.html` ni `manual.pdf` a mano.** Se generan.
-- **La teoría del libro SALE de los `curso/semana-*/teoria.md`.** Los capítulos de
-  Linux/Python/Git se generan automáticamente desde esos archivos (con
-  `manual_lib.desde_teoria`, que convierte el markdown al estilo del libro). Para
-  cambiar la enseñanza de un tema, **editá su `teoria.md`** y regenerá; NO dupliques
-  contenido en `manual_contenido.py`.
-- En `manual/manual_contenido.py` solo van a mano la **introducción**, el **mapa de
-  temas** y la **página de ayuda/glosario**, más la lista `CAPITULOS` (su orden define
-  el orden y la numeración del libro).
-- Los **estilos y herramientas** (CSS, cajas, resaltado, conversor de teoría) están en
-  `manual/manual_lib.py`.
-- Para regenerar todo: `python manual/generar_manual.py`
-  (usa **WeasyPrint** para el PDF y **Pygments** para el código; produce además
-  `docs/index.html` y `docs/recursos.html` para GitHub Pages).
-- Dependencias de mantenimiento (no las necesita el alumno):
-  `pip install -r manual/requirements-dev.txt`.
+- **Ya NO se genera PDF.** El manual en PDF fue eliminado; no lo recrees.
+- **El contenido teórico vive en `web/src/content/libro/*.md`** (content collections de
+  Astro). Esa es la **única fuente** del libro: se edita ahí. Los `curso/semana-*/teoria.md`
+  quedaron **obsoletos** (no los mantengas como fuente del libro).
+- El sitio estático viejo (`manual/` → `docs/`) queda como legacy hasta que la app de
+  Astro lo reemplace en el deploy. No le pongas más esfuerzo salvo necesidad puntual.
+- Dev de la web: `cd web && npm run dev` (Astro, con hot-reload). Build: `npm run build`.
 
-**Siempre que cambie el proyecto de una forma que afecte cómo se usa o qué
-contiene, actualizá lo que corresponda y regenerá el manual.** Por ejemplo:
-
-- Cambiar la teoría de un tema → editá `curso/semana-*/teoria.md` y regenerá.
-- Agregar / quitar / renombrar una semana → actualizá `CAPITULOS` y el "Mapa de temas".
-- Cambiar cómo se instala/corre el curso (`setup.sh`, comandos) → la intro/ayuda.
-- Cambiar la Liga (`aventura.py`) o un proyecto → la intro/mapa.
-
-La **numeración de capítulos y secciones es automática**: la asigna
-`generar_manual.renumerar()` según el ORDEN de la lista `CAPITULOS`. Para reordenar
-el libro (o insertar un capítulo), solo cambiá el orden de esa lista; los números
-(1, 2... y 3.1, 3.2...) se recalculan solos. Los números que escribas en los títulos
-de `capitulo()`/`h2()` son solo placeholders: el generador los reemplaza.
-Para **referencias cruzadas** usá enlaces por id estable
-(`<a href="#cap-7">bucles</a>`), nunca "capítulo N", así no se rompen al reordenar.
-
-El libro tiene un **índice automático** y una sección "Mapa de temas del curso":
-mantené ese mapa sincronizado con las semanas reales.
-
-Después de regenerar, **commiteá los archivos de `manual/` juntos**
-(`manual_contenido.py`, `manual_lib.py`, `manual.html`, `manual.pdf`).
+> El **curso en sí** (carpetas `curso/semana-*` con `ejercicios.py`, `soluciones.py`,
+> `test_*.py`, `interactivo.py`) sigue siendo el código real del curso y la fuente de
+> los ejercicios/tests. Eso NO se migra: la web lo consume.
 
 ## 🔁 Coherencia general
 

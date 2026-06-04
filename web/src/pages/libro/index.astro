@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const caps = (await getCollection('libro')).sort((a, b) => a.data.order - b.data.order);
+---
+<Base title="El libro — Python con Pokémon" active="Libro">
+  <div class="wrap">
+    <section class="hero-home" style="padding:48px 36px 40px; margin-bottom:28px;">
+      <p class="kick">El libro del curso</p>
+      <h1>Python con Pokémon</h1>
+      <p>Toda la teoría, de Linux a la POO, con ejemplos que podés ejecutar en el navegador.</p>
+    </section>
+
+    <div class="cards indice">
+      {caps.map((c, i) => (
+        <a class="card" href={`/libro/${c.slug}`} style="display:flex; align-items:center; gap:6px;">
+          <span class="num">{i}</span>
+          <span><h3 style="margin:0;">{c.data.title}</h3></span>
+        </a>
+      ))}
+    </div>
+  </div>
+</Base>

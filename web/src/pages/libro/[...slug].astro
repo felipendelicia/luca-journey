@@ -1,0 +1,99 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const caps = (await getCollection('libro')).sort((a, b) => a.data.order - b.data.order);
+  return caps.map((cap, i) => ({
+    params: { slug: cap.slug },
+    props: { cap, caps, i },
+  }));
+}
+
+const { cap, caps, i } = Astro.props;
+const { Content } = await cap.render();
+const prev = caps[i - 1];
+const next = caps[i + 1];
+---
+<Base title={cap.data.title + ' — Python con Pokémon'} active="Libro">
+  <div class="wrap">
+    <div class="book-layout">
+      <aside class="book-rail">
+        <div class="rail-tit">Capítulos</div>
+        {caps.map((c, idx) => (
+          <a class={c.slug === cap.slug ? 'activo' : ''} href={`/libro/${c.slug}`}>
+            <span class="rn">{idx}</span><span>{c.data.title}</span>
+          </a>
+        ))}
+      </aside>
+
+      <main class="book">
+        <h1>{cap.data.title}</h1>
+        <Content />
+        <nav class="cap-nav">
+          {prev
+            ? <a href={`/libro/${prev.slug}`}><span class="dir">← Anterior</span><br />{prev.data.title}</a>
+            : <a href="/libro"><span class="dir">← Índice</span><br />Todos los capítulos</a>}
+          {next
+            ? <a class="next" href={`/libro/${next.slug}`}><span class="dir">Siguiente →</span><br />{next.data.title}</a>
+            : <a class="next" href="/playground"><span class="dir">Seguir →</span><br />Ir al Playground</a>}
+        </nav>
+      </main>
+    </div>
+  </div>
+
+  <script is:inline src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+  <script>
+    // Envuelve cada bloque de código en una "ventana" con botón ▶ ejecutar (Pyodide).
+    let pyReady = null;
+    async function getPy(out) {
+      if (!pyReady) {
+        out.innerHTML = '<span class="lbl">SALIDA</span>⏳ Cargando Python (~15s la primera vez)…';
+        pyReady = window.loadPyodide();
+      }
+      const py = await pyReady;
+      return py;
+    }
+    async function correr(codigo, out, btn) {
+      out.classList.add('show');
+      out.innerHTML = '<span class="lbl">SALIDA</span>';
+      btn.disabled = true;
+      try {
+        const py = await getPy(out);
+        out.innerHTML = '<span class="lbl">SALIDA</span>';
+        py.setStdout({ batched: (s) => out.appendChild(document.createTextNode(s)) });
+        py.setStderr({ batched: (s) => { const e = document.createElement('span'); e.className = 'err'; e.textContent = s; out.appendChild(e); } });
+        py.setStdin({ stdin: () => { const v = window.prompt('input():'); return v === null ? '' : v; } });
+        await py.runPythonAsync(codigo);
+      } catch (err) {
+        const e = document.createElement('span'); e.className = 'err';
+        e.textContent = '\n' + (err && err.message ? err.message : err);
+        out.appendChild(e);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    document.querySelectorAll('.book pre.astro-code').forEach((pre) => {
+      const lang = (pre.getAttribute('data-language') || '').toLowerCase();
+      const fig = document.createElement('figure');
+      fig.className = 'cw';
+      const bar = document.createElement('div');
+      bar.className = 'cw-bar';
+      bar.innerHTML = '<span class="dots"><i></i><i></i><i></i></span><span class="cw-lang">' + (lang || 'code') + '</span>';
+      pre.parentNode.insertBefore(fig, pre);
+      fig.appendChild(bar);
+      fig.appendChild(pre);
+      if (lang === 'python') {
+        const out = document.createElement('div');
+        out.className = 'cw-out';
+        out.innerHTML = '<span class="lbl">SALIDA</span>';
+        const btn = document.createElement('button');
+        btn.className = 'cw-run'; btn.type = 'button'; btn.textContent = '▶ ejecutar';
+        btn.addEventListener('click', () => correr(pre.innerText, out, btn));
+        bar.appendChild(btn);
+        fig.appendChild(out);
+      }
+    });
+  </script>
+</Base>

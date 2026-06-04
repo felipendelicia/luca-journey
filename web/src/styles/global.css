@@ -128,3 +128,77 @@ body.dark .bg-grid{
   background-size:auto,auto,22px 22px;}
 
 @media (max-width:760px){ .tools .navlink{display:none;} }
+
+/* ===================== LIBRO ===================== */
+.book-layout{ max-width:1120px; margin:0 auto; display:grid; grid-template-columns:248px minmax(0,1fr); gap:44px; }
+.book-rail{ position:sticky; top:76px; align-self:start; height:max-content; font-size:.9rem; max-height:calc(100vh - 100px); overflow:auto; }
+.book-rail .rail-tit{ font-family:var(--font-pixel); font-size:9px; letter-spacing:.12em; color:var(--ink-mute); margin:0 0 10px 8px; }
+.book-rail a{ display:flex; gap:9px; align-items:center; padding:6px 9px; border-radius:9px; color:var(--ink-soft); margin:1px 0; text-decoration:none; }
+.book-rail a .rn{ font-family:var(--font-pixel); font-size:9px; color:#fff; background:var(--ink-mute); min-width:22px; height:20px; border-radius:6px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+.book-rail a:hover{ background:var(--paper-2); color:var(--ink); }
+.book-rail a.activo{ background:var(--card); color:var(--ink); box-shadow:var(--shadow-sm); }
+.book-rail a.activo .rn{ background:var(--red); }
+
+.book{ min-width:0; max-width:var(--readw); }
+.book h1{ font-size:2rem; color:var(--red-deep); border-bottom:3px solid var(--red); padding-bottom:.2em; margin:0 0 .7em; letter-spacing:-.02em; }
+.book h2{ font-size:1.42rem; color:var(--red-deep); margin:2rem 0 .5rem; padding-left:.7rem; position:relative; }
+.book h2::before{ content:""; position:absolute; left:0; top:.18em; bottom:.18em; width:5px; border-radius:3px; background:linear-gradient(var(--yellow),var(--red)); }
+.book h3{ font-size:1.12rem; color:var(--ink); margin:1.3rem 0 .35rem; }
+.book p{ margin:.6em 0; }
+.book ul,.book ol{ margin:.5em 0; padding-left:1.35em; }
+.book li{ margin:.3em 0; }
+.book li::marker{ color:var(--red); }
+.book strong{ color:var(--red-ink); }
+
+/* cajas de aviso */
+.callout{ position:relative; margin:1.1em 0; padding:13px 16px; border-radius:12px;
+  background:var(--card); border:1px solid var(--line); border-left:5px solid var(--ink-mute); box-shadow:var(--shadow-sm); }
+.callout > .et{ display:inline-block; font-family:var(--font-pixel); font-size:8px; letter-spacing:.08em; color:#fff; padding:3px 8px; border-radius:7px; margin-bottom:6px; }
+.callout p{ margin:.25em 0; }
+.callout.nota{ background:#eef5fd; border-color:#bcd8f5; border-left-color:var(--blue); }
+.callout.nota > .et{ background:var(--blue); }
+.callout.tip{ background:#ecfaf1; border-color:#bce7cd; border-left-color:var(--teal-deep); }
+.callout.tip > .et{ background:var(--teal-deep); }
+.callout.cuidado{ background:#fff6e2; border-color:#f3dca0; border-left-color:var(--yellow-deep); }
+.callout.cuidado > .et{ background:var(--yellow-deep); }
+
+/* ventanas de código (envueltas por el script del cliente) */
+.cw{ margin:1em 0; border-radius:13px; overflow:hidden; box-shadow:var(--shadow); border:1px solid rgba(0,0,0,.25); }
+.cw-bar{ display:flex; align-items:center; gap:10px; padding:8px 13px; background:#21252b; border-bottom:1px solid rgba(255,255,255,.08); }
+.cw-bar .dots{ display:flex; gap:7px; } .cw-bar .dots i{ width:11px;height:11px;border-radius:50%;display:block; }
+.cw-bar .dots i:nth-child(1){background:#ff5f56;} .cw-bar .dots i:nth-child(2){background:#ffbd2e;} .cw-bar .dots i:nth-child(3){background:#27c93f;}
+.cw-bar .cw-lang{ font-family:var(--font-pixel); font-size:8px; color:rgba(255,255,255,.5); letter-spacing:.12em; text-transform:uppercase; }
+.cw-run{ margin-left:auto; background:#1f9d55; color:#eafff2; border:1px solid #27c93f; border-radius:7px; font-family:var(--font-pixel); font-size:8px; letter-spacing:.08em; padding:4px 10px; cursor:pointer; text-transform:uppercase; }
+.cw-run:hover{ background:#27c93f; color:#06210c; } .cw-run[disabled]{ opacity:.6; cursor:default; }
+.book .astro-code{ margin:0; padding:14px 16px; overflow-x:auto; font-family:var(--font-mono); font-size:13px; line-height:1.55; }
+.cw-out{ display:none; margin:0; padding:11px 14px; background:#0b0d14; color:#cdf5d6; border-top:1px solid rgba(255,255,255,.12); font-family:var(--font-mono); font-size:12px; line-height:1.5; white-space:pre-wrap; word-break:break-word; max-height:320px; overflow:auto; }
+.cw-out.show{ display:block; }
+.cw-out .lbl{ font-family:var(--font-pixel); font-size:8px; color:#7aa; letter-spacing:.1em; display:block; margin-bottom:4px; }
+.cw-out .err{ color:#ff9b9b; }
+
+/* tablas del libro */
+.book table{ border-collapse:collapse; width:100%; margin:1em 0; background:var(--paper-2); font-size:.92rem; box-shadow:var(--shadow-sm); border-radius:10px; overflow:hidden; }
+.book th,.book td{ padding:7px 11px; text-align:left; border-bottom:1px solid var(--line); }
+.book th{ background:var(--ink); color:#fff; font-family:var(--font-display); font-weight:700; font-size:.82rem; }
+.book tbody tr:nth-child(even){ background:#fbf5e9; }
+.book hr{ border:none; border-top:1px solid var(--line); margin:1.6rem 0; }
+
+/* navegación prev/next */
+.cap-nav{ display:flex; justify-content:space-between; gap:12px; margin:2.4rem 0 0; }
+.cap-nav a{ flex:1; padding:14px 16px; border:1px solid var(--line); border-radius:12px; background:var(--paper-2); text-decoration:none; color:var(--ink); box-shadow:var(--shadow-sm); }
+.cap-nav a:hover{ border-color:var(--red); }
+.cap-nav .dir{ font-family:var(--font-pixel); font-size:8px; color:var(--ink-mute); letter-spacing:.1em; }
+.cap-nav a.next{ text-align:right; }
+
+/* índice de capítulos (/libro) */
+.indice .num{ font-family:var(--font-pixel); font-size:11px; color:#fff; background:var(--red); min-width:30px; height:26px; border-radius:7px; display:inline-flex; align-items:center; justify-content:center; margin-right:10px; }
+
+/* modo oscuro libro */
+body.dark .book h1{ color:#7db8ff; border-bottom-color:#7db8ff; }
+body.dark .book h2{ color:#ff8aa6; }
+body.dark .book strong{ color:#ffb3c6; }
+body.dark .callout.nota{ background:#16243a; } body.dark .callout.tip{ background:#13301f; } body.dark .callout.cuidado{ background:#352a12; }
+body.dark .book table{ background:var(--paper-2); } body.dark .book th{ background:#2a2d3c; }
+body.dark .book tbody tr:nth-child(even){ background:#20232f; }
+body.dark .book-rail a:hover, body.dark .book-rail a.activo{ background:var(--card); }
+@media (max-width:900px){ .book-layout{ grid-template-columns:1fr; gap:0; } .book-rail{ display:none; } .book{ max-width:none; } }

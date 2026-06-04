@@ -33,7 +33,6 @@ import manual_contenido
 RAIZ = os.path.dirname(os.path.abspath(__file__))            # carpeta manual/
 REPO = os.path.dirname(RAIZ)                                 # raíz del repo
 SALIDA_HTML = os.path.join(RAIZ, "manual.html")
-SALIDA_PDF = os.path.join(RAIZ, "manual.pdf")
 # Copia del libro para publicarlo con GitHub Pages (sirve docs/index.html).
 SALIDA_DOCS = os.path.join(REPO, "docs", "index.html")
 
@@ -476,47 +475,6 @@ El segundo mejor momento es ahora." ⚡<br>¡A atraparlos a todos!</p>
 </html>"""
 
 
-# ----------------------------------------------------------------------
-#  Generación del PDF (varios motores, por orden de preferencia)
-# ----------------------------------------------------------------------
-def pdf_con_weasyprint(html):
-    try:
-        from weasyprint import HTML
-    except ImportError:
-        return False
-    # WeasyPrint no renderiza emoji a color: los quitamos solo para el PDF.
-    HTML(string=_quitar_emoji(html), base_url=RAIZ).write_pdf(SALIDA_PDF)
-    return True
-
-
-def pdf_con_chrome(ruta_html):
-    chrome = None
-    for c in ("google-chrome", "google-chrome-stable", "chromium", "chromium-browser"):
-        if shutil.which(c):
-            chrome = c
-            break
-    if chrome is None:
-        return False
-    comando = [
-        chrome, "--headless=new", "--no-sandbox", "--disable-gpu",
-        "--no-pdf-header-footer", "--virtual-time-budget=8000",
-        f"--print-to-pdf={SALIDA_PDF}", "file://" + ruta_html,
-    ]
-    r = subprocess.run(comando, capture_output=True, text=True)
-    return r.returncode == 0 and os.path.exists(SALIDA_PDF)
-
-
-def pdf_con_soffice(ruta_html):
-    soffice = shutil.which("libreoffice") or shutil.which("soffice")
-    if soffice is None:
-        return False
-    r = subprocess.run(
-        [soffice, "--headless", "--convert-to", "pdf", "--outdir", RAIZ, ruta_html],
-        capture_output=True, text=True,
-    )
-    return r.returncode == 0 and os.path.exists(SALIDA_PDF)
-
-
 def _escribir(nombre, html):
     destino = os.path.join(DOCS, nombre)
     with open(destino, "w", encoding="utf-8") as f:
@@ -528,7 +486,7 @@ def generar():
     html = construir_html()
     os.makedirs(DOCS, exist_ok=True)
 
-    # 1) El libro: copia local (para el PDF) y en el sitio (docs/libro.html).
+    # 1) El libro como página del sitio (docs/libro.html) + copia local.
     with open(SALIDA_HTML, "w", encoding="utf-8") as f:
         f.write(html)
     print(f"✓ HTML generado: {SALIDA_HTML}")
@@ -549,24 +507,8 @@ def generar():
             "Roadmap — Python con Pokémon", "ROADMAP.md", activo=""))
     except Exception as e:
         print(f"  (roadmap: {e})")
-
-    # 3) Generamos el PDF con el mejor motor disponible.
-    print("➤ Generando PDF...")
-    if pdf_con_weasyprint(html):
-        print(f"✓ PDF generado con WeasyPrint: {SALIDA_PDF}")
-        return 0
-    print("  (WeasyPrint no disponible, probando Chrome...)")
-    if pdf_con_chrome(SALIDA_HTML):
-        print(f"✓ PDF generado con Chrome: {SALIDA_PDF}")
-        return 0
-    print("  (Chrome no disponible, probando LibreOffice...)")
-    if pdf_con_soffice(SALIDA_HTML):
-        print(f"✓ PDF generado con LibreOffice: {SALIDA_PDF}")
-        return 0
-
-    print("✗ No se pudo generar el PDF (instalá weasyprint: pip install weasyprint).")
-    print(f"  De todos modos, podés abrir el libro en el navegador: {SALIDA_HTML}")
-    return 1
+    print("✓ Sitio generado. (Ya no se genera PDF.)")
+    return 0
 
 
 if __name__ == "__main__":
