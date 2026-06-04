@@ -517,6 +517,12 @@ _EXTRA = r"""
 @media screen{
   .topbar .meta{ display:none; }
   .topbar .tools{ margin-left:auto; display:flex; align-items:center; gap:10px; }
+  .tools .navlink, .tools .volver{
+    font-family:var(--font-body); font-weight:600; font-size:.85rem; color:var(--ink);
+    text-decoration:none; padding:6px 13px; border:1px solid var(--line);
+    border-radius:999px; background:var(--paper-2); white-space:nowrap;
+  }
+  .tools .navlink:hover, .tools .volver:hover{ border-color:var(--red); color:var(--red); }
   .search-box{
     background:var(--paper-2); border:1px solid var(--line); border-radius:999px;
     padding:6px 13px; font-size:.85rem; color:var(--ink); width:180px;

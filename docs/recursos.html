@@ -362,6 +362,12 @@ tbody tr:nth-child(even){background:#fbf5e9;}
 @media screen{
   .topbar .meta{ display:none; }
   .topbar .tools{ margin-left:auto; display:flex; align-items:center; gap:10px; }
+  .tools .navlink, .tools .volver{
+    font-family:var(--font-body); font-weight:600; font-size:.85rem; color:var(--ink);
+    text-decoration:none; padding:6px 13px; border:1px solid var(--line);
+    border-radius:999px; background:var(--paper-2); white-space:nowrap;
+  }
+  .tools .navlink:hover, .tools .volver:hover{ border-color:var(--red); color:var(--red); }
   .search-box{
     background:var(--paper-2); border:1px solid var(--line); border-radius:999px;
     padding:6px 13px; font-size:.85rem; color:var(--ink); width:180px;
@@ -500,27 +506,24 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 .highlight .vi { color: #E06C75 } /* Name.Variable.Instance */
 .highlight .vm { color: #E06C75 } /* Name.Variable.Magic */
 .highlight .il { color: #D19A66 } /* Literal.Number.Integer.Long */
+/* Esta página no tiene riel: la columna va centrada, no corrida a la derecha. */
 @media screen{
-  .tools .navlink, .tools .volver{
-    font-family:var(--font-display); font-weight:700; font-size:.86rem; color:var(--ink);
-    text-decoration:none; padding:6px 12px; border:1px solid var(--line);
-    border-radius:999px; background:var(--paper-2);
-  }
-  .tools .navlink:hover, .tools .volver:hover{ border-color:var(--red); color:var(--red); }
+  .pagina-recursos .wrap{ display:block; max-width:860px; margin:0 auto; }
+  .pagina-recursos .book.recursos{ margin:0 auto; }
 }
-.recursos{ max-width:var(--readw); }
+.recursos{ max-width:var(--readw); margin:0 auto; }
 .recursos h1{
   font-family:var(--font-display); font-weight:800; color:var(--red-deep);
-  border-bottom:3px solid var(--red); padding-bottom:.2em; font-size:2rem; letter-spacing:-.02em;
+  border-bottom:3px solid var(--red); padding-bottom:.2em; font-size:2.1rem; letter-spacing:-.02em;
 }
 .recursos h3{ color:var(--teal-deep); }
 .recursos a{ word-break:break-word; }
 .recursos hr{ border:none; border-top:1px solid var(--line); margin:1.6rem 0; }
 .recursos ul{ padding-left:1.2em; }
-.recursos li{ margin:.5em 0; }
+.recursos li{ margin:.55em 0; }
 </style>
 </head>
-<body>
+<body class="pagina-recursos">
 <div class="bg-grid" aria-hidden="true"></div>
 <header class="topbar">
   <span class="pb"></span>
@@ -537,6 +540,10 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <hr />
 <h2>🐍 Python — Documentación y aprendizaje</h2>
 <ul>
+<li>
+<p><strong><a href="https://ellibrodepython.com/">El Libro de Python (en español)</a></strong> ⭐
+  Un libro online buenísimo y gratis, en español. Explica todo Python desde cero con ejemplos. Ideal como complemento de este curso (¡el diseño de nuestro propio libro está inspirado en él!).</p>
+</li>
 <li>
 <p><strong><a href="https://docs.python.org/es/3/">Documentación oficial de Python (en español)</a></strong>
   La biblia de Python. Al principio asusta, pero el <a href="https://docs.python.org/es/3/tutorial/index.html">Tutorial</a> es buenísimo para principiantes.</p>
@@ -556,6 +563,26 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <li>
 <p><strong><a href="https://recursospython.com/pep8es.pdf">PEP 8 — Guía de estilo (en español)</a></strong>
   Cómo escribir código Python prolijo. Lo vas a agradecer.</p>
+</li>
+</ul>
+<hr />
+<h2>🎓 Cursos online gratuitos (Harvard y más)</h2>
+<ul>
+<li>
+<p><strong><a href="https://cs50.harvard.edu/python/">CS50P — Introduction to Programming with Python (Harvard)</a></strong> ⭐ <em>(en inglés, con subtítulos)</em>
+  El curso de Python de Harvard, <strong>gratis</strong>. Pensado para principiantes, con videos, ejercicios y certificado opcional. Ideal para hacer en paralelo con este curso.</p>
+</li>
+<li>
+<p><strong><a href="https://cs50.harvard.edu/x/">CS50x — Introduction to Computer Science (Harvard)</a></strong> <em>(en inglés)</em>
+  El curso de introducción a la programación <strong>más famoso del mundo</strong>, también gratis. Más amplio (C, Python, web, bases de datos). Un golazo si querés ir más a fondo.</p>
+</li>
+<li>
+<p><strong><a href="https://www.youtube.com/results?search_query=cs50+espa%C3%B1ol">CS50 en español (freeCodeCamp)</a></strong> <em>(YouTube)</em>
+  Hay versiones y resúmenes de CS50 con explicaciones en español en YouTube.</p>
+</li>
+<li>
+<p><strong><a href="https://www.freecodecamp.org/espanol/">freeCodeCamp</a></strong> <em>(en español)</em>
+  Cursos completos y gratuitos de programación, con certificados.</p>
 </li>
 </ul>
 <hr />

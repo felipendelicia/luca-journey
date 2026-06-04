@@ -6,6 +6,9 @@ Una colección de links comentados para cuando quieras profundizar, te trabes, o
 
 ## 🐍 Python — Documentación y aprendizaje
 
+- **[El Libro de Python (en español)](https://ellibrodepython.com/)** ⭐
+  Un libro online buenísimo y gratis, en español. Explica todo Python desde cero con ejemplos. Ideal como complemento de este curso (¡el diseño de nuestro propio libro está inspirado en él!).
+
 - **[Documentación oficial de Python (en español)](https://docs.python.org/es/3/)**
   La biblia de Python. Al principio asusta, pero el [Tutorial](https://docs.python.org/es/3/tutorial/index.html) es buenísimo para principiantes.
 
@@ -20,6 +23,22 @@ Una colección de links comentados para cuando quieras profundizar, te trabes, o
 
 - **[PEP 8 — Guía de estilo (en español)](https://recursospython.com/pep8es.pdf)**
   Cómo escribir código Python prolijo. Lo vas a agradecer.
+
+---
+
+## 🎓 Cursos online gratuitos (Harvard y más)
+
+- **[CS50P — Introduction to Programming with Python (Harvard)](https://cs50.harvard.edu/python/)** ⭐ *(en inglés, con subtítulos)*
+  El curso de Python de Harvard, **gratis**. Pensado para principiantes, con videos, ejercicios y certificado opcional. Ideal para hacer en paralelo con este curso.
+
+- **[CS50x — Introduction to Computer Science (Harvard)](https://cs50.harvard.edu/x/)** *(en inglés)*
+  El curso de introducción a la programación **más famoso del mundo**, también gratis. Más amplio (C, Python, web, bases de datos). Un golazo si querés ir más a fondo.
+
+- **[CS50 en español (freeCodeCamp)](https://www.youtube.com/results?search_query=cs50+espa%C3%B1ol)** *(YouTube)*
+  Hay versiones y resúmenes de CS50 con explicaciones en español en YouTube.
+
+- **[freeCodeCamp](https://www.freecodecamp.org/espanol/)** *(en español)*
+  Cursos completos y gratuitos de programación, con certificados.
 
 ---
 

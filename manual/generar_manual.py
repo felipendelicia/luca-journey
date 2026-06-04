@@ -210,25 +210,23 @@ JS = """<script>
 
 
 # CSS extra para la subpágina de bibliografía (recursos.html).
+# (El estilo del botón ya vive en el CSS compartido; acá solo va lo propio de la página.)
 RECURSOS_CSS = """
+/* Esta página no tiene riel: la columna va centrada, no corrida a la derecha. */
 @media screen{
-  .tools .navlink, .tools .volver{
-    font-family:var(--font-display); font-weight:700; font-size:.86rem; color:var(--ink);
-    text-decoration:none; padding:6px 12px; border:1px solid var(--line);
-    border-radius:999px; background:var(--paper-2);
-  }
-  .tools .navlink:hover, .tools .volver:hover{ border-color:var(--red); color:var(--red); }
+  .pagina-recursos .wrap{ display:block; max-width:860px; margin:0 auto; }
+  .pagina-recursos .book.recursos{ margin:0 auto; }
 }
-.recursos{ max-width:var(--readw); }
+.recursos{ max-width:var(--readw); margin:0 auto; }
 .recursos h1{
   font-family:var(--font-display); font-weight:800; color:var(--red-deep);
-  border-bottom:3px solid var(--red); padding-bottom:.2em; font-size:2rem; letter-spacing:-.02em;
+  border-bottom:3px solid var(--red); padding-bottom:.2em; font-size:2.1rem; letter-spacing:-.02em;
 }
 .recursos h3{ color:var(--teal-deep); }
 .recursos a{ word-break:break-word; }
 .recursos hr{ border:none; border-top:1px solid var(--line); margin:1.6rem 0; }
 .recursos ul{ padding-left:1.2em; }
-.recursos li{ margin:.5em 0; }
+.recursos li{ margin:.55em 0; }
 """
 
 
@@ -254,7 +252,7 @@ def generar_recursos():
 {FUENTES}
 <style>{estilos}</style>
 </head>
-<body>
+<body class="pagina-recursos">
 <div class="bg-grid" aria-hidden="true"></div>
 <header class="topbar">
   <span class="pb"></span>
