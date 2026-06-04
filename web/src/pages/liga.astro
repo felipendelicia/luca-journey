@@ -1,0 +1,96 @@
+---
+import Base from '../layouts/Base.astro';
+import datos from '../data/ejercicios.json';
+
+const GIMNASIOS = [
+  ['Roca', '🪨'], ['Cascada', '💧'], ['Trueno', '⚡'], ['Arcoíris', '🌈'],
+  ['Alma', '💗'], ['Pantano', '🟣'], ['Volcán', '🔥'], ['Tierra', '🌍'],
+];
+const semanas = datos.map((w, i) => ({
+  slug: w.slug, titulo: w.titulo,
+  exIds: w.ejercicios.map((e) => e.id),
+  gym: GIMNASIOS[i % GIMNASIOS.length][0], emoji: GIMNASIOS[i % GIMNASIOS.length][1],
+}));
+const totalEj = semanas.reduce((a, w) => a + w.exIds.length, 0);
+---
+<Base title="La Liga — Python con Pokémon" active="Liga">
+  <div class="wrap liga">
+    <section class="tarjeta">
+      <div class="tarjeta-top">
+        <div class="avatar" id="avatar">🎓</div>
+        <div class="tarjeta-info">
+          <label class="t-nombre-l">Entrenador/a</label>
+          <input class="t-nombre" id="nombre" placeholder="Tu nombre" maxlength="20" />
+          <div class="t-rango" id="rango">Novato</div>
+        </div>
+        <div class="t-nivel"><span class="t-nivel-n" id="nivel">1</span><span class="t-nivel-l">nivel</span></div>
+      </div>
+      <div class="t-exp">
+        <div class="t-exp-bar"><span id="exp-fill"></span></div>
+        <div class="t-exp-txt"><span id="exp-txt">0 EXP</span><span id="exp-next"></span></div>
+      </div>
+      <div class="t-stats">
+        <div><b id="st-ej">0</b><span>ejercicios</span></div>
+        <div><b id="st-med">0</b><span>medallas</span></div>
+        <div><b id="st-temas">0</b><span>temas completos</span></div>
+      </div>
+    </section>
+
+    <h2 class="liga-h">🏅 Medallas de gimnasio</h2>
+    <div class="medallas" id="medallas"></div>
+
+    <h2 class="liga-h">📊 Progreso por tema</h2>
+    <div class="progreso-temas" id="progreso"></div>
+
+    <p class="liga-nota">Tu progreso se guarda en este navegador. Resolvé ejercicios para ganar EXP y medallas. ⚡</p>
+  </div>
+
+  <script type="application/json" id="liga-data" set:html={JSON.stringify({ semanas, totalEj })}></script>
+  <script is:inline>
+    (function () {
+      const data = JSON.parse(document.getElementById('liga-data').textContent);
+      const RANGOS = [[0, 'Novato'], [3, 'Aprendiz'], [6, 'Entrenador'], [10, 'Veterano'], [16, 'As'], [24, 'Líder'], [40, 'Campeón']];
+      const $ = (id) => document.getElementById(id);
+
+      // nombre
+      const nombre = $('nombre');
+      nombre.value = localStorage.getItem('liga:nombre') || '';
+      nombre.addEventListener('input', () => localStorage.setItem('liga:nombre', nombre.value));
+
+      let doneTotal = 0, temasCompletos = 0, medallas = 0;
+      const filas = [];
+      const medHtml = [];
+      for (const w of data.semanas) {
+        const done = w.exIds.filter((id) => localStorage.getItem('ej:' + w.slug + ':' + id + ':ok') === '1').length;
+        const total = w.exIds.length;
+        const completo = total > 0 && done === total;
+        doneTotal += done;
+        if (completo) { temasCompletos++; medallas++; }
+        const pct = total ? Math.round((done / total) * 100) : 0;
+        filas.push('<a class="pt-row" href="/ejercicios/' + w.slug + '"><span class="pt-emoji">' + w.emoji + '</span>' +
+          '<span class="pt-nom">' + w.titulo + '</span><span class="pt-bar"><i style="width:' + pct + '%"></i></span>' +
+          '<span class="pt-num">' + done + '/' + total + '</span></a>');
+        medHtml.push('<div class="medalla ' + (completo ? 'ganada' : '') + '" title="Gimnasio ' + w.gym + '">' +
+          '<div class="med-ico">' + w.emoji + '</div><div class="med-nom">' + w.gym + '</div></div>');
+      }
+      $('progreso').innerHTML = filas.join('');
+      $('medallas').innerHTML = medHtml.join('');
+
+      const exp = doneTotal * 20;
+      let rango = 'Novato';
+      for (const [n, r] of RANGOS) if (medallas >= n || doneTotal >= n) rango = r;
+      // nivel: cada 100 EXP
+      const nivel = 1 + Math.floor(exp / 100);
+      const expEnNivel = exp % 100;
+      $('nivel').textContent = nivel;
+      $('rango').textContent = rango;
+      $('exp-txt').textContent = exp + ' EXP';
+      $('exp-next').textContent = (100 - expEnNivel) + ' para nivel ' + (nivel + 1);
+      $('exp-fill').style.width = expEnNivel + '%';
+      $('st-ej').textContent = doneTotal + '/' + data.totalEj;
+      $('st-med').textContent = medallas + '/' + data.semanas.length;
+      $('st-temas').textContent = temasCompletos;
+      if (medallas === data.semanas.length && data.semanas.length) { $('avatar').textContent = '🏆'; $('rango').textContent = '¡Campeón de Kanto!'; }
+    })();
+  </script>
+</Base>
