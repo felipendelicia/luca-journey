@@ -4,3 +4,7 @@ dist/
 .astro/
 .DS_Store
 *.log
+
+# variables de entorno locales
+.env
+.env.local

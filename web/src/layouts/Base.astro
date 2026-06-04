@@ -29,12 +29,41 @@ const nav = [
       {nav.map(([t, h]) => (
         <a class={'navlink' + (t === active ? ' activo' : '')} href={u(h)}>{t}</a>
       ))}
+      <button class="theme-toggle" id="nube-btn" type="button" title="Guardar progreso en la nube" style="display:none">☁️</button>
       <button class="theme-toggle" id="sonido-toggle" type="button" title="Sonido on/off">🔊</button>
       <button class="theme-toggle" id="theme-toggle" type="button" title="Tema claro/oscuro">🌙</button>
     </div>
   </header>
 
   <script is:inline define:vars={{ base: import.meta.env.BASE_URL }}>window.__BASE = base;</script>
+
+  <script>
+    import { init, usuario, loginEmail, logout } from '../lib/nube.js';
+    import { haySupabase } from '../lib/supa.js';
+    const btn = document.getElementById('nube-btn');
+    if (haySupabase && btn) {
+      btn.style.display = '';
+      init();
+      const pintar = () => {
+        const u = usuario();
+        btn.textContent = u ? '✅' : '☁️';
+        btn.title = u ? `Sesión: ${u.email || ''} — clic para salir` : 'Guardar progreso en la nube';
+      };
+      pintar();
+      window.addEventListener('nube:cambio', pintar);
+      btn.addEventListener('click', async () => {
+        if (usuario()) {
+          if (confirm('¿Cerrar sesión? Tu progreso queda guardado en la nube.')) logout();
+        } else {
+          const email = prompt('Tu email (te mandamos un link para entrar y guardar tu progreso):');
+          if (email && email.trim()) {
+            const { error } = await loginEmail(email.trim());
+            alert(error ? `Error: ${error.message}` : '¡Listo! Revisá tu email y tocá el link. 📩');
+          }
+        }
+      });
+    }
+  </script>
 
   <slot />
 

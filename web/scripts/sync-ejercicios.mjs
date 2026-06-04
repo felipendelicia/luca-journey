@@ -1,6 +1,7 @@
 // sync-ejercicios.mjs — empaqueta los ejercicios (web/src/ejercicios/<slug>/) a
 // web/src/data/ejercicios.json, DIVIDIDOS por función/clase, con sus tests.
-// Cada semana = { preamble, test, solucion, extra, ejercicios:[{id,titulo,prompt,starter,tests}] }
+// Cada semana = { preamble, test, extra, ejercicios:[{id,titulo,prompt,starter,tests}] }
+// (la solución NO se emite: anti-trampa)
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -187,15 +188,11 @@ SEMANAS.forEach(([slug, titulo, region], i) => {
   }
   const { preamble, ejercicios } = dividir(ejSrc);
   mapearTests(test, ejercicios);
-  // solución por ejercicio (dividimos soluciones.py igual y mapeamos por nombre)
-  if (solucion) {
-    const sol = dividir(solucion);
-    const solMap = new Map(sol.ejercicios.map((e) => [e.name, e.starter]));
-    ejercicios.forEach((e) => { e.solucion = solMap.get(e.name) || ''; });
-  }
+  // soluciones.py se usa SOLO para detectar paquetes (server-side). NO se emite al
+  // cliente: las resoluciones reales no se muestran (anti-trampa).
   const packages = paquetesDe([ejSrc, test, solucion || '', ...Object.values(extra)]);
   const conTests = ejercicios.filter((e) => e.tests.length).length;
-  data.push({ slug, titulo, region: region || 'kanto', packages, orden: i, preamble, test, solucion, extra, ejercicios });
+  data.push({ slug, titulo, region: region || 'kanto', packages, orden: i, preamble, test, extra, ejercicios });
   console.log(`✓ ${slug.padEnd(24)} [${region}] ${ejercicios.length} ej (${conTests} c/test)${packages.length ? ' pkg:' + packages.join(',') : ''}`);
 });
 

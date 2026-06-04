@@ -21,7 +21,7 @@ const desc = ex.prompt.split('\n').slice(1).join(' ').trim();
 const payload = {
   slug: w.slug, preamble: w.preamble, test: w.test, extra: w.extra,
   packages: w.packages || [],
-  exId: ex.id, exTests: ex.tests, starter: ex.starter, solucion: ex.solucion || '',
+  exId: ex.id, exTests: ex.tests, starter: ex.starter,
   ejercicios: w.ejercicios.map((e) => ({ id: e.id, starter: e.starter })),
 };
 ---
@@ -40,7 +40,6 @@ const payload = {
             {ex.tests.length ? '✅ Corregir' : 'Sin test automático'}
           </button>
           <button class="btn-sec" id="reset" type="button">↺ Reiniciar</button>
-          <button class="btn-sec" id="ver-sol" type="button">👁 Ver solución</button>
           <span class="ejer-estado" id="estado"></span>
         </div>
 
@@ -50,11 +49,6 @@ const payload = {
         </div>
 
         <div class="ejer-result" id="result"></div>
-
-        <details class="sol-box" id="sol-box" hidden>
-          <summary>Solución de este ejercicio</summary>
-          <pre class="sol-pre" id="sol-pre"></pre>
-        </details>
 
         <nav class="cap-nav">
           {prev
@@ -160,11 +154,6 @@ const payload = {
       editor.dispatch({ changes: { from: 0, to: editor.state.doc.length, insert: data.starter } });
       localStorage.removeItem(KEY(data.exId)); localStorage.removeItem(KEY(data.exId) + ':ok');
       document.getElementById('result').innerHTML = '';
-    });
-    document.getElementById('ver-sol').addEventListener('click', () => {
-      const box = document.getElementById('sol-box');
-      document.getElementById('sol-pre').textContent = data.solucion || '(sin solución)';
-      box.hidden = !box.hidden; if (!box.hidden) box.open = true;
     });
   </script>
 </Base>
