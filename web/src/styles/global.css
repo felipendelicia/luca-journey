@@ -360,3 +360,22 @@ body.dark .ej-mini{ background:#3a1c1a; } body.dark .ej-mini.win{ background:#13
 .poke.tengo{ border-color:#bce7cd; }
 .poke-x{ position:absolute; top:3px; right:5px; background:var(--red); color:#fff; font-family:var(--font-pixel); font-size:8px; padding:2px 5px; border-radius:8px; }
 body.dark .poke.falta img{ filter:brightness(0) invert(.18); }
+
+/* shiny ✨ + buscador de la Pokédex */
+.captura.shiny img{ animation:pop .45s ease, brillo 1.2s ease-in-out infinite; }
+@keyframes brillo{ 0%,100%{filter:drop-shadow(0 0 10px gold) drop-shadow(0 8px 12px rgba(0,0,0,.25))} 50%{filter:drop-shadow(0 0 22px #fff3) drop-shadow(0 0 18px gold)} }
+.captura.shiny .captura-txt{ color:#cc9a00; }
+.poke.es-shiny{ border-color:var(--yellow-deep); box-shadow:0 0 0 2px var(--yellow) inset; background:linear-gradient(180deg,#fffbe6,var(--paper-2)); }
+.poke-shiny{ position:absolute; top:2px; left:4px; font-size:12px; }
+.dex-buscar{ width:100%; max-width:420px; padding:10px 16px; border:1px solid var(--line); border-radius:999px; background:var(--paper-2); color:var(--ink); font-size:.95rem; margin:.4rem 0 1rem; outline:none; }
+.dex-buscar:focus{ border-color:var(--red); }
+.dex-sinresultados{ color:var(--ink-mute); }
+body.dark .poke.es-shiny{ background:linear-gradient(180deg,#2c2814,var(--paper-2)); }
+
+/* controles de la Pokédex: buscador + filtros */
+.dex-controles{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin:.4rem 0 1rem; }
+.dex-controles .dex-buscar{ margin:0; flex:1; min-width:220px; }
+.dex-filtros{ display:flex; gap:8px; flex-wrap:wrap; }
+.dex-f{ font-size:.82rem; padding:7px 13px; border:1px solid var(--line); border-radius:999px; background:var(--paper-2); color:var(--ink); cursor:pointer; }
+.dex-f:hover{ border-color:var(--red); }
+.dex-f.activo{ background:var(--red); color:#fff; border-color:var(--red); }

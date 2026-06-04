@@ -7,6 +7,7 @@ const set = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 
 export const BALLS_POR_EJERCICIO = 2;
 export const REGALO_DIARIO = 5;
+export const PROB_SHINY = 0.01; // 1% de que un salvaje sea shiny ✨
 
 // Pokémon insignia de cada tema (id de la PokéAPI).
 export const INSIGNIAS = {
@@ -22,7 +23,8 @@ export const INSIGNIAS = {
 };
 export const LEGENDARIOS = { kanto: 150, johto: 249, hoenn: 384 };
 
-export const spriteUrl = (id) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+export const spriteUrl = (id, shiny = false) =>
+  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${shiny ? 'shiny/' : ''}${id}.png`;
 
 const ejDone = (slug, exId) => localStorage.getItem(`ej:${slug}:${exId}:ok`) === '1';
 
@@ -34,6 +36,7 @@ export function estado() {
     atrapados: at,
     unicos: Object.keys(at).length,
     total: Object.values(at).reduce((a, b) => a + b, 0),
+    shiny: new Set(get('col:shiny', [])),
   };
 }
 
@@ -108,7 +111,14 @@ export function tirar(pokemon, temas) {
   const at = get('col:atrapados', {});
   at[elegido.id] = (at[elegido.id] || 0) + 1;
   balls--;
+  // shiny: 1% de las veces; se guarda aparte (podés tener el shiny de un Pokémon)
+  const shiny = Math.random() < PROB_SHINY;
+  let nuevoShiny = false;
+  if (shiny) {
+    const s = get('col:shiny', []);
+    if (!s.includes(elegido.id)) { s.push(elegido.id); set('col:shiny', s); nuevoShiny = true; }
+  }
   set('col:balls', balls);
   set('col:atrapados', at);
-  return { pokemon: elegido, cantidad: at[elegido.id], repetido: at[elegido.id] > 1, balls };
+  return { pokemon: elegido, cantidad: at[elegido.id], repetido: at[elegido.id] > 1, shiny, nuevoShiny, balls };
 }
