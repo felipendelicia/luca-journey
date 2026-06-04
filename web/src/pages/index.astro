@@ -2,10 +2,10 @@
 import Base from '../layouts/Base.astro';
 
 const cards = [
+  ['📖', 'El libro', 'Toda la teoría del curso (Linux + Python), con ejemplos ejecutables.', '/libro'],
   ['🎮', 'Playground', 'Escribí y ejecutá Python en el navegador, sin instalar nada.', '/playground'],
-  ['📖', 'El libro', 'Toda la teoría del curso (Linux + Python). — Próximamente acá', '/playground'],
-  ['🏋️', 'Ejercicios en vivo', 'Resolvé y corregí tus ejercicios en el navegador. — En camino', '/playground'],
-  ['🏆', 'La Liga', 'EXP, medallas y progreso. — En camino', '/playground'],
+  ['🏋️', 'Ejercicios en vivo', 'Resolvé y corregí tus ejercicios en el navegador. — En camino', '/libro'],
+  ['🏆', 'La Liga', 'EXP, medallas y progreso. — En camino', '/libro'],
   ['📚', 'Repositorio', 'Código, curso y la Liga Pokémon en GitHub.', 'https://github.com/felipendelicia/luca-journey'],
 ];
 ---
@@ -16,8 +16,8 @@ const cards = [
       <h1>Python con Pokémon</h1>
       <p>Aprendé a programar desde cero — Linux, Python y mucha aventura — directo en tu navegador. 🏆</p>
       <div class="cta">
-        <a class="btn-grande" href="/playground">🎮 Probar Python ya</a>
-        <a class="btn-grande sec" href="https://github.com/felipendelicia/luca-journey">⭐ Ver en GitHub</a>
+        <a class="btn-grande" href="/libro">📖 Empezar a leer</a>
+        <a class="btn-grande sec" href="/playground">🎮 Probar Python ya</a>
       </div>
     </section>
 

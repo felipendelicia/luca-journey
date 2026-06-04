@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
+import { agrupar } from '../../lib/grupos.mjs';
 
 export async function getStaticPaths() {
   const caps = (await getCollection('libro')).sort((a, b) => a.data.order - b.data.order);
@@ -14,16 +15,22 @@ const { cap, caps, i } = Astro.props;
 const { Content } = await cap.render();
 const prev = caps[i - 1];
 const next = caps[i + 1];
+const grupos = agrupar(caps);
 ---
 <Base title={cap.data.title + ' — Python con Pokémon'} active="Libro">
   <div class="wrap">
     <div class="book-layout">
       <aside class="book-rail">
         <div class="rail-tit">Capítulos</div>
-        {caps.map((c, idx) => (
-          <a class={c.slug === cap.slug ? 'activo' : ''} href={`/libro/${c.slug}`}>
-            <span class="rn">{idx}</span><span>{c.data.title}</span>
-          </a>
+        {grupos.map((g) => (
+          <details class="grupo" open={g.items.some((it) => it.cap.slug === cap.slug)}>
+            <summary><span class="g-ico">{g.icono}</span>{g.nombre}</summary>
+            {g.items.map(({ cap: c, n }) => (
+              <a class={c.slug === cap.slug ? 'activo' : ''} href={`/libro/${c.slug}`}>
+                <span class="rn">{n}</span><span>{c.data.title}</span>
+              </a>
+            ))}
+          </details>
         ))}
       </aside>
 

@@ -27,8 +27,8 @@ h1,h2,h3{font-family:var(--font-display); font-weight:800; letter-spacing:-.02em
 a{color:var(--teal-deep); text-decoration:none;}
 p{margin:.7em 0;}
 strong{color:var(--red-ink);}
-code{font-family:var(--font-mono); font-size:.85em; background:#fff; color:var(--red-deep);
-  border:1px solid var(--line); border-radius:6px; padding:.06em .4em;}
+code{font-family:var(--font-mono); font-size:.85em; background:#eef1f4; color:var(--red-deep);
+  border:1px solid var(--line-2); border-radius:6px; padding:.06em .4em;}
 
 /* fondo con grilla de puntos */
 .bg-grid{position:fixed; inset:0; z-index:-2; pointer-events:none;
@@ -202,3 +202,23 @@ body.dark .book table{ background:var(--paper-2); } body.dark .book th{ backgrou
 body.dark .book tbody tr:nth-child(even){ background:#20232f; }
 body.dark .book-rail a:hover, body.dark .book-rail a.activo{ background:var(--card); }
 @media (max-width:900px){ .book-layout{ grid-template-columns:1fr; gap:0; } .book-rail{ display:none; } .book{ max-width:none; } }
+
+/* refuerzo: ventana de código siempre oscura */
+.cw{ background:#21252b; }
+
+/* grupos desplegables (riel + índice) */
+.grupo{ margin:0 0 3px; }
+.grupo > summary{ cursor:pointer; list-style:none; display:flex; align-items:center; gap:8px;
+  font-family:var(--font-display); font-weight:800; color:var(--ink); padding:7px 9px; border-radius:9px; }
+.grupo > summary::-webkit-details-marker{ display:none; }
+.grupo > summary::after{ content:"▾"; margin-left:auto; color:var(--ink-mute); font-size:.78em; transition:transform .15s; }
+.grupo:not([open]) > summary::after{ transform:rotate(-90deg); }
+.grupo > summary:hover{ background:var(--paper-2); }
+.grupo .g-ico{ font-size:1.05em; }
+.grupo .g-count{ font-family:var(--font-pixel); font-size:8px; color:#fff; background:var(--ink-mute); padding:2px 7px; border-radius:999px; }
+.book-rail .grupo > a{ margin-left:8px; }
+
+/* variante índice (/libro): grupos más grandes con tarjetas adentro */
+.grupo-idx{ margin-bottom:18px; }
+.grupo-idx > summary{ font-size:1.18rem; padding:10px 4px; border-bottom:2px solid var(--line); border-radius:0; margin-bottom:12px; }
+.grupo-idx > summary .g-count{ margin-right:6px; }
