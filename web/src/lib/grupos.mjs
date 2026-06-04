@@ -19,6 +19,14 @@ export const GRUPOS = [
       'pandas-limpieza', 'pandas-groupby', 'matplotlib', 'analisis-integrador',
     ],
   },
+  {
+    nombre: 'APIs',
+    icono: '🛰️',
+    slugs: [
+      'api-http-json', 'flask-primera-app', 'flask-json', 'flask-parametros',
+      'flask-post', 'flask-rest-crud', 'consumir-api', 'pokedex-api',
+    ],
+  },
   { nombre: 'Git', icono: '🔀', slugs: ['git'] },
   { nombre: 'Ayuda', icono: '❓', slugs: ['ayuda'] },
 ];

@@ -5,10 +5,12 @@ import datos from '../data/ejercicios.json';
 const BADGES = {
   kanto: [['Roca', '🪨'], ['Cascada', '💧'], ['Trueno', '⚡'], ['Arcoíris', '🌈'], ['Alma', '💗'], ['Pantano', '🟣'], ['Volcán', '🔥'], ['Tierra', '🌍']],
   johto: [['Cifré', '🌀'], ['Colmena', '🐝'], ['Llanura', '🌾'], ['Niebla', '🌫️'], ['Tormenta', '⛈️'], ['Mineral', '⛏️'], ['Glaciar', '❄️'], ['Subida', '🐉']],
+  hoenn: [['Piedra', '🗿'], ['Puño', '🥊'], ['Dínamo', '⚙️'], ['Calor', '🌋'], ['Equilibrio', '⚖️'], ['Pluma', '🪶'], ['Mente', '🧠'], ['Lluvia', '🌧️']],
 };
 const META = {
   kanto: { nombre: 'Kanto', sub: 'Fundamentos: Python', titulo: 'Campeón de Kanto' },
   johto: { nombre: 'Johto', sub: 'Análisis de datos', titulo: 'Campeón de Johto' },
+  hoenn: { nombre: 'Hoenn', sub: 'APIs con Flask', titulo: 'Campeón de Hoenn' },
 };
 
 function temasDe(region) {
@@ -17,7 +19,7 @@ function temasDe(region) {
     gym: (BADGES[region][i] || ['?', '⭐'])[0], emoji: (BADGES[region][i] || ['?', '⭐'])[1],
   }));
 }
-const regiones = ['kanto', 'johto'].map((id) => ({ id, ...META[id], temas: temasDe(id) }));
+const regiones = ['kanto', 'johto', 'hoenn'].map((id) => ({ id, ...META[id], temas: temasDe(id) }));
 const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exIds.length, 0), 0);
 ---
 <Base title="La Liga — Python con Pokémon" active="Liga">
@@ -45,7 +47,7 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
 
     {regiones.map((r) => (
       <section class="region" data-region={r.id}>
-        <h2 class="liga-h">{r.id === 'kanto' ? '🔴' : '⚪'} Región {r.nombre} <small>— {r.sub}</small> <span class="reg-estado" data-reg={r.id}></span></h2>
+        <h2 class="liga-h">{({ kanto: '🔴', johto: '⚪', hoenn: '🟢' })[r.id] || '🔵'} Región {r.nombre} <small>— {r.sub}</small> <span class="reg-estado" data-reg={r.id}></span></h2>
         <div class="medallas" data-medallas={r.id}></div>
         <div class="progreso-temas" data-progreso={r.id}></div>
       </section>

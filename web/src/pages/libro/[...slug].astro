@@ -74,13 +74,16 @@ const grupos = agrupar(caps);
       btn.disabled = true;
       try {
         const py = await getPy(out);
-        // cargar paquetes de datos si el código los usa
+        // cargar librerías si el código las usa
         const pkgs = [];
         if (/\bnumpy\b|\bnp\./.test(codigo)) pkgs.push('numpy');
         if (/\bpandas\b|\bpd\./.test(codigo)) pkgs.push('pandas');
         const usaPlot = /\bmatplotlib\b|\bplt\./.test(codigo);
         if (usaPlot) pkgs.push('matplotlib');
-        if (pkgs.length) { out.innerHTML = '<span class="lbl">SALIDA</span>⏳ cargando ' + pkgs.join(', ') + '…'; await py.loadPackage(pkgs); }
+        const usaFlask = /\bflask\b|\bFlask\(/.test(codigo);
+        if (usaFlask) pkgs.push('micropip');
+        if (pkgs.length) { out.innerHTML = '<span class="lbl">SALIDA</span>⏳ cargando librerías…'; await py.loadPackage(pkgs); }
+        if (usaFlask) await py.runPythonAsync("import micropip\nawait micropip.install('flask')");
         out.innerHTML = '<span class="lbl">SALIDA</span>';
         py.setStdout({ batched: (s) => out.appendChild(document.createTextNode(s + '\n')) });
         py.setStderr({ batched: (s) => { const e = document.createElement('span'); e.className = 'err'; e.textContent = s + '\n'; out.appendChild(e); } });

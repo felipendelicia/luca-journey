@@ -30,6 +30,15 @@ const SEMANAS = [
   ['pandas-groupby', 'pandas: Agrupar y combinar', 'johto'],
   ['matplotlib', 'matplotlib: Gráficos', 'johto'],
   ['analisis-integrador', 'Análisis integrador', 'johto'],
+  // Hoenn — APIs con Flask
+  ['api-http-json', 'APIs: HTTP y JSON', 'hoenn'],
+  ['flask-primera-app', 'Flask: tu primera app', 'hoenn'],
+  ['flask-json', 'Flask: respuestas JSON', 'hoenn'],
+  ['flask-parametros', 'Flask: parámetros', 'hoenn'],
+  ['flask-post', 'Flask: métodos y POST', 'hoenn'],
+  ['flask-rest-crud', 'Flask: API REST (CRUD)', 'hoenn'],
+  ['consumir-api', 'Consumir una API', 'hoenn'],
+  ['pokedex-api', 'Proyecto: Pokédex API', 'hoenn'],
 ];
 const IGNORAR = new Set(['ejercicios.py', 'soluciones.py', 'test_ejercicios.py']);
 const leer = (p) => (fs.existsSync(p) ? fs.readFileSync(p, 'utf-8') : null);
@@ -41,6 +50,7 @@ function paquetesDe(textos) {
   if (/\b(import numpy|from numpy)\b/.test(todo) || /\bnp\./.test(todo)) pk.push('numpy');
   if (/\b(import pandas|from pandas)\b/.test(todo) || /\bpd\./.test(todo)) pk.push('pandas');
   if (/\b(import matplotlib|from matplotlib|matplotlib\.pyplot)\b/.test(todo) || /\bplt\./.test(todo)) pk.push('matplotlib');
+  if (/\b(import flask|from flask)\b/.test(todo) || /\bFlask\(/.test(todo)) pk.push('flask');
   return pk;
 }
 
@@ -85,12 +95,29 @@ function dividir(src) {
   return { preamble, ejercicios };
 }
 
-// Mapea cada test_* a los ejercicios cuyos símbolos usa (modulo.<name>)
+// Convierte una ruta de Flask ('/pokemon/<int:n>') en regex para matchear un path real.
+function rutaARegex(ruta) {
+  const r = ruta.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/<[^>]+>/g, '[^/]+');
+  return new RegExp('^' + r + '/?$');
+}
+
+// Mapea cada test_* a su ejercicio: por símbolo (modulo.<name>) o por ruta Flask
+// que pega (cuando el test usa test_client: c.get("/ruta")).
 function mapearTests(testSrc, ejercicios) {
   const lines = testSrc.split('\n');
   const idx = [];
   for (let i = 0; i < lines.length; i++) if (/^def (test_\w+)/.test(lines[i])) idx.push(i);
   const porNombre = new Map(ejercicios.map((e) => [e.name, e]));
+  // rutas de Flask por ejercicio (path + métodos), si su starter tiene @app.route("...")
+  const rutas = ejercicios.map((e) => {
+    const m = e.starter.match(/@\w+\.route\(\s*["']([^"']+)["']([^)]*)\)/);
+    if (!m) return null;
+    const metodos = (m[2].match(/["'](GET|POST|PUT|DELETE|PATCH)["']/gi) || []).map((s) => s.replace(/["']/g, '').toUpperCase());
+    return { e, re: rutaARegex(m[1]), metodos: metodos.length ? metodos : ['GET'], est: !/<[^>]+>/.test(m[1]) };
+  }).filter(Boolean);
+  // las rutas estáticas (/pokedex/buscar) se prueban antes que las dinámicas (/pokedex/<id>)
+  rutas.sort((a, b) => (b.est ? 1 : 0) - (a.est ? 1 : 0));
+
   for (let k = 0; k < idx.length; k++) {
     const ini = idx[k], fin = k + 1 < idx.length ? idx[k + 1] : lines.length;
     const nombre = lines[ini].match(/^def (test_\w+)/)[1];
@@ -100,7 +127,16 @@ function mapearTests(testSrc, ejercicios) {
     for (const u of usados) {
       if (porNombre.has(u)) { porNombre.get(u).tests.push(nombre); asignado = true; }
     }
-    // si no matchea símbolo, lo dejamos en el primer ejercicio cuyo nombre aparezca en el test
+    // pedidos del test (test_client): c.get("/ruta"), .post("/x"), etc. (path + método)
+    if (!asignado && rutas.length) {
+      const pedidos = [...cuerpo.matchAll(/\.(get|post|put|delete|patch)\(\s*["']([^"'?]+)/gi)]
+        .map((m) => ({ metodo: m[1].toUpperCase(), path: m[2] }));
+      for (const { metodo, path: p } of pedidos) {
+        const hit = rutas.find((r) => r.re.test(p) && r.metodos.includes(metodo));
+        if (hit) { hit.e.tests.push(nombre); asignado = true; break; }
+      }
+    }
+    // último recurso: al primer ejercicio cuyo nombre aparezca en el test, o al primero
     if (!asignado && ejercicios.length) {
       const e = ejercicios.find((e) => nombre.includes(e.name)) || ejercicios[0];
       e.tests.push(nombre);

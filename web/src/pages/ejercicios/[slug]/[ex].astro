@@ -110,7 +110,11 @@ const payload = {
         estado('⏳ Cargando Python + pytest (~20s la primera vez)…');
         pyReady = (async () => {
           const py = await window.loadPyodide();
-          await py.loadPackage(['pytest', ...(data.packages || [])]);
+          const pkgs = data.packages || [];
+          const load = pkgs.filter((p) => p !== 'flask');
+          const usaFlask = pkgs.includes('flask');
+          await py.loadPackage(['pytest', ...load, ...(usaFlask ? ['micropip'] : [])]);
+          if (usaFlask) await py.runPythonAsync("import micropip\nawait micropip.install('flask')");
           return py;
         })();
       }
