@@ -195,7 +195,8 @@ python semana-03-python-introduccion/interactivo.py
 
 ## 📚 Más recursos
 
-- 📘 **Leé el libro del curso online:** [Python con Pokémon](https://felipendelicia.github.io/luca-journey/) — un libro completo que enseña Linux y Python desde cero (también en PDF: [`manual/manual.pdf`](manual/manual.pdf)).
+- 📘 **Leé el libro del curso online:** [Python con Pokémon](https://felipendelicia.github.io/luca-journey/) — un libro completo que enseña Linux y Python desde cero, con modo oscuro, buscador y ejercicios resueltos (también en PDF: [`manual/manual.pdf`](manual/manual.pdf)).
+- 📚 **Bibliografía recomendada online:** [recursos y enlaces útiles](https://felipendelicia.github.io/luca-journey/recursos.html).
 - 🗺️ Mirá el [ROADMAP.md](ROADMAP.md) para ver el mapa completo del viaje.
 - 🔗 Revisá [recursos.md](recursos.md) para links de documentación, la PokéAPI y videos recomendados.
 

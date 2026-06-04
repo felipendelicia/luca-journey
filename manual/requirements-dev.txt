@@ -4,3 +4,4 @@
 
 weasyprint>=60    # convierte el HTML del manual a PDF (con estilos)
 pygments>=2.15    # resalta la sintaxis del código en el manual
+markdown>=3.4     # convierte recursos.md a la subpágina de bibliografía

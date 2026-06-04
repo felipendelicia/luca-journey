@@ -158,6 +158,127 @@ FUENTES = (
 )
 
 
+# JavaScript del libro (solo afecta al navegador; el PDF lo ignora):
+# modo oscuro con memoria, botón "copiar" en cada bloque de código y buscador.
+JS = """<script>
+(function(){
+  var body = document.body;
+  if (localStorage.getItem('tema') === 'dark') body.classList.add('dark');
+
+  var toggle = document.querySelector('.theme-toggle');
+  if (toggle) {
+    var refrescar = function(){ toggle.textContent = body.classList.contains('dark') ? '\\u2600\\uFE0F' : '\\uD83C\\uDF19'; };
+    refrescar();
+    toggle.addEventListener('click', function(){
+      body.classList.toggle('dark');
+      localStorage.setItem('tema', body.classList.contains('dark') ? 'dark' : 'claro');
+      refrescar();
+    });
+  }
+
+  document.querySelectorAll('figure.code').forEach(function(fig){
+    var bar = fig.querySelector('.code-bar');
+    var pre = fig.querySelector('pre');
+    if (!bar || !pre) return;
+    var btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.type = 'button';
+    btn.textContent = 'copiar';
+    btn.addEventListener('click', function(){
+      navigator.clipboard.writeText(pre.innerText).then(function(){
+        btn.textContent = 'copiado!';
+        btn.classList.add('ok');
+        setTimeout(function(){ btn.textContent = 'copiar'; btn.classList.remove('ok'); }, 1500);
+      });
+    });
+    bar.appendChild(btn);
+  });
+
+  var search = document.querySelector('.search-box');
+  if (search) {
+    var heads = Array.prototype.slice.call(document.querySelectorAll('h1.cap, h2'));
+    search.addEventListener('keydown', function(e){
+      if (e.key !== 'Enter') return;
+      var q = search.value.trim().toLowerCase();
+      if (!q) return;
+      var hit = heads.find(function(h){ return h.textContent.toLowerCase().indexOf(q) >= 0; });
+      if (hit) hit.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  }
+})();
+</script>"""
+
+
+# CSS extra para la subpágina de bibliografía (recursos.html).
+RECURSOS_CSS = """
+@media screen{
+  .tools .navlink, .tools .volver{
+    font-family:var(--font-display); font-weight:700; font-size:.86rem; color:var(--ink);
+    text-decoration:none; padding:6px 12px; border:1px solid var(--line);
+    border-radius:999px; background:var(--paper-2);
+  }
+  .tools .navlink:hover, .tools .volver:hover{ border-color:var(--red); color:var(--red); }
+}
+.recursos{ max-width:var(--readw); }
+.recursos h1{
+  font-family:var(--font-display); font-weight:800; color:var(--red-deep);
+  border-bottom:3px solid var(--red); padding-bottom:.2em; font-size:2rem; letter-spacing:-.02em;
+}
+.recursos h3{ color:var(--teal-deep); }
+.recursos a{ word-break:break-word; }
+.recursos hr{ border:none; border-top:1px solid var(--line); margin:1.6rem 0; }
+.recursos ul{ padding-left:1.2em; }
+.recursos li{ margin:.5em 0; }
+"""
+
+
+def generar_recursos():
+    """Genera docs/recursos.html (la subpágina de bibliografía) desde recursos.md."""
+    import markdown
+
+    ruta_md = os.path.join(REPO, "recursos.md")
+    if not os.path.exists(ruta_md):
+        return
+    with open(ruta_md, "r", encoding="utf-8") as f:
+        md = f.read()
+    cuerpo = markdown.markdown(
+        md, extensions=["tables", "fenced_code", "sane_lists"]
+    )
+    estilos = manual_lib.CSS + "\n" + manual_lib.css_pygments() + RECURSOS_CSS
+    html = f"""<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bibliografía recomendada — Python con Pokémon</title>
+{FUENTES}
+<style>{estilos}</style>
+</head>
+<body>
+<div class="bg-grid" aria-hidden="true"></div>
+<header class="topbar">
+  <span class="pb"></span>
+  <span class="brand">Pokédex <b>Codex</b></span>
+  <div class="tools">
+    <a class="volver" href="index.html">← Volver al libro</a>
+    <button class="theme-toggle" type="button" title="Cambiar tema claro/oscuro">🌙</button>
+  </div>
+</header>
+<div class="wrap">
+<main class="book recursos">
+{cuerpo}
+</main>
+</div>
+{JS}
+</body>
+</html>"""
+    destino = os.path.join(REPO, "docs", "recursos.html")
+    os.makedirs(os.path.dirname(destino), exist_ok=True)
+    with open(destino, "w", encoding="utf-8") as f:
+        f.write(html)
+    print(f"✓ Subpágina de bibliografía: {destino}")
+
+
 def construir_html():
     """Arma el documento HTML completo (standalone)."""
     # Numeramos los capítulos/secciones según el orden de la lista (Linux primero).
@@ -178,7 +299,11 @@ def construir_html():
 <header class="topbar">
   <span class="pb"></span>
   <span class="brand">Pokédex <b>Codex</b></span>
-  <span class="meta">Python con Pokémon</span>
+  <div class="tools">
+    <a class="navlink" href="recursos.html">📚 Bibliografía</a>
+    <input class="search-box" type="search" placeholder="Buscar tema… (Enter)" aria-label="Buscar">
+    <button class="theme-toggle" type="button" title="Cambiar tema claro/oscuro">🌙</button>
+  </div>
   <div class="progress"></div>
 </header>
 <div class="wrap">
@@ -191,6 +316,7 @@ def construir_html():
 El segundo mejor momento es ahora." ⚡<br>¡A atraparlos a todos!</p>
 </main>
 </div>
+{JS}
 </body>
 </html>"""
 
@@ -249,6 +375,12 @@ def generar():
     with open(SALIDA_DOCS, "w", encoding="utf-8") as f:
         f.write(html)
     print(f"✓ Copia para GitHub Pages: {SALIDA_DOCS}")
+
+    # 1c) Subpágina de bibliografía (docs/recursos.html) desde recursos.md.
+    try:
+        generar_recursos()
+    except Exception as e:
+        print(f"  (no se pudo generar la subpágina de recursos: {e})")
 
     # 2) Generamos el PDF con el mejor motor disponible.
     print("➤ Generando PDF...")

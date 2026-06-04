@@ -322,6 +322,84 @@ tbody tr:nth-child(even){background:#fbf5e9;}
   h2{color:#11497e;} h2::before{background:#ffcb05;}
   figure.code,.callout,.tabla-wrap,table{box-shadow:none;}
   figure.code:hover{transform:none;}
+  /* En el PDF: ocultamos los controles de pantalla y mostramos las soluciones */
+  .copy-btn,.theme-toggle,.search-box,.tools{display:none !important;}
+  .reto-sol > summary{display:none !important;}
+  .reto-sol-body{margin-top:0;}
+  .reto{border-color:#bbb; background:#f6faf9;}
+}
+
+/* ===== Mini-retos (ejercicios resueltos) ===== */
+.reto{
+  border:2px dashed var(--teal); border-radius:13px; padding:13px 16px; margin:1.3em 0;
+  background:rgba(14,165,160,.06); page-break-inside:avoid;
+}
+.reto-tag{ font-family:var(--font-pixel); font-size:10px; letter-spacing:.08em;
+  color:var(--teal-deep); margin-bottom:.5em; }
+.reto-enun{ margin-bottom:.3em; }
+.reto-sol{ margin-top:.7em; }
+.reto-sol > summary{
+  cursor:pointer; font-family:var(--font-display); font-weight:700; color:var(--teal-deep);
+  list-style:none; display:inline-flex; align-items:center; gap:.4em;
+  padding:5px 13px; border:1px solid var(--teal); border-radius:999px; font-size:.9rem;
+}
+.reto-sol > summary::-webkit-details-marker{ display:none; }
+.reto-sol > summary::before{ content:"▸"; }
+.reto-sol[open] > summary::before{ content:"▾"; }
+.reto-sol[open] > summary{ margin-bottom:.6em; }
+
+/* ===== Botón copiar en los bloques de código ===== */
+.copy-btn{
+  margin-left:8px; background:rgba(255,255,255,.1); color:#cfd3e0;
+  border:1px solid rgba(255,255,255,.18); border-radius:7px;
+  font-family:var(--font-pixel); font-size:8px; letter-spacing:.08em;
+  padding:4px 9px; cursor:pointer; text-transform:uppercase;
+}
+.copy-btn:hover{ background:rgba(255,255,255,.2); color:#fff; }
+.copy-btn.ok{ background:#27c93f; color:#06210c; border-color:#27c93f; }
+
+/* ===== Barra superior: buscador y toggle de tema (solo pantalla) ===== */
+@media screen{
+  .topbar .meta{ display:none; }
+  .topbar .tools{ margin-left:auto; display:flex; align-items:center; gap:10px; }
+  .search-box{
+    background:var(--paper-2); border:1px solid var(--line); border-radius:999px;
+    padding:6px 13px; font-size:.85rem; color:var(--ink); width:180px;
+    font-family:var(--font-body); outline:none;
+  }
+  .search-box:focus{ border-color:var(--red); }
+  .search-box::placeholder{ color:var(--ink-mute); }
+  .theme-toggle{
+    background:var(--paper-2); border:1px solid var(--line); border-radius:50%;
+    width:34px; height:34px; cursor:pointer; font-size:15px; line-height:1; flex:0 0 auto;
+  }
+  .theme-toggle:hover{ border-color:var(--red); }
+}
+
+/* ===== MODO OSCURO ===== */
+body.dark{
+  --paper:#14151c; --paper-2:#1a1c26; --card:#1c1f2c;
+  --ink:#e7e6ef; --ink-soft:#b6b3c6; --ink-mute:#86839a;
+  --line:#2b2e3d; --line-2:#232532;
+}
+body.dark p code, body.dark li code, body.dark td code{
+  background:#23263a; color:#ff9bbf; border-color:#33374d; }
+body.dark h1.cap{ color:#7db8ff; border-bottom-color:#7db8ff; }
+body.dark h2{ color:#ff8aa6; }
+body.dark strong{ color:#ffb3c6; }
+body.dark a{ color:#5fd0c8; }
+body.dark .toc, body.dark .reto{ background:var(--paper-2); }
+body.dark table{ background:var(--paper-2); }
+body.dark tbody tr:nth-child(even){ background:#20232f; }
+body.dark .nota{ background:#16243a; } body.dark .tip{ background:#13301f; }
+body.dark .cuidado{ background:#352a12; } body.dark .clave{ background:#2a1830; }
+body.dark .pokemon{ background:#34201c; }
+body.dark .bg-grid{
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(227,53,13,.16), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(14,165,160,.14), transparent 60%),
+    radial-gradient(rgba(255,255,255,.05) 1px, transparent 1.4px);
+  background-size:auto,auto,22px 22px;
 }
 
 pre { line-height: 125%; }
@@ -415,7 +493,11 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <header class="topbar">
   <span class="pb"></span>
   <span class="brand">Pokédex <b>Codex</b></span>
-  <span class="meta">Python con Pokémon</span>
+  <div class="tools">
+    <a class="navlink" href="recursos.html">📚 Bibliografía</a>
+    <input class="search-box" type="search" placeholder="Buscar tema… (Enter)" aria-label="Buscar">
+    <button class="theme-toggle" type="button" title="Cambiar tema claro/oscuro">🌙</button>
+  </div>
   <div class="progress"></div>
 </header>
 <div class="wrap">
@@ -484,7 +566,13 @@ rm<span class="w"> </span>-r<span class="w"> </span>carpeta<span class="w">     
 </pre></div>
 </figure><ul><li><code>.</code> &rarr; la carpeta actual (acá mismo)</li><li><code>..</code> &rarr; la carpeta de arriba</li><li><code>~</code> &rarr; tu home</li><li><code>/</code> &rarr; la raíz de todo</li></ul><h2 id="linux-permisos">1.4. Permisos básicos</h2><p>Cada archivo tiene <strong>permisos</strong> que dicen quién puede leerlo,
     escribirlo o ejecutarlo. Al correr <code>ls -l</code> ves algo como
-    <code>-rwxr-xr--</code>. Esa columna se lee así:</p><ul><li><code>r</code> = leer, <code>w</code> = escribir, <code>x</code> = ejecutar.</li><li>Se agrupan de a 3, para tres grupos: el <strong>dueño</strong>, el <strong>grupo</strong> y los <strong>otros</strong>.</li></ul><p>En la próxima parte vas a aprender a cambiar estos permisos con <code>chmod</code>.</p><h2 id="linux-resumen-1">1.5. Resumen</h2><div class="tabla-wrap"><table><thead><tr><th>Comando</th><th>Qué hace</th></tr></thead><tbody><tr><td><code>pwd</code></td><td>Dice en qué carpeta estás</td></tr><tr><td><code>ls</code></td><td>Lista archivos y carpetas</td></tr><tr><td><code>cd</code></td><td>Cambia de carpeta</td></tr><tr><td><code>mkdir</code></td><td>Crea una carpeta</td></tr><tr><td><code>touch</code> / <code>echo</code></td><td>Crea / escribe archivos</td></tr><tr><td><code>cat</code></td><td>Muestra un archivo</td></tr><tr><td><code>cp</code> / <code>mv</code></td><td>Copia / mueve o renombra</td></tr><tr><td><code>rm</code></td><td>Borra (¡sin papelera!)</td></tr></tbody></table></div><h1 id="cap-linux2" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">2</span><span class="cap-ttl">Linux: comandos intermedios</span></h1><p>Ahora que te movés por la terminal, sumamos superpoderes: editar archivos,
+    <code>-rwxr-xr--</code>. Esa columna se lee así:</p><ul><li><code>r</code> = leer, <code>w</code> = escribir, <code>x</code> = ejecutar.</li><li>Se agrupan de a 3, para tres grupos: el <strong>dueño</strong>, el <strong>grupo</strong> y los <strong>otros</strong>.</li></ul><p>En la próxima parte vas a aprender a cambiar estos permisos con <code>chmod</code>.</p><h2 id="linux-resumen-1">1.5. Resumen</h2><div class="tabla-wrap"><table><thead><tr><th>Comando</th><th>Qué hace</th></tr></thead><tbody><tr><td><code>pwd</code></td><td>Dice en qué carpeta estás</td></tr><tr><td><code>ls</code></td><td>Lista archivos y carpetas</td></tr><tr><td><code>cd</code></td><td>Cambia de carpeta</td></tr><tr><td><code>mkdir</code></td><td>Crea una carpeta</td></tr><tr><td><code>touch</code> / <code>echo</code></td><td>Crea / escribe archivos</td></tr><tr><td><code>cat</code></td><td>Muestra un archivo</td></tr><tr><td><code>cp</code> / <code>mv</code></td><td>Copia / mueve o renombra</td></tr><tr><td><code>rm</code></td><td>Borra (¡sin papelera!)</td></tr></tbody></table></div><div class="reto"><div class="reto-tag">🎯 Mini-reto</div><div class="reto-enun">Desde tu home, creá una carpeta <code>equipo</code>, entrá en ella, creá un archivo vacío <code>pikachu.txt</code> y confirmá que está.</div><details class="reto-sol"><summary>Ver solución</summary><div class="reto-sol-body"><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span></figcaption><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>~
+mkdir<span class="w"> </span>equipo
+<span class="nb">cd</span><span class="w"> </span>equipo
+touch<span class="w"> </span>pikachu.txt
+ls<span class="w">            </span><span class="c1"># debería mostrar: pikachu.txt</span>
+</pre></div>
+</figure></div></details></div><h1 id="cap-linux2" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">2</span><span class="cap-ttl">Linux: comandos intermedios</span></h1><p>Ahora que te movés por la terminal, sumamos superpoderes: editar archivos,
     encadenar comandos, buscar, manejar procesos y automatizar con scripts.</p><h2 id="linux-nano">2.1. Editar con nano</h2><p><code>nano</code> es un editor de texto simple que vive dentro de la terminal.
     Abajo te muestra los atajos (el <code>^</code> significa la tecla Ctrl):</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">bash</span></figcaption><div class="highlight"><pre><span></span>nano<span class="w"> </span>notas.txt<span class="w">   </span><span class="c1"># Ctrl+O para guardar, Ctrl+X para salir</span>
 </pre></div>
@@ -640,7 +728,11 @@ Elegí<span class="w"> </span>a<span class="w"> </span>Pikachu<span class="w"> <
 </pre></div>
 </figure><div class="callout clave"><span class="et">CONCEPTO CLAVE</span><span class="callout-body">Los f-strings son la forma recomendada de armar texto. Antes se usaban otras
     (con <code>+</code> o con <code>.format()</code>), pero el f-string es más claro y
-    corto. ¡Usalo siempre!</span></div><h1 id="cap-3" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">5</span><span class="cap-ttl">Operadores</span></h1><p>Los <strong>operadores</strong> son símbolos que combinan o comparan valores.
+    corto. ¡Usalo siempre!</span></div><div class="reto"><div class="reto-tag">🎯 Mini-reto</div><div class="reto-enun">Creá las variables <code>nombre = "Pikachu"</code> y <code>nivel = 25</code>, y mostrá con un f-string el texto: <code>Pikachu va a ser nivel 26</code>.</div><details class="reto-sol"><summary>Ver solución</summary><div class="reto-sol-body"><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">nombre</span> <span class="o">=</span> <span class="s2">&quot;Pikachu&quot;</span>
+<span class="n">nivel</span> <span class="o">=</span> <span class="mi">25</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nombre</span><span class="si">}</span><span class="s2"> va a ser nivel </span><span class="si">{</span><span class="n">nivel</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>   <span class="c1"># Pikachu va a ser nivel 26</span>
+</pre></div>
+</figure></div></details></div><h1 id="cap-3" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">5</span><span class="cap-ttl">Operadores</span></h1><p>Los <strong>operadores</strong> son símbolos que combinan o comparan valores.
     Ya usaste uno: el <code>=</code> de asignación. Ahora vemos los de matemática,
     comparación y lógica.</p><h2 id="aritmeticos">5.1. Operadores aritméticos</h2><p>Sirven para hacer cuentas:</p><div class="tabla-wrap"><table><thead><tr><th>Operador</th><th>Hace</th><th>Ejemplo</th><th>Resultado</th></tr></thead><tbody><tr><td><code>+</code></td><td>Suma</td><td><code>10 + 5</code></td><td>15</td></tr><tr><td><code>-</code></td><td>Resta</td><td><code>10 - 5</code></td><td>5</td></tr><tr><td><code>*</code></td><td>Multiplicación</td><td><code>10 * 5</code></td><td>50</td></tr><tr><td><code>/</code></td><td>División (da decimal)</td><td><code>10 / 4</code></td><td>2.5</td></tr><tr><td><code>//</code></td><td>División entera</td><td><code>10 // 4</code></td><td>2</td></tr><tr><td><code>%</code></td><td>Resto (módulo)</td><td><code>10 % 4</code></td><td>2</td></tr><tr><td><code>**</code></td><td>Potencia</td><td><code>2 ** 3</code></td><td>8</td></tr></tbody></table></div><h3>/ contra //</h3><p>La división normal <code>/</code> siempre da un <code>float</code> (decimal),
     aunque dé exacto. La división entera <code>//</code> descarta los decimales:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="mi">10</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>    <span class="c1"># 5.0   (¡ojo, con punto: es float!)</span>
@@ -682,7 +774,10 @@ Elegí<span class="w"> </span>a<span class="w"> </span>Pikachu<span class="w"> <
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;na&quot;</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span>           <span class="c1"># nananana</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">20</span><span class="p">)</span>           <span class="c1"># ====================  (útil para separadores)</span>
 </pre></div>
-</figure><h1 id="cap-4" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">6</span><span class="cap-ttl">Cadenas de texto (strings)</span></h1><p>Un <strong>string</strong> es texto, siempre entre comillas (simples
+</figure><div class="reto"><div class="reto-tag">🎯 Mini-reto</div><div class="reto-enun">¿El número 18 es par? Imprimí <code>True</code> o <code>False</code> usando el operador módulo <code>%</code>.</div><details class="reto-sol"><summary>Ver solución</summary><div class="reto-sol-body"><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">numero</span> <span class="o">=</span> <span class="mi">18</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">numero</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>   <span class="c1"># True</span>
+</pre></div>
+</figure></div></details></div><h1 id="cap-4" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">6</span><span class="cap-ttl">Cadenas de texto (strings)</span></h1><p>Un <strong>string</strong> es texto, siempre entre comillas (simples
     <code>'...'</code> o dobles <code>"..."</code>, da igual). Es uno de los tipos que
     más vas a usar: nombres, mensajes, datos de archivos, todo es texto.</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">nombre</span> <span class="o">=</span> <span class="s2">&quot;Pikachu&quot;</span>
 <span class="n">frase</span> <span class="o">=</span> <span class="s1">&#39;Yo elijo a Pikachu&#39;</span>
@@ -828,7 +923,15 @@ Elegí<span class="w"> </span>a<span class="w"> </span>Pikachu<span class="w"> <
 </pre></div>
 </figure><div class="callout cuidado"><span class="et">CUIDADO</span><span class="callout-body">Errores típicos: (1) usar <code>=</code> en vez de <code>==</code> en la
     condición; (2) olvidar los dos puntos <code>:</code> al final del <code>if</code>;
-    (3) mezclar espacios y tabs en la sangría. Si algo no anda, revisá esas tres cosas.</span></div><h1 id="cap-7" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">9</span><span class="cap-ttl">Bucles: repetir cosas (while y for)</span></h1><p>Un <strong>bucle</strong> (o ciclo) repite un bloque de código varias veces.
+    (3) mezclar espacios y tabs en la sangría. Si algo no anda, revisá esas tres cosas.</span></div><div class="reto"><div class="reto-tag">🎯 Mini-reto</div><div class="reto-enun">Según una variable <code>hp</code>, imprimí 'sano' si es mayor a 50, 'herido' si es mayor a 0, y 'debilitado' en otro caso.</div><details class="reto-sol"><summary>Ver solución</summary><div class="reto-sol-body"><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">hp</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="k">if</span> <span class="n">hp</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sano&quot;</span><span class="p">)</span>
+<span class="k">elif</span> <span class="n">hp</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;herido&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;debilitado&quot;</span><span class="p">)</span>
+</pre></div>
+</figure></div></details></div><h1 id="cap-7" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">9</span><span class="cap-ttl">Bucles: repetir cosas (while y for)</span></h1><p>Un <strong>bucle</strong> (o ciclo) repite un bloque de código varias veces.
     Sin bucles, para atacar 5 veces tendrías que escribir <code>print()</code> cinco
     veces. Con bucles, lo escribís una vez y le decís cuántas veces repetir.</p><h2 id="while">9.1. while: repetir mientras...</h2><p><code>while</code> (mientras) repite un bloque <strong>mientras</strong> una
     condición sea verdadera. Antes de cada vuelta revisa la condición; cuando se vuelve
@@ -897,7 +1000,12 @@ Elegí<span class="w"> </span>a<span class="w"> </span>Pikachu<span class="w"> <
     <span class="k">for</span> <span class="n">pokemon</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Pikachu&quot;</span><span class="p">,</span> <span class="s2">&quot;Staryu&quot;</span><span class="p">]:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">entrenador</span><span class="si">}</span><span class="s2"> podría usar a </span><span class="si">{</span><span class="n">pokemon</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
-</figure><h1 id="cap-8" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">10</span><span class="cap-ttl">Funciones</span></h1><p>Una <strong>función</strong> es un bloque de código con nombre que escribís
+</figure><div class="reto"><div class="reto-tag">🎯 Mini-reto</div><div class="reto-enun">Sumá todos los números del 1 al 100 con un bucle y mostrá el total.</div><details class="reto-sol"><summary>Ver solución</summary><div class="reto-sol-body"><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">101</span><span class="p">):</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="n">total</span> <span class="o">+</span> <span class="n">n</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">total</span><span class="p">)</span>   <span class="c1"># 5050</span>
+</pre></div>
+</figure></div></details></div><h1 id="cap-8" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">10</span><span class="cap-ttl">Funciones</span></h1><p>Una <strong>función</strong> es un bloque de código con nombre que escribís
     <strong>una vez</strong> y podés usar <strong>muchas veces</strong>. Sirve para no
     repetirte y para organizar tu programa en piezas con sentido.</p><div class="callout pokemon"><span class="et">ANALOGÍA POKÉMON</span><span class="callout-body">Es como un ataque que tu Pokémon <strong>aprende una vez</strong> y después
     usa mil veces. No reaprende "Impactrueno" en cada batalla: lo sabe, le pone un
@@ -976,7 +1084,13 @@ Elegí<span class="w"> </span>a<span class="w"> </span>Pikachu<span class="w"> <
 <span class="nb">print</span><span class="p">(</span><span class="n">factorial</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>    <span class="c1"># 120  (5*4*3*2*1)</span>
 </pre></div>
 </figure><p>Es como muñecas rusas: cada <code>factorial</code> abre otra más chica, hasta
-    llegar a la más chiquita (el caso base), y ahí se arma el resultado para arriba.</p><h1 id="cap-9" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">11</span><span class="cap-ttl">Listas y tuplas</span></h1><p>Hasta ahora cada variable guardaba <strong>un</strong> dato. Una <strong>lista</strong>
+    llegar a la más chiquita (el caso base), y ahí se arma el resultado para arriba.</p><div class="reto"><div class="reto-tag">🎯 Mini-reto</div><div class="reto-enun">Escribí una función <code>es_par(n)</code> que devuelva <code>True</code> si <code>n</code> es par, y probala con 4 y con 7.</div><details class="reto-sol"><summary>Ver solución</summary><div class="reto-sol-body"><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">es_par</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">es_par</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>   <span class="c1"># True</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">es_par</span><span class="p">(</span><span class="mi">7</span><span class="p">))</span>   <span class="c1"># False</span>
+</pre></div>
+</figure></div></details></div><h1 id="cap-9" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">11</span><span class="cap-ttl">Listas y tuplas</span></h1><p>Hasta ahora cada variable guardaba <strong>un</strong> dato. Una <strong>lista</strong>
     guarda <strong>muchos</strong> datos juntos, en orden, bajo un solo nombre. Es como
     tu equipo Pokémon. Se escribe entre corchetes <code>[ ]</code>, con los elementos
     separados por comas:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">equipo</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Pikachu&quot;</span><span class="p">,</span> <span class="s2">&quot;Charizard&quot;</span><span class="p">,</span> <span class="s2">&quot;Snorlax&quot;</span><span class="p">]</span>
@@ -1048,7 +1162,12 @@ Elegí<span class="w"> </span>a<span class="w"> </span>Pikachu<span class="w"> <
 </pre></div>
 </figure><div class="callout nota"><span class="et">NOTA</span><span class="callout-body">¿Lista o tupla? Usá <strong>lista</strong> cuando los datos van a cambiar
     (tu equipo, que evoluciona). Usá <strong>tupla</strong> cuando son fijos (las
-    coordenadas de un punto, los días de la semana).</span></div><h1 id="cap-10" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">12</span><span class="cap-ttl">Diccionarios y conjuntos</span></h1><h2 id="dict">12.1. Diccionarios: pares clave → valor</h2><p>Un <strong>diccionario</strong> guarda pares de <strong>clave: valor</strong>.
+    coordenadas de un punto, los días de la semana).</span></div><div class="reto"><div class="reto-tag">🎯 Mini-reto</div><div class="reto-enun">Partiendo de <code>equipo = ["Pikachu", "Onix"]</code>, agregá <code>"Snorlax"</code> al final y mostrá cuántos Pokémon hay.</div><details class="reto-sol"><summary>Ver solución</summary><div class="reto-sol-body"><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">equipo</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Pikachu&quot;</span><span class="p">,</span> <span class="s2">&quot;Onix&quot;</span><span class="p">]</span>
+<span class="n">equipo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Snorlax&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">equipo</span><span class="p">)</span>        <span class="c1"># [&#39;Pikachu&#39;, &#39;Onix&#39;, &#39;Snorlax&#39;]</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">equipo</span><span class="p">))</span>   <span class="c1"># 3</span>
+</pre></div>
+</figure></div></details></div><h1 id="cap-10" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">12</span><span class="cap-ttl">Diccionarios y conjuntos</span></h1><h2 id="dict">12.1. Diccionarios: pares clave → valor</h2><p>Un <strong>diccionario</strong> guarda pares de <strong>clave: valor</strong>.
     En vez de acceder por posición (como las listas), accedés por una <strong>clave</strong>
     con sentido. Es como una Pokédex de verdad: buscás por nombre y obtenés los datos.
     Se escribe con llaves <code>{ }</code>:</p><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">pikachu</span> <span class="o">=</span> <span class="p">{</span>
@@ -1095,7 +1214,10 @@ Elegí<span class="w"> </span>a<span class="w"> </span>Pikachu<span class="w"> <
 <span class="n">tipos</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Electrico&quot;</span><span class="p">)</span>  <span class="c1"># agregar</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Agua&quot;</span> <span class="ow">in</span> <span class="n">tipos</span><span class="p">)</span>  <span class="c1"># True</span>
 </pre></div>
-</figure><h2 id="resumen-colecciones">12.3. Resumen de colecciones</h2><p>Ya viste las cuatro colecciones principales de Python. Cuándo usar cada una:</p><div class="tabla-wrap"><table><thead><tr><th>Colección</th><th>Símbolo</th><th>Característica</th><th>Cuándo usarla</th></tr></thead><tbody><tr><td>Lista</td><td><code>[ ]</code></td><td>Ordenada, modificable</td><td>Una serie de cosas que cambia</td></tr><tr><td>Tupla</td><td><code>( )</code></td><td>Ordenada, inmutable</td><td>Datos fijos que no cambian</td></tr><tr><td>Set</td><td><code>{ }</code></td><td>Única, sin orden</td><td>Elementos sin repetir</td></tr><tr><td>Diccionario</td><td><code>{c: v}</code></td><td>Pares clave-valor</td><td>Buscar datos por nombre/clave</td></tr></tbody></table></div><h1 id="cap-11" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">13</span><span class="cap-ttl">Archivos y manejo de errores</span></h1><p>Hasta ahora, cuando cerrabas tu programa, todos los datos se perdían. Para que
+</figure><h2 id="resumen-colecciones">12.3. Resumen de colecciones</h2><p>Ya viste las cuatro colecciones principales de Python. Cuándo usar cada una:</p><div class="tabla-wrap"><table><thead><tr><th>Colección</th><th>Símbolo</th><th>Característica</th><th>Cuándo usarla</th></tr></thead><tbody><tr><td>Lista</td><td><code>[ ]</code></td><td>Ordenada, modificable</td><td>Una serie de cosas que cambia</td></tr><tr><td>Tupla</td><td><code>( )</code></td><td>Ordenada, inmutable</td><td>Datos fijos que no cambian</td></tr><tr><td>Set</td><td><code>{ }</code></td><td>Única, sin orden</td><td>Elementos sin repetir</td></tr><tr><td>Diccionario</td><td><code>{c: v}</code></td><td>Pares clave-valor</td><td>Buscar datos por nombre/clave</td></tr></tbody></table></div><div class="reto"><div class="reto-tag">🎯 Mini-reto</div><div class="reto-enun">Creá un diccionario de un Pokémon con las claves <code>nombre</code> y <code>nivel</code>, y mostrá su nombre.</div><details class="reto-sol"><summary>Ver solución</summary><div class="reto-sol-body"><figure class="code"><figcaption class="code-bar"><span class="dots"><i></i><i></i><i></i></span><span class="code-lang">python</span></figcaption><div class="highlight"><pre><span></span><span class="n">pikachu</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;nombre&quot;</span><span class="p">:</span> <span class="s2">&quot;Pikachu&quot;</span><span class="p">,</span> <span class="s2">&quot;nivel&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pikachu</span><span class="p">[</span><span class="s2">&quot;nombre&quot;</span><span class="p">])</span>   <span class="c1"># Pikachu</span>
+</pre></div>
+</figure></div></details></div><h1 id="cap-11" class="cap"><span class="cap-kicker">Capítulo</span><span class="cap-num">13</span><span class="cap-ttl">Archivos y manejo de errores</span></h1><p>Hasta ahora, cuando cerrabas tu programa, todos los datos se perdían. Para que
     <strong>sobrevivan</strong>, los guardás en <strong>archivos</strong> del disco.
     Así tu programa tiene "memoria" permanente.</p><h2 id="with">13.1. Abrir archivos con with</h2><p>La forma recomendada de trabajar con archivos es <code>with open(...)</code>,
     que se encarga de cerrar el archivo solo, aunque haya un error. <code>open()</code>
@@ -1348,5 +1470,52 @@ pytest<span class="w"> </span>semana-05-python-funciones/test_ejercicios.py<span
 El segundo mejor momento es ahora." ⚡<br>¡A atraparlos a todos!</p>
 </main>
 </div>
+<script>
+(function(){
+  var body = document.body;
+  if (localStorage.getItem('tema') === 'dark') body.classList.add('dark');
+
+  var toggle = document.querySelector('.theme-toggle');
+  if (toggle) {
+    var refrescar = function(){ toggle.textContent = body.classList.contains('dark') ? '\u2600\uFE0F' : '\uD83C\uDF19'; };
+    refrescar();
+    toggle.addEventListener('click', function(){
+      body.classList.toggle('dark');
+      localStorage.setItem('tema', body.classList.contains('dark') ? 'dark' : 'claro');
+      refrescar();
+    });
+  }
+
+  document.querySelectorAll('figure.code').forEach(function(fig){
+    var bar = fig.querySelector('.code-bar');
+    var pre = fig.querySelector('pre');
+    if (!bar || !pre) return;
+    var btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.type = 'button';
+    btn.textContent = 'copiar';
+    btn.addEventListener('click', function(){
+      navigator.clipboard.writeText(pre.innerText).then(function(){
+        btn.textContent = 'copiado!';
+        btn.classList.add('ok');
+        setTimeout(function(){ btn.textContent = 'copiar'; btn.classList.remove('ok'); }, 1500);
+      });
+    });
+    bar.appendChild(btn);
+  });
+
+  var search = document.querySelector('.search-box');
+  if (search) {
+    var heads = Array.prototype.slice.call(document.querySelectorAll('h1.cap, h2'));
+    search.addEventListener('keydown', function(e){
+      if (e.key !== 'Enter') return;
+      var q = search.value.trim().toLowerCase();
+      if (!q) return;
+      var hit = heads.find(function(h){ return h.textContent.toLowerCase().indexOf(q) >= 0; });
+      if (hit) hit.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  }
+})();
+</script>
 </body>
 </html>

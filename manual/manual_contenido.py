@@ -10,7 +10,7 @@ Este libro cumple dos roles:
 """
 
 from manual_lib import (
-    capitulo, h2, h3, p, ul, ol, code, caja, tabla, inline,
+    capitulo, h2, h3, p, ul, ol, code, caja, tabla, inline, reto,
 )
 
 
@@ -269,6 +269,15 @@ cap2 = capitulo(
     caja("""Los f-strings son la forma recomendada de armar texto. Antes se usaban otras
     (con <code>+</code> o con <code>.format()</code>), pero el f-string es más claro y
     corto. ¡Usalo siempre!""", "clave"),
+    reto(
+        "Creá las variables <code>nombre = \"Pikachu\"</code> y <code>nivel = 25</code>, "
+        "y mostrá con un f-string el texto: <code>Pikachu va a ser nivel 26</code>.",
+        code('''
+            nombre = "Pikachu"
+            nivel = 25
+            print(f"{nombre} va a ser nivel {nivel + 1}")   # Pikachu va a ser nivel 26
+        '''),
+    ),
 )
 
 
@@ -377,6 +386,14 @@ cap3 = capitulo(
         print("na" * 4)           # nananana
         print("=" * 20)           # ====================  (útil para separadores)
     '''),
+    reto(
+        "¿El número 18 es par? Imprimí <code>True</code> o <code>False</code> usando el "
+        "operador módulo <code>%</code>.",
+        code('''
+            numero = 18
+            print(numero % 2 == 0)   # True
+        '''),
+    ),
 )
 
 
@@ -625,6 +642,19 @@ cap6 = capitulo(
     caja("""Errores típicos: (1) usar <code>=</code> en vez de <code>==</code> en la
     condición; (2) olvidar los dos puntos <code>:</code> al final del <code>if</code>;
     (3) mezclar espacios y tabs en la sangría. Si algo no anda, revisá esas tres cosas.""", "cuidado"),
+    reto(
+        "Según una variable <code>hp</code>, imprimí 'sano' si es mayor a 50, 'herido' "
+        "si es mayor a 0, y 'debilitado' en otro caso.",
+        code('''
+            hp = 30
+            if hp > 50:
+                print("sano")
+            elif hp > 0:
+                print("herido")
+            else:
+                print("debilitado")
+        '''),
+    ),
 )
 
 
@@ -736,6 +766,15 @@ cap7 = capitulo(
             for pokemon in ["Pikachu", "Staryu"]:
                 print(f"{entrenador} podría usar a {pokemon}")
     '''),
+    reto(
+        "Sumá todos los números del 1 al 100 con un bucle y mostrá el total.",
+        code('''
+            total = 0
+            for n in range(1, 101):
+                total = total + n
+            print(total)   # 5050
+        '''),
+    ),
 )
 
 
@@ -858,6 +897,17 @@ cap8 = capitulo(
     '''),
     p("""Es como muñecas rusas: cada <code>factorial</code> abre otra más chica, hasta
     llegar a la más chiquita (el caso base), y ahí se arma el resultado para arriba."""),
+    reto(
+        "Escribí una función <code>es_par(n)</code> que devuelva <code>True</code> si "
+        "<code>n</code> es par, y probala con 4 y con 7.",
+        code('''
+            def es_par(n):
+                return n % 2 == 0
+
+            print(es_par(4))   # True
+            print(es_par(7))   # False
+        '''),
+    ),
 )
 
 
@@ -976,6 +1026,16 @@ cap9 = capitulo(
     caja("""¿Lista o tupla? Usá <strong>lista</strong> cuando los datos van a cambiar
     (tu equipo, que evoluciona). Usá <strong>tupla</strong> cuando son fijos (las
     coordenadas de un punto, los días de la semana).""", "nota"),
+    reto(
+        "Partiendo de <code>equipo = [\"Pikachu\", \"Onix\"]</code>, agregá "
+        "<code>\"Snorlax\"</code> al final y mostrá cuántos Pokémon hay.",
+        code('''
+            equipo = ["Pikachu", "Onix"]
+            equipo.append("Snorlax")
+            print(equipo)        # ['Pikachu', 'Onix', 'Snorlax']
+            print(len(equipo))   # 3
+        '''),
+    ),
 )
 
 
@@ -1056,6 +1116,14 @@ cap10 = capitulo(
             ["Set", "<code>{ }</code>", "Única, sin orden", "Elementos sin repetir"],
             ["Diccionario", "<code>{c: v}</code>", "Pares clave-valor", "Buscar datos por nombre/clave"],
         ],
+    ),
+    reto(
+        "Creá un diccionario de un Pokémon con las claves <code>nombre</code> y "
+        "<code>nivel</code>, y mostrá su nombre.",
+        code('''
+            pikachu = {"nombre": "Pikachu", "nivel": 25}
+            print(pikachu["nombre"])   # Pikachu
+        '''),
     ),
 )
 
@@ -1531,6 +1599,17 @@ cap_linux1 = capitulo(
             ["<code>cp</code> / <code>mv</code>", "Copia / mueve o renombra"],
             ["<code>rm</code>", "Borra (¡sin papelera!)"],
         ],
+    ),
+    reto(
+        "Desde tu home, creá una carpeta <code>equipo</code>, entrá en ella, creá un "
+        "archivo vacío <code>pikachu.txt</code> y confirmá que está.",
+        code('''
+            cd ~
+            mkdir equipo
+            cd equipo
+            touch pikachu.txt
+            ls            # debería mostrar: pikachu.txt
+        ''', lang="bash"),
     ),
 )
 
