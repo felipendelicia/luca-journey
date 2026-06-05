@@ -26,31 +26,34 @@ consola fueron migrados a la web y eliminados (quedan en el historial de git).
 - `npm run dev` — dev server (base `/`, hot-reload), en `http://localhost:4321`.
 - `npm run build` — build a `../docs` con base `/luca-journey` (lo que sirve GitHub Pages).
 
-## Supabase (login Google + progreso en la nube + intercambios)
+## API self-hosted (NestJS + Prisma + Docker)
 
-El backend es **Supabase** (Postgres + Auth + Realtime). El schema vive en
-`supabase/migrations/*.sql` (cada cambio = una migración nueva; no editar las viejas).
-La CLI ya está **linkeada** a este proyecto:
+El backend es **NestJS 10 + Prisma v7 + Postgres**, corriendo en Docker. Reemplaza a Supabase
+(`supabase/` queda en el repo solo como historial; ya no se usa).
 
-- **Project ref:** `cvknrqphepwzpdqdyegv` (org `juxovbtolkdxooccvngp`), nombre `luca-journey`.
-- **Config:** `supabase/config.toml` (`project_id = "luca-journey"`); el link cacheado en
-  `supabase/.temp/` (no se commitea).
-- **Ver estado:** `supabase migration list` (compara local vs remoto; read-only).
-- **Aplicar migraciones al remoto:** `supabase db push --yes` (las credenciales están
-  cacheadas; no pide password). El `build` **no** corre migraciones — esto es aparte.
-- **Cliente:** `src/lib/supa.js` (cliente), `src/lib/nube.js` (sync del progreso),
-  `src/lib/social.js` (perfiles/amigos/ofertas), `src/lib/trades.js` (RPCs + Realtime de
-  intercambios).
-- **Sync = nube pura (login obligatorio):** la **nube es la única fuente de verdad**.
-  `Base.astro` muestra un **overlay de arranque** (pantalla de login si no hay sesión;
-  loader mientras hidrata). `nube.js` `boot()` baja `progreso` y **pisa** el cache local
-  (localStorage = espejo descartable, nunca manda); las escrituras son write-through y los
-  cambios externos llegan por realtime. `coleccion.js` y las páginas leen el cache síncrono
-  (no se reescribió a async). Diseño: `superpowers/specs/2026-06-04-nube-pura-design.md`.
-- Las tablas/RPC se acceden con la **anon key**; el cliente lee `PUBLIC_SUPABASE_URL` y
-  `PUBLIC_SUPABASE_ANON_KEY` (env con prefijo `PUBLIC_`, Astro las expone al navegador). Si
-  faltan, `supa` queda en `null` y la app corre en modo solo-localStorage. Las mutaciones
-  sensibles van por **RPCs `security definer`** (ver `intercambios.sql`), no por escritura directa.
+- **Ubicación:** `api/` (NestJS). Módulos: `auth` (Google OAuth → JWT), `progreso`,
+  `intercambios`, `social` (perfiles / amigos / ofertas), `desafios`, `realtime` (gateway
+  socket.io).
+- **Correr localmente:**
+  ```
+  docker compose up -d --build
+  ```
+  Levanta los servicios `db` (Postgres, puerto host **5433**) y `api` (NestJS). El contenedor
+  `api` corre `prisma migrate deploy` al arrancar.
+- **Env del servidor** (`api/.env`): `DATABASE_URL`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`,
+  `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL`, `FRONTEND_URL`, `CORS_ORIGINS`.
+  La API necesita `GOOGLE_*` no vacíos para arrancar.
+- **Migraciones:** Prisma en `api/prisma/` (`prisma migrate dev` en local; `migrate deploy`
+  en el contenedor). Ya **no** se usa `supabase/migrations/`.
+- **Data migration:** `api/prisma/seed-import.ts` importa un CSV dump del proyecto Supabase
+  original (preserva UUIDs). El dueño corre el export con su connection string de Supabase.
+- **Cliente web:** `src/lib/api.js` (fetch + JWT, auth Google) y `src/lib/realtime.js`
+  (socket.io). `src/lib/supa.js` es un shim de compatibilidad que re-exporta `haySupabase`
+  (= `hayApi`); `supa` queda `null`.
+- **Env del frontend** (`web/.env`): `PUBLIC_API_URL` (reemplaza `PUBLIC_SUPABASE_*`).
+  Sin esta variable la web corre en modo solo-localStorage.
+- **Deploy:** el build de producción (`npm run build` desde `web/`) debe correrse con el
+  valor real de `PUBLIC_API_URL`. El CORS de la API debe permitir el origen de GitHub Pages.
 
 ## Reglas
 
