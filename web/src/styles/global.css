@@ -933,3 +933,7 @@ body.claro .hero-home h1{ color:#eafff0; }
 .df-sol-cod{ margin:0; padding:11px 14px; background:var(--code-bg); color:#e8eaf2; font-family:var(--font-mono); font-size:12.5px; line-height:1.5; overflow:auto; white-space:pre; }
 .df-voto{ border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:9px; font-weight:700; font-size:.8rem; padding:4px 10px; cursor:pointer; }
 .df-voto.on{ background:var(--red); border-color:var(--red); color:#fff; }
+.df-mod{ display:flex; gap:8px; margin:.4rem 0 .8rem; }
+.df-modbtn{ border:1px solid var(--line); background:var(--paper-2); color:var(--ink-mute); border-radius:9px; font-size:.78rem; font-weight:700; padding:4px 10px; cursor:pointer; }
+.df-modbtn:hover{ color:var(--ink); }
+.df-modbtn.danger:hover{ color:var(--red-deep); border-color:var(--red-deep); }

@@ -8,6 +8,7 @@ import Base from '../../layouts/Base.astro';
       <div class="df-cab"><span class="df-region" id="dv-region"></span><span class="df-dif" id="dv-dif"></span></div>
       <h1 id="dv-titulo"></h1>
       <p class="df-autor" id="dv-autor"></p>
+      <div class="df-mod"><button class="df-modbtn" id="dv-reportar" type="button">🚩 Reportar</button><button class="df-modbtn danger" id="dv-borrar" type="button" hidden>🗑️ Borrar (autor)</button></div>
       <p class="ej-prompt" id="dv-consigna"></p>
       <div class="df-ejemplos" id="dv-ejemplos"></div>
       <div class="cw"><div class="cw-bar"><span class="cw-lang">python</span><span class="cw-hint">✎ tu solución</span></div><div id="dv-editor"></div></div>
@@ -26,11 +27,12 @@ import Base from '../../layouts/Base.astro';
   <script>
     import { editorPython } from '../../lib/editor.js';
     import evalPy from '../../lib/desafios-eval.py?raw';
-    import { leerDesafio, registrarResolucion, solucionesDe, votar } from '../../lib/desafios.js';
+    import { leerDesafio, registrarResolucion, solucionesDe, votar, reportarDesafio, borrarDesafio } from '../../lib/desafios.js';
     import { usuario, refrescarDesdeNube } from '../../lib/nube.js';
     const $ = (id) => document.getElementById(id);
     const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c]));
     const REGN = { kanto:'🔴 Kanto', johto:'⚪ Johto', hoenn:'🟢 Hoenn', sinnoh:'🔵 Sinnoh', unova:'⚫ Unova', kalos:'🟠 Kalos', libre:'🎲 Libre' };
+    const B = (window.__BASE || '/').replace(/\/$/, '');
     const id = new URLSearchParams(location.search).get('id');
     let des = null, editor = null, py = null;
     async function getPy() { if (!py) { py = await window.loadPyodide(); await py.runPythonAsync(evalPy); } return py; }
@@ -73,6 +75,16 @@ import Base from '../../layouts/Base.astro';
         '<div class="df-ej"><code>' + esc(des.func) + '(' + esc(c.args.map((a) => JSON.stringify(a)).join(', ')) + ')</code> → <code>' + esc(c.esperado) + '</code></div>').join('') : '';
       editor = editorPython({ doc: des.starter || ('def ' + des.func + '():\n    '), parent: $('dv-editor'), onRun: enviar });
       pintarSoluciones();
+      if (usuario() && des.autor === usuario().id) $('dv-borrar').hidden = false;
+      $('dv-reportar').addEventListener('click', async () => {
+        if (!usuario()) { $('dv-estado').textContent = 'Iniciá sesión para reportar.'; return; }
+        const motivo = prompt('¿Por qué lo reportás? (roto, inapropiado, etc.)') || '';
+        try { await reportarDesafio(id, motivo); $('dv-reportar').textContent = '✓ reportado'; $('dv-reportar').disabled = true; } catch (e) { alert(e.message || e); }
+      });
+      $('dv-borrar').addEventListener('click', async () => {
+        if (!confirm('¿Borrar este desafío? Se va para siempre.')) return;
+        try { await borrarDesafio(id); location.href = B + '/desafios'; } catch (e) { alert(e.message || e); }
+      });
     }
     async function enviar() {
       if (!usuario()) { $('dv-estado').textContent = 'Iniciá sesión para enviar.'; return; }

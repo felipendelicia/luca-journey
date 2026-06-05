@@ -40,4 +40,12 @@ export async function statsDesafios(userId) {
   if (error) throw error;
   return Array.isArray(data) ? data[0] : data; // {resueltos, creados}
 }
+export async function reportarDesafio(desafioId, motivo) {
+  const { error } = await supa.rpc('reportar_desafio', { p_desafio_id: desafioId, p_motivo: motivo || '' });
+  if (error) throw error;
+}
+export async function borrarDesafio(desafioId) {
+  const { error } = await supa.rpc('borrar_desafio', { p_desafio_id: desafioId });
+  if (error) throw error;
+}
 export { haySupabase };
