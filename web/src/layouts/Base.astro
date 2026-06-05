@@ -50,6 +50,11 @@ const nav = [
       <p class="auth-msg err" id="boot-err" hidden></p>
     </div>
   </div>
+  <script is:inline>
+    // Si ya se hidrató en esta pestaña, revelar al toque (sin pantalla de carga entre páginas).
+    // El cache está vigente y el realtime lo mantiene fresco; el boot igual corre en segundo plano.
+    try { if (sessionStorage.getItem('nube:hidratado') === '1') { var _o = document.getElementById('boot-overlay'); if (_o) _o.hidden = true; } } catch (e) {}
+  </script>
 
   <header class="topbar">
     <a class="brand-link" href={u('/')}><span class="pb"></span><span class="brand">Pokédex <b>Codex</b></span></a>
