@@ -905,3 +905,24 @@ body.claro .hero-home h1{ color:#eafff0; }
 .tarjeta .t-stats b{ font-family:var(--font-crt); color:var(--neon); font-size:1.9rem; line-height:1; text-shadow:0 0 12px rgba(93,255,122,.4); }
 .tarjeta .t-stats span{ font-family:var(--font-pixel); font-size:7px; letter-spacing:.08em; color:#6f9a7e; opacity:1; text-transform:uppercase; }
 .tarjeta .avatar{ background:#06100c; border:1px solid var(--neon); box-shadow:0 0 12px rgba(93,255,122,.3); }
+
+/* desafíos de la comunidad */
+.df-form{ display:flex; flex-direction:column; gap:12px; max-width:680px; }
+.df-form label{ display:flex; flex-direction:column; gap:5px; font-weight:700; font-size:.9rem; }
+.df-form input, .df-form select, .df-form textarea{ font:inherit; font-weight:400; padding:9px 12px; border:1px solid var(--line); border-radius:12px; background:var(--card); color:var(--ink); }
+.df-form textarea{ font-family:var(--font-mono); }
+.df-form code{ font-size:.85em; }
+.df-lista{ display:flex; flex-direction:column; gap:8px; margin-top:.8rem; }
+.df-item{ display:flex; align-items:center; gap:10px; background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:10px 14px; text-decoration:none; color:var(--ink); }
+.df-item.ok{ border-color:#1f8b4c; }
+.df-item .df-reg{ font-size:1.1rem; flex:none; }
+.df-item .df-tit{ flex:1; font-weight:700; }
+.df-item .df-meta{ color:var(--ink-soft); font-size:.8rem; flex:none; }
+.df-cab{ display:flex; gap:10px; align-items:center; }
+.df-region{ background:var(--paper-2); border:1px solid var(--line); border-radius:9px; padding:2px 9px; font-size:.85rem; }
+.df-dif{ color:var(--yellow-deep); }
+.df-autor{ color:var(--ink-soft); font-size:.85rem; }
+.df-ejemplos{ background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:10px 14px; margin:.6rem 0; font-size:.9rem; }
+.df-ej{ font-family:var(--font-mono); font-size:.82rem; margin-top:4px; }
+.df-ej code{ background:var(--card); border:1px solid var(--line); border-radius:5px; padding:0 4px; }
+@media(max-width:560px){ .df-item{ flex-wrap:wrap; } .df-item .df-meta{ flex-basis:100%; } }

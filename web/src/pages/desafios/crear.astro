@@ -1,0 +1,62 @@
+---
+import Base from '../../layouts/Base.astro';
+import { u } from '../../lib/url.ts';
+const REGIONES = [['libre','Libre'],['kanto','Kanto · fundamentos'],['johto','Johto · datos'],['hoenn','Hoenn · Flask'],['sinnoh','Sinnoh · SQL'],['unova','Unova · IA'],['kalos','Kalos · testing']];
+---
+<Base title="Crear desafío — Python con Pokémon" active="Desafíos">
+  <main class="wrap">
+    <h1>✍️ Crear un desafío</h1>
+    <p>Definí una función a implementar, escribí tu solución de referencia y los casos de prueba. Al publicar, calculamos los resultados esperados (tu solución no se muestra a nadie).</p>
+    <div class="df-form">
+      <label>Título<input id="d-titulo" maxlength="80" placeholder="Sumar los pares de una lista" /></label>
+      <label>Región<select id="d-region">{REGIONES.map(([v,t]) => <option value={v}>{t}</option>)}</select></label>
+      <label>Dificultad (1-8)<input id="d-dif" type="number" min="1" max="8" value="3" /></label>
+      <label>Consigna<textarea id="d-consigna" rows="3" placeholder="Devolvé la suma de los números pares de la lista."></textarea></label>
+      <label>Nombre de la función<input id="d-func" placeholder="sumar_pares" /></label>
+      <label>Código inicial (starter, opcional)<textarea id="d-starter" rows="2" placeholder="def sumar_pares(nums):\n    pass"></textarea></label>
+      <label>Tu solución (no se publica)<div class="cw"><div class="cw-bar"><span class="cw-lang">python</span></div><div id="d-sol"></div></div></label>
+      <label>Casos de prueba — array JSON: cada uno <code>{`{"args": [...], "ejemplo": true}`}</code><textarea id="d-casos" rows="4" placeholder='[{"args": [[1,2,3,4]], "ejemplo": true}, {"args": [[]], "ejemplo": false}]'></textarea></label>
+      <button class="btn-grande" id="d-publicar" type="button">✅ Validar y publicar</button>
+      <p class="auth-msg err" id="d-err" hidden></p>
+    </div>
+  </main>
+  <script is:inline src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+  <script>
+    import { editorPython } from '../../lib/editor.js';
+    import evalPy from '../../lib/desafios-eval.py?raw';
+    import { crearDesafio } from '../../lib/desafios.js';
+    import { usuario } from '../../lib/nube.js';
+    const $ = (id) => document.getElementById(id);
+    const B = (window.__BASE || '/').replace(/\/$/, '');
+    const sol = editorPython({ doc: '', parent: $('d-sol') });
+    let py = null;
+    async function getPy() {
+      if (!py) { py = await window.loadPyodide(); await py.runPythonAsync(evalPy); }
+      return py;
+    }
+    $('d-publicar').addEventListener('click', async () => {
+      const err = $('d-err'); err.hidden = true;
+      if (!usuario()) { err.textContent = 'Iniciá sesión para crear desafíos.'; err.hidden = false; return; }
+      const func = $('d-func').value.trim();
+      let casos;
+      try { casos = JSON.parse($('d-casos').value); if (!Array.isArray(casos) || !casos.length) throw 0; }
+      catch { err.textContent = 'Los casos deben ser un array JSON no vacío.'; err.hidden = false; return; }
+      const b = $('d-publicar'); b.disabled = true; b.textContent = 'Validando…';
+      try {
+        const p = await getPy();
+        p.globals.set('_cod', sol.state.doc.toString());
+        p.globals.set('_func', func);
+        p.globals.set('_casos', JSON.stringify(casos));
+        const res = JSON.parse(await p.runPythonAsync('computar_esperados(_cod, _func, _casos)'));
+        if (res.error) { err.textContent = '⚠️ ' + res.error; err.hidden = false; return; }
+        const id = await crearDesafio({
+          titulo: $('d-titulo').value, consigna: $('d-consigna').value, func,
+          starter: $('d-starter').value, casos: res.casos,
+          dificultad: Number($('d-dif').value) || 3, region: $('d-region').value,
+        });
+        location.href = B + '/desafios/ver?id=' + id;
+      } catch (e) { err.textContent = '⚠️ ' + (e.message || e); err.hidden = false; }
+      finally { b.disabled = false; b.textContent = '✅ Validar y publicar'; }
+    });
+  </script>
+</Base>

@@ -1,0 +1,42 @@
+---
+import Base from '../../layouts/Base.astro';
+import { u } from '../../lib/url.ts';
+const REGIONES = [['todas','Todas'],['libre','🎲 Libre'],['kanto','🔴 Kanto'],['johto','⚪ Johto'],['hoenn','🟢 Hoenn'],['sinnoh','🔵 Sinnoh'],['unova','⚫ Unova'],['kalos','🟠 Kalos']];
+---
+<Base title="Desafíos de la comunidad — Python con Pokémon" active="Desafíos">
+  <main class="wrap">
+    <div class="safari-head"><h1>🧩 Desafíos de la comunidad</h1><a class="btn-grande" href={u('/desafios/crear')}>✍️ Crear desafío</a></div>
+    <p>Retos de Python hechos por la comunidad. Resolvelos y ganá Pokéballs. ¡Creá los tuyos!</p>
+    <div class="dex-controles">
+      <input class="dex-buscar" id="df-q" type="search" placeholder="🔍 Buscar por título…" />
+      <select id="df-orden"><option value="recientes">Recientes</option><option value="resueltos">Más resueltos</option><option value="dificultad">Dificultad</option></select>
+    </div>
+    <div class="dex-filtros" id="df-regiones">{REGIONES.map(([v,t],i) => <button class={'dex-f' + (i===0?' activo':'')} data-r={v} type="button">{t}</button>)}</div>
+    <div class="df-lista" id="df-lista"></div>
+    <p id="df-login" hidden>Iniciá sesión para crear y resolver desafíos.</p>
+  </main>
+  <script>
+    import { listarDesafios } from '../../lib/desafios.js';
+    import { usuario } from '../../lib/nube.js';
+    const $ = (id) => document.getElementById(id);
+    const B = (window.__BASE || '/').replace(/\/$/, '');
+    const REGN = { kanto:'🔴', johto:'⚪', hoenn:'🟢', sinnoh:'🔵', unova:'⚫', kalos:'🟠', libre:'🎲' };
+    let region = 'todas';
+    async function cargar() {
+      const lista = await listarDesafios({ orden: $('df-orden').value, q: $('df-q').value, region }).catch(() => []);
+      const cont = $('df-lista');
+      cont.innerHTML = lista.length ? lista.map((d) =>
+        '<a class="df-item' + (d.resuelto ? ' ok' : '') + '" href="' + B + '/desafios/ver?id=' + d.id + '">' +
+        '<span class="df-reg">' + (REGN[d.region]||'🎲') + '</span><span class="df-tit">' + (d.resuelto ? '✅ ' : '') + d.titulo + '</span>' +
+        '<span class="df-meta">★' + d.dificultad + ' · ' + d.resoluciones + ' resueltos · @' + (d.autor_handle || '?') + '</span></a>').join('')
+        : '<p class="tr-colec-vacio">No hay desafíos todavía. ¡Creá el primero!</p>';
+    }
+    $('df-q').addEventListener('input', cargar);
+    $('df-orden').addEventListener('change', cargar);
+    $('df-regiones').querySelectorAll('.dex-f').forEach((b) => b.addEventListener('click', () => {
+      $('df-regiones').querySelectorAll('.dex-f').forEach((x) => x.classList.remove('activo'));
+      b.classList.add('activo'); region = b.dataset.r; cargar();
+    }));
+    cargar();
+  </script>
+</Base>
