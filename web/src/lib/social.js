@@ -1,12 +1,12 @@
-// social.js — perfiles públicos, amigos e intercambios asíncronos (sobre Supabase).
-import { supa, haySupabase } from './supa.js';
+// social.js — perfiles públicos, amigos e intercambios asíncronos (sobre la API self-hosted).
+import { hayApi, auth, apiGet, apiPost, apiDelete } from './api.js';
 import { estado } from './coleccion.js';
 import { evaluar, contexto } from './logros.js';
+const haySupabase = hayApi;
 
 const REGN = { kanto: 'Kanto', johto: 'Johto', hoenn: 'Hoenn', sinnoh: 'Sinnoh', unova: 'Unova', kalos: 'Kalos' };
 const done = (slug, id) => localStorage.getItem(`ej:${slug}:${id}:ok`) === '1';
 
-// Arma el snapshot público (lo que se muestra en el perfil) desde el progreso local.
 export function snapshotPublico(temas) {
   const st = estado();
   const c = contexto(temas);
@@ -29,114 +29,40 @@ export function snapshotPublico(temas) {
   };
 }
 
-async function uid() {
-  const { data } = await supa.auth.getUser();
-  return data && data.user ? data.user.id : null;
-}
+const uid = () => (auth.user() ? auth.user().id : null);
 
-// ---- perfil propio ----
-export async function miPerfil() {
-  const id = await uid();
-  if (!id) return null;
-  const { data } = await supa.from('perfiles').select('*').eq('user_id', id).maybeSingle();
-  return data;
-}
+export async function miPerfil() { if (!uid()) return null; return apiGet('/perfil/me'); }
 export async function guardarPerfil({ handle, nombre, avatar, publico }) {
-  const { data, error } = await supa.rpc('guardar_perfil', {
-    p_handle: handle, p_nombre: nombre || '', p_avatar: avatar || 0, p_publico: publico || {},
-  });
-  if (error) throw error;
-  return Array.isArray(data) ? data[0] : data;
+  return apiPost('/perfil', { handle, nombre: nombre || '', avatar: avatar || 0, publico: publico || {} });
 }
-// Actualiza solo el snapshot público (no-op si todavía no tenés perfil).
 export async function actualizarSnapshot(temas) {
-  if (!haySupabase || !(await uid())) return;
+  if (!hayApi || !uid()) return;
   const avatar = Number(localStorage.getItem('col:avatar')) || 0;
-  try { await supa.rpc('actualizar_publico', { p_publico: snapshotPublico(temas), p_avatar: avatar }); } catch {}
+  try { await apiPost('/perfil/publico', { publico: snapshotPublico(temas), avatar }); } catch {}
 }
-export async function guardarDescripcion(desc) {
-  const { error } = await supa.rpc('actualizar_descripcion', { p_desc: desc });
-  if (error) throw error;
-}
+export async function guardarDescripcion(desc) { await apiPost('/perfil/descripcion', { desc }); }
 
-// ---- perfiles públicos / búsqueda ----
-export async function perfilPublico(handle) {
-  const { data, error } = await supa.rpc('perfil_publico', { p_handle: handle });
-  if (error) throw error;
-  return Array.isArray(data) ? data[0] : data;
-}
-export async function buscar(q) {
-  const { data, error } = await supa.rpc('buscar_perfiles', { q });
-  if (error) throw error;
-  return data || [];
-}
+export async function perfilPublico(handle) { return apiGet(`/perfil/${encodeURIComponent(handle)}`); }
+export async function buscar(q) { return apiGet(`/perfiles?q=${encodeURIComponent(q || '')}`); }
 
-// ---- amigos ----
-export async function solicitar({ handle, codigo }) {
-  const { error } = await supa.rpc('solicitar_amistad', { p_handle: handle || null, p_codigo: codigo || null });
-  if (error) throw error;
-}
-export async function responder(id, aceptar) {
-  const { error } = await supa.rpc('responder_amistad', { p_id: id, p_aceptar: aceptar });
-  if (error) throw error;
-}
-export async function quitar(id) {
-  const { error } = await supa.rpc('quitar_amigo', { p_id: id });
-  if (error) throw error;
-}
-export async function amigos() {
-  const { data, error } = await supa.rpc('mis_amigos');
-  if (error) throw error;
-  return data || [];
-}
-export async function solicitudes() {
-  const { data, error } = await supa.rpc('solicitudes_entrantes');
-  if (error) throw error;
-  return data || [];
-}
-export async function sonAmigos(otroUserId) {
-  const { data, error } = await supa.rpc('son_amigos', { p_otro: otroUserId });
-  if (error) throw error;
-  return !!data;
-}
-// Map(handle del otro -> estado) de todas tus relaciones (aceptada | pendiente).
+export async function solicitar({ handle, codigo }) { await apiPost('/amigos/solicitar', { handle: handle || null, codigo: codigo || null }); }
+export async function responder(id, aceptar) { await apiPost(`/amigos/${id}/responder`, { aceptar }); }
+export async function quitar(id) { await apiDelete(`/amigos/${id}`); }
+export async function amigos() { return apiGet('/amigos'); }
+export async function solicitudes() { return apiGet('/amigos/solicitudes'); }
+export async function sonAmigos(otroUserId) { const r = await apiGet(`/amigos/son/${otroUserId}`); return !!(r && r.son); }
 export async function misRelaciones() {
-  const { data, error } = await supa.rpc('mis_relaciones');
-  if (error) return new Map();
-  const m = new Map();
-  (data || []).forEach((r) => m.set(r.handle, r.estado));
-  return m;
+  try {
+    const data = await apiGet('/amigos/relaciones');
+    const m = new Map(); (data || []).forEach((r) => m.set(r.handle, r.estado)); return m;
+  } catch { return new Map(); }
 }
 
-// ---- intercambios asíncronos (ofertas) ----
-export async function crearOferta(aUserId, doy, pido) {
-  const { data, error } = await supa.rpc('crear_oferta', { p_a_id: aUserId, p_doy: doy, p_pido: pido });
-  if (error) throw error;
-  return data;
-}
-export async function responderOferta(id, aceptar) {
-  const { data, error } = await supa.rpc('responder_oferta', { p_id: id, p_aceptar: aceptar });
-  if (error) throw error;
-  return data;
-}
-export async function cancelarOferta(id) {
-  const { error } = await supa.rpc('cancelar_oferta', { p_id: id });
-  if (error) throw error;
-}
-export async function ofertas() {
-  const { data, error } = await supa.rpc('mis_ofertas');
-  if (error) throw error;
-  return data || [];
-}
-export async function pendientes() {
-  const { data, error } = await supa.rpc('social_pendientes');
-  if (error) return 0;
-  return data || 0;
-}
-export async function listarPerfiles(limite, offset) {
-  const { data, error } = await supa.rpc('listar_perfiles', { p_limite: limite, p_offset: offset });
-  if (error) throw error;
-  return data || [];
-}
+export async function crearOferta(aUserId, doy, pido) { const r = await apiPost('/ofertas', { aId: aUserId, doy, pido }); return r && r.id; }
+export async function responderOferta(id, aceptar) { const r = await apiPost(`/ofertas/${id}/responder`, { aceptar }); return r && r.estado; }
+export async function cancelarOferta(id) { await apiDelete(`/ofertas/${id}`); }
+export async function ofertas() { return apiGet('/ofertas'); }
+export async function pendientes() { try { const r = await apiGet('/social/pendientes'); return (r && r.n) || 0; } catch { return 0; } }
+export async function listarPerfiles(limite, offset) { return apiGet(`/perfiles/listar?limite=${limite}&offset=${offset}`); }
 
 export { haySupabase };
