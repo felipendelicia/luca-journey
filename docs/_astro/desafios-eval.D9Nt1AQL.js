@@ -24,6 +24,23 @@ def computar_esperados(codigo, func, casos_json):
     except Exception as e:
         return json.dumps({"error": "%s: %s" % (type(e).__name__, e)})
 
+def construir_casos(filas_json):
+    """Convierte filas del constructor UI a casos JSON.
+    filas_json = [{"expr": "2, 3", "ejemplo": true}, ...]
+    Devuelve JSON {"casos": [{"args":[...], "ejemplo":bool}]} o {"error": "..."}."""
+    filas = json.loads(filas_json)
+    out = []
+    for f in filas:
+        expr = f.get("expr", "").strip()
+        if not expr:
+            continue
+        try:
+            args = eval("[" + expr + "]", {"__builtins__": __builtins__})
+        except Exception as e:
+            return json.dumps({"error": "Caso '%s': %s" % (expr, e)})
+        out.append({"args": args, "ejemplo": bool(f.get("ejemplo"))})
+    return json.dumps({"casos": out})
+
 def evaluar(codigo, func, casos_json):
     """Para el SOLVER: corre su código y compara contra los 'esperado' guardados.
     Devuelve JSON {ok:bool, fallos:[{i, args, esperado, obtenido|error}]}."""

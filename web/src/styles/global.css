@@ -912,6 +912,21 @@ body.claro .hero-home h1{ color:#eafff0; }
 .df-form input, .df-form select, .df-form textarea{ font:inherit; font-weight:400; padding:9px 12px; border:1px solid var(--line); border-radius:12px; background:var(--card); color:var(--ink); }
 .df-form textarea{ font-family:var(--font-mono); }
 .df-form code{ font-size:.85em; }
+/* --- constructor de casos (crear desafío) --- */
+.df-casos-bloque{ display:flex; flex-direction:column; gap:8px; }
+.df-casos-titulo{ font-weight:700; font-size:.9rem; }
+.df-casos-ayuda{ font-size:.82rem; color:var(--ink-soft); margin:0; line-height:1.4; }
+.df-filas{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
+.df-fila{ display:flex; align-items:center; gap:7px; background:var(--paper-2); border:1px solid var(--line); border-radius:10px; padding:7px 10px; }
+.df-fila-prefijo{ font-family:var(--font-mono); font-size:.85rem; color:var(--ink-soft); white-space:nowrap; user-select:none; }
+.df-fila-expr{ flex:1; min-width:0; font-family:var(--font-mono); font-size:.85rem; padding:5px 8px; border:1px solid var(--line); border-radius:7px; background:var(--card); color:var(--ink); }
+.df-fila-expr:focus{ outline:none; border-color:var(--red); }
+.df-fila-ej{ display:flex; align-items:center; gap:4px; font-size:.8rem; font-weight:600; white-space:nowrap; cursor:pointer; }
+.df-fila-ej input{ width:auto; padding:0; border:none; background:transparent; }
+.df-fila-rm{ background:transparent; border:none; cursor:pointer; color:var(--ink-mute); font-size:.9rem; padding:3px 5px; border-radius:5px; line-height:1; }
+.df-fila-rm:hover{ background:rgba(255,65,51,.12); color:var(--red-deep); }
+.df-casos-bloque .btn-grande.sec{ align-self:flex-start; font-size:.7rem; padding:7px 14px; margin-top:2px; }
+/* --- fin constructor de casos --- */
 .df-lista{ display:flex; flex-direction:column; gap:8px; margin-top:.8rem; }
 .df-item{ display:flex; align-items:flex-start; gap:10px; background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:10px 14px; text-decoration:none; color:var(--ink); }
 .df-item.ok{ border-color:#1f8b4c; }

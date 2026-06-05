@@ -15,7 +15,12 @@ const REGIONES = [['libre','Libre'],['kanto','Kanto · fundamentos'],['johto','J
       <label>Nombre de la función<input id="d-func" placeholder="sumar_pares" /></label>
       <label>Código inicial (starter, opcional)<textarea id="d-starter" rows="2" placeholder="def sumar_pares(nums):\n    pass"></textarea></label>
       <label>Tu solución (no se publica)<div class="cw"><div class="cw-bar"><span class="cw-lang">python</span></div><div id="d-sol"></div></div></label>
-      <label>Casos de prueba — array JSON: cada uno <code>{`{"args": [...], "ejemplo": true}`}</code><textarea id="d-casos" rows="4" placeholder='[{"args": [[1,2,3,4]], "ejemplo": true}, {"args": [[]], "ejemplo": false}]'></textarea></label>
+      <div class="df-casos-bloque">
+        <span class="df-casos-titulo">Casos de prueba</span>
+        <p class="df-casos-ayuda">Escribí los argumentos como en Python. Ej: para <code>contar_vocales(texto)</code> poné <code>"murcielago"</code>. Para <code>sumar(a, b)</code> poné <code>2, 3</code>.</p>
+        <ul id="d-filas" class="df-filas"></ul>
+        <button class="btn-grande sec" id="d-agregar" type="button">+ Agregar caso</button>
+      </div>
       <button class="btn-grande" id="d-publicar" type="button">✅ Validar y publicar</button>
       <p class="auth-msg err" id="d-err" hidden></p>
     </div>
@@ -34,24 +39,63 @@ const REGIONES = [['libre','Libre'],['kanto','Kanto · fundamentos'],['johto','J
       if (!py) { py = await window.loadPyodide(); await py.runPythonAsync(evalPy); }
       return py;
     }
+
+    // --- Constructor de filas de casos ---
+    function crearFila() {
+      const li = document.createElement('li');
+      li.className = 'df-fila';
+      li.innerHTML = `
+        <span class="df-fila-prefijo" id="df-prefijo-${Date.now()}"></span>
+        <input class="df-fila-expr" type="text" placeholder='ej: "hola"  ó  2, 3  ó  [1,2,3]' autocomplete="off" spellcheck="false" />
+        <label class="df-fila-ej"><input type="checkbox" class="df-fila-check" /> ejemplo</label>
+        <button class="df-fila-rm" type="button" title="Quitar fila">✕</button>`;
+      li.querySelector('.df-fila-rm').addEventListener('click', () => { li.remove(); actualizarPrefijos(); });
+      $('d-filas').appendChild(li);
+      actualizarPrefijos();
+      li.querySelector('.df-fila-expr').focus();
+    }
+    function actualizarPrefijos() {
+      const func = ($('d-func').value.trim() || 'func');
+      $('d-filas').querySelectorAll('.df-fila').forEach(li => {
+        li.querySelector('.df-fila-prefijo').textContent = func + '(';
+        // add closing paren hint in placeholder area via sibling span if needed
+      });
+    }
+    $('d-func').addEventListener('input', actualizarPrefijos);
+    $('d-agregar').addEventListener('click', crearFila);
+    // Arranca con 2 filas
+    crearFila(); crearFila();
+
+    // --- Publicar ---
     $('d-publicar').addEventListener('click', async () => {
       const err = $('d-err'); err.hidden = true;
       if (!usuario()) { err.textContent = 'Iniciá sesión para crear desafíos.'; err.hidden = false; return; }
       const func = $('d-func').value.trim();
-      let casos;
-      try { casos = JSON.parse($('d-casos').value); if (!Array.isArray(casos) || !casos.length) throw 0; }
-      catch { err.textContent = 'Los casos deben ser un array JSON no vacío.'; err.hidden = false; return; }
+      if (!$('d-titulo').value.trim()) { err.textContent = 'Falta el título.'; err.hidden = false; return; }
+      if (!func) { err.textContent = 'Falta el nombre de la función.'; err.hidden = false; return; }
+      // Recolectar filas
+      const filaEls = [...$('d-filas').querySelectorAll('.df-fila')];
+      const filas = filaEls.map(li => ({
+        expr: li.querySelector('.df-fila-expr').value.trim(),
+        ejemplo: li.querySelector('.df-fila-check').checked,
+      })).filter(f => f.expr !== '');
+      if (!filas.length) { err.textContent = 'Agregá al menos un caso de prueba.'; err.hidden = false; return; }
       const b = $('d-publicar'); b.disabled = true; b.textContent = 'Validando…';
       try {
         const p = await getPy();
+        // Paso 1: construir casos desde filas
+        p.globals.set('_filas', JSON.stringify(filas));
+        const r1 = JSON.parse(await p.runPythonAsync('construir_casos(_filas)'));
+        if (r1.error) { err.textContent = '⚠️ ' + r1.error; err.hidden = false; return; }
+        // Paso 2: computar esperados con la solución del autor
         p.globals.set('_cod', sol.state.doc.toString());
         p.globals.set('_func', func);
-        p.globals.set('_casos', JSON.stringify(casos));
-        const res = JSON.parse(await p.runPythonAsync('computar_esperados(_cod, _func, _casos)'));
-        if (res.error) { err.textContent = '⚠️ ' + res.error; err.hidden = false; return; }
+        p.globals.set('_casos', JSON.stringify(r1.casos));
+        const r2 = JSON.parse(await p.runPythonAsync('computar_esperados(_cod, _func, _casos)'));
+        if (r2.error) { err.textContent = '⚠️ ' + r2.error; err.hidden = false; return; }
         const id = await crearDesafio({
           titulo: $('d-titulo').value, consigna: $('d-consigna').value, func,
-          starter: $('d-starter').value, casos: res.casos,
+          starter: $('d-starter').value, casos: r2.casos,
           dificultad: Number($('d-dif').value) || 3, region: $('d-region').value,
         });
         location.href = B + '/desafios/ver?id=' + id;
