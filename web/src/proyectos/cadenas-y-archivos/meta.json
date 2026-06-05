@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "cadenas-y-archivos",
+  "region": "kanto",
+  "titulo": "Líder Koga: Código secreto ninja",
+  "lider": "Koga",
+  "premio": 65,
+  "intro": "Koga es maestro del sigilo y los mensajes cifrados. Sus agentes se comunican con códigos secretos que transforman texto. Construí las herramientas de cifrado ninja paso a paso. ¡Derrotá a Koga!",
+  "preamble": "CLAVE_NINJA = {\n    \"a\": \"4\", \"e\": \"3\", \"i\": \"1\", \"o\": \"0\", \"u\": \"v\",\n    \"A\": \"4\", \"E\": \"3\", \"I\": \"1\", \"O\": \"0\", \"U\": \"V\",\n}",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "cifrar",
+      "titulo": "1 · Cifrar mensaje",
+      "consigna": "Arriba (en 📦 Código base) tenés CLAVE_NINJA: un diccionario que reemplaza ciertas letras por símbolos.\n\nEscribí la función cifrar(mensaje) que recorra cada caracter del mensaje y lo reemplace si está en CLAVE_NINJA, o lo deje igual si no está. Devolvé el mensaje cifrado como string.\n\nEjemplos:\n  cifrar(\"Pikachu\")   →  \"P1k4chv\"\n  cifrar(\"Arcanine\")  →  \"4rc4n1n3\"\n  cifrar(\"xyz\")       →  \"xyz\"",
+      "starter": "def cifrar(mensaje):\n    ",
+      "tests": ["test_cifrar"]
+    },
+    {
+      "id": "contar_palabras",
+      "titulo": "2 · Contar palabras",
+      "consigna": "Escribí la función contar_palabras(texto) que reciba un texto y devuelva un diccionario con la cantidad de veces que aparece cada palabra (en minúsculas, ignorando mayúsculas).\n\nEjemplos:\n  contar_palabras(\"Pikachu usa Thunderbolt Pikachu gana\")\n  →  {\"pikachu\": 2, \"usa\": 1, \"thunderbolt\": 1, \"gana\": 1}\n\n  contar_palabras(\"Agua Fuego agua\")\n  →  {\"agua\": 2, \"fuego\": 1}",
+      "starter": "def contar_palabras(texto):\n    ",
+      "tests": ["test_contar_palabras"]
+    },
+    {
+      "id": "parsear_datos",
+      "titulo": "3 · Parsear datos ninja",
+      "consigna": "Los agentes ninja envían datos separados por \"|\". Escribí la función parsear_datos(linea) que reciba una línea con el formato \"nombre|tipo|nivel\" y devuelva un diccionario con esas claves.\n\nEl nivel debe ser un entero (int). Ignorá espacios extra alrededor de cada campo con strip().\n\nEjemplos:\n  parsear_datos(\"Venomoth|veneno|43\")       →  {\"nombre\": \"Venomoth\", \"tipo\": \"veneno\", \"nivel\": 43}\n  parsear_datos(\" Koffing | veneno | 37 \")  →  {\"nombre\": \"Koffing\", \"tipo\": \"veneno\", \"nivel\": 37}",
+      "starter": "def parsear_datos(linea):\n    ",
+      "tests": ["test_parsear_datos"]
+    },
+    {
+      "id": "procesar_informe",
+      "titulo": "4 · Procesar informe (final)",
+      "consigna": "Integrá todo: escribí procesar_informe(informe) que reciba un string con varias líneas (cada una con formato \"nombre|tipo|nivel\"), descarte las líneas vacías, parsee cada una y devuelva una lista de strings con el mensaje cifrado de cada nombre junto con su nivel.\n\nFormato de cada elemento: \"<nombre_cifrado> (nivel <nivel>)\"\n\nEjemplos:\n  informe = \"Venomoth|veneno|43\\nKoffing|veneno|37\\n\\nWeezing|veneno|39\"\n  procesar_informe(informe)  →  [\n    \"V3n0m0th (nivel 43)\",\n    \"K0ff1ng (nivel 37)\",\n    \"W33z1ng (nivel 39)\"\n  ]",
+      "starter": "def procesar_informe(informe):\n    ",
+      "tests": ["test_procesar_informe"]
+    }
+  ]
+}

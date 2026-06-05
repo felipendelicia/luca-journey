@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "listas-y-colecciones",
+  "region": "kanto",
+  "titulo": "Líder Erika: Gestor de equipo",
+  "lider": "Erika",
+  "premio": 103,
+  "intro": "Erika cuida su equipo con precisión y calma. Construí un gestor de equipo que opere sobre listas y diccionarios: agregar, filtrar, ordenar y resumir. ¡Derrotá a Erika!",
+  "preamble": "EQUIPO_INICIAL = [\n    {\"nombre\": \"Vileplume\", \"tipo\": \"planta\", \"nivel\": 29, \"ps\": 75},\n    {\"nombre\": \"Weepinbell\",\"tipo\": \"planta\", \"nivel\": 24, \"ps\": 65},\n    {\"nombre\": \"Tangela\",   \"tipo\": \"planta\", \"nivel\": 22, \"ps\": 70},\n]",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "agregar_pokemon",
+      "titulo": "1 · Agregar Pokémon",
+      "consigna": "Arriba (en 📦 Código base) tenés EQUIPO_INICIAL con los Pokémon de Erika.\n\nEscribí la función agregar_pokemon(equipo, nombre, tipo, nivel, ps) que agrega un nuevo Pokémon al final de la lista. La función devuelve la lista modificada.\n\nEjemplos:\n  equipo = [{\"nombre\": \"Bulbasaur\", \"tipo\": \"planta\", \"nivel\": 5, \"ps\": 45}]\n  agregar_pokemon(equipo, \"Oddish\", \"planta\", 12, 55)\n  →  [{\"nombre\": \"Bulbasaur\", ...}, {\"nombre\": \"Oddish\", \"tipo\": \"planta\", \"nivel\": 12, \"ps\": 55}]",
+      "starter": "def agregar_pokemon(equipo, nombre, tipo, nivel, ps):\n    ",
+      "tests": ["test_agregar_pokemon"]
+    },
+    {
+      "id": "filtrar_nivel_minimo",
+      "titulo": "2 · Filtrar por nivel mínimo",
+      "consigna": "Escribí la función filtrar_nivel_minimo(equipo, nivel_min) que devuelva una nueva lista con solo los Pokémon cuyo nivel sea mayor o igual a nivel_min.\n\nNo modifiques la lista original.\n\nEjemplos:\n  filtrar_nivel_minimo(EQUIPO_INICIAL, 25)  →  lista con solo Vileplume (nivel 29)\n  filtrar_nivel_minimo(EQUIPO_INICIAL, 22)  →  lista con Vileplume, Weepinbell y Tangela\n  filtrar_nivel_minimo(EQUIPO_INICIAL, 30)  →  []",
+      "starter": "def filtrar_nivel_minimo(equipo, nivel_min):\n    ",
+      "tests": ["test_filtrar_nivel_minimo"]
+    },
+    {
+      "id": "ordenar_por_ps",
+      "titulo": "3 · Ordenar por PS",
+      "consigna": "Escribí la función ordenar_por_ps(equipo) que devuelva una nueva lista con los Pokémon ordenados de mayor a menor por sus PS (puntos de salud).\n\nNo modifiques la lista original.\n\nEjemplos:\n  ordenar_por_ps(EQUIPO_INICIAL)  →  [Vileplume (75 ps), Tangela (70 ps), Weepinbell (65 ps)]",
+      "starter": "def ordenar_por_ps(equipo):\n    ",
+      "tests": ["test_ordenar_por_ps"]
+    },
+    {
+      "id": "resumen_equipo",
+      "titulo": "4 · Resumen del equipo (final)",
+      "consigna": "Integrá todo: escribí resumen_equipo(equipo) que devuelva un diccionario con estas claves:\n- \"cantidad\": cuántos Pokémon hay en el equipo\n- \"ps_total\": la suma de todos los PS\n- \"nivel_promedio\": el promedio de niveles (como float)\n- \"mas_fuerte\": el nombre del Pokémon con más PS\n\nEjemplos:\n  resumen_equipo(EQUIPO_INICIAL)  →  {\n    \"cantidad\": 3,\n    \"ps_total\": 210,\n    \"nivel_promedio\": 25.0,\n    \"mas_fuerte\": \"Vileplume\"\n  }",
+      "starter": "def resumen_equipo(equipo):\n    ",
+      "tests": ["test_resumen_equipo"]
+    }
+  ]
+}

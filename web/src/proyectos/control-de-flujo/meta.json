@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "control-de-flujo",
+  "region": "kanto",
+  "titulo": "Líder Misty: Clasificador de Pokémon",
+  "lider": "Misty",
+  "premio": 4,
+  "intro": "Misty entrena Pokémon de agua con mucha disciplina: cada uno tiene un nivel, un tipo y un estado. Construí un clasificador que tome decisiones con if y bucles. ¡Derrotá a Misty!",
+  "preamble": "EQUIPO = [\n    {\"nombre\": \"Starmie\",   \"tipo\": \"agua\",    \"nivel\": 21, \"estado\": \"normal\"},\n    {\"nombre\": \"Horsea\",    \"tipo\": \"agua\",    \"nivel\": 8,  \"estado\": \"dormido\"},\n    {\"nombre\": \"Geodude\",   \"tipo\": \"roca\",    \"nivel\": 5,  \"estado\": \"normal\"},\n    {\"nombre\": \"Magikarp\",  \"tipo\": \"agua\",    \"nivel\": 3,  \"estado\": \"paralizado\"},\n    {\"nombre\": \"Psyduck\",   \"tipo\": \"agua\",    \"nivel\": 15, \"estado\": \"normal\"},\n]",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "categoria",
+      "titulo": "1 · Categoría por nivel",
+      "consigna": "Arriba (en 📦 Código base) tenés la lista EQUIPO con los Pokémon de Misty.\n\nEscribí la función categoria(nivel) que clasifique un Pokémon según su nivel:\n- Si el nivel es menor a 10 → \"principiante\"\n- Si el nivel está entre 10 y 29 (inclusive) → \"intermedio\"\n- Si el nivel es 30 o más → \"experto\"\n\nEjemplos:\n  categoria(3)   →  \"principiante\"\n  categoria(15)  →  \"intermedio\"\n  categoria(36)  →  \"experto\"",
+      "starter": "def categoria(nivel):\n    ",
+      "tests": ["test_categoria"]
+    },
+    {
+      "id": "puede_combatir",
+      "titulo": "2 · ¿Puede combatir?",
+      "consigna": "Escribí la función puede_combatir(poke) que recibe un dict de Pokémon y devuelve True si puede entrar al combate, o False si no puede.\n\nUn Pokémon puede combatir si cumple AMBAS condiciones:\n- Su estado es \"normal\"\n- Su nivel es mayor o igual a 5\n\nEjemplos:\n  puede_combatir({\"nombre\": \"Starmie\", \"tipo\": \"agua\", \"nivel\": 21, \"estado\": \"normal\"})     →  True\n  puede_combatir({\"nombre\": \"Horsea\",  \"tipo\": \"agua\", \"nivel\": 8,  \"estado\": \"dormido\"})   →  False\n  puede_combatir({\"nombre\": \"Geodude\", \"tipo\": \"roca\", \"nivel\": 4,  \"estado\": \"normal\"})    →  False",
+      "starter": "def puede_combatir(poke):\n    ",
+      "tests": ["test_puede_combatir"]
+    },
+    {
+      "id": "filtrar_tipo",
+      "titulo": "3 · Filtrar por tipo",
+      "consigna": "Escribí la función filtrar_tipo(equipo, tipo) que recibe la lista de Pokémon y un tipo, y devuelve una lista con solo los Pokémon de ese tipo.\n\nEjemplos:\n  filtrar_tipo(EQUIPO, \"agua\")  →  lista con Starmie, Horsea, Magikarp y Psyduck\n  filtrar_tipo(EQUIPO, \"roca\")  →  lista con Geodude\n  filtrar_tipo(EQUIPO, \"fuego\") →  lista vacía []",
+      "starter": "def filtrar_tipo(equipo, tipo):\n    ",
+      "tests": ["test_filtrar_tipo"]
+    },
+    {
+      "id": "resumen_equipo",
+      "titulo": "4 · Resumen del equipo (final)",
+      "consigna": "Integrá todo: escribí resumen_equipo(equipo) que recorre la lista y, para cada Pokémon, arma un texto con su nombre, categoría y si puede combatir. Devolvé una lista de strings.\n\nFormato de cada elemento: \"<nombre>: <categoria> | <'listo' si puede combatir, 'no disponible' si no>\"\n\nEjemplos:\n  resumen_equipo(EQUIPO) →  [\n    \"Starmie: intermedio | listo\",\n    \"Horsea: principiante | no disponible\",\n    \"Geodude: principiante | listo\",\n    \"Magikarp: principiante | no disponible\",\n    \"Psyduck: intermedio | listo\"\n  ]",
+      "starter": "def resumen_equipo(equipo):\n    ",
+      "tests": ["test_resumen_equipo"]
+    }
+  ]
+}

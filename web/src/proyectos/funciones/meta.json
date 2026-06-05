@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "funciones",
+  "region": "kanto",
+  "titulo": "Líder Lt. Surge: Calculadora de combate",
+  "lider": "Lt. Surge",
+  "premio": 68,
+  "intro": "El Teniente Surge es fanático de los Pokémon eléctricos y de la potencia pura. Construí una calculadora de combate con funciones puras que calculen daño, efectividad y resultado final. ¡Derrotá a Lt. Surge!",
+  "preamble": "TABLA_EFECTIVIDAD = {\n    (\"agua\",     \"fuego\"):    2.0,\n    (\"fuego\",    \"planta\"):   2.0,\n    (\"planta\",   \"agua\"):     2.0,\n    (\"electrico\",\"agua\"):    2.0,\n    (\"fuego\",    \"agua\"):     0.5,\n    (\"agua\",     \"planta\"):   0.5,\n    (\"planta\",   \"fuego\"):    0.5,\n    (\"agua\",     \"electrico\"): 0.5,\n}",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "efectividad",
+      "titulo": "1 · Efectividad de tipo",
+      "consigna": "Arriba (en 📦 Código base) tenés TABLA_EFECTIVIDAD: un diccionario que mapea (tipo_ataque, tipo_defensor) a un multiplicador.\n\nEscribí la función efectividad(tipo_ataque, tipo_defensor) que devuelva el multiplicador de la tabla, o 1.0 si esa combinación no figura.\n\nEjemplos:\n  efectividad(\"agua\", \"fuego\")     →  2.0\n  efectividad(\"fuego\", \"agua\")     →  0.5\n  efectividad(\"normal\", \"normal\")  →  1.0",
+      "starter": "def efectividad(tipo_ataque, tipo_defensor):\n    ",
+      "tests": ["test_efectividad"]
+    },
+    {
+      "id": "danio_base",
+      "titulo": "2 · Daño base",
+      "consigna": "Escribí la función danio_base(ataque, defensa, poder) que calcula el daño de un movimiento usando esta fórmula:\n\n  danio = (ataque * poder) / defensa\n\nDevolvé el resultado como un número entero (usá int() para truncar).\n\nEjemplos:\n  danio_base(50, 40, 80)  →  100\n  danio_base(30, 60, 50)  →  25\n  danio_base(100, 50, 40)  →  80",
+      "starter": "def danio_base(ataque, defensa, poder):\n    ",
+      "tests": ["test_danio_base"]
+    },
+    {
+      "id": "danio_total",
+      "titulo": "3 · Daño total con efectividad",
+      "consigna": "Combiná las dos funciones anteriores: escribí danio_total(ataque, defensa, poder, tipo_ataque, tipo_defensor) que calcula el daño base y luego lo multiplica por la efectividad de tipo.\n\nDevolvé el resultado como entero (int).\n\nEjemplos:\n  danio_total(50, 40, 80, \"agua\", \"fuego\")     →  200  (100 * 2.0)\n  danio_total(50, 40, 80, \"fuego\", \"agua\")     →  50   (100 * 0.5)\n  danio_total(50, 40, 80, \"normal\", \"normal\")  →  100  (100 * 1.0)",
+      "starter": "def danio_total(ataque, defensa, poder, tipo_ataque, tipo_defensor):\n    ",
+      "tests": ["test_danio_total"]
+    },
+    {
+      "id": "resultado_combate",
+      "titulo": "4 · Resultado del combate (final)",
+      "consigna": "Integrá todo: escribí resultado_combate(atacante, defensor) donde cada uno es un dict con claves \"nombre\", \"tipo\", \"ataque\", \"defensa\", \"poder\" y \"hp\".\n\nLa función debe calcular cuántos ataques necesita el atacante para derrotar al defensor (dividiendo hp del defensor por el daño total, redondeando hacia arriba). Devolvé un string con el formato:\n\n\"<nombre_atacante> derrota a <nombre_defensor> en <N> golpe(s).\"\n\nEjemplos:\n  atacante = {\"nombre\": \"Pikachu\",  \"tipo\": \"electrico\", \"ataque\": 55, \"poder\": 90, \"hp\": 100}\n  defensor = {\"nombre\": \"Gyarados\", \"tipo\": \"agua\",      \"defensa\": 79, \"hp\": 100}\n  resultado_combate(atacante, defensor)  →  \"Pikachu derrota a Gyarados en 1 golpe(s).\"",
+      "starter": "def resultado_combate(atacante, defensor):\n    ",
+      "tests": ["test_resultado_combate"]
+    }
+  ]
+}
