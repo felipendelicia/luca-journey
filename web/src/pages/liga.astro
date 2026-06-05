@@ -46,7 +46,6 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
           <div class="t-rango" id="rango">Novato</div>
           <div class="social-meta" id="social-meta" hidden>
             <span class="cod-chip" title="Tu código de amigo">🎴 <b id="social-codigo"></b></span>
-            <button class="meta-btn" id="social-link" type="button">🔗 Copiar link</button>
             <a class="meta-btn" id="social-vermio" target="_blank" rel="noopener">👁️ Ver perfil</a>
           </div>
           <p class="social-msg" id="social-msg"></p>
@@ -149,11 +148,6 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
         bloquear(await guardarPerfil({ handle, nombre: handle, avatar, publico: snapshotPublico(temas) }));
         $('social-msg').textContent = '✅ ¡Usuario @' + perfilActual.handle + ' creado!';
       } catch (e) { $('social-msg').textContent = '⚠️ ' + (e.message || e); }
-    });
-    $('social-link').addEventListener('click', () => {
-      if (!perfilActual) return;
-      navigator.clipboard.writeText(location.origin + B + '/u?h=' + perfilActual.handle);
-      $('social-link').textContent = '✓ copiado';
     });
     window.addEventListener('nube:cambio', cargar);
     cargar();
