@@ -152,15 +152,21 @@ export async function logout() {
 
 export function init() {
   if (!haySupabase) return;
-  let cargado = false;   // Opción 2: la nube manda — baja y aplica una vez por carga de página
+  // Bajar de la nube y aplicar UNA vez por sesión (evita loops de recarga). Los cambios
+  // externos en vivo (intercambios) los trae la suscripción realtime, no este pull.
+  let fusionado = sessionStorage.getItem('nube:fusionado') === '1';
   supa.auth.onAuthStateChange((evento, sesion) => {
     _user = (sesion && sesion.user) || null;
     window.dispatchEvent(new CustomEvent('nube:cambio', { detail: { user: _user } }));
     if (_user) {
-      if (!cargado) { cargado = true; alLoguear(_user); }
+      if (!fusionado) {
+        fusionado = true;
+        sessionStorage.setItem('nube:fusionado', '1');
+        alLoguear(_user);
+      }
       suscribirProgreso(_user.id);     // escuchar cambios externos (intercambios)
     } else {
-      cargado = false;
+      sessionStorage.removeItem('nube:fusionado');
       if (_canalProg) { supa.removeChannel(_canalProg); _canalProg = null; }
     }
   });
