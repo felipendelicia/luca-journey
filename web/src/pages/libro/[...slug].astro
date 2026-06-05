@@ -55,7 +55,9 @@ const grupos = agrupar(caps);
     // Los bloques python del libro se vuelven editores (CodeMirror) que podés
     // tocar y ejecutar; los bash quedan como ventana de solo lectura.
     import { editorPython } from '../../lib/editor.js';
+    import trazadorPy from '../../lib/trazador.py?raw';
 
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
     let pyReady = null;
     async function getPy(out) {
       if (!pyReady) {
@@ -101,6 +103,72 @@ const grupos = agrupar(caps);
       }
     }
 
+    // ── Visualizador paso a paso ──────────────────────────────────────────────
+    let trazadorCargado = false;
+    async function visualizar(codigo, fig, btn) {
+      btn.disabled = true;
+      const previo = fig.querySelector('.cw-viz');
+      if (previo) previo.remove();
+      const cont = document.createElement('div');
+      cont.className = 'cw-viz';
+      cont.innerHTML = '<span class="lbl">VISUALIZADOR</span> ⏳ Cargando Python (~15s la primera vez)…';
+      fig.appendChild(cont);
+      try {
+        const py = await getPy(cont);
+        if (!trazadorCargado) { await py.runPythonAsync(trazadorPy); trazadorCargado = true; }
+        py.globals.set('_cod', codigo);
+        const data = JSON.parse(await py.runPythonAsync('trazar(_cod)'));
+        renderViz(cont, codigo, data);
+      } catch (e) {
+        cont.innerHTML = '<span class="lbl">VISUALIZADOR</span><span class="err"> ' + esc((e && e.message) || e) + '</span>';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function renderViz(cont, codigo, data) {
+      const lineas = codigo.split('\n');
+      const pasos = data.pasos || [];
+      if (!pasos.length) { cont.innerHTML = '<span class="lbl">VISUALIZADOR</span> Sin pasos para mostrar.'; return; }
+      let i = 0;
+      cont.innerHTML = '';
+      const head = document.createElement('div'); head.className = 'viz-head';
+      const cuerpo = document.createElement('div'); cuerpo.className = 'viz-cuerpo';
+      const codeEl = document.createElement('pre'); codeEl.className = 'viz-code';
+      const lado = document.createElement('div'); lado.className = 'viz-lado';
+      cuerpo.appendChild(codeEl); cuerpo.appendChild(lado);
+      cont.appendChild(head); cont.appendChild(cuerpo);
+
+      function pintar() {
+        const p = pasos[i];
+        head.innerHTML = '';
+        const prev = document.createElement('button'); prev.className = 'viz-btn'; prev.textContent = '◀ atrás'; prev.disabled = i === 0;
+        const next = document.createElement('button'); next.className = 'viz-btn'; next.textContent = 'siguiente ▶'; next.disabled = i === pasos.length - 1;
+        const lbl = document.createElement('span'); lbl.className = 'viz-paso';
+        lbl.textContent = '👁️ Paso ' + (i + 1) + '/' + pasos.length + (p.fin ? ' · final' : (p.linea ? ' · línea ' + p.linea : ''));
+        const cerrar = document.createElement('button'); cerrar.className = 'viz-btn cerrar'; cerrar.textContent = '✕';
+        cerrar.addEventListener('click', () => cont.remove());
+        prev.addEventListener('click', () => { if (i > 0) { i--; pintar(); } });
+        next.addEventListener('click', () => { if (i < pasos.length - 1) { i++; pintar(); } });
+        head.appendChild(prev); head.appendChild(next); head.appendChild(lbl); head.appendChild(cerrar);
+
+        codeEl.innerHTML = lineas.map((ln, idx) =>
+          '<span class="viz-ln' + (p.linea === idx + 1 ? ' activa' : '') + '">' + esc(ln === '' ? ' ' : ln) + '</span>').join('\n');
+
+        const vars = p.vars || {};
+        const keys = Object.keys(vars);
+        let h = '<div class="viz-tit">Variables</div>';
+        h += keys.length
+          ? '<table class="viz-vars">' + keys.map((k) => '<tr><td class="vn">' + esc(k) + '</td><td class="vv">' + esc(vars[k]) + '</td></tr>').join('') + '</table>'
+          : '<div class="viz-vacio">(ninguna todavía)</div>';
+        if (p.salida) h += '<div class="viz-tit">Salida</div><pre class="viz-salida">' + esc(p.salida) + '</pre>';
+        if (p.error) h += '<div class="viz-errbox">⚠️ ' + esc(p.error) + '</div>';
+        if (data.truncado && i === pasos.length - 1) h += '<div class="viz-vacio">(traza cortada a ' + (pasos.length - 1) + ' pasos — código muy largo o bucle grande)</div>';
+        lado.innerHTML = h;
+      }
+      pintar();
+    }
+
     document.querySelectorAll('.book pre.astro-code').forEach((pre) => {
       const lang = (pre.getAttribute('data-language') || '').toLowerCase();
       const codigo = pre.innerText.replace(/\n+$/, '');
@@ -132,6 +200,11 @@ const grupos = agrupar(caps);
         btn.className = 'cw-run'; btn.type = 'button'; btn.textContent = '▶ ejecutar';
         btn.addEventListener('click', () => correr(view.state.doc.toString(), out, btn));
         bar.appendChild(btn);
+        const vbtn = document.createElement('button');
+        vbtn.className = 'cw-run cw-viz-btn'; vbtn.type = 'button'; vbtn.textContent = '👁️ visualizar';
+        vbtn.title = 'Ver cómo corre el código paso a paso';
+        vbtn.addEventListener('click', () => visualizar(view.state.doc.toString(), fig, vbtn));
+        bar.appendChild(vbtn);
         fig.appendChild(out);
       } else {
         fig.appendChild(pre);
