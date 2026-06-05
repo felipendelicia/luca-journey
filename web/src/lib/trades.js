@@ -1,60 +1,28 @@
-// trades.js — API de intercambios: RPCs + suscripción Realtime + presencia.
-import { supa, haySupabase } from './supa.js';
-
+// trades.js — intercambios en vivo: REST + realtime (sala:<id>) + presencia de sala.
+import { hayApi, apiGet, apiPost, apiDelete } from './api.js';
+import * as rt from './realtime.js';
+const haySupabase = hayApi;
 const nombreLocal = () => localStorage.getItem('liga:nombre') || 'Entrenador/a';
 
-export async function crear() {
-  const { data, error } = await supa.rpc('crear_intercambio', { mi_nombre: nombreLocal() });
-  if (error) throw error;
-  return data[0]; // { id, codigo }
-}
+export async function crear() { return apiPost('/trades', { nombre: nombreLocal() }); }
 export async function unirse(codigo) {
-  const { data, error } = await supa.rpc('unirse', { p_codigo: codigo.trim().toUpperCase(), mi_nombre: nombreLocal() });
-  if (error) throw error;
-  return data; // id
+  const r = await apiPost('/trades/join', { codigo: codigo.trim().toUpperCase(), nombre: nombreLocal() });
+  return r && r.id;
 }
-export async function ponerLote(id, lote) {
-  const { error } = await supa.rpc('poner_lote', { p_id: id, p_lote: lote });
-  if (error) throw error;
-}
-export async function confirmar(id) {
-  const { data, error } = await supa.rpc('confirmar', { p_id: id });
-  if (error) throw error;
-  return data; // 'abierta' | 'completada'
-}
-export async function cancelar(id) {
-  const { error } = await supa.rpc('cancelar', { p_id: id });
-  if (error) throw error;
-}
-export async function leerSala(id) {
-  const { data, error } = await supa.from('intercambios').select('*').eq('id', id).maybeSingle();
-  if (error) throw error;
-  return data;
-}
-export async function coleccionOtro(id) {
-  const { data, error } = await supa.rpc('coleccion_del_otro', { p_id: id });
-  if (error) throw error;
-  return data; // { atrapados: {<id>:<cant>}, shiny: [<id>...] }
-}
-export async function ponerPedido(id, pedido) {
-  const { error } = await supa.rpc('poner_pedido', { p_id: id, p_pedido: pedido });
-  if (error) throw error;
-}
+export async function ponerLote(id, lote) { await apiPost(`/trades/${id}/lote`, { lote }); }
+export async function confirmar(id) { const r = await apiPost(`/trades/${id}/confirm`); return r && r.estado; }
+export async function cancelar(id) { await apiDelete(`/trades/${id}`); }
+export async function leerSala(id) { return apiGet(`/trades/${id}`); }
+export async function coleccionOtro(id) { return apiGet(`/trades/${id}/otro`); }
+export async function ponerPedido(id, pedido) { await apiPost(`/trades/${id}/pedido`, { pedido }); }
 
-// Suscribe a los cambios de la sala (postgres_changes) + presencia del otro.
-// onCambio(row) cada vez que cambia la fila; onPresencia(hayOtro) cuando entra/sale.
-// Devuelve una función para desuscribir.
 export function suscribir(id, miId, { onCambio, onPresencia }) {
-  const canal = supa.channel(`sala:${id}`, { config: { presence: { key: miId } } });
-  canal.on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'intercambios', filter: `id=eq.${id}` },
-    (payload) => onCambio && onCambio(payload.new));
-  canal.on('presence', { event: 'sync' }, () => {
-    const estado = canal.presenceState();
-    const otros = Object.keys(estado).filter((k) => k !== miId).length;
-    onPresencia && onPresencia(otros > 0);
+  rt.unir(`sala:${id}`);
+  const off1 = rt.on('sala', (row) => { if (row && row.id === id && onCambio) onCambio(row); });
+  const off2 = rt.on('presencia', (p) => {
+    if (p && p.topic === `sala:${id}` && onPresencia) onPresencia((p.ids || []).filter((k) => k !== miId).length > 0);
   });
-  canal.subscribe((status) => { if (status === 'SUBSCRIBED') canal.track({ at: Date.now() }); });
-  return () => supa.removeChannel(canal);
+  return () => { rt.salir(`sala:${id}`); off1(); off2(); };
 }
 
 export { haySupabase };
