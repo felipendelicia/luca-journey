@@ -1,8 +1,9 @@
-// nube.js — sincroniza el progreso (localStorage) con Supabase cuando hay sesión.
-// Modo HÍBRIDO: sin login, todo sigue en localStorage. Al loguearte:
-//   - si tu cuenta YA tiene progreso → se importa ese y se descarta el local.
-//   - si la cuenta es NUEVA (vacía) → tu progreso local la siembra.
-// Después, cada cambio se sube solo.
+// nube.js — la NUBE es la única fuente de verdad. Login obligatorio.
+//   - Boot: al cargar (logueado) se hidrata el cache (localStorage) desde la nube ANTES de
+//     mostrar la app. localStorage es solo un cache descartable: en cada boot la nube manda.
+//   - Escrituras: write-through (el watcher sube cada cambio).
+//   - Realtime: cambios externos (intercambios) entran en vivo.
+//   - Sin sesión: la app no entra (Base muestra la pantalla de login).
 import { supa, haySupabase } from './supa.js';
 
 const PREFIJOS = ['ej:', 'col:'];
@@ -36,11 +37,12 @@ function limpiarLocal() {
   }
   claves.forEach((k) => localStorage.removeItem(k));
 }
-// reemplaza el progreso local por el de la nube (y marca _ultima para no re-subir lo viejo)
+// reemplaza el progreso local por el de la nube. _ultima se toma del CACHE real (post-aplicar),
+// no del crudo de la nube → evita la asimetría (claves null) que causaba reloads infinitos.
 function aplicarNube(estado) {
   limpiarLocal();
   aplicar(estado);
-  _ultima = serial(estado);
+  _ultima = serial(snapshot());
 }
 
 // ---- Supabase I/O ----
@@ -55,21 +57,29 @@ async function subir(userId, estado) {
   else _ultima = serial(estado);
 }
 
-// ---- al iniciar sesión: la cuenta manda (salvo que sea nueva) ----
-async function alLoguear(user) {
-  const nube = await bajar(user.id);
-  const tieneNube = nube && Object.keys(nube).length > 0;
-  if (tieneNube) {
-    // la nube manda: importar su progreso y descartar el local
-    const cambia = serial(nube) !== serial(snapshot());
-    aplicarNube(nube);
-    if (cambia) location.reload();           // reflejar lo importado (termina: tras aplicar, local == nube)
+// ---- boot: la NUBE manda. Hidrata el cache desde la nube una vez por carga de página. ----
+let _booteado = false;
+async function boot() {
+  if (_booteado || !_user) return;
+  _booteado = true;
+  const yaHidratado = sessionStorage.getItem('nube:hidratado') === '1';
+  const cloud = await bajar(_user.id);
+  if (cloud && Object.keys(cloud).length > 0) {
+    const antes = serial(snapshot());
+    aplicarNube(cloud);                        // la nube pisa el cache (setea _ultima)
+    if (!yaHidratado && antes !== serial(snapshot())) {
+      sessionStorage.setItem('nube:hidratado', '1');
+      location.reload();                       // reflejar lo importado; acotado (no loopea)
+      return;
+    }
   } else {
-    // cuenta nueva: el progreso local siembra la cuenta
+    // cuenta nueva / migración: el cache local siembra la cuenta una vez
     const local = snapshot();
-    if (Object.keys(local).length) await subir(user.id, local);
-    else _ultima = serial(local);
+    if (Object.keys(local).length) await subir(_user.id, local);
+    else _ultima = serial(snapshot());
   }
+  sessionStorage.setItem('nube:hidratado', '1');
+  window.dispatchEvent(new CustomEvent('nube:listo'));
 }
 
 // ---- watcher: mientras hay sesión, sube los cambios (debounced) ----
@@ -145,29 +155,27 @@ export async function loginGoogle() {
 }
 
 export async function logout() {
+  sessionStorage.removeItem('nube:hidratado');
   sessionStorage.removeItem('nube:fusionado');
+  _booteado = false;
   await supa.auth.signOut();
   location.reload();
 }
 
+let _inicializado = false;
 export function init() {
-  if (!haySupabase) return;
-  // Bajar de la nube y aplicar UNA vez por sesión (evita loops de recarga). Los cambios
-  // externos en vivo (intercambios) los trae la suscripción realtime, no este pull.
-  let fusionado = sessionStorage.getItem('nube:fusionado') === '1';
+  if (!haySupabase || _inicializado) return;
+  _inicializado = true;
   supa.auth.onAuthStateChange((evento, sesion) => {
     _user = (sesion && sesion.user) || null;
     window.dispatchEvent(new CustomEvent('nube:cambio', { detail: { user: _user } }));
     if (_user) {
-      if (!fusionado) {
-        fusionado = true;
-        sessionStorage.setItem('nube:fusionado', '1');
-        alLoguear(_user);
-      }
-      suscribirProgreso(_user.id);     // escuchar cambios externos (intercambios)
+      suscribirProgreso(_user.id);     // cambios externos (intercambios) en vivo
+      boot();                          // la nube manda: hidratar el cache
     } else {
-      sessionStorage.removeItem('nube:fusionado');
+      sessionStorage.removeItem('nube:hidratado');
       if (_canalProg) { supa.removeChannel(_canalProg); _canalProg = null; }
+      window.dispatchEvent(new CustomEvent('nube:sinsesion'));
     }
   });
   vigilar();
