@@ -122,15 +122,16 @@ const BASE = import.meta.env.BASE_URL || '/';
         const ganado = localStorage.getItem('proy:' + slug + ':ok') === '1';
         const sub = document.getElementById('lider-sub-' + slug);
         const est = document.getElementById('lider-est-' + slug);
+        // siempre clickeable: SE PUEDE LEER aunque no esté desbloqueado para completar
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', () => { window.location.href = href; });
         if (desbloqueado) {
           card.classList.remove('bloq');
-          // Hacer clickeable: convertir en enlace
-          card.style.cursor = 'pointer';
-          card.addEventListener('click', () => { window.location.href = href; });
           if (sub) sub.textContent = ganado ? '¡Líder vencido!' : 'Hacé clic para desafiarlo';
           if (est) est.textContent = ganado ? '🏅' : '→';
         } else {
-          if (sub) sub.textContent = done + '/' + total + ' ejercicios — completá el tema para desafiar al líder';
+          if (sub) sub.textContent = done + '/' + total + ' ejercicios — 📖 leelo ahora (completá el tema para vencerlo)';
+          if (est) est.textContent = '📖';
         }
       });
 
@@ -149,12 +150,16 @@ const BASE = import.meta.env.BASE_URL || '/';
         // así que comprobamos si todos están ganados revisando los slugs de líderes con :ok
         // En Fase 1 no hay integradores, así que esta lógica no se activa — dejamos bloqueada
         // a menos que ganado === true
+        // siempre clickeable: se puede leer
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', () => { window.location.href = href; });
         if (ganado) {
           card.classList.remove('bloq');
-          card.style.cursor = 'pointer';
-          card.addEventListener('click', () => { window.location.href = href; });
           if (sub) sub.textContent = '¡Completado!';
           if (est) est.textContent = '👑';
+        } else {
+          if (sub) sub.textContent = '📖 Leelo ahora (vencé a todos los líderes de la región para completarlo)';
+          if (est) est.textContent = '📖';
         }
       });
     })();

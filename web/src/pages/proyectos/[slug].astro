@@ -62,6 +62,16 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       return proyecto.pasos.length; // todos aprobados
     }
 
+    // ¿Tenés los ejercicios necesarios para COMPLETAR el proyecto? (leer siempre se puede).
+    // Líder: todos los ejercicios del tema. Integrador: todos los temas de la región.
+    function puedeCompletar() {
+      const temas = D.temas || [];
+      const temaCompleto = (t) => t.ejercicios.length > 0 && t.ejercicios.every((ex) => localStorage.getItem('ej:' + t.slug + ':' + ex.id + ':ok') === '1');
+      if (proyecto.tipo === 'integrador') return temas.filter((t) => t.region === proyecto.region).every(temaCompleto);
+      const tema = temas.find((t) => t.slug === proyecto.tema);
+      return !!tema && temaCompleto(tema);
+    }
+
     // Construir código acumulado (preamble + pasos 0..N, el actual usa el editor)
     function codigoAcumulado(n, editorActual) {
       const partes = [proyecto.preamble];
@@ -116,21 +126,28 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     // Render completo de todos los pasos
     const editors = {};
     function renderPasos() {
+      const completable = puedeCompletar();
       const actual = pasoActualIdx();
       const victoriaTotal = actual >= proyecto.pasos.length;
       const area = document.getElementById('proy-area');
       area.innerHTML = '';
 
-      if (victoriaTotal && localStorage.getItem(KEY_PROY_OK) === '1') {
+      if (!completable) {
+        const reqTxt = proyecto.tipo === 'integrador'
+          ? 'completar <b>todos los temas de la región</b>'
+          : 'completar <b>todos los ejercicios de este tema</b>';
+        area.innerHTML += '<div class="proy-lectura">📖 <b>Modo lectura.</b> Podés leer los pasos y probar el código con ▶ Ejecutar, pero para <b>vencer al líder y ganar la medalla</b> necesitás ' + reqTxt + ' primero.</div>';
+      }
+
+      if (completable && victoriaTotal && localStorage.getItem(KEY_PROY_OK) === '1') {
         const recId = proyecto.tipo === 'integrador' ? LEGENDARIOS[proyecto.region] : INSIGNIAS[proyecto.tema];
         const premio = recId ? ' y el Pokémon insignia <img src="' + spriteUrl(recId) + '" alt="Pokémon insignia" style="height:46px;vertical-align:middle;image-rendering:pixelated;">' : '';
         area.innerHTML += '<div class="ejer-resumen win" style="margin-bottom:1.2rem;">🏅 ¡Venciste a ' + esc(proyecto.lider) + '! Conseguiste la <b>medalla</b>' + premio + '.</div>';
       }
 
       proyecto.pasos.forEach((paso, i) => {
-        const aprobado = localStorage.getItem(KEY_PASO_OK(paso.id)) === '1';
-        const esActual = i === actual;
-        const bloqueado = i > actual;
+        const aprobado = completable && localStorage.getItem(KEY_PASO_OK(paso.id)) === '1';
+        const bloqueado = completable && i > actual;   // en modo lectura nada se bloquea: todo es legible
 
         const div = document.createElement('div');
         div.className = 'proy-paso' + (aprobado ? ' ok' : '') + (bloqueado ? ' bloq' : '');
@@ -154,20 +171,23 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
           return;
         }
 
-        // Paso actual — interactivo
+        // Paso interactivo (modo normal) o legible (modo lectura: Corregir bloqueado)
         html += '<p class="ej-prompt" style="margin:.3rem 0 .8rem; white-space:pre-wrap;">' + esc(paso.consigna) + '</p>';
         html += '<div class="cw"><div class="cw-bar"><span class="dots"><i></i><i></i><i></i></span><span class="cw-lang">python</span><span class="cw-hint">✎ editable</span></div><div id="editor-' + paso.id + '"></div></div>';
-        html += '<div class="ejer-acciones"><button class="btn-sec" id="run-' + paso.id + '" type="button">▶ Ejecutar</button><button class="btn-corregir" id="btn-' + paso.id + '" type="button">✅ Corregir paso</button><span class="ejer-estado" id="est-' + paso.id + '"></span></div>';
+        const btnCorregir = completable
+          ? '<button class="btn-corregir" id="btn-' + paso.id + '" type="button">✅ Corregir paso</button>'
+          : '<button class="btn-corregir" id="btn-' + paso.id + '" type="button" disabled title="Completá los ejercicios del tema para vencer al líder">🔒 Corregir (bloqueado)</button>';
+        html += '<div class="ejer-acciones"><button class="btn-sec" id="run-' + paso.id + '" type="button">▶ Ejecutar</button>' + btnCorregir + '<span class="ejer-estado" id="est-' + paso.id + '"></span></div>';
         html += '<div class="ejer-result" id="res-' + paso.id + '"></div>';
         div.innerHTML = html;
         area.appendChild(div);
 
-        // Crear editor
+        // Crear editor (Ctrl+Enter corrige si se puede, si no ejecuta)
         const guardado = localStorage.getItem(KEY_PASO(paso.id));
         const ed = editorPython({
           doc: guardado ?? paso.starter,
           parent: document.getElementById('editor-' + paso.id),
-          onRun: () => corregirPaso(i, ed, paso),
+          onRun: () => (completable ? corregirPaso(i, ed, paso) : ejecutarPaso(i, ed, paso)),
           onChange: (txt) => {
             clearTimeout(ed._t);
             ed._t = setTimeout(() => localStorage.setItem(KEY_PASO(paso.id), txt), 500);
@@ -176,7 +196,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
         editors[paso.id] = ed;
 
         // Botones
-        document.getElementById('btn-' + paso.id).addEventListener('click', () => corregirPaso(i, ed, paso));
+        if (completable) document.getElementById('btn-' + paso.id).addEventListener('click', () => corregirPaso(i, ed, paso));
         document.getElementById('run-' + paso.id).addEventListener('click', () => ejecutarPaso(i, ed, paso));
       });
     }

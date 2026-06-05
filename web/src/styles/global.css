@@ -969,6 +969,7 @@ body.claro .hero-home h1{ color:#eafff0; }
 .proy-base{ background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:10px 14px; margin:.6rem 0 1rem; }
 .proy-base summary{ cursor:pointer; font-weight:700; font-size:.9rem; color:var(--ink-soft); }
 .proy-base-pre{ margin:.6rem 0 0; background:var(--code-bg); color:#e8eaf2; border-radius:8px; padding:11px 14px; overflow:auto; font-family:var(--font-mono); font-size:12.5px; line-height:1.5; }
+.proy-lectura{ background:var(--paper-2); border:1px solid var(--yellow-deep); border-radius:12px; padding:11px 15px; margin:0 0 1.2rem; font-size:.92rem; line-height:1.45; }
 /* listas de desafíos en el perfil */
 .u-df-grupo{ margin-bottom:.9rem; }
 .u-df-lista{ display:flex; flex-direction:column; gap:5px; margin-top:6px; }
