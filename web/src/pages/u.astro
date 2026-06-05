@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import pokemon from '../data/pokemon.json';
 const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
+const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
 ---
 <Base title="Perfil — Python con Pokémon" active="">
   <main class="wrap u-wrap">
@@ -17,12 +18,23 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
         </div>
       </header>
 
+      <p class="u-desc" id="u-desc" hidden></p>
+      <div class="social-desc-card u-desc-edit" id="u-desc-edit" hidden>
+        <label class="t-nombre-l">Tu descripción</label>
+        <textarea id="u-desc-input" maxlength="200" rows="2" placeholder="Escribí algo sobre vos como entrenador/a…"></textarea>
+        <div class="social-desc-foot"><span id="u-desc-cnt">0/200</span><button class="btn-sec" id="u-desc-guardar" type="button">Guardar descripción</button></div>
+      </div>
       <div class="u-acciones" id="u-acciones"></div>
       <p class="social-msg" id="u-msg"></p>
 
       <section class="u-sec" id="u-titulos-sec" hidden>
         <h3 class="u-h">🏆 Títulos</h3>
         <div class="u-titulos" id="u-titulos"></div>
+      </section>
+
+      <section class="u-sec" id="u-regiones-sec" hidden>
+        <h3 class="u-h">🗺️ Regiones</h3>
+        <div class="u-regiones" id="u-regiones"></div>
       </section>
 
       <section class="u-sec">
@@ -32,12 +44,12 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
 
       <section class="u-sec">
         <h3 class="u-h">📕 Pokédex <span id="u-dex-n"></span></h3>
-        <div class="tr-grid" id="u-dex"></div>
+        <div id="u-dex"></div>
       </section>
 
       <section class="u-sec" id="u-logros-sec" hidden>
         <h3 class="u-h">🌟 Logros</h3>
-        <div class="u-logros" id="u-logros"></div>
+        <div class="logros-grid" id="u-logros"></div>
       </section>
     </article>
 
@@ -56,13 +68,17 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     </div>
   </main>
 
-  <script type="application/json" id="u-data" set:html={JSON.stringify({ nombres })}></script>
+  <script type="application/json" id="u-data" set:html={JSON.stringify({ nombres, regionDe })}></script>
   <script>
-    import { perfilPublico, sonAmigos, solicitar, crearOferta, haySupabase } from '../lib/social.js';
+    import { perfilPublico, sonAmigos, solicitar, crearOferta, guardarDescripcion, haySupabase } from '../lib/social.js';
     import { usuario, init as initNube } from '../lib/nube.js';
 
     const D = JSON.parse(document.getElementById('u-data').textContent);
     const nombres = D.nombres;
+    const regionDe = D.regionDe;
+    const REGEMOJI = { kanto: '🔴', johto: '⚪', hoenn: '🟢', sinnoh: '🔵', unova: '⚫', kalos: '🟠', otros: '📦' };
+    const REGNOM = { kanto: 'Kanto', johto: 'Johto', hoenn: 'Hoenn', sinnoh: 'Sinnoh', unova: 'Unova', kalos: 'Kalos', otros: 'Otros' };
+    const REGORD = ['kanto', 'johto', 'hoenn', 'sinnoh', 'unova', 'kalos'];
     const $ = (id) => document.getElementById(id);
     const B = (window.__BASE || '/').replace(/\/$/, '');
     const sprite = (id, sh) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${sh ? 'shiny/' : ''}${id}.png`;
@@ -73,18 +89,35 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
 
     let perfil = null, doy = [], pido = [];
 
+    const esc = (s) => (s || '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    function celda(id, at, shi) {
+      return `<div class="tr-cell"><img src="${sprite(id, false)}" title="${nombres[id] || id} (x${at[id]})" />`
+        + `<span class="tr-cnt">x${at[id]}</span>${shi.has(id) ? '<span class="u-shi">✨</span>' : ''}</div>`;
+    }
     function pintarPerfil(p) {
       const pub = p.publico || {};
       $('u-nombre').textContent = p.nombre || 'Entrenador/a';
       $('u-handle').textContent = '@' + p.handle;
       $('u-codigo').textContent = p.codigo_amigo;
       $('u-av').innerHTML = p.avatar ? `<img src="${sprite(p.avatar)}" alt="avatar" />` : '🎓';
+      if (p.descripcion) { $('u-desc').textContent = p.descripcion; $('u-desc').hidden = false; }
 
       const titulos = pub.titulos || [];
       if (titulos.length) {
         $('u-titulos-sec').hidden = false;
-        $('u-titulos').innerHTML = titulos.map((t) => `<span class="u-titulo">🏆 Campeón de ${t}</span>`).join('');
+        $('u-titulos').innerHTML = titulos.map((t) => `<span class="u-titulo">🏆 Campeón de ${esc(t)}</span>`).join('');
       }
+
+      const regiones = pub.regiones || [];
+      if (regiones.length) {
+        $('u-regiones-sec').hidden = false;
+        $('u-regiones').innerHTML = regiones.map((r) => {
+          const pct = r.total ? Math.round(r.hechas / r.total * 100) : 0;
+          return `<div class="u-reg ${r.campeon ? 'campeon' : ''}"><span class="u-reg-nom">${REGEMOJI[r.region] || '🔵'} ${esc(r.nombre)}${r.campeon ? ' 🏆' : ''}</span>`
+            + `<span class="u-reg-bar"><i style="width:${pct}%"></i></span><span class="u-reg-n">${r.hechas}/${r.total}</span></div>`;
+        }).join('');
+      }
+
       const c = pub.conteos || {};
       $('u-counts').innerHTML = [
         ['Pokédex', c.unicos || 0], ['total', c.total || 0],
@@ -93,31 +126,54 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
       ].map(([l, v]) => `<div><b>${v}</b><small>${l}</small></div>`).join('');
 
       const at = pub.atrapados || {}, shi = new Set(pub.shiny || []);
-      const ids = Object.keys(at).map(Number).filter((id) => at[id] > 0).sort((a, b) => a - b);
+      const ids = Object.keys(at).map(Number).filter((id) => at[id] > 0);
       $('u-dex-n').textContent = '(' + ids.length + ')';
-      $('u-dex').innerHTML = ids.length
-        ? ids.map((id) => `<div class="tr-cell"><img src="${sprite(id, false)}" title="${nombres[id] || id} (x${at[id]})" />`
-            + `<span class="tr-cnt">x${at[id]}</span>${shi.has(id) ? '<span class="u-shi">✨</span>' : ''}</div>`).join('')
-        : '<div class="tr-colec-vacio">Todavía no atrapó ninguno.</div>';
+      if (!ids.length) {
+        $('u-dex').innerHTML = '<div class="tr-colec-vacio">Todavía no atrapó ninguno.</div>';
+      } else {
+        const grupos = {};
+        ids.forEach((id) => { const r = regionDe[id] || 'otros'; (grupos[r] ||= []).push(id); });
+        const orden = REGORD.filter((r) => grupos[r]).concat(grupos.otros ? ['otros'] : []);
+        $('u-dex').innerHTML = orden.map((r) => {
+          const lista = grupos[r].sort((a, b) => a - b);
+          return `<div class="u-dex-reg"><div class="u-dex-reg-h">${REGEMOJI[r] || '📦'} ${REGNOM[r] || r} <small>(${lista.length})</small></div>`
+            + `<div class="tr-grid">${lista.map((id) => celda(id, at, shi)).join('')}</div></div>`;
+        }).join('');
+      }
 
       const logros = pub.logros || [];
       if (logros.length) {
         $('u-logros-sec').hidden = false;
-        $('u-logros').innerHTML = logros.map((l) => `<span class="u-logro" title="${l.nombre}">${l.ico}</span>`).join('');
+        $('u-logros').innerHTML = logros.map((l) =>
+          `<div class="logro hecho" title="${esc(l.desc)}"><span class="logro-ico">${l.ico}</span>`
+          + `<div class="logro-txt"><b>${esc(l.nombre)}</b><span>${esc(l.desc || '')}</span></div></div>`).join('');
       }
     }
 
     async function pintarAcciones() {
       const cont = $('u-acciones'); cont.innerHTML = '';
       const yo = usuario();
+      const esMio = yo && perfil.user_id === yo.id;
+      // descripción: editable solo en tu propio perfil
+      if (esMio) {
+        $('u-desc').hidden = true;
+        $('u-desc-edit').hidden = false;
+        const input = $('u-desc-input');
+        input.value = perfil.descripcion || '';
+        const cnt = () => { $('u-desc-cnt').textContent = input.value.length + '/200'; };
+        cnt(); input.oninput = cnt;
+        $('u-desc-guardar').onclick = async () => {
+          try { await guardarDescripcion(input.value); perfil.descripcion = input.value; $('u-msg').textContent = '✅ Descripción guardada.'; }
+          catch (e) { $('u-msg').textContent = '⚠️ ' + (e.message || e); }
+        };
+      }
       const linkBtn = document.createElement('button');
       linkBtn.className = 'btn-sec'; linkBtn.textContent = '🔗 Copiar link';
       linkBtn.addEventListener('click', () => {
         navigator.clipboard.writeText(location.origin + B + '/u?h=' + perfil.handle);
         linkBtn.textContent = '✓ copiado';
       });
-      // si no estás logueado, o es tu propio perfil → solo copiar link
-      if (yo && perfil.user_id !== yo.id) {
+      if (yo && !esMio) {
         const amigos = await sonAmigos(perfil.user_id).catch(() => false);
         if (amigos) {
           const b = document.createElement('button');

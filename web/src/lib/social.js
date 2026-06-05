@@ -10,15 +10,22 @@ const done = (slug, id) => localStorage.getItem(`ej:${slug}:${id}:ok`) === '1';
 export function snapshotPublico(temas) {
   const st = estado();
   const c = contexto(temas);
-  const logros = evaluar(temas).filter((l) => l.cumplido).map((l) => ({ ico: l.ico, nombre: l.nombre }));
-  let medallas = 0;
-  for (const t of temas) if (t.ejercicios.length && t.ejercicios.every((ex) => done(t.slug, ex.id))) medallas++;
-  const titulos = Object.entries(c.reg).filter(([, v]) => v).map(([r]) => REGN[r] || r);
+  const logros = evaluar(temas).filter((l) => l.cumplido).map((l) => ({ ico: l.ico, nombre: l.nombre, desc: l.desc }));
+  const REGORD = ['kanto', 'johto', 'hoenn', 'sinnoh', 'unova', 'kalos'];
+  const porReg = {};
+  for (const t of temas) (porReg[t.region] ||= []).push(t);
+  const regiones = REGORD.filter((r) => porReg[r]).map((r) => {
+    const ts = porReg[r];
+    const hechas = ts.filter((t) => t.ejercicios.length && t.ejercicios.every((ex) => done(t.slug, ex.id))).length;
+    return { region: r, nombre: REGN[r], hechas, total: ts.length, campeon: hechas === ts.length && ts.length > 0 };
+  });
+  const medallas = regiones.reduce((a, x) => a + x.hechas, 0);
+  const titulos = regiones.filter((x) => x.campeon).map((x) => x.nombre);
   return {
     atrapados: st.atrapados,
     shiny: [...st.shiny],
     conteos: { unicos: st.unicos, total: st.total, shinies: st.shiny.size, ejercicios: c.ejHechos },
-    medallas, titulos, logros,
+    medallas, titulos, regiones, logros,
   };
 }
 
@@ -45,6 +52,10 @@ export async function guardarPerfil({ handle, nombre, avatar, publico }) {
 export async function actualizarSnapshot(temas) {
   if (!haySupabase || !(await uid())) return;
   try { await supa.rpc('actualizar_publico', { p_publico: snapshotPublico(temas) }); } catch {}
+}
+export async function guardarDescripcion(desc) {
+  const { error } = await supa.rpc('actualizar_descripcion', { p_desc: desc });
+  if (error) throw error;
 }
 
 // ---- perfiles públicos / búsqueda ----

@@ -41,13 +41,13 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
           <div class="t-user-row">
             <span class="social-at">@</span>
             <input class="t-nombre" id="nombre" placeholder="tu_usuario" maxlength="20" autocapitalize="off" autocomplete="off" />
-            <button class="btn-sec t-guardar" id="social-guardar" type="button" hidden>Guardar</button>
+            <button class="t-crear" id="social-guardar" type="button" hidden>Crear</button>
           </div>
           <div class="t-rango" id="rango">Novato</div>
           <div class="social-meta" id="social-meta" hidden>
-            🎴 <b id="social-codigo"></b>
-            <button class="btn-sec" id="social-link" type="button">🔗 link</button>
-            <a class="btn-sec" id="social-vermio" target="_blank" rel="noopener">👁️ perfil</a>
+            <span class="cod-chip" title="Tu código de amigo">🎴 <b id="social-codigo"></b></span>
+            <button class="meta-btn" id="social-link" type="button">🔗 Copiar link</button>
+            <a class="meta-btn" id="social-vermio" target="_blank" rel="noopener">👁️ Ver perfil</a>
           </div>
           <p class="social-msg" id="social-msg"></p>
         </div>
@@ -112,33 +112,42 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
     const normHandle = (s) => (s || '').trim().toLowerCase().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 20);
     let perfilActual = null;
 
-    function mostrarPerfil(p) {
+    function bloquear(p) {
       perfilActual = p;
-      nombre.value = p.handle;
+      nombre.value = p.handle; nombre.readOnly = true;
       localStorage.setItem('liga:nombre', p.handle);
       $('social-codigo').textContent = p.codigo_amigo;
       $('social-vermio').href = B + '/u?h=' + p.handle;
       $('social-meta').hidden = false;
+      $('social-guardar').hidden = true;
+    }
+    function desbloquear() {
+      nombre.readOnly = false;
+      $('social-guardar').hidden = false;
+      $('social-meta').hidden = true;
+      $('social-msg').textContent = 'Elegí tu @usuario — no se puede cambiar después.';
     }
     async function cargar() {
-      $('social-guardar').hidden = !(haySupabase && usuario());
-      if (!haySupabase) { $('social-msg').textContent = ''; return; }
-      if (!usuario()) { $('social-meta').hidden = true; $('social-msg').textContent = 'Iniciá sesión (☁️) para perfil público y amigos.'; return; }
-      $('social-msg').textContent = '';
+      if (!haySupabase) { $('social-guardar').hidden = true; return; }
+      if (!usuario()) {
+        nombre.readOnly = false; $('social-guardar').hidden = true; $('social-meta').hidden = true;
+        $('social-msg').textContent = 'Iniciá sesión (☁️) para perfil público y amigos.'; return;
+      }
       try {
         const p = await miPerfil();
-        if (p) { mostrarPerfil(p); actualizarSnapshot(temas); }
-      } catch {}
+        if (p) { bloquear(p); $('social-msg').textContent = ''; actualizarSnapshot(temas); }
+        else { desbloquear(); }
+      } catch { desbloquear(); }
     }
     $('social-guardar').addEventListener('click', async () => {
       const handle = normHandle(nombre.value);
       if (handle.length < 3) { $('social-msg').textContent = '⚠️ Mínimo 3 caracteres (minúsculas, números o _).'; return; }
       nombre.value = handle; localStorage.setItem('liga:nombre', handle);
       const avatar = Number(localStorage.getItem('col:avatar')) || 0;
-      $('social-msg').textContent = 'Guardando…';
+      $('social-msg').textContent = 'Creando…';
       try {
-        mostrarPerfil(await guardarPerfil({ handle, nombre: handle, avatar, publico: snapshotPublico(temas) }));
-        $('social-msg').textContent = '✅ Guardado: @' + perfilActual.handle;
+        bloquear(await guardarPerfil({ handle, nombre: handle, avatar, publico: snapshotPublico(temas) }));
+        $('social-msg').textContent = '✅ ¡Usuario @' + perfilActual.handle + ' creado!';
       } catch (e) { $('social-msg').textContent = '⚠️ ' + (e.message || e); }
     });
     $('social-link').addEventListener('click', () => {
