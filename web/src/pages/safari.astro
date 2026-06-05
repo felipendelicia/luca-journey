@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import datos from '../data/ejercicios.json';
 import pokemon from '../data/pokemon.json';
-import pesos from '../data/rarezas.json';
+import pesos from '../data/aparicion.json';
 import { u } from '../lib/url.ts';
 
 const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.ejercicios.map((e) => ({ id: e.id })) }));

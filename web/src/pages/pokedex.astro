@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import datos from '../data/ejercicios.json';
 import pokemon from '../data/pokemon.json';
 import evoluciones from '../data/evoluciones.json';
+import aparicion from '../data/aparicion.json';
 import { u } from '../lib/url.ts';
 
 const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.ejercicios.map((e) => ({ id: e.id })) }));
@@ -34,7 +35,7 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
     <div id="secciones"></div>
   </div>
 
-  <script type="application/json" id="dex-data" set:html={JSON.stringify({ pokemon, temas, regiones: REGIONES, evoluciones })}></script>
+  <script type="application/json" id="dex-data" set:html={JSON.stringify({ pokemon, temas, regiones: REGIONES, evoluciones, aparicion })}></script>
   <script>
     import { sincronizar, estado, spriteUrl, evolucionesPosibles, evolucionar } from '../lib/coleccion.js';
     import { sonarExito } from '../lib/sonidos.js';
@@ -42,6 +43,14 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
     const D = JSON.parse(document.getElementById('dex-data').textContent);
     sincronizar(D.temas);
     const nombreDe = Object.fromEntries(D.pokemon.map((p) => [p.id, p.nombre]));
+    // rareza de aparición: "1 de cada X" (peso del Pokémon sobre el total). Menos común = más valioso.
+    const apar = D.aparicion || {};
+    const totalPeso = Object.values(apar).reduce((a, b) => a + b, 0) || 1;
+    function rarTxt(id) {
+      const w = apar[id] || 1; const x = Math.round(totalPeso / w);
+      const c = x >= 10000 ? '1/' + Math.round(x / 1000) + 'k' : x >= 1000 ? '1/' + (x / 1000).toFixed(1) + 'k' : '1/' + x;
+      return '<span class="poke-rar" title="aparición ≈ 1 de cada ' + x + '">' + c + '</span>';
+    }
     const $ = (id) => document.getElementById(id);
     const buscar = $('buscar'), sinres = $('sinres');
     let filtro = 'todos';
@@ -64,11 +73,11 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
           const attrs = 'data-num="' + p.id + '" data-nombre="' + p.nombre.toLowerCase() + '"';
           if (n > 0) {
             return '<div class="poke tengo' + (esShiny ? ' es-shiny' : '') + '" ' + attrs + ' title="' + p.nombre + '">' +
-              '<img loading="lazy" src="' + spriteUrl(p.id, esShiny) + '" alt="' + p.nombre + '" />' +
+              '<img loading="lazy" src="' + spriteUrl(p.id, esShiny) + '" alt="' + p.nombre + '" />' + rarTxt(p.id) +
               (esShiny ? '<span class="poke-shiny">✨</span>' : '') + (n > 1 ? '<span class="poke-x">x' + n + '</span>' : '') +
               '<span class="poke-nom">' + p.nombre + '</span></div>';
           }
-          return '<div class="poke falta" ' + attrs + ' title="???"><img loading="lazy" src="' + spriteUrl(p.id) + '" alt="?" /><span class="poke-nom">Nº ' + p.id + '</span></div>';
+          return '<div class="poke falta" ' + attrs + ' title="???"><img loading="lazy" src="' + spriteUrl(p.id) + '" alt="?" />' + rarTxt(p.id) + '<span class="poke-nom">Nº ' + p.id + '</span></div>';
         }).join('');
         return '<div class="dex-seccion"><h2 class="liga-h">' + label + '</h2><div class="poke-grid">' + celdas + '</div></div>';
       }).join('');
