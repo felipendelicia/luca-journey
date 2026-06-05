@@ -1,47 +1,36 @@
-// presencia.js — presencia GLOBAL: un canal único (app-wide) donde cada usuario logueado
-// se anuncia. Sirve para ver qué amigos están online (en cualquier página) y para recibir
-// invitaciones a intercambiar estés donde estés. Se inicia desde Base.astro.
-import { supa, haySupabase } from './supa.js';
+// presencia.js — presencia GLOBAL (canal 'presencia-global'): quién está online + recibir
+// invitaciones a intercambiar. Se inicia desde Base.astro.
+import { hayApi } from './api.js';
+import * as rt from './realtime.js';
+const haySupabase = hayApi;
 
-let _canal = null;
-let _presentes = new Set();      // user_ids online ahora
+let _iniciado = false;
+let _presentes = new Set();
 let _onInvite = null;
 let _miId = null;
-const _subs = new Set();         // callbacks que se enteran de cambios de presencia
+const _subs = new Set();
 
 export function iniciarPresencia(userId, handle, onInvitacion) {
-  if (!haySupabase || !userId || _canal) return;
-  _miId = userId;
-  _onInvite = onInvitacion;
-  _canal = supa.channel('presencia-global', { config: { presence: { key: userId } } });
-  _canal.on('presence', { event: 'sync' }, () => {
-    _presentes = new Set(Object.keys(_canal.presenceState()));
+  if (!hayApi || !userId || _iniciado) return;
+  _iniciado = true; _miId = userId; _onInvite = onInvitacion;
+  rt.unir('presencia-global');
+  rt.on('presencia', (p) => {
+    if (!p || p.topic !== 'presencia-global') return;
+    _presentes = new Set(p.ids || []);
     _subs.forEach((fn) => fn(_presentes));
   });
-  _canal.on('broadcast', { event: 'invitacion' }, ({ payload }) => {
-    if (payload && payload.to === _miId && _onInvite) _onInvite(payload);
-  });
-  _canal.subscribe((s) => { if (s === 'SUBSCRIBED') _canal.track({ handle: handle || '', at: Date.now() }); });
+  rt.on('broadcast', (payload) => { if (payload && payload.to === _miId && _onInvite) _onInvite(payload); });
 }
 
 export function estaOnline(userId) { return _presentes.has(userId); }
 export function presentes() { return _presentes; }
 
-// Suscribirse a cambios de presencia. Llama fn(set) al toque y en cada sync. Devuelve baja.
-export function onPresencia(fn) {
-  _subs.add(fn);
-  fn(_presentes);
-  return () => _subs.delete(fn);
-}
+export function onPresencia(fn) { _subs.add(fn); fn(_presentes); return () => _subs.delete(fn); }
 
-// Mandar una invitación de intercambio a un amigo (le llega esté en la página que esté).
 export function invitar(toId, codigo, deHandle) {
-  if (_canal) _canal.send({ type: 'broadcast', event: 'invitacion', payload: { to: toId, codigo, de: deHandle } });
+  rt.broadcast('presencia-global', { to: toId, codigo, de: deHandle });
 }
 
-export function detenerPresencia() {
-  if (_canal) { supa.removeChannel(_canal); _canal = null; }
-  _presentes = new Set();
-}
+export function detenerPresencia() { rt.salir('presencia-global'); _presentes = new Set(); _iniciado = false; }
 
 export { haySupabase };
