@@ -12,8 +12,8 @@ consola fueron migrados a la web y eliminados (quedan en el historial de git).
     Orden por frontmatter `order`; la agrupación del índice/riel está en `src/lib/grupos.mjs`.
   - `src/ejercicios/<tema>/` — `ejercicios.py`, `soluciones.py`, `test_ejercicios.py`
     (+ helpers) de cada tema. Son la fuente real de los ejercicios.
-  - `src/pages/` — `index`, `libro/[...slug]`, `ejercicios/[slug]/[ex]`, `liga`,
-    `playground`, `recursos`.
+  - `src/pages/` — `index`, `libro/[...slug]`, `ejercicios/[slug]/[ex]`, `liga`, `safari`,
+    `pokedex`, `intercambio`, `amigos`, `u` (perfil público), `recursos`.
   - `src/lib/runner.py` — corre **pytest en Pyodide** para corregir ejercicios.
   - `src/lib/url.ts` (`u()`) — prefija los links con el base path de Pages.
   - `scripts/sync-ejercicios.mjs` — divide cada `ejercicios.py` por función/clase, mapea
@@ -60,5 +60,5 @@ La CLI ya está **linkeada** a este proyecto:
   porque en Pages el sitio vive bajo `/luca-journey/`. En scripts de cliente usá `window.__BASE`.
 - **Deploy:** `npm run build` actualiza `docs/`; commiteá `docs/` junto con los cambios de `web/`.
 - **Correr Python en el navegador** es siempre vía Pyodide (CDN). Los ejercicios usan
-  `loadPackage('pytest')`; el código del libro/playground usa CodeMirror + Pyodide.
+  `loadPackage('pytest')`; el código del libro usa CodeMirror + Pyodide.
 - Tras tocar la UI, verificá con un screenshot del dev server antes de dar por hecho un cambio.

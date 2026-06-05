@@ -5,7 +5,6 @@ import { u } from '../lib/url.ts';
 const cards = [
   ['🧭', '¿Cómo funciona?', 'Guía del proyecto: todas las features y cómo sacarles el jugo.', '/ayuda'],
   ['📖', 'El libro', 'Toda la teoría del curso (Linux + Python), con ejemplos ejecutables.', '/libro'],
-  ['🎮', 'Playground', 'Escribí y ejecutá Python en el navegador, sin instalar nada.', '/playground'],
   ['🏋️', 'Ejercicios en vivo', 'Resolvé y corregí tus ejercicios con tests reales en el navegador.', '/ejercicios'],
   ['🏆', 'La Liga', 'Ganá EXP y medallas resolviendo ejercicios. Sé Campeón de Kanto.', '/liga'],
   ['📕', 'Pokédex', 'Coleccioná Pokémon: ganá Pokéballs y atrapalos en el Safari.', '/pokedex'],
@@ -21,7 +20,7 @@ const cards = [
       <p>Aprendé a programar desde cero — Linux, Python y mucha aventura — directo en tu navegador. 🏆</p>
       <div class="cta">
         <a class="btn-grande" href={u('/libro')}>📖 Empezar a leer</a>
-        <a class="btn-grande sec" href={u('/playground')}>🎮 Probar Python ya</a>
+        <a class="btn-grande sec" href={u('/ejercicios')}>🏋️ Resolver ejercicios</a>
         <a class="btn-grande sec" href={u('/safari')}>🎒 Atrapar Pokémon</a>
         <a class="btn-grande sec" href={u('/ayuda')}>🧭 ¿Cómo funciona?</a>
       </div>
