@@ -6,9 +6,10 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { ProgresoModule } from './progreso/progreso.module';
 import { RealtimeModule } from './realtime/realtime.module';
 import { IntercambiosModule } from './intercambios/intercambios.module';
+import { SocialModule } from './social/social.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, ProgresoModule, RealtimeModule, IntercambiosModule],
+  imports: [PrismaModule, AuthModule, ProgresoModule, RealtimeModule, IntercambiosModule, SocialModule],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
 export class AppModule {}
