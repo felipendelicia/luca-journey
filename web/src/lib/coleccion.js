@@ -154,6 +154,8 @@ export function tirar(pokemon, temas, pesos = {}) {
   // probabilidad de que apareciera justo este (su peso sobre el total del pool)
   const totalPeso = pool.reduce((a, p) => a + (pesos[p.id] || 1), 0);
   const prob = (pesos[elegido.id] || 1) / totalPeso;
+  // "aparece 1 de cada X intentos" (más intuitivo que el % chico)
+  const cadaCuantos = Math.max(1, Math.round(1 / prob));
   const at = get('col:atrapados', {});
   at[elegido.id] = (at[elegido.id] || 0) + 1;
   balls--;
@@ -166,5 +168,5 @@ export function tirar(pokemon, temas, pesos = {}) {
   }
   set('col:balls', balls);
   set('col:atrapados', at);
-  return { pokemon: elegido, cantidad: at[elegido.id], repetido: at[elegido.id] > 1, shiny, nuevoShiny, balls, prob };
+  return { pokemon: elegido, cantidad: at[elegido.id], repetido: at[elegido.id] > 1, shiny, nuevoShiny, balls, prob, cadaCuantos };
 }

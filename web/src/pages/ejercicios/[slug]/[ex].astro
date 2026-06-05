@@ -39,6 +39,7 @@ const payload = {
           <button class="btn-corregir" id="corregir" type="button" disabled={ex.tests.length === 0}>
             {ex.tests.length ? '✅ Corregir' : 'Sin test automático'}
           </button>
+          <button class="btn-sec" id="ejecutar" type="button">▶ Ejecutar</button>
           <button class="btn-sec" id="reset" type="button">↺ Reiniciar</button>
           <span class="ejer-estado" id="estado"></span>
         </div>
@@ -118,7 +119,12 @@ const payload = {
       if (todo) sonarExito(); else sonarError();
       localStorage.setItem(KEY(data.exId) + ':ok', todo ? '1' : '0');
       let h = '<div class="ejer-resumen ' + (todo ? 'win' : '') + '">' + ok + ' / ' + tot + ' tests' + (todo ? ' · +' + (ok * 10) + ' EXP · ¡COMPLETO! 🏅' : '') + '</div><ul class="ejer-lista">';
-      for (const t of tests) h += '<li class="' + (t.ok ? 'ok' : 'no') + '"><span class="ic">' + (t.ok ? '✅' : '❌') + '</span><code>' + esc(t.name) + '</code>' + (t.msg ? '<div class="m">' + esc(t.msg) + '</div>' : '') + '</li>';
+      for (const t of tests) {
+        h += '<li class="' + (t.ok ? 'ok' : 'no') + '"><span class="ic">' + (t.ok ? '✅' : '❌') + '</span><code>' + esc(t.name) + '</code>';
+        if (t.msg) h += '<div class="m">' + esc(t.msg) + '</div>';
+        if (t.out) h += '<div class="ej-out"><span class="lbl">🖨️ tus prints</span>' + esc(t.out) + '</div>';
+        h += '</li>';
+      }
       box.innerHTML = h + '</ul>';
     }
 
@@ -139,6 +145,26 @@ const payload = {
       } catch (e) { render([], (e && e.message) || String(e)); }
       finally { b.disabled = false; estado(''); }
     }
+
+    async function ejecutar() {
+      const b = document.getElementById('ejecutar');
+      b.disabled = true; estado('Ejecutando…');
+      const box = document.getElementById('result');
+      box.innerHTML = '';
+      try {
+        const py = await getPy();
+        py.globals.set('_code', data.preamble + '\n\n' + editor.state.doc.toString());
+        const res = JSON.parse(await py.runPythonAsync('ejecutar(_code)'));
+        let h = '<div class="ejer-run"><span class="lbl">▶ Ejecutar</span>';
+        if (res.out) h += '<pre class="ej-stdout">' + esc(res.out) + '</pre>';
+        if (res.ret !== null) h += '<div class="ej-ret">↩ devuelve <code>' + esc(res.ret) + '</code></div>';
+        if (!res.out && res.ret === null) h += '<div class="ej-vacio">Sin salida. Agregá <code>print(...)</code> o poné una llamada como última línea (ej. <code>mi_funcion(2, 3)</code>) para ver qué devuelve.</div>';
+        box.innerHTML = h + '</div>';
+      } catch (e) {
+        box.innerHTML = '<div class="ejer-err">⚠️ ' + esc((e && e.message) || e) + '</div>';
+      } finally { b.disabled = false; estado(''); }
+    }
+    document.getElementById('ejecutar').addEventListener('click', ejecutar);
 
     if (data.exTests.length) document.getElementById('corregir').addEventListener('click', corregir);
     document.getElementById('reset').addEventListener('click', () => {

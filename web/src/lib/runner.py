@@ -4,6 +4,30 @@
 import os
 import sys
 import json
+import ast
+import io
+import contextlib
+import traceback
+
+
+def ejecutar(code):
+    """Corre el código del alumno y devuelve {out, ret}: lo impreso (prints) y el valor
+    de la última expresión (si la última línea es una expresión, ej. una llamada)."""
+    g = {"__name__": "__main__"}
+    buf = io.StringIO()
+    ret = None
+    try:
+        tree = ast.parse(code)
+        ultimo = tree.body.pop() if (tree.body and isinstance(tree.body[-1], ast.Expr)) else None
+        with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(buf):
+            exec(compile(ast.Module(tree.body, []), "<ejercicio>", "exec"), g)
+            if ultimo is not None:
+                val = eval(compile(ast.Expression(ultimo.value), "<ejercicio>", "eval"), g)
+                if val is not None:
+                    ret = repr(val)
+    except Exception:
+        buf.write(traceback.format_exc())
+    return json.dumps({"out": buf.getvalue(), "ret": ret})
 
 
 def _msg(report):
@@ -52,16 +76,17 @@ def correr(slug, ejercicios_code, test_code, extra_json, solo_json="[]"):
         def pytest_runtest_logreport(self, report):
             nombre = report.nodeid.split("::")[-1]
             if report.when == "call":
-                self.res.append({"name": nombre, "ok": report.passed, "msg": "" if report.passed else _msg(report)})
+                salida = (getattr(report, "capstdout", "") or "").strip()
+                self.res.append({"name": nombre, "ok": report.passed, "msg": "" if report.passed else _msg(report), "out": salida})
             elif report.when == "setup" and report.outcome in ("failed", "error"):
-                self.res.append({"name": nombre, "ok": False, "msg": _msg(report)})
+                self.res.append({"name": nombre, "ok": False, "msg": _msg(report), "out": (getattr(report, "capstdout", "") or "").strip()})
 
         def pytest_collectreport(self, report):
             if report.failed and self.carga is None:
                 self.carga = _msg(report)
 
     rec = Recolector()
-    args = ["-p", "no:cacheprovider", "-q", "--no-header", "-o", "addopts="]
+    args = ["-p", "no:cacheprovider", "-q", "--no-header", "--capture=sys", "-o", "addopts="]
     if solo:
         args += [d + "/test_ejercicios.py::" + n for n in solo]
     else:
