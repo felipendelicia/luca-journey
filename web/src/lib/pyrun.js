@@ -1,0 +1,72 @@
+/* pyrun.js — wrapper main-thread para py-worker.js.
+   Crea el worker lazy y lo recrea si fue terminado por timeout.
+
+   export function run(helperSrc, packages, fn, args, timeoutMs = 10000): Promise<string>
+*/
+
+let worker = null;
+let pendingMap = new Map(); // id → { resolve, reject, timer }
+let nextId = 1;
+
+function getWorker() {
+  if (!worker) {
+    const base = (typeof window !== 'undefined' && window.__BASE) ? window.__BASE : '/';
+    const url = base.replace(/\/$/, '') + '/py-worker.js';
+    worker = new Worker(url);
+    worker.onmessage = (evt) => {
+      const { id, ok, result, error } = evt.data;
+      const pending = pendingMap.get(id);
+      if (!pending) return;
+      clearTimeout(pending.timer);
+      pendingMap.delete(id);
+      if (ok) {
+        pending.resolve(result);
+      } else {
+        pending.reject(new Error(error));
+      }
+    };
+    worker.onerror = (evt) => {
+      // Errores no capturados en el worker: rechazamos todos los pendientes.
+      const err = new Error(evt.message || 'Error en el worker de Python.');
+      for (const [, pending] of pendingMap) {
+        clearTimeout(pending.timer);
+        pending.reject(err);
+      }
+      pendingMap.clear();
+      worker = null;
+    };
+  }
+  return worker;
+}
+
+/**
+ * Corre una función Python en el worker.
+ * @param {string} helperSrc  - Código Python que define las funciones (se ejecuta una vez por hash).
+ * @param {string[]} packages - Paquetes Pyodide adicionales a cargar.
+ * @param {string} fn         - Nombre de la función Python a llamar.
+ * @param {string[]} args     - Argumentos string para la función.
+ * @param {number} timeoutMs  - Timeout en ms (default 10 s).
+ * @returns {Promise<string>} - El JSON string devuelto por la función Python.
+ */
+export function run(helperSrc, packages, fn, args, timeoutMs = 10000) {
+  return new Promise((resolve, reject) => {
+    const id = nextId++;
+    const w = getWorker();
+
+    const timer = setTimeout(() => {
+      // Timeout: terminar el worker para que no quede congelado.
+      if (worker) {
+        worker.terminate();
+        worker = null;
+      }
+      // Rechazar todos los pendientes (incluyendo éste).
+      for (const [, pending] of pendingMap) {
+        pending.reject(new Error('⏱️ Tu código tardó demasiado (¿bucle infinito? ej. un while sin fin).'));
+      }
+      pendingMap.clear();
+    }, timeoutMs);
+
+    pendingMap.set(id, { resolve, reject, timer });
+    w.postMessage({ id, helperSrc, packages, fn, args });
+  });
+}

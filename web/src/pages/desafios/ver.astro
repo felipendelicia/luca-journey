@@ -23,10 +23,10 @@ import Base from '../../layouts/Base.astro';
       </section>
     </article>
   </main>
-  <script is:inline src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
   <script>
     import { editorPython } from '../../lib/editor.js';
     import evalPy from '../../lib/desafios-eval.py?raw';
+    import { run } from '../../lib/pyrun.js';
     import { leerDesafio, registrarResolucion, solucionesDe, votar, reportarDesafio, borrarDesafio } from '../../lib/desafios.js';
     import { usuario, refrescarDesdeNube } from '../../lib/nube.js';
     const $ = (id) => document.getElementById(id);
@@ -34,8 +34,7 @@ import Base from '../../layouts/Base.astro';
     const REGN = { kanto:'🔴 Kanto', johto:'⚪ Johto', hoenn:'🟢 Hoenn', sinnoh:'🔵 Sinnoh', unova:'⚫ Unova', kalos:'🟠 Kalos', libre:'🎲 Libre' };
     const B = (window.__BASE || '/').replace(/\/$/, '');
     const id = new URLSearchParams(location.search).get('id');
-    let des = null, editor = null, py = null;
-    async function getPy() { if (!py) { py = await window.loadPyodide(); await py.runPythonAsync(evalPy); } return py; }
+    let des = null, editor = null;
 
     async function pintarSoluciones() {
       let sols = [];
@@ -90,11 +89,7 @@ import Base from '../../layouts/Base.astro';
       if (!usuario()) { $('dv-estado').textContent = 'Iniciá sesión para enviar.'; return; }
       const b = $('dv-enviar'); b.disabled = true; $('dv-estado').textContent = 'Corriendo…';
       try {
-        const p = await getPy();
-        p.globals.set('_cod', editor.state.doc.toString());
-        p.globals.set('_func', des.func);
-        p.globals.set('_casos', JSON.stringify(des.casos));
-        const res = JSON.parse(await p.runPythonAsync('evaluar(_cod, _func, _casos)'));
+        const res = JSON.parse(await run(evalPy, [], 'evaluar', [editor.state.doc.toString(), des.func, JSON.stringify(des.casos)]));
         const box = $('dv-result');
         if (res.ok) {
           let premio = 0;
