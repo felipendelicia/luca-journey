@@ -113,5 +113,10 @@ export async function pendientes() {
   if (error) return 0;
   return data || 0;
 }
+export async function listarPerfiles(limite, offset) {
+  const { data, error } = await supa.rpc('listar_perfiles', { p_limite: limite, p_offset: offset });
+  if (error) throw error;
+  return data || [];
+}
 
 export { haySupabase };

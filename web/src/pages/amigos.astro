@@ -40,13 +40,24 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
         <h2 class="liga-h">🧑‍🤝‍🧑 Mis amigos <span class="reg-estado" id="am-amigos-n"></span></h2>
         <div class="am-lista" id="am-amigos"></div>
       </section>
+
+      <section class="am-sec">
+        <h2 class="liga-h">🏆 Ranking de entrenadores <span class="reg-estado" id="am-todos-n"></span></h2>
+        <p class="liga-nota">Todos los entrenadores, ordenados por cantidad de Pokémon.</p>
+        <div class="am-lista" id="am-todos"></div>
+        <div class="am-pager" id="am-pager" hidden>
+          <button class="btn-sec" id="am-prev" type="button">← Anterior</button>
+          <span id="am-pag-info"></span>
+          <button class="btn-sec" id="am-next" type="button">Siguiente →</button>
+        </div>
+      </section>
     </div>
     <p class="social-msg" id="am-msg"></p>
   </main>
 
   <script type="application/json" id="am-data" set:html={JSON.stringify({ nombres })}></script>
   <script>
-    import { buscar, solicitar, responder, quitar, amigos, solicitudes, ofertas, responderOferta, cancelarOferta, haySupabase } from '../lib/social.js';
+    import { buscar, solicitar, responder, quitar, amigos, solicitudes, ofertas, responderOferta, cancelarOferta, listarPerfiles, haySupabase } from '../lib/social.js';
     import { usuario, init as initNube, refrescarDesdeNube } from '../lib/nube.js';
 
     const D = JSON.parse(document.getElementById('am-data').textContent);
@@ -146,7 +157,38 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
       });
     }
 
-    function refrescarTodo() { cargarSolicitudes(); cargarAmigos(); cargarOfertas(); }
+    const PAGE = 20; let pagU = 0;   // pager solo si hay > 20 entrenadores
+    async function cargarTodos() {
+      let lista = [];
+      try { lista = await listarPerfiles(PAGE, pagU * PAGE); } catch {}
+      const total = lista.length ? Number(lista[0].total) : 0;
+      const cont = $('am-todos'); cont.innerHTML = '';
+      $('am-todos-n').textContent = total || '';
+      if (!lista.length) { cont.innerHTML = '<p class="tr-colec-vacio">No hay otros entrenadores todavía.</p>'; $('am-pager').hidden = true; return; }
+      lista.forEach((p, i) => {
+        const rank = pagU * PAGE + i + 1;
+        const div = document.createElement('div'); div.className = 'am-fila';
+        div.innerHTML = `<span class="am-rank">#${rank}</span><div class="am-av">${avSprite(p.avatar)}</div>`
+          + `<a class="am-info" href="${B}/u?h=${p.handle}"><b>${p.nombre || '@' + p.handle}</b><span>@${p.handle} · 📕 ${p.pokes}</span></a>`;
+        const acc = document.createElement('div'); acc.className = 'am-acc';
+        acc.appendChild(btn('＋ Agregar', 'tr-aceptar', async (b) => {
+          b.disabled = true;
+          try { await solicitar({ handle: p.handle }); b.textContent = '✓ enviada'; }
+          catch (e) { b.disabled = false; msg('⚠️ ' + (e.message || e)); }
+        }));
+        div.appendChild(acc);
+        cont.appendChild(div);
+      });
+      const paginas = Math.ceil(total / PAGE);
+      $('am-pager').hidden = paginas <= 1;
+      $('am-pag-info').textContent = (pagU + 1) + ' / ' + paginas;
+      $('am-prev').disabled = pagU === 0;
+      $('am-next').disabled = pagU >= paginas - 1;
+    }
+    $('am-prev').addEventListener('click', () => { if (pagU > 0) { pagU--; cargarTodos(); } });
+    $('am-next').addEventListener('click', () => { pagU++; cargarTodos(); });
+
+    function refrescarTodo() { cargarSolicitudes(); cargarAmigos(); cargarOfertas(); cargarTodos(); }
 
     $('am-buscar').addEventListener('click', async () => {
       const q = $('am-q').value.trim();

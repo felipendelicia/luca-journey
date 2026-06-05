@@ -37,9 +37,19 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
       <div class="tarjeta-top">
         <div class="avatar" id="avatar" title="Elegí tu foto de perfil">🎓<span class="avatar-cam">📷</span></div>
         <div class="tarjeta-info">
-          <label class="t-nombre-l">Entrenador/a</label>
-          <input class="t-nombre" id="nombre" placeholder="Tu nombre" maxlength="20" />
+          <label class="t-nombre-l">Tu usuario</label>
+          <div class="t-user-row">
+            <span class="social-at">@</span>
+            <input class="t-nombre" id="nombre" placeholder="tu_usuario" maxlength="20" autocapitalize="off" autocomplete="off" />
+            <button class="btn-sec t-guardar" id="social-guardar" type="button" hidden>Guardar</button>
+          </div>
           <div class="t-rango" id="rango">Novato</div>
+          <div class="social-meta" id="social-meta" hidden>
+            🎴 <b id="social-codigo"></b>
+            <button class="btn-sec" id="social-link" type="button">🔗 link</button>
+            <a class="btn-sec" id="social-vermio" target="_blank" rel="noopener">👁️ perfil</a>
+          </div>
+          <p class="social-msg" id="social-msg"></p>
         </div>
         <div class="t-nivel"><span class="t-nivel-n" id="nivel">1</span><span class="t-nivel-l">nivel</span></div>
       </div>
@@ -53,23 +63,6 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
         <div><b id="st-reg">0</b><span>regiones</span></div>
       </div>
     </section>
-
-    <section class="social-card" id="social-card" hidden>
-      <h2 class="liga-h">👥 Tu perfil social</h2>
-      <p class="liga-nota">Elegí tu usuario único para tener un perfil público compartible y agregar amigos.</p>
-      <div class="social-row">
-        <span class="social-at">@</span>
-        <input id="social-handle" placeholder="tu_usuario" maxlength="20" autocapitalize="off" autocomplete="off" />
-        <button class="btn-sec" id="social-guardar" type="button">Guardar</button>
-      </div>
-      <p class="social-msg" id="social-msg"></p>
-      <div class="social-meta" id="social-meta" hidden>
-        <span>🎴 Código de amigo: <b id="social-codigo"></b></span>
-        <button class="btn-sec" id="social-link" type="button">🔗 Copiar link de mi perfil</button>
-        <a class="btn-sec" id="social-vermio" target="_blank" rel="noopener">👁️ Ver mi perfil</a>
-      </div>
-    </section>
-    <p class="social-login" id="social-login" hidden>Iniciá sesión (botón ☁️ arriba) para tener perfil público y amigos.</p>
 
     <h2 class="liga-h">🏆 Logros <span class="reg-estado" id="logros-n"></span></h2>
     <div class="logros-grid" id="logros"></div>
@@ -115,32 +108,37 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
     const temas = LD.regiones.flatMap((r) => r.temas.map((t) => ({ slug: t.slug, region: r.id, ejercicios: t.exIds.map((id) => ({ id })) })));
     const B = (window.__BASE || '/').replace(/\/$/, '');
     const $ = (id) => document.getElementById(id);
+    const nombre = $('nombre');
+    const normHandle = (s) => (s || '').trim().toLowerCase().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 20);
     let perfilActual = null;
 
     function mostrarPerfil(p) {
       perfilActual = p;
-      $('social-handle').value = p.handle;
+      nombre.value = p.handle;
+      localStorage.setItem('liga:nombre', p.handle);
       $('social-codigo').textContent = p.codigo_amigo;
       $('social-vermio').href = B + '/u?h=' + p.handle;
       $('social-meta').hidden = false;
     }
     async function cargar() {
-      if (!haySupabase) { $('social-card').hidden = true; $('social-login').hidden = true; return; }
-      if (!usuario()) { $('social-card').hidden = true; $('social-login').hidden = false; return; }
-      $('social-login').hidden = true; $('social-card').hidden = false;
+      $('social-guardar').hidden = !(haySupabase && usuario());
+      if (!haySupabase) { $('social-msg').textContent = ''; return; }
+      if (!usuario()) { $('social-meta').hidden = true; $('social-msg').textContent = 'Iniciá sesión (☁️) para perfil público y amigos.'; return; }
+      $('social-msg').textContent = '';
       try {
         const p = await miPerfil();
         if (p) { mostrarPerfil(p); actualizarSnapshot(temas); }
       } catch {}
     }
     $('social-guardar').addEventListener('click', async () => {
-      const handle = $('social-handle').value.trim().toLowerCase();
-      const nombre = localStorage.getItem('liga:nombre') || '';
+      const handle = normHandle(nombre.value);
+      if (handle.length < 3) { $('social-msg').textContent = '⚠️ Mínimo 3 caracteres (minúsculas, números o _).'; return; }
+      nombre.value = handle; localStorage.setItem('liga:nombre', handle);
       const avatar = Number(localStorage.getItem('col:avatar')) || 0;
       $('social-msg').textContent = 'Guardando…';
       try {
-        mostrarPerfil(await guardarPerfil({ handle, nombre, avatar, publico: snapshotPublico(temas) }));
-        $('social-msg').textContent = '✅ Perfil guardado: @' + perfilActual.handle;
+        mostrarPerfil(await guardarPerfil({ handle, nombre: handle, avatar, publico: snapshotPublico(temas) }));
+        $('social-msg').textContent = '✅ Guardado: @' + perfilActual.handle;
       } catch (e) { $('social-msg').textContent = '⚠️ ' + (e.message || e); }
     });
     $('social-link').addEventListener('click', () => {

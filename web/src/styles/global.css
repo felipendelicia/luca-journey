@@ -562,6 +562,11 @@ body.shiny-flash{ animation:shinyFlash .7s ease; }
 .social-card[hidden]{ display:none; }
 .social-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
 .social-at{ font-weight:800; color:var(--ink-mute); }
+.t-user-row{ display:flex; align-items:center; gap:6px; }
+.t-user-row .t-nombre{ flex:1; min-width:0; margin:0; }
+.t-user-row .social-at{ font-size:1.15rem; }
+.t-guardar{ flex:none; padding:6px 12px; }
+.tarjeta-info .social-meta{ font-size:.82rem; gap:8px; }
 .social-row input{ font:inherit; flex:1; min-width:140px; padding:9px 12px; border:1px solid var(--line); border-radius:12px; background:var(--card); color:var(--ink); }
 .social-msg{ font-size:.85rem; color:var(--ink-soft); margin:.5rem 0 0; min-height:1.1em; }
 .social-meta{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:.7rem; font-size:.9rem; }
@@ -606,6 +611,10 @@ body.shiny-flash{ animation:shinyFlash .7s ease; }
 .am-of-trato>div{ flex:1; }
 .am-chip{ width:38px; height:38px; image-rendering:pixelated; vertical-align:middle; }
 .am-acc a.btn-sec{ text-decoration:none; }
+.am-rank{ font-family:var(--font-mono); font-weight:800; color:var(--ink-mute); min-width:34px; text-align:right; flex:none; }
+.am-pager{ display:flex; gap:14px; align-items:center; justify-content:center; margin-top:.9rem; }
+.am-pager span{ font-family:var(--font-mono); color:var(--ink-soft); }
+.am-pager button[disabled]{ opacity:.4; cursor:default; }
 
 /* =======================================================================
    ▓▓▓  REDISEÑO: CONSOLA 8-BIT / CRT (oscuro · fósforo · neón)  ▓▓▓
