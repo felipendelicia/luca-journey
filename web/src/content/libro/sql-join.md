@@ -42,6 +42,14 @@ for nombre, debilidad in con.execute(sql):
 
 > 💡 `JOIN tipos t ON p.tipo = t.tipo` une cada fila de `pokemon` con la de `tipos` que tenga **el mismo tipo**. Las letras `p` y `t` son **apodos** (alias) para escribir menos.
 
+```quiz
+P: En `JOIN tipos t ON p.tipo = t.tipo`, ¿para qué sirven las letras `p` y `t`?
+- Son variables de Python que guardan los datos
++ Son alias (apodos) de las tablas para escribir menos
+- Son los nombres de las columnas a combinar
+> Los alias (`p` para `pokemon`, `t` para `tipos`) son apodos que se definen después del nombre de la tabla. Permiten escribir `p.nombre` en vez de `pokemon.nombre`.
+```
+
 ## 🎯 JOIN + WHERE
 
 Podés filtrar el resultado combinado como cualquier consulta:
@@ -57,6 +65,14 @@ con.executemany("INSERT INTO tipos VALUES (?, ?)", [("Fuego", "Agua"), ("Agua", 
 # ¿quiénes son débiles al Agua?
 sql = "SELECT p.nombre FROM pokemon p JOIN tipos t ON p.tipo = t.tipo WHERE t.debilidad = ?"
 print([f[0] for f in con.execute(sql, ("Agua",))])
+```
+
+```quiz
+P: ¿Por qué se divide la información en varias tablas en lugar de poner todo en una?
+- Porque SQLite no permite tablas con más de 3 columnas
+- Para que las consultas sean más rápidas siempre
++ Para no repetir los mismos datos en cada fila
+> La separación evita **redundancia**: si la debilidad del tipo Fuego cambia, la corregís en un solo lugar (tabla `tipos`), no en cada Pokémon de tipo Fuego.
 ```
 
 ## 📝 Resumen

@@ -38,6 +38,16 @@ import math as m             # le ponés un apodo: m.sqrt(16)
 
 ---
 
+```quiz
+P: ¿Qué diferencia hay entre `import math` y `from math import sqrt`?
+- Ninguna, hacen lo mismo
++ Con `import math` usás `math.sqrt()`; con `from math import sqrt` usás `sqrt()` directo
+- `from math import sqrt` descarga una versión más nueva de `math`
+> La segunda forma importa solo la función `sqrt` al espacio de nombres local, así la llamás sin el prefijo `math.`. Útil cuando usás mucho esa función.
+```
+
+---
+
 ## 🧰 Módulos estándar útiles
 
 ### `math` — matemática
@@ -165,6 +175,16 @@ flask>=3.0
 Se instalan todas juntas con:
 ```bash
 pip install -r requirements.txt
+```
+
+---
+
+```quiz
+P: ¿Para qué sirve un entorno virtual (`venv`)?
+- Para correr Python más rápido
++ Para tener las librerías de cada proyecto aisladas, sin mezclarse
+- Para instalar Python sin necesitar permisos de administrador
+> Cada proyecto puede tener sus propias versiones de librerías sin pisar las de otros proyectos. Es la práctica estándar en proyectos Python reales.
 ```
 
 ---

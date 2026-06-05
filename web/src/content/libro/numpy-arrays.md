@@ -69,6 +69,14 @@ print(equipo[:3])    # primeros tres -> [25 90 12]
 print(equipo[1:4])   # del 1 al 3     -> [90 12 70]
 ```
 
+```quiz
+P: ¿Qué imprime `np.arange(1, 5)`?
+- `[1, 2, 3, 4, 5]`
++ `[1 2 3 4]`
+- `[0 1 2 3 4]`
+> `np.arange(a, b)` genera valores desde `a` hasta `b-1`. El `5` no entra.
+```
+
 ## 🎭 Máscaras booleanas: filtrar por condición
 
 Una **máscara** es un array de `True/False`. La usás para **quedarte con lo que cumple una condición**.
@@ -79,6 +87,14 @@ import numpy as np
 niveles = np.array([25, 90, 12, 70, 5])
 print(niveles > 30)          # [False  True False  True False]
 print(niveles[niveles > 30]) # solo los que cumplen -> [90 70]
+```
+
+```quiz
+P: Dado `niveles = np.array([25, 90, 12, 70, 5])`, ¿qué devuelve `niveles[niveles > 30]`?
+- `[False True False True False]`
+- `[25, 12, 5]`
++ `[90 70]`
+> La máscara `niveles > 30` filtra y devuelve solo los valores que cumplen la condición: 90 y 70.
 ```
 
 ## 📐 Forma (shape) y matrices 2D

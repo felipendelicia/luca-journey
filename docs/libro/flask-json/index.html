@@ -63,6 +63,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 <code>r.get_json()</code> te devuelve la respuesta ya convertida a diccionario de Python. Es lo que usás para leer lo que mandó la API.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué función de Flask se usa para devolver un diccionario como respuesta JSON?</span></span>
+<span class="line"><span>- `json.dumps()`</span></span>
+<span class="line"><span>- `return dict()`</span></span>
+<span class="line"><span>+ `jsonify()`</span></span>
+<span class="line"><span>> `jsonify({...})` convierte el dict a JSON y setea el header `Content-Type: application/json` automáticamente. `json.dumps` solo convierte a texto, sin los headers correctos.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-devolver-listas">📋 Devolver listas</h2>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">from</span><span style="color:#ABB2BF"> flask </span><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> Flask, jsonify</span></span>
 <span class="line"><span style="color:#ABB2BF">app </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> Flask</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">__name__</span><span style="color:#ABB2BF">)</span></span>
@@ -74,6 +80,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#ABB2BF">c </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> app.</span><span style="color:#61AFEF">test_client</span><span style="color:#ABB2BF">()</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(c.</span><span style="color:#61AFEF">get</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"/equipo"</span><span style="color:#ABB2BF">).</span><span style="color:#61AFEF">get_json</span><span style="color:#ABB2BF">())</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Cómo leés el JSON de la respuesta en el cliente de pruebas de Flask?</span></span>
+<span class="line"><span>- `r.get_data()`</span></span>
+<span class="line"><span>- `r.json`</span></span>
+<span class="line"><span>+ `r.get_json()`</span></span>
+<span class="line"><span>> `.get_json()` parsea el cuerpo de la respuesta como JSON y te devuelve directamente el dict o lista de Python. `.get_data(as_text=True)` devuelve el texto crudo.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="️-una-mini-pokédex">🗂️ Una mini Pokédex</h2>
 <p>Podés armar respuestas tan ricas como quieras: diccionarios con listas adentro, etc.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">from</span><span style="color:#ABB2BF"> flask </span><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> Flask, jsonify</span></span>

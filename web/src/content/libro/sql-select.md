@@ -24,6 +24,14 @@ for fila in con.execute("SELECT nombre FROM pokemon WHERE nivel >= ?", (50,)):
 
 > 💡 `WHERE` filtra filas por una condición. Y de nuevo: el valor va con `?` y una tupla `(50,)`.
 
+```quiz
+P: ¿Qué cláusula SQL filtra filas por una condición?
+- ORDER BY
++ WHERE
+- GROUP BY
+> `WHERE` filtra qué filas entran al resultado. `ORDER BY` ordena el resultado y `GROUP BY` agrupa para calcular resúmenes.
+```
+
 ## ↕️ ORDER BY: ordenar
 
 ```python
@@ -63,6 +71,14 @@ con.executemany("INSERT INTO pokemon VALUES (?, ?)", [("A", 10), ("B", 90), ("C"
 # los 2 de mayor nivel
 for fila in con.execute("SELECT nombre FROM pokemon ORDER BY nivel DESC LIMIT 2"):
     print(fila[0])
+```
+
+```quiz
+P: ¿Qué hace `ORDER BY nivel DESC`?
+- Ordena los Pokémon de nivel más bajo a más alto
+- Ordena por nombre en vez de por nivel
++ Ordena de nivel más alto a más bajo
+> `DESC` = descendente (mayor a menor). `ASC` sería ascendente (menor a mayor), que es el orden por defecto.
 ```
 
 ## 📝 Resumen

@@ -38,6 +38,14 @@ todos = con.execute("SELECT nombre FROM pokemon").fetchall()
 print("todos:", todos)       # [('Pikachu',), ('Charizard',)]
 ```
 
+```quiz
+P: ¿Cuál es la diferencia entre `sqlite3.connect(":memory:")` y `sqlite3.connect("pokedex.db")`?
+- No hay diferencia, son equivalentes
+- `:memory:` es más lento porque trabaja en disco
++ `:memory:` es temporal (desaparece al terminar); `pokedex.db` guarda en un archivo real
+> `:memory:` crea la base de datos en la RAM — perfecta para practicar. Con un nombre de archivo, los datos **persisten** aunque el programa se cierre.
+```
+
 ## 💾 Guardar: commit
 
 Cuando **modificás** datos (INSERT/UPDATE/DELETE) en un archivo, hay que **confirmar** con `commit()` para que queden guardados.
@@ -54,6 +62,14 @@ print(con.execute("SELECT COUNT(*) FROM pokemon").fetchone()[0])
 ```
 
 > 💡 También existe el **cursor** (`cur = con.cursor()`), una forma más explícita de ejecutar y leer: `cur.execute(...)` y después `cur.fetchone()`. Para lo básico, usar `con.execute(...)` directo alcanza.
+
+```quiz
+P: Después de un `INSERT` en un archivo `.db`, ¿qué hay que hacer para que el dato quede guardado?
+- Cerrar la conexión con `con.close()`
+- Volver a abrir el archivo
++ Llamar a `con.commit()`
+> Sin `commit()`, los cambios (INSERT/UPDATE/DELETE) quedan en una **transacción abierta** y se pierden al cerrar. `commit()` los confirma definitivamente.
+```
 
 ## 📝 Resumen
 

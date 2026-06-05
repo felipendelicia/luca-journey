@@ -89,6 +89,16 @@ Lo ejecutás así: `./script.sh Charizard` → imprime "Capturaste a: Charizard"
 
 ---
 
+```quiz
+P: Ejecutás `chmod +x script.sh` y luego `./script.sh`. ¿Qué hace el `./`?
+- Muestra el contenido del script sin ejecutarlo
++ Indica que el archivo está en la carpeta actual y lo ejecuta
+- Es necesario para scripts bash pero no para Python
+> Sin `./`, la terminal busca el comando en las carpetas del `$PATH`. El `./` dice explícitamente "ejecutá este archivo que está acá mismo".
+```
+
+---
+
 ## ➡️ Redirección: `>` y `>>`
 
 La **redirección** manda la salida de un comando a un archivo en vez de a la pantalla.
@@ -109,6 +119,16 @@ Un **pipe** (tubería) conecta la salida de un comando con la entrada de otro. E
 ```bash
 ls | wc -l         # ls lista archivos, wc -l cuenta cuántas líneas → cuántos archivos hay
 cat equipo.txt | sort   # muestra el equipo ordenado alfabéticamente
+```
+
+---
+
+```quiz
+P: Querés agregar una línea al final de `equipo.txt` sin borrar lo que ya tiene. ¿Qué usás?
+- `echo "Snorlax" > equipo.txt`
++ `echo "Snorlax" >> equipo.txt`
+- `echo "Snorlax" | equipo.txt`
+> `>` reemplaza todo el contenido. `>>` agrega al final sin tocar lo que había. El pipe `|` conecta comandos, no escribe a archivos directamente.
 ```
 
 ---

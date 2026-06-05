@@ -64,6 +64,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#61AFEF">test_es_palindromo</span><span style="color:#ABB2BF">()</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"✅ verde"</span><span style="color:#ABB2BF">)</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: En TDD, ¿qué significa la fase "Rojo"?</span></span>
+<span class="line"><span>- El test pasó y el código está listo</span></span>
+<span class="line"><span>+ El test falla porque el código que prueba todavía no existe</span></span>
+<span class="line"><span>- El test tiene un error de sintaxis</span></span>
+<span class="line"><span>> En el ciclo Rojo → Verde → Refactor, el **rojo** es intencional: escribís el test antes que el código, así que falla. Es la señal de que hay algo por hacer.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-por-qué-tdd-funciona">🧭 Por qué TDD funciona</h2>
 <ul>
 <li><strong>Pensás primero qué querés</strong> (el test te obliga a definir el comportamiento).</li>
@@ -88,6 +94,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 En estos ejercicios el test ya está escrito por nosotros: tu trabajo es escribir el código que lo ponga en <strong>verde</strong>. Eso es vivir el lado lindo de TDD. 🟢</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Cuánto código debería escribir en la fase "Verde" del TDD?</span></span>
+<span class="line"><span>- Todo el código posible para cubrir casos futuros</span></span>
+<span class="line"><span>+ El mínimo necesario para que el test pase, nada más</span></span>
+<span class="line"><span>- Primero el test, después refactorizás antes de que pase</span></span>
+<span class="line"><span>> La idea es escribir lo **mínimo** para pasar el test. Nada de más. Si necesitás más casos, primero escribís otro test (rojo) y después lo implementás (verde).</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

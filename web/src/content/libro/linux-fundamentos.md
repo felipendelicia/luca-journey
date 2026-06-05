@@ -179,6 +179,16 @@ rm -r pokecenter         # borra una carpeta y todo su contenido (-r)
 
 ---
 
+```quiz
+P: Estás en `/home/felipe` y querés ir a `/home/felipe/pokecenter`. ¿Qué comando usás?
+- `cd /pokecenter`
+- `cd ~pokecenter`
++ `cd pokecenter`
+> Como ya estás en `/home/felipe`, podés usar la ruta relativa `pokecenter` directamente. La ruta absoluta `/home/felipe/pokecenter` también funciona, pero es más larga.
+```
+
+---
+
 ## 🛣️ Rutas absolutas vs relativas
 
 Una **ruta** es la dirección de un archivo o carpeta. Hay dos formas de escribirla:
@@ -203,6 +213,16 @@ Símbolos clave:
 - `..` → la carpeta de arriba (el nivel anterior).
 - `~` → tu home.
 - `/` → la raíz.
+
+---
+
+```quiz
+P: ¿Qué hace `mv pikachu.txt raichu.txt`?
+- Crea una copia de `pikachu.txt` con el nombre `raichu.txt`
+- Borra `pikachu.txt` y crea `raichu.txt` vacío
++ Renombra `pikachu.txt` a `raichu.txt`
+> `mv` mueve archivos, pero si el destino es un nombre en la misma carpeta, simplemente renombra. No crea copia: el archivo original desaparece con el nombre viejo.
+```
 
 ---
 

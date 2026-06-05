@@ -59,6 +59,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout cuidado"><span class="et">CUIDADO</span>
 <p>⚠️ <strong>El <code>WHERE</code> es clave.</strong> Un <code>UPDATE</code> <strong>sin</strong> <code>WHERE</code> cambia <strong>TODAS</strong> las filas. Es como darle una Poción a todo el PC de Bill a la vez.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué pasa si ejecutás `UPDATE pokemon SET nivel = 50` sin cláusula `WHERE`?</span></span>
+<span class="line"><span>- Solo actualiza el primer Pokémon de la tabla</span></span>
+<span class="line"><span>- Da un error: el WHERE es obligatorio</span></span>
+<span class="line"><span>+ Actualiza el nivel de TODOS los Pokémon a 50</span></span>
+<span class="line"><span>> Sin `WHERE`, `UPDATE` y `DELETE` afectan **todas** las filas. Siempre revisá que el `WHERE` esté antes de ejecutar.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-actualizar-usando-el-valor-actual">➕ Actualizar usando el valor actual</h2>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> sqlite3</span></span>
 <span class="line"><span style="color:#ABB2BF">con </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> sqlite3.</span><span style="color:#61AFEF">connect</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">":memory:"</span><span style="color:#ABB2BF">)</span></span>
@@ -85,6 +91,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout cuidado"><span class="et">CUIDADO</span>
 <p>⚠️ Igual que UPDATE: <code>DELETE</code> <strong>sin</strong> <code>WHERE</code> <strong>vacía la tabla entera</strong>. Siempre revisá el WHERE antes de ejecutar.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Cómo subirle 10 niveles a todos los Pokémon en una sola consulta SQL?</span></span>
+<span class="line"><span>- `UPDATE pokemon SET nivel = 10`</span></span>
+<span class="line"><span>- `UPDATE pokemon SET nivel = nivel WHERE nivel + 10`</span></span>
+<span class="line"><span>+ `UPDATE pokemon SET nivel = nivel + 10`</span></span>
+<span class="line"><span>> Podés usar el valor actual de la columna en el `SET`. `nivel = nivel + 10` suma 10 al valor que ya tiene cada fila.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

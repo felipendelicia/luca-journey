@@ -60,6 +60,13 @@ window.__BASE = base;})();</script> <script>
 <p>⚠️ <strong>La indentación importa.</strong> El código “adentro” del <code>if</code> va con <strong>4 espacios</strong> de sangría. Python usa esa sangría para saber qué está adentro y qué afuera. No es decorativo: es obligatorio.</p>
 </div>
 <hr>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué es lo que hace que el código adentro de un `if` se ejecute?</span></span>
+<span class="line"><span>- Que la línea empiece con cuatro espacios</span></span>
+<span class="line"><span>+ Que la condición sea verdadera (`True`)</span></span>
+<span class="line"><span>- Que la variable no sea `None`</span></span>
+<span class="line"><span>> La indentación le dice a Python qué código está "adentro", pero ese código solo se ejecuta si la condición del `if` es `True`.</span></span>
+<span class="line"><span></span></span></code></pre>
+<hr>
 <h2 id="-operadores-de-comparación">🔢 Operadores de comparación</h2>
 <p>Sirven para construir condiciones. Devuelven <code>True</code> o <code>False</code>:</p>
 
@@ -194,6 +201,13 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 Recordá: <code>range(5)</code> da <code>0, 1, 2, 3, 4</code> (empieza en 0, termina <strong>antes</strong> del 5).</p>
 </div>
+<hr>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué imprime `range(3)` si lo recorrés con `for i in range(3): print(i)`?</span></span>
+<span class="line"><span>- 1, 2, 3</span></span>
+<span class="line"><span>- 0, 1, 2, 3</span></span>
+<span class="line"><span>+ 0, 1, 2</span></span>
+<span class="line"><span>> `range(3)` genera los números del 0 al 2 (tres números). El límite final NO se incluye.</span></span>
+<span class="line"><span></span></span></code></pre>
 <hr>
 <h2 id="️-break-y-continue">⏭️ break y continue</h2>
 <p>Controlan el bucle desde adentro:</p>

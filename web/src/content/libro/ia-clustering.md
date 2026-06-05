@@ -39,6 +39,14 @@ modelo = KMeans(n_clusters=2, random_state=0, n_init=10).fit(X)
 print(modelo.predict([[1.5, 1.5]]))   # el grupo de los primeros
 ```
 
+```quiz
+P: ¿Qué diferencia al clustering (aprendizaje no supervisado) de la clasificación?
+- El clustering necesita más datos para funcionar
++ En clustering no hay etiquetas `y`; el modelo descubre los grupos solo
+- El clustering predice números en vez de categorías
+> En clasificación tenés `y` (las respuestas correctas). En clustering **no tenés `y`**: el modelo agrupa los datos por similitud sin que nadie le diga cuáles van juntos.
+```
+
 ## 🎯 Supervisado vs no supervisado
 
 | | Supervisado | No supervisado |
@@ -48,6 +56,14 @@ print(modelo.predict([[1.5, 1.5]]))   # el grupo de los primeros
 | **Ejemplos** | clasificación, regresión | clustering (KMeans) |
 
 > 💡 El clustering sirve para **explorar**: segmentar clientes, agrupar noticias parecidas, detectar familias de Pokémon... todo sin etiquetas previas.
+
+```quiz
+P: ¿Qué guarda `modelo.labels_` después de un `KMeans.fit(X)`?
+- Los centros (centroides) de cada grupo
+- Los datos de entrada `X` ordenados por grupo
++ Un número de grupo para cada dato de `X`
+> `labels_` es un arreglo con el mismo largo que `X`. Cada posición tiene el número de grupo al que pertenece ese dato: `[0, 0, 0, 1, 1, 1]` significa que los 3 primeros van al grupo 0 y los 3 últimos al grupo 1.
+```
 
 ## 📝 Resumen
 

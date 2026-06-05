@@ -112,6 +112,13 @@ window.__BASE = base;})();</script> <script>
 <span class="line"></span></code></pre>
 <p>Regla práctica: si querés <strong>usar</strong> el resultado después, usá <code>return</code>.</p>
 <hr>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: Una función tiene `print(x * 2)` en vez de `return x * 2`. Si hacés `resultado = mi_funcion(5)`, ¿qué vale `resultado`?</span></span>
+<span class="line"><span>- 10</span></span>
+<span class="line"><span>- 5</span></span>
+<span class="line"><span>+ `None`</span></span>
+<span class="line"><span>> Sin `return`, la función no devuelve nada útil: Python le asigna `None` a `resultado`. El `print` solo muestra en pantalla, no devuelve el valor.</span></span>
+<span class="line"><span></span></span></code></pre>
+<hr>
 <h2 id="️-valores-por-defecto">🎚️ Valores por defecto</h2>
 <p>Podés darle a un parámetro un valor por defecto, que se usa si no pasás nada:</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> atacar</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66;font-style:italic">nombre</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66;font-style:italic">dano</span><span style="color:#ABB2BF">=</span><span style="color:#D19A66">10</span><span style="color:#ABB2BF">):       </span><span style="color:#7F848E;font-style:italic"># dano vale 10 si no se especifica</span></span>
@@ -157,6 +164,13 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 Las lambda se usan mucho para ordenar o filtrar (lo vas a ver más adelante). Por ahora, alcanza con saber qué son.</p>
 </div>
+<hr>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: Tenés `def atacar(nombre, dano=10)`. ¿Qué imprime `atacar("Pikachu")`?</span></span>
+<span class="line"><span>+ Pikachu hizo 10 de daño</span></span>
+<span class="line"><span>- Error: falta el argumento `dano`</span></span>
+<span class="line"><span>- Pikachu hizo None de daño</span></span>
+<span class="line"><span>> `dano=10` es un valor por defecto: si no lo pasás, se usa 10 automáticamente.</span></span>
+<span class="line"><span></span></span></code></pre>
 <hr>
 <h2 id="-docstrings-documentar-tu-función">📖 Docstrings: documentar tu función</h2>
 <p>Un <strong>docstring</strong> es un texto (entre <code>"""triple comillas"""</code>) justo abajo del <code>def</code>, que explica qué hace la función.</p>

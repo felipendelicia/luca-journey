@@ -23,6 +23,14 @@ print(con.execute("SELECT * FROM pokemon").fetchall())
 
 > ⚠️ **El `WHERE` es clave.** Un `UPDATE` **sin** `WHERE` cambia **TODAS** las filas. Es como darle una Poción a todo el PC de Bill a la vez.
 
+```quiz
+P: ¿Qué pasa si ejecutás `UPDATE pokemon SET nivel = 50` sin cláusula `WHERE`?
+- Solo actualiza el primer Pokémon de la tabla
+- Da un error: el WHERE es obligatorio
++ Actualiza el nivel de TODOS los Pokémon a 50
+> Sin `WHERE`, `UPDATE` y `DELETE` afectan **todas** las filas. Siempre revisá que el `WHERE` esté antes de ejecutar.
+```
+
 ## ➕ Actualizar usando el valor actual
 
 ```python
@@ -53,6 +61,14 @@ print([f[0] for f in con.execute("SELECT nombre FROM pokemon")])
 ```
 
 > ⚠️ Igual que UPDATE: `DELETE` **sin** `WHERE` **vacía la tabla entera**. Siempre revisá el WHERE antes de ejecutar.
+
+```quiz
+P: ¿Cómo subirle 10 niveles a todos los Pokémon en una sola consulta SQL?
+- `UPDATE pokemon SET nivel = 10`
+- `UPDATE pokemon SET nivel = nivel WHERE nivel + 10`
++ `UPDATE pokemon SET nivel = nivel + 10`
+> Podés usar el valor actual de la columna en el `SET`. `nivel = nivel + 10` suma 10 al valor que ya tiene cada fila.
+```
 
 ## 📝 Resumen
 

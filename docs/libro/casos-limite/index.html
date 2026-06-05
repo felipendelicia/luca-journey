@@ -84,6 +84,12 @@ window.__BASE = base;})();</script> <script>
 
 
 <table><thead><tr><th>Tipo de dato</th><th>Casos límite a probar</th></tr></thead><tbody><tr><td>texto</td><td>vacío <code>""</code>, un solo carácter</td></tr><tr><td>número</td><td><code>0</code>, negativos, muy grande</td></tr><tr><td>lista</td><td>vacía <code>[]</code>, un solo elemento</td></tr><tr><td>división</td><td>dividir por <code>0</code></td></tr></tbody></table>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Por qué son tan importantes los casos límite en los tests?</span></span>
+<span class="line"><span>- Porque son los únicos casos que pytest ejecuta</span></span>
+<span class="line"><span>+ Porque los bugs se esconden en los bordes: vacío, cero, un elemento</span></span>
+<span class="line"><span>- Porque los casos normales nunca tienen errores</span></span>
+<span class="line"><span>> El caso `""` o `[]` o `0` es donde más bugs aparecen: funciones que asumen que la lista tiene algo, que el número es positivo, etc. Los casos normales suelen andar; los límites, no.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-testear-que-sí-lance-un-error">💥 Testear que SÍ lance un error</h2>
 <p>A veces lo correcto es que la función <strong>falle</strong>. ¿Cómo lo probás? Esperás el error con <code>try</code>/<code>except</code>: si <strong>no</strong> salta, el test debe fallar.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> probar_dividir</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66;font-style:italic">dividir</span><span style="color:#ABB2BF">):</span></span>
@@ -100,6 +106,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 En <code>pytest</code> esto se escribe más cortito con <code>with pytest.raises(ZeroDivisionError):</code>, pero la idea es la misma: <strong>verificar que el error ocurra</strong>.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: En un test, ¿cómo verificás que `dividir(5, 0)` lanza `ZeroDivisionError`?</span></span>
+<span class="line"><span>- `assert dividir(5, 0) == ZeroDivisionError`</span></span>
+<span class="line"><span>- `if dividir(5, 0): raise AssertionError()`</span></span>
+<span class="line"><span>+ Llamás `dividir(5, 0)` dentro de un `try/except ZeroDivisionError` y si NO lanza, fallás el test manualmente</span></span>
+<span class="line"><span>> Si el error **no** ocurre, el `except` no se activa y llegás al `raise AssertionError(...)` manual. En pytest también podés usar `with pytest.raises(ZeroDivisionError):`.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

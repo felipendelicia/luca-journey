@@ -74,6 +74,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 <code>JOIN tipos t ON p.tipo = t.tipo</code> une cada fila de <code>pokemon</code> con la de <code>tipos</code> que tenga <strong>el mismo tipo</strong>. Las letras <code>p</code> y <code>t</code> son <strong>apodos</strong> (alias) para escribir menos.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: En `JOIN tipos t ON p.tipo = t.tipo`, ¿para qué sirven las letras `p` y `t`?</span></span>
+<span class="line"><span>- Son variables de Python que guardan los datos</span></span>
+<span class="line"><span>+ Son alias (apodos) de las tablas para escribir menos</span></span>
+<span class="line"><span>- Son los nombres de las columnas a combinar</span></span>
+<span class="line"><span>> Los alias (`p` para `pokemon`, `t` para `tipos`) son apodos que se definen después del nombre de la tabla. Permiten escribir `p.nombre` en vez de `pokemon.nombre`.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-join--where">🎯 JOIN + WHERE</h2>
 <p>Podés filtrar el resultado combinado como cualquier consulta:</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> sqlite3</span></span>
@@ -87,6 +93,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#ABB2BF">sql </span><span style="color:#56B6C2">=</span><span style="color:#98C379"> "SELECT p.nombre FROM pokemon p JOIN tipos t ON p.tipo = t.tipo WHERE t.debilidad = ?"</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">([f[</span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">] </span><span style="color:#C678DD">for</span><span style="color:#ABB2BF"> f </span><span style="color:#C678DD">in</span><span style="color:#ABB2BF"> con.</span><span style="color:#61AFEF">execute</span><span style="color:#ABB2BF">(sql, (</span><span style="color:#98C379">"Agua"</span><span style="color:#ABB2BF">,))])</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Por qué se divide la información en varias tablas en lugar de poner todo en una?</span></span>
+<span class="line"><span>- Porque SQLite no permite tablas con más de 3 columnas</span></span>
+<span class="line"><span>- Para que las consultas sean más rápidas siempre</span></span>
+<span class="line"><span>+ Para no repetir los mismos datos en cada fila</span></span>
+<span class="line"><span>> La separación evita **redundancia**: si la debilidad del tipo Fuego cambia, la corregís en un solo lugar (tabla `tipos`), no en cada Pokémon de tipo Fuego.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

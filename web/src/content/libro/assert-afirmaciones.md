@@ -30,6 +30,14 @@ print(verificar_positivo(5))    # 5
 print(verificar_positivo(-2))   # 💥 AssertionError: n debe ser positivo
 ```
 
+```quiz
+P: ¿Qué pasa si ejecutás `assert 5 > 10, "el cinco no es mayor que diez"`?
+- No pasa nada: `assert` solo muestra advertencias
+- Lanza un `ValueError` con el mensaje
++ Lanza un `AssertionError` con el mensaje "el cinco no es mayor que diez"
+> Cuando la condición de `assert` es **falsa**, Python lanza `AssertionError`. El texto después de la coma es el mensaje que aparece para saber qué falló.
+```
+
 ## 🧪 assert como chequeo de supuestos
 
 Sirve para validar supuestos en medio de un cálculo:
@@ -52,6 +60,14 @@ print(promedio([10, 20, 30]))   # 20.0
 | **Ojo** | se puede desactivar (modo optimizado) | siempre activo |
 
 > 💡 Regla práctica: **`raise`** para validar datos que vienen de afuera; **`assert`** para verificar cosas que *deberían* ser ciertas si tu código está bien (y en los **tests**, que es lo que viene ahora).
+
+```quiz
+P: ¿Cuándo es mejor usar `raise` en vez de `assert`?
+- Cuando querés que el error tenga un mensaje
++ Cuando validás datos que vienen de afuera del programa (usuario, archivo, API)
+- Cuando estás escribiendo tests
+> `assert` puede desactivarse con el modo optimizado de Python. `raise` siempre actúa. Para validar entradas del usuario o datos externos, usá `raise`; para checks internos y tests, `assert`.
+```
 
 ## 📝 Resumen
 

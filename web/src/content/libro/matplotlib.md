@@ -28,6 +28,14 @@ plt.show()
 
 > 💡 El patrón es siempre el mismo: `fig, ax = plt.subplots()` crea el lienzo, después dibujás sobre `ax`, y `plt.show()` lo muestra.
 
+```quiz
+P: En matplotlib, ¿cuál es el rol de `fig, ax = plt.subplots()`?
+- Muestra el gráfico en pantalla.
+- Guarda el gráfico en un archivo.
++ Crea el lienzo (`fig`) y los ejes (`ax`) sobre los que vas a dibujar.
+> `plt.subplots()` es el primer paso: prepara el espacio. Después usás `ax.bar(...)`, `ax.plot(...)`, etc. para dibujar sobre ese lienzo.
+```
+
 ## 📈 Gráfico de línea
 
 Ideal para ver una evolución (ej: cómo sube el nivel con la experiencia).
@@ -44,6 +52,14 @@ ax.set_title("Nivel según experiencia")
 ax.set_xlabel("EXP")
 ax.set_ylabel("Nivel")
 plt.show()
+```
+
+```quiz
+P: ¿Qué tipo de gráfico usarías para ver cómo evoluciona el nivel de un Pokémon a lo largo de sus batallas?
+- `ax.bar(...)` — barras
++ `ax.plot(...)` — línea
+- `ax.scatter(...)` — dispersión
+> El gráfico de línea (`plot`) es ideal para mostrar una **evolución en el tiempo** o una secuencia. Las barras comparan categorías; la dispersión muestra relación entre dos variables.
 ```
 
 ## ⚬ Dispersión (scatter)

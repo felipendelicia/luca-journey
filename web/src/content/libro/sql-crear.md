@@ -35,6 +35,14 @@ for fila in con.execute("SELECT * FROM entrenadores"):
 
 > ⚠️ **Siempre usá `?`** para los valores (no los pegues con f-strings). Es más seguro: evita el famoso "SQL injection". SQLite reemplaza cada `?` por el valor de la tupla.
 
+```quiz
+P: ¿Por qué se usa `?` en lugar de poner el valor directo en el SQL?
+- Porque SQLite no acepta strings en el INSERT
+- Porque los `?` hacen la consulta más rápida
++ Para evitar SQL injection y que SQLite maneje el tipo correctamente
+> Pegar valores con f-strings abre la puerta al SQL injection. Los `?` son **parámetros seguros**: SQLite reemplaza cada `?` con el valor correspondiente de la tupla.
+```
+
 ## 📦 Insertar muchos de una: executemany
 
 ```python
@@ -49,6 +57,14 @@ print("Cargados:", con.execute("SELECT COUNT(*) FROM pokemon").fetchone()[0])
 ```
 
 > 💡 `executemany` corre el mismo INSERT para cada tupla de la lista. Ideal para cargar muchos datos juntos.
+
+```quiz
+P: ¿Qué tipo de columna usarías para guardar el nombre de un Pokémon?
++ `TEXT`
+- `INTEGER`
+- `REAL`
+> `TEXT` es para cadenas de texto. `INTEGER` es para números enteros y `REAL` para decimales.
+```
 
 ## 📝 Resumen
 

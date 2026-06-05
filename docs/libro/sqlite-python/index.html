@@ -70,6 +70,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#ABB2BF">todos </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> con.</span><span style="color:#61AFEF">execute</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"SELECT nombre FROM pokemon"</span><span style="color:#ABB2BF">).</span><span style="color:#61AFEF">fetchall</span><span style="color:#ABB2BF">()</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"todos:"</span><span style="color:#ABB2BF">, todos)       </span><span style="color:#7F848E;font-style:italic"># [('Pikachu',), ('Charizard',)]</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Cuál es la diferencia entre `sqlite3.connect(":memory:")` y `sqlite3.connect("pokedex.db")`?</span></span>
+<span class="line"><span>- No hay diferencia, son equivalentes</span></span>
+<span class="line"><span>- `:memory:` es más lento porque trabaja en disco</span></span>
+<span class="line"><span>+ `:memory:` es temporal (desaparece al terminar); `pokedex.db` guarda en un archivo real</span></span>
+<span class="line"><span>> `:memory:` crea la base de datos en la RAM — perfecta para practicar. Con un nombre de archivo, los datos **persisten** aunque el programa se cierre.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-guardar-commit">💾 Guardar: commit</h2>
 <p>Cuando <strong>modificás</strong> datos (INSERT/UPDATE/DELETE) en un archivo, hay que <strong>confirmar</strong> con <code>commit()</code> para que queden guardados.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> sqlite3</span></span>
@@ -84,6 +90,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 También existe el <strong>cursor</strong> (<code>cur = con.cursor()</code>), una forma más explícita de ejecutar y leer: <code>cur.execute(...)</code> y después <code>cur.fetchone()</code>. Para lo básico, usar <code>con.execute(...)</code> directo alcanza.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: Después de un `INSERT` en un archivo `.db`, ¿qué hay que hacer para que el dato quede guardado?</span></span>
+<span class="line"><span>- Cerrar la conexión con `con.close()`</span></span>
+<span class="line"><span>- Volver a abrir el archivo</span></span>
+<span class="line"><span>+ Llamar a `con.commit()`</span></span>
+<span class="line"><span>> Sin `commit()`, los cambios (INSERT/UPDATE/DELETE) quedan en una **transacción abierta** y se pierden al cerrar. `commit()` los confirma definitivamente.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

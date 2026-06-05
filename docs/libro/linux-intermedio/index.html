@@ -99,6 +99,13 @@ window.__BASE = base;})();</script> <script>
 <span class="line"></span></code></pre>
 <p>Lo ejecutás así: <code>./script.sh Charizard</code> → imprime “Capturaste a: Charizard”.</p>
 <hr>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: Ejecutás `chmod +x script.sh` y luego `./script.sh`. ¿Qué hace el `./`?</span></span>
+<span class="line"><span>- Muestra el contenido del script sin ejecutarlo</span></span>
+<span class="line"><span>+ Indica que el archivo está en la carpeta actual y lo ejecuta</span></span>
+<span class="line"><span>- Es necesario para scripts bash pero no para Python</span></span>
+<span class="line"><span>> Sin `./`, la terminal busca el comando en las carpetas del `$PATH`. El `./` dice explícitamente "ejecutá este archivo que está acá mismo".</span></span>
+<span class="line"><span></span></span></code></pre>
+<hr>
 <h2 id="️-redirección--y">➡️ Redirección: <code>></code> y <code>>></code></h2>
 <p>La <strong>redirección</strong> manda la salida de un comando a un archivo en vez de a la pantalla.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#56B6C2">echo</span><span style="color:#98C379"> "Pikachu"</span><span style="color:#ABB2BF"> > </span><span style="color:#98C379">equipo.txt</span><span style="color:#7F848E;font-style:italic">      # > CREA o REEMPLAZA el archivo</span></span>
@@ -113,6 +120,13 @@ window.__BASE = base;})();</script> <script>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">ls</span><span style="color:#ABB2BF"> | </span><span style="color:#61AFEF">wc</span><span style="color:#D19A66"> -l</span><span style="color:#7F848E;font-style:italic">         # ls lista archivos, wc -l cuenta cuántas líneas → cuántos archivos hay</span></span>
 <span class="line"><span style="color:#61AFEF">cat</span><span style="color:#98C379"> equipo.txt</span><span style="color:#ABB2BF"> | </span><span style="color:#61AFEF">sort</span><span style="color:#7F848E;font-style:italic">   # muestra el equipo ordenado alfabéticamente</span></span>
 <span class="line"></span></code></pre>
+<hr>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: Querés agregar una línea al final de `equipo.txt` sin borrar lo que ya tiene. ¿Qué usás?</span></span>
+<span class="line"><span>- `echo "Snorlax" > equipo.txt`</span></span>
+<span class="line"><span>+ `echo "Snorlax" >> equipo.txt`</span></span>
+<span class="line"><span>- `echo "Snorlax" | equipo.txt`</span></span>
+<span class="line"><span>> `>` reemplaza todo el contenido. `>>` agrega al final sin tocar lo que había. El pipe `|` conecta comandos, no escribe a archivos directamente.</span></span>
+<span class="line"><span></span></span></code></pre>
 <hr>
 <h2 id="-grep-buscar-texto">🔍 grep: buscar texto</h2>
 <p><code>grep</code> busca un texto dentro de archivos o de lo que le llega por pipe. Es tu <strong>detector de Pokémon</strong>.</p>

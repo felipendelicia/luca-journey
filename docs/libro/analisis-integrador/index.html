@@ -68,6 +68,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#ABB2BF">limpia </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> pokedex.</span><span style="color:#61AFEF">dropna</span><span style="color:#ABB2BF">().</span><span style="color:#61AFEF">reset_index</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75;font-style:italic">drop</span><span style="color:#56B6C2">=</span><span style="color:#D19A66">True</span><span style="color:#ABB2BF">)</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(limpia)</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué hace `pokedex.dropna().reset_index(drop=True)` en el paso de limpieza?</span></span>
+<span class="line"><span>- Rellena los valores faltantes con 0 y reinicia el índice.</span></span>
+<span class="line"><span>- Solo reinicia el índice sin tocar los NaN.</span></span>
+<span class="line"><span>+ Elimina las filas con valores faltantes y renumera el índice desde 0.</span></span>
+<span class="line"><span>> `dropna()` saca las filas con NaN. `reset_index(drop=True)` renumera las filas desde 0 (sin guardar el índice viejo como columna).</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="3️⃣-resumir-las-preguntas-clave">3️⃣ Resumir: las preguntas clave</h2>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> pandas </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> pd</span></span>
 <span class="line"><span style="color:#ABB2BF">pokedex </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> pd.</span><span style="color:#61AFEF">DataFrame</span><span style="color:#ABB2BF">({</span></span>
@@ -81,6 +87,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"promedio por tipo:"</span><span style="color:#ABB2BF">)</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pokedex.</span><span style="color:#61AFEF">groupby</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"tipo"</span><span style="color:#ABB2BF">)[</span><span style="color:#98C379">"nivel"</span><span style="color:#ABB2BF">].</span><span style="color:#61AFEF">mean</span><span style="color:#ABB2BF">())</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿En qué orden van los pasos del flujo de análisis de datos?</span></span>
+<span class="line"><span>- Limpiar → Cargar → Resumir → Explorar → Graficar</span></span>
+<span class="line"><span>- Graficar → Resumir → Limpiar → Cargar → Explorar</span></span>
+<span class="line"><span>+ Cargar → Explorar → Limpiar → Resumir → Graficar</span></span>
+<span class="line"><span>> El orden es siempre: primero cargás los datos, los explorás (`head`, `describe`), los limpiás (NaN, duplicados), los resumís (`groupby`, `mean`) y finalmente graficás.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="4️⃣-graficar-la-conclusión">4️⃣ Graficar la conclusión</h2>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> pandas </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> pd</span></span>
 <span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> matplotlib.pyplot </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> plt</span></span>

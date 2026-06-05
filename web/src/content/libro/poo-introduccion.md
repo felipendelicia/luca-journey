@@ -61,6 +61,16 @@ print(pikachu.nivel)     # 25
 
 ---
 
+```quiz
+P: En `def __init__(self, nombre, nivel)`, ¿para qué sirve `self`?
+- Es el nombre de la clase
+- Es el primer argumento que pasás al crear el objeto
++ Es el propio objeto: sirve para guardar datos adentro con `self.algo`
+> `self` siempre es el primer parámetro de los métodos y representa al objeto. Python lo pasa solo; vos no lo escribís cuando llamás el método.
+```
+
+---
+
 ## 📊 Atributos: los datos del objeto
 
 Los **atributos** son las variables que viven dentro de un objeto (`self.nombre`, `self.nivel`...). Son sus "stats".
@@ -155,6 +165,16 @@ print(equipo)           # [Pokemon(nombre='Pikachu', nivel=25)]
 ```
 
 > 💡 Regla práctica: `__str__` para el usuario (lindo), `__repr__` para vos (preciso). Si solo vas a definir uno, definí `__repr__`.
+
+---
+
+```quiz
+P: Tenés `pikachu = Pokemon("Pikachu", 25)` y `charizard = Pokemon("Charizard", 50)`. Si hacés `pikachu.nivel = 26`, ¿cambia el nivel de Charizard?
++ No, cada objeto tiene sus propios atributos
+- Sí, todos los objetos de la misma clase comparten atributos
+- Depende si la clase usa `self` o no
+> Cada instancia (objeto) tiene su propio espacio de datos. Cambiar `pikachu.nivel` no afecta a `charizard` ni a ningún otro objeto.
+```
 
 ---
 

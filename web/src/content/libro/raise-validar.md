@@ -34,6 +34,14 @@ def validar_nivel(nivel):
 print(validar_nivel(50))    # 50
 ```
 
+```quiz
+P: ¿Para qué se usa `raise` en una función?
+- Para mostrar un mensaje de advertencia sin detener el programa
++ Para lanzar un error y cortar la ejecución cuando los datos son inválidos
+- Para reintentar la operación que falló
+> `raise` lanza una excepción **intencionalmente**. Cortás de inmediato y le avisás a quien llamó la función qué salió mal, con un mensaje claro.
+```
+
 ## 🧬 Elegir el tipo de error
 
 Usá el error que mejor describe el problema:
@@ -70,6 +78,14 @@ except ValueError as e:
 ```
 
 > 💡 `except ValueError as e` guarda el error en `e` para leer su mensaje. Así informás sin crashear.
+
+```quiz
+P: Si recibís un número entero donde esperabas un string, ¿qué error deberías lanzar?
++ `TypeError`
+- `ValueError`
+- `IndexError`
+> `TypeError` es para cuando el **tipo** está mal (esperabas texto, llegó un número). `ValueError` es cuando el tipo está bien pero el valor no tiene sentido (ej: edad negativa).
+```
 
 ## 📝 Resumen
 

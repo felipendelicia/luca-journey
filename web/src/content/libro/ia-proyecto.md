@@ -45,6 +45,14 @@ tipo = modelo.predict([stats])[0]
 print("Predicción:", "Fuego" if tipo == 0 else "Agua")
 ```
 
+```quiz
+P: ¿En qué orden correcto se aplican los 4 pasos de un proyecto de ML?
+- Entrenar → dividir → preparar → evaluar
+- Dividir → preparar → entrenar → evaluar
++ Preparar datos → dividir train/test → entrenar → evaluar
+> Primero separás features de etiquetas (preparar), después dividís en train/test para no hacer trampa, luego entrenás el modelo y finalmente evaluás con el test set.
+```
+
 ## 🧠 Lo que aprendiste en Unova
 
 1. **ML** = aprender de ejemplos (`fit` / `predict`).
@@ -56,6 +64,14 @@ print("Predicción:", "Fuego" if tipo == 0 else "Agua")
 7. **Clustering** — agrupar sin etiquetas (KMeans).
 
 Con esto entendés la base de la IA moderna. Las redes neuronales y los modelos gigantes (como los que generan texto) son **la misma idea, a lo grande**: aprender de un montón de ejemplos. 🚀
+
+```quiz
+P: En el pipeline del proyecto, `X = datos[:, :-1]` hace ¿qué?
+- Selecciona solo la última columna del arreglo
++ Selecciona todas las columnas menos la última (las features)
+- Selecciona las primeras dos columnas
+> `[:, :-1]` significa "todas las filas, todas las columnas excepto la última". La última columna es la etiqueta `y`; el resto son las features `X`.
+```
 
 ## ➡️ ¿Y ahora qué?
 

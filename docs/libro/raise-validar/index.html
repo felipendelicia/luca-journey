@@ -66,6 +66,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#61AFEF">validar_nivel</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">50</span><span style="color:#ABB2BF">))    </span><span style="color:#7F848E;font-style:italic"># 50</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Para qué se usa `raise` en una función?</span></span>
+<span class="line"><span>- Para mostrar un mensaje de advertencia sin detener el programa</span></span>
+<span class="line"><span>+ Para lanzar un error y cortar la ejecución cuando los datos son inválidos</span></span>
+<span class="line"><span>- Para reintentar la operación que falló</span></span>
+<span class="line"><span>> `raise` lanza una excepción **intencionalmente**. Cortás de inmediato y le avisás a quien llamó la función qué salió mal, con un mensaje claro.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-elegir-el-tipo-de-error">🧬 Elegir el tipo de error</h2>
 <p>Usá el error que mejor describe el problema:</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> solo_texto</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66;font-style:italic">x</span><span style="color:#ABB2BF">):</span></span>
@@ -109,6 +115,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 <code>except ValueError as e</code> guarda el error en <code>e</code> para leer su mensaje. Así informás sin crashear.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: Si recibís un número entero donde esperabas un string, ¿qué error deberías lanzar?</span></span>
+<span class="line"><span>+ `TypeError`</span></span>
+<span class="line"><span>- `ValueError`</span></span>
+<span class="line"><span>- `IndexError`</span></span>
+<span class="line"><span>> `TypeError` es para cuando el **tipo** está mal (esperabas texto, llegó un número). `ValueError` es cuando el tipo está bien pero el valor no tiene sentido (ej: edad negativa).</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

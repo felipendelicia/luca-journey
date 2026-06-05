@@ -59,6 +59,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 pandas se importa como <code>pd</code>, siempre. Y por dentro usa NumPy: una Series es un array con etiquetas.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué diferencia hay entre una `Series` y un `DataFrame` en pandas?</span></span>
+<span class="line"><span>- Una Series tiene etiquetas; un DataFrame no.</span></span>
+<span class="line"><span>+ Una Series es una columna; un DataFrame es una tabla con muchas columnas.</span></span>
+<span class="line"><span>- Son lo mismo, solo cambia el nombre.</span></span>
+<span class="line"><span>> Una `Series` es una sola columna con etiquetas. Un `DataFrame` agrupa muchas Series en una tabla completa (como una Pokédex).</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="️-crear-un-dataframe">🗂️ Crear un DataFrame</h2>
 <p>Lo más común: desde un <strong>diccionario</strong> donde cada clave es una columna.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> pandas </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> pd</span></span>
@@ -95,6 +101,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(pokedex[</span><span style="color:#98C379">"nivel"</span><span style="color:#ABB2BF">].</span><span style="color:#61AFEF">mean</span><span style="color:#ABB2BF">())     </span><span style="color:#7F848E;font-style:italic"># promedio de la columna</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#56B6C2">list</span><span style="color:#ABB2BF">(pokedex.columns))       </span><span style="color:#7F848E;font-style:italic"># nombres de columnas</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué devuelve `pokedex.shape` si el DataFrame tiene 4 Pokémon y 3 columnas?</span></span>
+<span class="line"><span>- `(3, 4)`</span></span>
+<span class="line"><span>- `12`</span></span>
+<span class="line"><span>+ `(4, 3)`</span></span>
+<span class="line"><span>> `.shape` devuelve `(filas, columnas)`. Primero las filas, después las columnas.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-agregar-una-columna">➕ Agregar una columna</h2>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> pandas </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> pd</span></span>
 <span class="line"><span style="color:#ABB2BF">pokedex </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> pd.</span><span style="color:#61AFEF">DataFrame</span><span style="color:#ABB2BF">({</span><span style="color:#98C379">"nombre"</span><span style="color:#ABB2BF">: [</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Charizard"</span><span style="color:#ABB2BF">], </span><span style="color:#98C379">"nivel"</span><span style="color:#ABB2BF">: [</span><span style="color:#D19A66">25</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">90</span><span style="color:#ABB2BF">]})</span></span>

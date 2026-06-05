@@ -61,6 +61,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 <code>&#x3C;int:n></code> dice que <code>n</code> es un <strong>número</strong>. Sin <code>int:</code> llegaría como texto. También podés usar <code>&#x3C;nombre></code> para texto.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: En la ruta `@app.route("/pokemon/&#x3C;int:n>")`, ¿qué significa `int:`?</span></span>
+<span class="line"><span>- Que la ruta solo funciona con métodos enteros.</span></span>
+<span class="line"><span>- Que `n` puede ser cualquier texto.</span></span>
+<span class="line"><span>+ Que Flask convierte el valor de la URL a `int` antes de pasárselo a la función.</span></span>
+<span class="line"><span>> Sin `int:`, el valor llega como texto (`"25"`). Con `int:n`, Flask lo convierte a número entero (`25`) automáticamente.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-parámetros-de-texto">🔤 Parámetros de texto</h2>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">from</span><span style="color:#ABB2BF"> flask </span><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> Flask</span></span>
 <span class="line"><span style="color:#ABB2BF">app </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> Flask</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">__name__</span><span style="color:#ABB2BF">)</span></span>
@@ -72,6 +78,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#ABB2BF">c </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> app.</span><span style="color:#61AFEF">test_client</span><span style="color:#ABB2BF">()</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(c.</span><span style="color:#61AFEF">get</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"/saludo/Ash"</span><span style="color:#ABB2BF">).</span><span style="color:#61AFEF">get_data</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75;font-style:italic">as_text</span><span style="color:#56B6C2">=</span><span style="color:#D19A66">True</span><span style="color:#ABB2BF">))   </span><span style="color:#7F848E;font-style:italic"># Hola, Ash</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Cómo se lee el parámetro `tipo` de la URL `/buscar?tipo=Fuego` en Flask?</span></span>
+<span class="line"><span>- `request.json["tipo"]`</span></span>
+<span class="line"><span>- `request.path["tipo"]`</span></span>
+<span class="line"><span>+ `request.args.get("tipo")`</span></span>
+<span class="line"><span>> Los parámetros de query (lo que va después del `?`) se leen con `request.args.get("clave")`. `request.json` es para el cuerpo de un POST.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-query-strings-filtros-con">❓ Query strings: filtros con ?</h2>
 <p>Lo que va después del <code>?</code> en la URL son <strong>parámetros de consulta</strong>. Se leen con <code>request.args</code>.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">from</span><span style="color:#ABB2BF"> flask </span><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> Flask, jsonify, request</span></span>

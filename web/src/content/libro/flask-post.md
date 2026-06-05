@@ -27,6 +27,14 @@ print(r.get_json())            # {'nombre': 'Mew', 'nivel': 70}
 
 > 💡 `request.json` te da el cuerpo del pedido ya convertido a diccionario. En el cliente, `c.post(url, json={...})` manda ese cuerpo.
 
+```quiz
+P: ¿Cómo se lee el cuerpo JSON que mandó el cliente en una ruta POST de Flask?
+- `request.args.get("datos")`
+- `request.body`
++ `request.json`
+> `request.json` parsea automáticamente el cuerpo JSON del pedido y te da un diccionario. `request.args` es para la query string (lo del `?`).
+```
+
 ## ➕ Usar los datos recibidos
 
 ```python
@@ -40,6 +48,14 @@ def sumar():
 
 c = app.test_client()
 print(c.post("/sumar", json={"a": 25, "b": 17}).get_json())   # {'suma': 42}
+```
+
+```quiz
+P: ¿Qué código de estado HTTP se usa por convención cuando una API **crea** un recurso nuevo?
+- `200`
+- `404`
++ `201`
+> `200` significa "OK" (pedido procesado). `201` significa "Creado": se usa cuando el resultado del POST fue crear algo nuevo. `404` es "no encontrado".
 ```
 
 ## 🏷️ Devolver un código de estado

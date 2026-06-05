@@ -30,6 +30,14 @@ print("pasó ✅")
 | lista | vacía `[]`, un solo elemento |
 | división | dividir por `0` |
 
+```quiz
+P: ¿Por qué son tan importantes los casos límite en los tests?
+- Porque son los únicos casos que pytest ejecuta
++ Porque los bugs se esconden en los bordes: vacío, cero, un elemento
+- Porque los casos normales nunca tienen errores
+> El caso `""` o `[]` o `0` es donde más bugs aparecen: funciones que asumen que la lista tiene algo, que el número es positivo, etc. Los casos normales suelen andar; los límites, no.
+```
+
 ## 💥 Testear que SÍ lance un error
 
 A veces lo correcto es que la función **falle**. ¿Cómo lo probás? Esperás el error con `try`/`except`: si **no** salta, el test debe fallar.
@@ -48,6 +56,14 @@ print("pasó ✅")
 ```
 
 > 💡 En `pytest` esto se escribe más cortito con `with pytest.raises(ZeroDivisionError):`, pero la idea es la misma: **verificar que el error ocurra**.
+
+```quiz
+P: En un test, ¿cómo verificás que `dividir(5, 0)` lanza `ZeroDivisionError`?
+- `assert dividir(5, 0) == ZeroDivisionError`
+- `if dividir(5, 0): raise AssertionError()`
++ Llamás `dividir(5, 0)` dentro de un `try/except ZeroDivisionError` y si NO lanza, fallás el test manualmente
+> Si el error **no** ocurre, el `except` no se activa y llegás al `raise AssertionError(...)` manual. En pytest también podés usar `with pytest.raises(ZeroDivisionError):`.
+```
 
 ## 📝 Resumen
 

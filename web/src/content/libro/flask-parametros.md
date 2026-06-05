@@ -26,6 +26,14 @@ print(c.get("/pokemon/1").get_json())
 
 > 💡 `<int:n>` dice que `n` es un **número**. Sin `int:` llegaría como texto. También podés usar `<nombre>` para texto.
 
+```quiz
+P: En la ruta `@app.route("/pokemon/<int:n>")`, ¿qué significa `int:`?
+- Que la ruta solo funciona con métodos enteros.
+- Que `n` puede ser cualquier texto.
++ Que Flask convierte el valor de la URL a `int` antes de pasárselo a la función.
+> Sin `int:`, el valor llega como texto (`"25"`). Con `int:n`, Flask lo convierte a número entero (`25`) automáticamente.
+```
+
 ## 🔤 Parámetros de texto
 
 ```python
@@ -38,6 +46,14 @@ def saludo(nombre):
 
 c = app.test_client()
 print(c.get("/saludo/Ash").get_data(as_text=True))   # Hola, Ash
+```
+
+```quiz
+P: ¿Cómo se lee el parámetro `tipo` de la URL `/buscar?tipo=Fuego` en Flask?
+- `request.json["tipo"]`
+- `request.path["tipo"]`
++ `request.args.get("tipo")`
+> Los parámetros de query (lo que va después del `?`) se leen con `request.args.get("clave")`. `request.json` es para el cuerpo de un POST.
 ```
 
 ## ❓ Query strings: filtros con ?

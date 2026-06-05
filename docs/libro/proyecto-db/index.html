@@ -88,6 +88,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"El más fuerte:"</span><span style="color:#ABB2BF">, con.</span><span style="color:#61AFEF">execute</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"SELECT nombre FROM pokemon ORDER BY nivel DESC LIMIT 1"</span><span style="color:#ABB2BF">).</span><span style="color:#61AFEF">fetchone</span><span style="color:#ABB2BF">()[</span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">])</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Por tipo:"</span><span style="color:#ABB2BF">, </span><span style="color:#56B6C2">dict</span><span style="color:#ABB2BF">(con.</span><span style="color:#61AFEF">execute</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"SELECT tipo, COUNT(*) FROM pokemon GROUP BY tipo"</span><span style="color:#ABB2BF">)))</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué hace `dict(con.execute("SELECT tipo, COUNT(*) FROM pokemon GROUP BY tipo"))`?</span></span>
+<span class="line"><span>- Convierte toda la tabla pokemon en un diccionario</span></span>
+<span class="line"><span>+ Crea un diccionario con cada tipo como clave y su cantidad de Pokémon como valor</span></span>
+<span class="line"><span>- Devuelve la lista de tipos sin repetición</span></span>
+<span class="line"><span>> `GROUP BY tipo` genera pares `(tipo, cantidad)`, y `dict(...)` convierte esos pares en un diccionario. Es una forma compacta de resumir en Python.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="️-lo-que-aprendiste-en-sinnoh">🗺️ Lo que aprendiste en Sinnoh</h2>
 <ol>
 <li><strong>SELECT</strong> — leer datos de una tabla.</li>
@@ -98,6 +104,12 @@ window.__BASE = base;})();</script> <script>
 <li><strong>JOIN</strong> — combinar varias tablas.</li>
 <li><strong>sqlite3</strong> — todo eso desde Python, con <code>commit</code> para guardar.</li>
 </ol>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué consulta SQL devuelve el nombre del Pokémon con el nivel más alto?</span></span>
+<span class="line"><span>- `SELECT nombre FROM pokemon ORDER BY nivel ASC LIMIT 1`</span></span>
+<span class="line"><span>- `SELECT MAX(nivel) FROM pokemon`</span></span>
+<span class="line"><span>+ `SELECT nombre FROM pokemon ORDER BY nivel DESC LIMIT 1`</span></span>
+<span class="line"><span>> `ORDER BY nivel DESC` ordena de mayor a menor, y `LIMIT 1` se queda solo con la primera fila: el más fuerte. `MAX(nivel)` devolvería el número, no el nombre.</span></span>
+<span class="line"><span></span></span></code></pre>
 <p>Con esto manejás <strong>datos que perduran</strong>: la base de toda app seria (redes sociales, juegos, bancos) guarda su info así. 🚀</p>
 <h2 id="️-y-ahora-qué">➡️ ¿Y ahora qué?</h2>
 <p>Cerrá Sinnoh con los <a href="/luca-journey/ejercicios/proyecto-db">ejercicios de este tema</a>. Al completarlos ganás la medalla <strong>Faro</strong> y sos <strong>Campeón de Sinnoh</strong>. 🔦🏆</p>

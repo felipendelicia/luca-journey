@@ -72,6 +72,16 @@ equipo.reverse()             # la da vuelta
 
 ---
 
+```quiz
+P: Tenés `equipo = ["Pikachu", "Charizard", "Snorlax"]`. ¿Qué devuelve `equipo[-1]`?
+- "Pikachu"
+- "Charizard"
++ "Snorlax"
+> El índice `-1` accede al último elemento de la lista, contando desde atrás. `-2` sería "Charizard".
+```
+
+---
+
 ## 📌 Tuplas: colección que NO se modifica
 
 Una **tupla** es como una lista, pero **inmutable** (no se puede cambiar). Se escribe con paréntesis `()`. Sirve para datos fijos.
@@ -153,6 +163,16 @@ for clave, valor in pikachu.items():
 | Borrar | `del dic["clave"]` |
 | ¿Existe la clave? | `"clave" in dic` |
 | Recorrer | `for k, v in dic.items():` |
+
+---
+
+```quiz
+P: ¿Cuál es la diferencia principal entre una lista `[]` y un set `{}`?
+- La lista usa llaves y el set corchetes
+- El set es más rápido para todo
++ El set no guarda duplicados y no tiene orden
+> El set descarta los repetidos automáticamente y no garantiza ningún orden. La lista sí mantiene duplicados y el orden en que los agregaste.
+```
 
 ---
 

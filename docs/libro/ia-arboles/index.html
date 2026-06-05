@@ -82,6 +82,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 Las importancias suman 1. Si una feature da <code>0</code>, no aportó nada para decidir; podrías hasta sacarla.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué ventaja tiene un árbol de decisión sobre el KNN?</span></span>
+<span class="line"><span>- Siempre tiene mayor accuracy</span></span>
+<span class="line"><span>+ Es interpretable: podés leer las reglas que aprendió</span></span>
+<span class="line"><span>- No necesita datos de entrenamiento</span></span>
+<span class="line"><span>> El árbol aprende reglas tipo "si ataque > 60 → Fuego". Podés explicar cada decisión. El KNN es una "caja negra": solo sabe que algo es parecido a sus vecinos.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-ventajas-y-cuidado">🌲 Ventajas y cuidado</h2>
 <ul>
 <li>✅ Se <strong>entiende</strong> (podés explicar cada decisión).</li>
@@ -92,6 +98,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#ABB2BF">modelo </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> DecisionTreeClassifier</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75;font-style:italic">max_depth</span><span style="color:#56B6C2">=</span><span style="color:#D19A66">2</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75;font-style:italic">random_state</span><span style="color:#56B6C2">=</span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">)   </span><span style="color:#7F848E;font-style:italic"># árbol cortito</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(modelo)</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Para qué sirve el parámetro `max_depth` en `DecisionTreeClassifier`?</span></span>
+<span class="line"><span>- Para definir cuántos datos de entrenamiento usar</span></span>
+<span class="line"><span>- Para establecer la cantidad de features del árbol</span></span>
+<span class="line"><span>+ Para limitar cuántos niveles de preguntas puede tener el árbol y evitar overfitting</span></span>
+<span class="line"><span>> Sin límite, el árbol puede crecer hasta memorizar cada dato. `max_depth=2` lo recorta: hace preguntas más generales y generaliza mejor.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

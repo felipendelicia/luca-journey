@@ -36,12 +36,28 @@ print(pokedex.groupby("tipo")["nivel"].max())    # nivel máximo por tipo
 
 > 💡 El patrón mental: **agrupá por** (`groupby`), **mirá esta columna** (`["nivel"]`), **calculá esto** (`.mean()`). Cambiá las 3 piezas según tu pregunta.
 
+```quiz
+P: ¿Qué devuelve `pokedex.groupby("tipo")["nivel"].mean()`?
+- El nivel promedio de todos los Pokémon.
++ El nivel promedio de los Pokémon de cada tipo.
+- La cantidad de Pokémon por tipo.
+> `groupby("tipo")` agrupa las filas por tipo; `["nivel"].mean()` calcula el promedio del nivel dentro de cada grupo.
+```
+
 ## 🏆 El tipo más común
 
 ```python
 import pandas as pd
 pokedex = pd.DataFrame({"tipo": ["Fuego", "Agua", "Agua", "Planta"]})
 print(pokedex["tipo"].value_counts().idxmax())   # -> Agua
+```
+
+```quiz
+P: ¿Para qué sirve `pd.merge(pokemon, debilidades, on="tipo")`?
+- Suma las columnas de ambas tablas.
+- Combina solo las filas duplicadas.
++ Une las dos tablas por la columna `"tipo"`, agregando las columnas de cada una.
+> `merge` es como cruzar dos Pokédex: junta las filas que coinciden en la columna indicada (`on`), igual que un JOIN de SQL.
 ```
 
 ## 🔗 Combinar dos tablas: merge

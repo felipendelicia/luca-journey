@@ -51,6 +51,16 @@ print(linea)     # "Charizard,Fuego,50"
 
 ---
 
+```quiz
+P: ¿Qué devuelve `"Pikachu,Electrico,25".split(",")`?
+- "Pikachu Electrico 25"
++ `['Pikachu', 'Electrico', '25']`
+- `('Pikachu', 'Electrico', '25')`
+> `split(",")` parte el string en cada coma y devuelve una **lista** de strings. El 25 también queda como string "25", no como número.
+```
+
+---
+
 ## ✂️ Slicing: rebanar strings
 
 El **slicing** saca una "rebanada" de un string usando `[inicio:fin]`. El `fin` NO se incluye.
@@ -112,6 +122,16 @@ with open("equipo.txt", "r") as archivo:
 ```
 
 > 💡 Usá **siempre** `with`. Es más corto, más seguro, y es lo que vas a ver en todos lados.
+
+---
+
+```quiz
+P: Abrís un archivo con `open("equipo.txt", "w")`. ¿Qué pasa con el contenido que ya tenía?
+- Se agrega al final
++ Se borra y se empieza de cero
+- Se genera un error si el archivo existe
+> El modo `"w"` (*write*) crea el archivo si no existe, pero si ya existe **reemplaza todo** su contenido. Usá `"a"` para agregar sin borrar.
+```
 
 ---
 

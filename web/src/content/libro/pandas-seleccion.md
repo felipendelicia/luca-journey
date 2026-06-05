@@ -38,6 +38,14 @@ print(pokedex[pokedex["tipo"] == "Fuego"])      # los de tipo Fuego
 
 > 💡 `pokedex["nivel"] >= 50` da una Series de True/False (una máscara, como en NumPy). pandas usa esa máscara para filtrar filas.
 
+```quiz
+P: ¿Qué hace `pokedex[pokedex["nivel"] >= 50]`?
+- Devuelve la fila en la posición 50.
+- Devuelve el valor `50` de la columna nivel.
++ Devuelve todas las filas donde el nivel es 50 o más.
+> `pokedex["nivel"] >= 50` crea una máscara True/False. Pasarla entre corchetes filtra y mantiene solo las filas donde es `True`.
+```
+
 ## 🔗 Varias condiciones a la vez
 
 Combinás con `&` (y) / `|` (o). **Ojo:** cada condición va entre paréntesis.
@@ -51,6 +59,14 @@ pokedex = pd.DataFrame({
 })
 fuertes_no_fuego = pokedex[(pokedex["nivel"] > 30) & (pokedex["tipo"] != "Fuego")]
 print(fuertes_no_fuego)
+```
+
+```quiz
+P: Para combinar dos condiciones en un filtro pandas (nivel > 30 **y** tipo Fuego), ¿cuál es la sintaxis correcta?
+- `pokedex[pokedex["nivel"] > 30 and pokedex["tipo"] == "Fuego"]`
++ `pokedex[(pokedex["nivel"] > 30) & (pokedex["tipo"] == "Fuego")]`
+- `pokedex[pokedex["nivel"] > 30 & pokedex["tipo"] == "Fuego"]`
+> Con pandas se usa `&` (no `and`) y cada condición va entre paréntesis. Sin los paréntesis el orden de operaciones rompe el filtro.
 ```
 
 ## ↕️ Ordenar

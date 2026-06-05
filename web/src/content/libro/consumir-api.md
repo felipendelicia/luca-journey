@@ -22,6 +22,14 @@ print(datos["name"])          # pikachu
 
 > ⚠️ Hacer pedidos de red **de verdad** desde el navegador tiene límites (CORS, permisos). Por eso acá practicamos la parte clave y siempre necesaria: **procesar la respuesta** que te da la API. El pedido lo simulamos con el JSON ya recibido.
 
+```quiz
+P: En una compu normal, ¿qué librería de Python se usa para hacer pedidos HTTP a una API externa?
+- `urllib`
+- `json`
++ `requests`
+> `requests` es la librería estándar para consumir APIs: `requests.get(url)` hace el pedido y `.json()` convierte la respuesta. `json` solo maneja texto JSON, no hace pedidos de red.
+```
+
 ## 🔎 Procesar la respuesta
 
 Lo que recibís es JSON (texto). Lo convertís a Python y extraés lo que necesitás.
@@ -51,6 +59,14 @@ datos = json.loads(respuesta)
 print("cantidad:", len(datos["results"]))
 for p in datos["results"]:
     print("-", p["name"])
+```
+
+```quiz
+P: Una API devuelve `'{"results": [{"name": "bulbasaur"}, {"name": "ivysaur"}]}'`. ¿Cómo accedés al nombre del primer Pokémon?
+- `datos["name"]`
+- `datos[0]["name"]`
++ `datos["results"][0]["name"]`
+> Primero accedés a la clave `"results"` (que es una lista), luego al índice `[0]` (primer elemento), y finalmente a `"name"`.
 ```
 
 ## ⚠️ Manejar errores

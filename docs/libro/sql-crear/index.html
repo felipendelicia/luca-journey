@@ -67,6 +67,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout cuidado"><span class="et">CUIDADO</span>
 <p>⚠️ <strong>Siempre usá <code>?</code></strong> para los valores (no los pegues con f-strings). Es más seguro: evita el famoso “SQL injection”. SQLite reemplaza cada <code>?</code> por el valor de la tupla.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Por qué se usa `?` en lugar de poner el valor directo en el SQL?</span></span>
+<span class="line"><span>- Porque SQLite no acepta strings en el INSERT</span></span>
+<span class="line"><span>- Porque los `?` hacen la consulta más rápida</span></span>
+<span class="line"><span>+ Para evitar SQL injection y que SQLite maneje el tipo correctamente</span></span>
+<span class="line"><span>> Pegar valores con f-strings abre la puerta al SQL injection. Los `?` son **parámetros seguros**: SQLite reemplaza cada `?` con el valor correspondiente de la tupla.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-insertar-muchos-de-una-executemany">📦 Insertar muchos de una: executemany</h2>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> sqlite3</span></span>
 <span class="line"><span style="color:#ABB2BF">con </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> sqlite3.</span><span style="color:#61AFEF">connect</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">":memory:"</span><span style="color:#ABB2BF">)</span></span>
@@ -80,6 +86,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 <code>executemany</code> corre el mismo INSERT para cada tupla de la lista. Ideal para cargar muchos datos juntos.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué tipo de columna usarías para guardar el nombre de un Pokémon?</span></span>
+<span class="line"><span>+ `TEXT`</span></span>
+<span class="line"><span>- `INTEGER`</span></span>
+<span class="line"><span>- `REAL`</span></span>
+<span class="line"><span>> `TEXT` es para cadenas de texto. `INTEGER` es para números enteros y `REAL` para decimales.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

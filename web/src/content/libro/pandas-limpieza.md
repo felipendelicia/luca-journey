@@ -23,6 +23,14 @@ print(df.isna())            # True donde falta
 print("faltan:", df.isna().sum().sum())   # cuántos NaN en total
 ```
 
+```quiz
+P: ¿Qué función de pandas se usa para detectar valores faltantes en un DataFrame?
+- `df.null()`
++ `df.isna()`
+- `df.empty()`
+> `df.isna()` devuelve un DataFrame de `True/False`: `True` donde falta un valor (`NaN`). `.isna().sum()` cuenta cuántos hay por columna.
+```
+
 ### Rellenar o eliminar
 
 ```python
@@ -35,6 +43,14 @@ print(df.dropna())     # elimina las filas que tengan algún NaN
 ```
 
 > ⚠️ `fillna` y `dropna` **devuelven una copia**; no cambian el original salvo que se lo asignes (`df = df.dropna()`).
+
+```quiz
+P: `df.fillna(0)` y `df.dropna()`: ¿cuál es la diferencia principal?
+- `fillna` borra filas; `dropna` las rellena.
+- Son iguales, solo cambia el nombre.
++ `fillna` reemplaza los `NaN` con un valor; `dropna` elimina las filas que los tienen.
+> `fillna(0)` pone 0 donde había `NaN`. `dropna()` directamente saca esas filas. Ninguna modifica el original: devuelven una copia.
+```
 
 ## 🔢 Tipos de datos
 

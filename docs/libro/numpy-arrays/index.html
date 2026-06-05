@@ -94,6 +94,12 @@ y podés operar sobre <strong>todos a la vez</strong> (eso se llama <em>vectoriz
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(equipo[:</span><span style="color:#D19A66">3</span><span style="color:#ABB2BF">])    </span><span style="color:#7F848E;font-style:italic"># primeros tres -> [25 90 12]</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(equipo[</span><span style="color:#D19A66">1</span><span style="color:#ABB2BF">:</span><span style="color:#D19A66">4</span><span style="color:#ABB2BF">])   </span><span style="color:#7F848E;font-style:italic"># del 1 al 3     -> [90 12 70]</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué imprime `np.arange(1, 5)`?</span></span>
+<span class="line"><span>- `[1, 2, 3, 4, 5]`</span></span>
+<span class="line"><span>+ `[1 2 3 4]`</span></span>
+<span class="line"><span>- `[0 1 2 3 4]`</span></span>
+<span class="line"><span>> `np.arange(a, b)` genera valores desde `a` hasta `b-1`. El `5` no entra.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-máscaras-booleanas-filtrar-por-condición">🎭 Máscaras booleanas: filtrar por condición</h2>
 <p>Una <strong>máscara</strong> es un array de <code>True/False</code>. La usás para <strong>quedarte con lo que cumple una condición</strong>.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> numpy </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> np</span></span>
@@ -102,6 +108,12 @@ y podés operar sobre <strong>todos a la vez</strong> (eso se llama <em>vectoriz
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(niveles </span><span style="color:#56B6C2">></span><span style="color:#D19A66"> 30</span><span style="color:#ABB2BF">)          </span><span style="color:#7F848E;font-style:italic"># [False  True False  True False]</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(niveles[niveles </span><span style="color:#56B6C2">></span><span style="color:#D19A66"> 30</span><span style="color:#ABB2BF">]) </span><span style="color:#7F848E;font-style:italic"># solo los que cumplen -> [90 70]</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: Dado `niveles = np.array([25, 90, 12, 70, 5])`, ¿qué devuelve `niveles[niveles > 30]`?</span></span>
+<span class="line"><span>- `[False True False True False]`</span></span>
+<span class="line"><span>- `[25, 12, 5]`</span></span>
+<span class="line"><span>+ `[90 70]`</span></span>
+<span class="line"><span>> La máscara `niveles > 30` filtra y devuelve solo los valores que cumplen la condición: 90 y 70.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-forma-shape-y-matrices-2d">📐 Forma (shape) y matrices 2D</h2>
 <p>Un array puede ser 2D (una <strong>tabla</strong> de números): filas y columnas.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> numpy </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> np</span></span>

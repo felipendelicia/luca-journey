@@ -39,6 +39,14 @@ print(modelo.predict([[42, 88]]))   # [1] -> ¡Agua!
 
 > 💡 `n_neighbors=1` significa "mirá el vecino MÁS cercano". El modelo nunca vio `[88, 42]`, pero lo parecido a sus ejemplos de Fuego, así que predice Fuego. **Eso es aprender de los datos.**
 
+```quiz
+P: ¿Qué hace `modelo.fit(X, y)`?
+- Predice los tipos de los Pokémon en `X`
++ Entrena el modelo usando los datos `X` y las respuestas correctas `y`
+- Evalúa qué tan preciso es el modelo
+> `fit` es la etapa de **entrenamiento**: el modelo aprende el patrón mirando los ejemplos `X` y sus respuestas `y`. Después de `fit` podés usar `predict`.
+```
+
 ## 🔄 El ciclo del ML
 
 ```python
@@ -56,6 +64,14 @@ print(modelo.predict([[8, 3]]))   # ['rápido']
 ```
 
 Siempre los mismos 3 pasos: **datos → entrenar (`fit`) → predecir (`predict`)**.
+
+```quiz
+P: ¿Qué es `X` en un modelo de Machine Learning?
+- Las respuestas correctas que el modelo tiene que aprender
+- El nombre del modelo que vamos a entrenar
++ Los datos de entrada (features) que el modelo usa para aprender
+> `X` son las **features**: los datos de cada ejemplo (ej: ataque y defensa). `y` son las **etiquetas**: las respuestas correctas (ej: el tipo del Pokémon).
+```
 
 ## 📝 Resumen
 

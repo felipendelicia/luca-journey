@@ -63,6 +63,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 <code>@app.route(...)</code> es un <strong>decorador</strong>: “engancha” la función de abajo a una URL. Cuando alguien pide esa URL, Flask llama a tu función.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué hace `@app.route("/ping")` en Flask?</span></span>
+<span class="line"><span>- Crea una variable llamada `ping`.</span></span>
+<span class="line"><span>- Instala la ruta en el servidor de producción.</span></span>
+<span class="line"><span>+ Conecta la función que está abajo a la URL `/ping`: cuando alguien pide esa URL, Flask llama a esa función.</span></span>
+<span class="line"><span>> `@app.route(...)` es un decorador. "Engancha" la función siguiente a la URL indicada. Sin él, Flask no sabe que esa función existe.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-probar-sin-servidor-test_client">🧪 Probar sin servidor: test_client</h2>
 <p>Normalmente la app se prende con <code>app.run()</code> y queda escuchando. Pero para <strong>probar</strong> (¡y para correr acá en el navegador!) usamos el <strong>cliente de pruebas</strong>, que simula pedidos sin levantar un servidor real.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">from</span><span style="color:#ABB2BF"> flask </span><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> Flask</span></span>
@@ -86,6 +92,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 Tocá <strong>▶ ejecutar</strong>: corre Flask de verdad en tu navegador y ves las respuestas. La primera vez tarda un poco más porque instala Flask.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Para qué sirve `app.test_client()` en Flask?</span></span>
+<span class="line"><span>- Para prender el servidor y escuchar pedidos reales.</span></span>
+<span class="line"><span>- Para instalar Flask automáticamente.</span></span>
+<span class="line"><span>+ Para simular pedidos HTTP sin levantar un servidor real, ideal para probar.</span></span>
+<span class="line"><span>> `test_client()` simula un cliente que hace `GET`, `POST`, etc. contra tu app sin necesitar internet ni un puerto abierto. Perfecto para tests y para practicar en el navegador.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="️-muchas-rutas">🛣️ Muchas rutas</h2>
 <p>Una app puede tener todas las rutas que quieras, cada una con su función.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">from</span><span style="color:#ABB2BF"> flask </span><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> Flask</span></span>

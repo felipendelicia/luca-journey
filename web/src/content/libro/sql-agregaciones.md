@@ -23,6 +23,14 @@ print("suma:", con.execute("SELECT SUM(nivel) FROM pokemon").fetchone()[0])
 
 > 💡 `COUNT`, `AVG`, `MAX`, `MIN`, `SUM` toman toda la columna y devuelven **un** valor. Por eso usás `.fetchone()[0]`.
 
+```quiz
+P: ¿Qué función SQL devuelve el promedio de una columna numérica?
+- `SUM(col)`
++ `AVG(col)`
+- `COUNT(col)`
+> `AVG` (average) calcula el promedio. `SUM` suma todos los valores y `COUNT` cuenta cuántos hay.
+```
+
 ## 🧮 GROUP BY: resumir por grupo
 
 `GROUP BY` arma grupos y calcula la agregación **por cada grupo**. Es lo más potente de SQL.
@@ -47,6 +55,14 @@ for tipo, prom in con.execute("SELECT tipo, AVG(nivel) FROM pokemon GROUP BY tip
 ```
 
 > 💡 El patrón: `SELECT columna_grupo, AGREGACIÓN FROM tabla GROUP BY columna_grupo`. Pensalo como "por cada tipo, contame/promediame...".
+
+```quiz
+P: ¿Qué hace `SELECT tipo, COUNT(*) FROM pokemon GROUP BY tipo`?
+- Filtra solo los Pokémon de un tipo específico
+- Cuenta el total de Pokémon sin importar el tipo
++ Muestra cuántos Pokémon hay de cada tipo
+> `GROUP BY tipo` forma un grupo por cada tipo distinto, y `COUNT(*)` cuenta las filas de cada grupo por separado.
+```
 
 ## 📝 Resumen
 

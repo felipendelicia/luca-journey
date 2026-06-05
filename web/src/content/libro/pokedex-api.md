@@ -43,6 +43,14 @@ def agregar():
     return jsonify(nuevo), 201
 ```
 
+```quiz
+P: En la Pokédex API, ¿qué ruta y método usarías para **filtrar** Pokémon por tipo (`Fuego`)?
+- GET `/pokedex/Fuego`
+- POST `/buscar` con `{"tipo": "Fuego"}`
++ GET `/buscar?tipo=Fuego`
+> La query string (`?tipo=Fuego`) es para filtros. El path (`/pokedex/<id>`) identifica un recurso concreto por id. Filtrar con GET y query string es la convención REST.
+```
+
 ## ▶️ Probándola
 
 ```python
@@ -66,6 +74,14 @@ def buscar():
 c = app.test_client()
 print("todos:", [p["nombre"] for p in c.get("/pokedex").get_json()])
 print("fuego:", [p["nombre"] for p in c.get("/buscar?tipo=Fuego").get_json()])
+```
+
+```quiz
+P: ¿Cuántos conceptos de Hoenn juntó este proyecto integrador?
+- 3 (Flask, JSON, parámetros)
+- 5 (HTTP, Flask, JSON, parámetros, POST)
++ 7 (HTTP+JSON, Flask, jsonify, parámetros, POST, CRUD+errores, consumir)
+> El proyecto integra los 7 temas de Hoenn: HTTP/JSON, primera app Flask, respuestas JSON, parámetros de path y query, POST, CRUD con errores REST, y consumo de APIs.
 ```
 
 ## 🗺️ Lo que aprendiste en Hoenn

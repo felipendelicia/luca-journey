@@ -70,6 +70,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#ABB2BF">predicciones </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> modelo.</span><span style="color:#61AFEF">predict</span><span style="color:#ABB2BF">(X_te)</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"exactitud:"</span><span style="color:#ABB2BF">, </span><span style="color:#61AFEF">accuracy_score</span><span style="color:#ABB2BF">(y_te, predicciones))</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué significa una accuracy de `0.8`?</span></span>
+<span class="line"><span>- El modelo acertó el 8% de las predicciones</span></span>
+<span class="line"><span>- El modelo tiene un error del 80%</span></span>
+<span class="line"><span>+ El modelo acertó el 80% de las predicciones</span></span>
+<span class="line"><span>> Accuracy es la proporción de aciertos: `0.8` = 4 de cada 5 predicciones correctas. Un valor de `1.0` sería perfecto (100% de aciertos).</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-atajo-score">⚡ Atajo: .score()</h2>
 <p>Casi todos los modelos tienen <code>.score(X_test, y_test)</code>, que entrena… no: <strong>calcula la exactitud</strong> directamente.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> numpy </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> np</span></span>
@@ -84,6 +90,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout cuidado"><span class="et">CUIDADO</span>
 <p>⚠️ Si tu modelo da <strong>100% en entrenamiento pero mal en prueba</strong>, está <strong>sobreajustado</strong> (overfitting): se memorizó los datos en vez de aprender el patrón. Por eso SIEMPRE se evalúa con datos separados.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué es el overfitting?</span></span>
+<span class="line"><span>- Cuando el modelo tiene muy pocos datos para entrenar</span></span>
+<span class="line"><span>+ Cuando el modelo memorizó los datos de entrenamiento pero no generaliza bien a datos nuevos</span></span>
+<span class="line"><span>- Cuando la accuracy en test supera el 95%</span></span>
+<span class="line"><span>> El overfitting ocurre cuando el modelo "se aprende de memoria" los datos de entrenamiento. Parece perfecto en train pero falla con datos nuevos. Por eso siempre se evalúa en un test set separado.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

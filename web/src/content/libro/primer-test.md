@@ -41,6 +41,14 @@ print("pasó ✅")
 
 > 💡 Si le pasás una versión **rota** (`lambda x: True`), el test lanza `AssertionError`: **detectó el bug**. Eso es exactamente lo que querés.
 
+```quiz
+P: ¿Por qué es útil recibir la función a probar como parámetro del test?
+- Para que el test corra más rápido
++ Para que el mismo test sirva para verificar cualquier implementación de esa función
+- Porque Python no deja llamar funciones directamente desde un test
+> Si el test recibe la función por parámetro, podés pasarle la tuya y la de un compañero. Si cualquiera de las dos está rota, el mismo test la detecta.
+```
+
 ## 🤖 pytest: el corredor de tests
 
 En el mundo real no llamás los tests a mano: usás **pytest**, que busca todas las funciones que empiezan con `test_` y las corre solas. (¡Es lo que usa esta plataforma para corregirte!)
@@ -55,6 +63,14 @@ def test_doble():
 ```
 
 > 💡 Cada botón **Corregir** de los ejercicios corre `pytest` en tu navegador. Ahora ya sabés qué hay abajo del capó. 🔧
+
+```quiz
+P: ¿Cómo reconoce pytest las funciones que tiene que correr?
+- Busca funciones que empiecen con `check_`
+- Busca funciones que tengan `@test` como decorador
++ Busca funciones cuyo nombre empiece con `test_`
+> pytest busca automáticamente todas las funciones que empiezan con `test_` en los archivos que empiezan con `test_`. No hace falta llamarlas a mano.
+```
 
 ## 📝 Resumen
 

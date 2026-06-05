@@ -39,6 +39,14 @@ predicciones = modelo.predict(X_te)
 print("exactitud:", accuracy_score(y_te, predicciones))
 ```
 
+```quiz
+P: ¿Qué significa una accuracy de `0.8`?
+- El modelo acertó el 8% de las predicciones
+- El modelo tiene un error del 80%
++ El modelo acertó el 80% de las predicciones
+> Accuracy es la proporción de aciertos: `0.8` = 4 de cada 5 predicciones correctas. Un valor de `1.0` sería perfecto (100% de aciertos).
+```
+
 ## ⚡ Atajo: .score()
 
 Casi todos los modelos tienen `.score(X_test, y_test)`, que entrena... no: **calcula la exactitud** directamente.
@@ -55,6 +63,14 @@ print(modelo.score(X, y))   # 1.0
 ```
 
 > ⚠️ Si tu modelo da **100% en entrenamiento pero mal en prueba**, está **sobreajustado** (overfitting): se memorizó los datos en vez de aprender el patrón. Por eso SIEMPRE se evalúa con datos separados.
+
+```quiz
+P: ¿Qué es el overfitting?
+- Cuando el modelo tiene muy pocos datos para entrenar
++ Cuando el modelo memorizó los datos de entrenamiento pero no generaliza bien a datos nuevos
+- Cuando la accuracy en test supera el 95%
+> El overfitting ocurre cuando el modelo "se aprende de memoria" los datos de entrenamiento. Parece perfecto en train pero falla con datos nuevos. Por eso siempre se evalúa en un test set separado.
+```
 
 ## 📝 Resumen
 

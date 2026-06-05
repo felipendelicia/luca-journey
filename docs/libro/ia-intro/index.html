@@ -91,6 +91,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 <code>n_neighbors=1</code> significa “mirá el vecino MÁS cercano”. El modelo nunca vio <code>[88, 42]</code>, pero lo parecido a sus ejemplos de Fuego, así que predice Fuego. <strong>Eso es aprender de los datos.</strong></p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué hace `modelo.fit(X, y)`?</span></span>
+<span class="line"><span>- Predice los tipos de los Pokémon en `X`</span></span>
+<span class="line"><span>+ Entrena el modelo usando los datos `X` y las respuestas correctas `y`</span></span>
+<span class="line"><span>- Evalúa qué tan preciso es el modelo</span></span>
+<span class="line"><span>> `fit` es la etapa de **entrenamiento**: el modelo aprende el patrón mirando los ejemplos `X` y sus respuestas `y`. Después de `fit` podés usar `predict`.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-el-ciclo-del-ml">🔄 El ciclo del ML</h2>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">from</span><span style="color:#ABB2BF"> sklearn.neighbors </span><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> KNeighborsClassifier</span></span>
 <span class="line"></span>
@@ -105,6 +111,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(modelo.</span><span style="color:#61AFEF">predict</span><span style="color:#ABB2BF">([[</span><span style="color:#D19A66">8</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">3</span><span style="color:#ABB2BF">]]))   </span><span style="color:#7F848E;font-style:italic"># ['rápido']</span></span>
 <span class="line"></span></code></pre>
 <p>Siempre los mismos 3 pasos: <strong>datos → entrenar (<code>fit</code>) → predecir (<code>predict</code>)</strong>.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué es `X` en un modelo de Machine Learning?</span></span>
+<span class="line"><span>- Las respuestas correctas que el modelo tiene que aprender</span></span>
+<span class="line"><span>- El nombre del modelo que vamos a entrenar</span></span>
+<span class="line"><span>+ Los datos de entrada (features) que el modelo usa para aprender</span></span>
+<span class="line"><span>> `X` son las **features**: los datos de cada ejemplo (ej: ataque y defensa). `y` son las **etiquetas**: las respuestas correctas (ej: el tipo del Pokémon).</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

@@ -36,6 +36,14 @@ Cada pedido usa un **método** y recibe un **código de estado**:
 | **404** | no encontrado |
 | **500** | error del servidor |
 
+```quiz
+P: Cuando tu app hace un pedido HTTP para **leer** datos de una API, ¿qué método usás?
+- POST
+- DELETE
++ GET
+> `GET` es para leer/pedir datos. `POST` crea, `PUT` actualiza, `DELETE` borra. Pedir la info de un Pokémon es un `GET`.
+```
+
 ## 📦 JSON: el idioma de los datos
 
 Las APIs mandan datos en **JSON**: texto con la misma pinta que un diccionario de Python.
@@ -55,6 +63,14 @@ print(de_vuelta["nombre"])   # Pikachu
 ```
 
 > 💡 `json.dumps` = **d**ump **s**tring (Python → texto JSON). `json.loads` = **load** **s**tring (texto JSON → Python). El JSON viaja como texto por la red.
+
+```quiz
+P: ¿Qué hace `json.loads('{"nombre": "Pikachu"}')`?
+- Convierte un diccionario de Python a texto JSON.
+- Guarda el JSON en un archivo.
++ Convierte el texto JSON a un diccionario de Python.
+> `loads` = **load string**: recibe texto JSON y devuelve Python. Al revés, `dumps` convierte de Python a texto JSON.
+```
 
 ## 🔎 Procesar una respuesta
 

@@ -122,6 +122,13 @@ window.__BASE = base;})();</script> <script>
 
 <table><thead><tr><th>Método</th><th>Qué hace</th></tr></thead><tbody><tr><td><code>.append(x)</code></td><td>Agrega x al final</td></tr><tr><td><code>.insert(i, x)</code></td><td>Inserta x en la posición i</td></tr><tr><td><code>.remove(x)</code></td><td>Borra la primera aparición de x</td></tr><tr><td><code>.pop()</code></td><td>Saca y devuelve el último</td></tr><tr><td><code>len(lista)</code></td><td>Cantidad de elementos</td></tr><tr><td><code>x in lista</code></td><td>¿x está en la lista?</td></tr><tr><td><code>.sort()</code></td><td>Ordena</td></tr><tr><td><code>.reverse()</code></td><td>Invierte el orden</td></tr></tbody></table>
 <hr>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: Tenés `equipo = ["Pikachu", "Charizard", "Snorlax"]`. ¿Qué devuelve `equipo[-1]`?</span></span>
+<span class="line"><span>- "Pikachu"</span></span>
+<span class="line"><span>- "Charizard"</span></span>
+<span class="line"><span>+ "Snorlax"</span></span>
+<span class="line"><span>> El índice `-1` accede al último elemento de la lista, contando desde atrás. `-2` sería "Charizard".</span></span>
+<span class="line"><span></span></span></code></pre>
+<hr>
 <h2 id="-tuplas-colección-que-no-se-modifica">📌 Tuplas: colección que NO se modifica</h2>
 <p>Una <strong>tupla</strong> es como una lista, pero <strong>inmutable</strong> (no se puede cambiar). Se escribe con paréntesis <code>()</code>. Sirve para datos fijos.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#ABB2BF">coordenada </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> (</span><span style="color:#D19A66">10</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">20</span><span style="color:#ABB2BF">)         </span><span style="color:#7F848E;font-style:italic"># una posición que no debería cambiar</span></span>
@@ -207,6 +214,13 @@ window.__BASE = base;})();</script> <script>
 
 
 <table><thead><tr><th>Operación</th><th>Cómo</th></tr></thead><tbody><tr><td>Acceder</td><td><code>dic["clave"]</code></td></tr><tr><td>Acceso seguro</td><td><code>dic.get("clave", default)</code></td></tr><tr><td>Agregar/cambiar</td><td><code>dic["clave"] = valor</code></td></tr><tr><td>Borrar</td><td><code>del dic["clave"]</code></td></tr><tr><td>¿Existe la clave?</td><td><code>"clave" in dic</code></td></tr><tr><td>Recorrer</td><td><code>for k, v in dic.items():</code></td></tr></tbody></table>
+<hr>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Cuál es la diferencia principal entre una lista `[]` y un set `{}`?</span></span>
+<span class="line"><span>- La lista usa llaves y el set corchetes</span></span>
+<span class="line"><span>- El set es más rápido para todo</span></span>
+<span class="line"><span>+ El set no guarda duplicados y no tiene orden</span></span>
+<span class="line"><span>> El set descarta los repetidos automáticamente y no garantiza ningún orden. La lista sí mantiene duplicados y el orden en que los agregaste.</span></span>
+<span class="line"><span></span></span></code></pre>
 <hr>
 <h2 id="-comprensiones-de-listas-crear-listas-en-una-línea">✨ Comprensiones de listas: crear listas en una línea</h2>
 <p>Una <strong>comprensión</strong> arma una lista nueva a partir de otra, en una sola línea. Es elegante y muy “pythónico”.</p>

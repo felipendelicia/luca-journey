@@ -18,6 +18,14 @@ order: 350
 
 > 💡 Fijate el patrón: la **misma ruta** (`/pokedex`) hace cosas distintas según el **método**. Eso es REST.
 
+```quiz
+P: En una API REST, ¿qué método HTTP y ruta se usan para **obtener un Pokémon específico** por su id?
+- POST `/pokedex`
+- DELETE `/pokedex/<id>`
++ GET `/pokedex/<id>`
+> GET es para leer; la ruta con `<id>` identifica el recurso específico. POST crea, DELETE borra; la ruta sin id (`/pokedex`) opera sobre la colección completa.
+```
+
 ## 📖 Read: listar y obtener
 
 ```python
@@ -47,6 +55,14 @@ print("inexistente:", c.get("/pokedex/99").status_code)   # 404
 ```
 
 > 💡 Cuando el recurso **no existe**, se responde **404**. Manejar el error es parte de hacer una buena API.
+
+```quiz
+P: ¿Qué código de estado devuelve la ruta cuando el Pokémon buscado **no existe**?
+- `200`
+- `201`
++ `404`
+> `404` significa "Not Found": el recurso pedido no existe. Es importante manejarlo explícitamente (`return jsonify(...), 404`) para que el cliente entienda qué pasó.
+```
 
 ## ➕ Create y 🗑️ Delete
 

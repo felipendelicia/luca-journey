@@ -69,6 +69,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 <code>pokedex["nivel"] >= 50</code> da una Series de True/False (una máscara, como en NumPy). pandas usa esa máscara para filtrar filas.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué hace `pokedex[pokedex["nivel"] >= 50]`?</span></span>
+<span class="line"><span>- Devuelve la fila en la posición 50.</span></span>
+<span class="line"><span>- Devuelve el valor `50` de la columna nivel.</span></span>
+<span class="line"><span>+ Devuelve todas las filas donde el nivel es 50 o más.</span></span>
+<span class="line"><span>> `pokedex["nivel"] >= 50` crea una máscara True/False. Pasarla entre corchetes filtra y mantiene solo las filas donde es `True`.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-varias-condiciones-a-la-vez">🔗 Varias condiciones a la vez</h2>
 <p>Combinás con <code>&#x26;</code> (y) / <code>|</code> (o). <strong>Ojo:</strong> cada condición va entre paréntesis.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> pandas </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> pd</span></span>
@@ -80,6 +86,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#ABB2BF">fuertes_no_fuego </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> pokedex[(pokedex[</span><span style="color:#98C379">"nivel"</span><span style="color:#ABB2BF">] </span><span style="color:#56B6C2">></span><span style="color:#D19A66"> 30</span><span style="color:#ABB2BF">) </span><span style="color:#56B6C2">&#x26;</span><span style="color:#ABB2BF"> (pokedex[</span><span style="color:#98C379">"tipo"</span><span style="color:#ABB2BF">] </span><span style="color:#56B6C2">!=</span><span style="color:#98C379"> "Fuego"</span><span style="color:#ABB2BF">)]</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(fuertes_no_fuego)</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: Para combinar dos condiciones en un filtro pandas (nivel > 30 **y** tipo Fuego), ¿cuál es la sintaxis correcta?</span></span>
+<span class="line"><span>- `pokedex[pokedex["nivel"] > 30 and pokedex["tipo"] == "Fuego"]`</span></span>
+<span class="line"><span>+ `pokedex[(pokedex["nivel"] > 30) &#x26; (pokedex["tipo"] == "Fuego")]`</span></span>
+<span class="line"><span>- `pokedex[pokedex["nivel"] > 30 &#x26; pokedex["tipo"] == "Fuego"]`</span></span>
+<span class="line"><span>> Con pandas se usa `&#x26;` (no `and`) y cada condición va entre paréntesis. Sin los paréntesis el orden de operaciones rompe el filtro.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="️-ordenar">↕️ Ordenar</h2>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> pandas </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> pd</span></span>
 <span class="line"><span style="color:#ABB2BF">pokedex </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> pd.</span><span style="color:#61AFEF">DataFrame</span><span style="color:#ABB2BF">({</span><span style="color:#98C379">"nombre"</span><span style="color:#ABB2BF">: [</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Charizard"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Bulbasaur"</span><span style="color:#ABB2BF">], </span><span style="color:#98C379">"nivel"</span><span style="color:#ABB2BF">: [</span><span style="color:#D19A66">25</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">90</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">12</span><span style="color:#ABB2BF">]})</span></span>

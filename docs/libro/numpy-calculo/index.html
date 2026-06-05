@@ -74,6 +74,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 Truco para no marearte: <code>axis=0</code> “aplasta hacia abajo” (resume las filas → te queda una por columna). <code>axis=1</code> “aplasta hacia el costado”.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: `niveles = np.array([25, 90, 12, 70, 50])`. ¿Qué devuelve `niveles.mean()`?</span></span>
+<span class="line"><span>- `90`</span></span>
+<span class="line"><span>- `25`</span></span>
+<span class="line"><span>+ `49.4`</span></span>
+<span class="line"><span>> `.mean()` calcula el promedio: (25+90+12+70+50)/5 = 247/5 = 49.4.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-contar-y-filtrar-con-condiciones">🎭 Contar y filtrar con condiciones</h2>
 <p>Combinás máscaras con agregaciones para <strong>contar</strong> o <strong>medir</strong>.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> numpy </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> np</span></span>
@@ -85,6 +91,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 <code>(niveles > 40)</code> da <code>[False True False True True]</code>. Sumar booleanos cuenta los <code>True</code> (porque <code>True</code> vale 1).</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: `niveles = np.array([25, 90, 12, 70, 50])`. ¿Qué devuelve `(niveles > 40).sum()`?</span></span>
+<span class="line"><span>- `1`</span></span>
+<span class="line"><span>- `2`</span></span>
+<span class="line"><span>+ `3`</span></span>
+<span class="line"><span>> `niveles > 40` da `[False True False True True]`. Sumar booleanos cuenta los `True`: hay 3 (90, 70 y 50).</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-npwhere-elegir-según-una-condición">🔀 np.where: elegir según una condición</h2>
 <p><code>np.where(condición, si_cumple, si_no)</code> arma un array nuevo decidiendo valor por valor.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> numpy </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> np</span></span>

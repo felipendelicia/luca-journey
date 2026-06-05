@@ -127,6 +127,12 @@ window.__BASE = base;})();</script> <script>
 
 
 <table><thead><tr><th>Código</th><th>Significa</th></tr></thead><tbody><tr><td><strong>200</strong></td><td>OK ✅</td></tr><tr><td><strong>201</strong></td><td>creado</td></tr><tr><td><strong>404</strong></td><td>no encontrado</td></tr><tr><td><strong>500</strong></td><td>error del servidor</td></tr></tbody></table>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: Cuando tu app hace un pedido HTTP para **leer** datos de una API, ¿qué método usás?</span></span>
+<span class="line"><span>- POST</span></span>
+<span class="line"><span>- DELETE</span></span>
+<span class="line"><span>+ GET</span></span>
+<span class="line"><span>> `GET` es para leer/pedir datos. `POST` crea, `PUT` actualiza, `DELETE` borra. Pedir la info de un Pokémon es un `GET`.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-json-el-idioma-de-los-datos">📦 JSON: el idioma de los datos</h2>
 <p>Las APIs mandan datos en <strong>JSON</strong>: texto con la misma pinta que un diccionario de Python.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> json</span></span>
@@ -144,6 +150,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 <code>json.dumps</code> = <strong>d</strong>ump <strong>s</strong>tring (Python → texto JSON). <code>json.loads</code> = <strong>load</strong> <strong>s</strong>tring (texto JSON → Python). El JSON viaja como texto por la red.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué hace `json.loads('{"nombre": "Pikachu"}')`?</span></span>
+<span class="line"><span>- Convierte un diccionario de Python a texto JSON.</span></span>
+<span class="line"><span>- Guarda el JSON en un archivo.</span></span>
+<span class="line"><span>+ Convierte el texto JSON a un diccionario de Python.</span></span>
+<span class="line"><span>> `loads` = **load string**: recibe texto JSON y devuelve Python. Al revés, `dumps` convierte de Python a texto JSON.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-procesar-una-respuesta">🔎 Procesar una respuesta</h2>
 <p>Cuando una API te responde, recibís JSON y lo convertís a Python para usarlo.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> json</span></span>

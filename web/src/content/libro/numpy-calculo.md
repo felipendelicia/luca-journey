@@ -42,6 +42,14 @@ print(stats.mean(axis=0))  # promedio por columna
 
 > 💡 Truco para no marearte: `axis=0` "aplasta hacia abajo" (resume las filas → te queda una por columna). `axis=1` "aplasta hacia el costado".
 
+```quiz
+P: `niveles = np.array([25, 90, 12, 70, 50])`. ¿Qué devuelve `niveles.mean()`?
+- `90`
+- `25`
++ `49.4`
+> `.mean()` calcula el promedio: (25+90+12+70+50)/5 = 247/5 = 49.4.
+```
+
 ## 🎭 Contar y filtrar con condiciones
 
 Combinás máscaras con agregaciones para **contar** o **medir**.
@@ -55,6 +63,14 @@ print(niveles[niveles > 40].mean())  # promedio de los que superan 40
 ```
 
 > 💡 `(niveles > 40)` da `[False True False True True]`. Sumar booleanos cuenta los `True` (porque `True` vale 1).
+
+```quiz
+P: `niveles = np.array([25, 90, 12, 70, 50])`. ¿Qué devuelve `(niveles > 40).sum()`?
+- `1`
+- `2`
++ `3`
+> `niveles > 40` da `[False True False True True]`. Sumar booleanos cuenta los `True`: hay 3 (90, 70 y 50).
+```
 
 ## 🔀 np.where: elegir según una condición
 

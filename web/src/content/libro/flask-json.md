@@ -28,6 +28,14 @@ print(r.headers["Content-Type"])   # application/json
 
 > 💡 `r.get_json()` te devuelve la respuesta ya convertida a diccionario de Python. Es lo que usás para leer lo que mandó la API.
 
+```quiz
+P: ¿Qué función de Flask se usa para devolver un diccionario como respuesta JSON?
+- `json.dumps()`
+- `return dict()`
++ `jsonify()`
+> `jsonify({...})` convierte el dict a JSON y setea el header `Content-Type: application/json` automáticamente. `json.dumps` solo convierte a texto, sin los headers correctos.
+```
+
 ## 📋 Devolver listas
 
 ```python
@@ -40,6 +48,14 @@ def equipo():
 
 c = app.test_client()
 print(c.get("/equipo").get_json())
+```
+
+```quiz
+P: ¿Cómo leés el JSON de la respuesta en el cliente de pruebas de Flask?
+- `r.get_data()`
+- `r.json`
++ `r.get_json()`
+> `.get_json()` parsea el cuerpo de la respuesta como JSON y te devuelve directamente el dict o lista de Python. `.get_data(as_text=True)` devuelve el texto crudo.
 ```
 
 ## 🗂️ Una mini Pokédex

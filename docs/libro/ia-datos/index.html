@@ -76,6 +76,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 <code>test_size=0.3</code> aparta el 30% para probar. <code>random_state=42</code> fija el “azar” para que el reparto sea siempre el mismo (reproducible).</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Por qué se divide el dataset en train y test antes de entrenar?</span></span>
+<span class="line"><span>- Para usar menos memoria al entrenar</span></span>
+<span class="line"><span>+ Para evaluar el modelo con datos que nunca vio y medir su desempeño real</span></span>
+<span class="line"><span>- Porque `fit` no acepta todos los datos a la vez</span></span>
+<span class="line"><span>> Si evaluás con los mismos datos de entrenamiento, el modelo parece mejor de lo que es (se los "sabe de memoria"). El **test set** mide cómo se porta con datos nuevos.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-escalar-misma-medida-para-todos">📏 Escalar: misma medida para todos</h2>
 <p>Si una feature va de 0 a 1000 y otra de 0 a 1, la grande “pisa” a la chica. <strong>Escalar</strong> las pone en la misma medida (media 0, desvío 1).</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> numpy </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> np</span></span>
@@ -85,6 +91,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#ABB2BF">X_escalado </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> StandardScaler</span><span style="color:#ABB2BF">().</span><span style="color:#61AFEF">fit_transform</span><span style="color:#ABB2BF">(X)</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(X_escalado.</span><span style="color:#61AFEF">round</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">2</span><span style="color:#ABB2BF">))</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Para qué sirve `StandardScaler().fit_transform(X)`?</span></span>
+<span class="line"><span>- Para convertir los datos a formato JSON antes de entrenar</span></span>
+<span class="line"><span>- Para rellenar los valores faltantes con cero</span></span>
+<span class="line"><span>+ Para poner todas las features en la misma escala (media 0, desvío 1)</span></span>
+<span class="line"><span>> Si una feature va de 0 a 1000 y otra de 0 a 1, la grande domina al modelo. Escalar las pone en la misma medida para que todas tengan igual peso.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

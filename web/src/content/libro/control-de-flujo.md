@@ -30,6 +30,16 @@ if nivel >= 25:
 
 ---
 
+```quiz
+P: ¿Qué es lo que hace que el código adentro de un `if` se ejecute?
+- Que la línea empiece con cuatro espacios
++ Que la condición sea verdadera (`True`)
+- Que la variable no sea `None`
+> La indentación le dice a Python qué código está "adentro", pero ese código solo se ejecuta si la condición del `if` es `True`.
+```
+
+---
+
 ## 🔢 Operadores de comparación
 
 Sirven para construir condiciones. Devuelven `True` o `False`:
@@ -149,6 +159,16 @@ for hp in range(0, 101, 10):
 ```
 
 > 💡 Recordá: `range(5)` da `0, 1, 2, 3, 4` (empieza en 0, termina **antes** del 5).
+
+---
+
+```quiz
+P: ¿Qué imprime `range(3)` si lo recorrés con `for i in range(3): print(i)`?
+- 1, 2, 3
+- 0, 1, 2, 3
++ 0, 1, 2
+> `range(3)` genera los números del 0 al 2 (tres números). El límite final NO se incluye.
+```
 
 ---
 

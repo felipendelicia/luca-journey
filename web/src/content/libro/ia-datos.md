@@ -45,6 +45,14 @@ print("prueba:", len(X_test), "filas")
 
 > 💡 `test_size=0.3` aparta el 30% para probar. `random_state=42` fija el "azar" para que el reparto sea siempre el mismo (reproducible).
 
+```quiz
+P: ¿Por qué se divide el dataset en train y test antes de entrenar?
+- Para usar menos memoria al entrenar
++ Para evaluar el modelo con datos que nunca vio y medir su desempeño real
+- Porque `fit` no acepta todos los datos a la vez
+> Si evaluás con los mismos datos de entrenamiento, el modelo parece mejor de lo que es (se los "sabe de memoria"). El **test set** mide cómo se porta con datos nuevos.
+```
+
 ## 📏 Escalar: misma medida para todos
 
 Si una feature va de 0 a 1000 y otra de 0 a 1, la grande "pisa" a la chica. **Escalar** las pone en la misma medida (media 0, desvío 1).
@@ -56,6 +64,14 @@ from sklearn.preprocessing import StandardScaler
 X = np.array([[0.0, 100.0], [10.0, 200.0], [20.0, 300.0]])
 X_escalado = StandardScaler().fit_transform(X)
 print(X_escalado.round(2))
+```
+
+```quiz
+P: ¿Para qué sirve `StandardScaler().fit_transform(X)`?
+- Para convertir los datos a formato JSON antes de entrenar
+- Para rellenar los valores faltantes con cero
++ Para poner todas las features en la misma escala (media 0, desvío 1)
+> Si una feature va de 0 a 1000 y otra de 0 a 1, la grande domina al modelo. Escalar las pone en la misma medida para que todas tengan igual peso.
 ```
 
 ## 📝 Resumen

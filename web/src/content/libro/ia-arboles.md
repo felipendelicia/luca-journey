@@ -51,6 +51,14 @@ print("importancia de cada feature:", modelo.feature_importances_)
 
 > 💡 Las importancias suman 1. Si una feature da `0`, no aportó nada para decidir; podrías hasta sacarla.
 
+```quiz
+P: ¿Qué ventaja tiene un árbol de decisión sobre el KNN?
+- Siempre tiene mayor accuracy
++ Es interpretable: podés leer las reglas que aprendió
+- No necesita datos de entrenamiento
+> El árbol aprende reglas tipo "si ataque > 60 → Fuego". Podés explicar cada decisión. El KNN es una "caja negra": solo sabe que algo es parecido a sus vecinos.
+```
+
 ## 🌲 Ventajas y cuidado
 
 - ✅ Se **entiende** (podés explicar cada decisión).
@@ -61,6 +69,14 @@ print("importancia de cada feature:", modelo.feature_importances_)
 from sklearn.tree import DecisionTreeClassifier
 modelo = DecisionTreeClassifier(max_depth=2, random_state=0)   # árbol cortito
 print(modelo)
+```
+
+```quiz
+P: ¿Para qué sirve el parámetro `max_depth` en `DecisionTreeClassifier`?
+- Para definir cuántos datos de entrenamiento usar
+- Para establecer la cantidad de features del árbol
++ Para limitar cuántos niveles de preguntas puede tener el árbol y evitar overfitting
+> Sin límite, el árbol puede crecer hasta memorizar cada dato. `max_depth=2` lo recorta: hace preguntas más generales y generaliza mejor.
 ```
 
 ## 📝 Resumen

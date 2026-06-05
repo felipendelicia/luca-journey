@@ -62,6 +62,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 A diferencia del clasificador, acá <code>predict</code> devuelve un <strong>número con decimales</strong>, no una categoría.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Cuál es la diferencia principal entre clasificación y regresión?</span></span>
+<span class="line"><span>- La regresión usa más datos que la clasificación</span></span>
+<span class="line"><span>+ La clasificación predice una categoría; la regresión predice un número continuo</span></span>
+<span class="line"><span>- La regresión solo funciona con una feature de entrada</span></span>
+<span class="line"><span>> Clasificar responde "¿qué tipo es?" (una categoría). Regresión responde "¿cuánto?" (un número como el CP o el precio de una casa).</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-la-fórmula-que-aprendió">🔢 La fórmula que aprendió</h2>
 <p>El modelo aprende una <strong>pendiente</strong> y una <strong>ordenada</strong> (<code>y = pendiente·x + ordenada</code>):</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">from</span><span style="color:#ABB2BF"> sklearn.linear_model </span><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> LinearRegression</span></span>
@@ -85,6 +91,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#ABB2BF">modelo </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> LinearRegression</span><span style="color:#ABB2BF">().</span><span style="color:#61AFEF">fit</span><span style="color:#ABB2BF">(X, y)</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(modelo.</span><span style="color:#61AFEF">predict</span><span style="color:#ABB2BF">([[</span><span style="color:#D19A66">70</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">70</span><span style="color:#ABB2BF">]]).</span><span style="color:#61AFEF">round</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">1</span><span style="color:#ABB2BF">))</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: Si el modelo aprendió `pendiente = 2` y `ordenada = 1`, ¿qué predice para `x = 5`?</span></span>
+<span class="line"><span>- 7</span></span>
+<span class="line"><span>+ 11</span></span>
+<span class="line"><span>- 10</span></span>
+<span class="line"><span>> La fórmula es `y = pendiente * x + ordenada` = `2 * 5 + 1 = 11`. El modelo guarda esos valores en `coef_[0]` e `intercept_`.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

@@ -72,6 +72,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 Si le pasás una versión <strong>rota</strong> (<code>lambda x: True</code>), el test lanza <code>AssertionError</code>: <strong>detectó el bug</strong>. Eso es exactamente lo que querés.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Por qué es útil recibir la función a probar como parámetro del test?</span></span>
+<span class="line"><span>- Para que el test corra más rápido</span></span>
+<span class="line"><span>+ Para que el mismo test sirva para verificar cualquier implementación de esa función</span></span>
+<span class="line"><span>- Porque Python no deja llamar funciones directamente desde un test</span></span>
+<span class="line"><span>> Si el test recibe la función por parámetro, podés pasarle la tuya y la de un compañero. Si cualquiera de las dos está rota, el mismo test la detecta.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-pytest-el-corredor-de-tests">🤖 pytest: el corredor de tests</h2>
 <p>En el mundo real no llamás los tests a mano: usás <strong>pytest</strong>, que busca todas las funciones que empiezan con <code>test_</code> y las corre solas. (¡Es lo que usa esta plataforma para corregirte!)</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#7F848E;font-style:italic"># archivo test_pokemon.py</span></span>
@@ -84,6 +90,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 Cada botón <strong>Corregir</strong> de los ejercicios corre <code>pytest</code> en tu navegador. Ahora ya sabés qué hay abajo del capó. 🔧</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Cómo reconoce pytest las funciones que tiene que correr?</span></span>
+<span class="line"><span>- Busca funciones que empiecen con `check_`</span></span>
+<span class="line"><span>- Busca funciones que tengan `@test` como decorador</span></span>
+<span class="line"><span>+ Busca funciones cuyo nombre empiece con `test_`</span></span>
+<span class="line"><span>> pytest busca automáticamente todas las funciones que empiezan con `test_` en los archivos que empiezan con `test_`. No hace falta llamarlas a mano.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

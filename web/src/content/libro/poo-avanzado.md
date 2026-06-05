@@ -42,6 +42,16 @@ print(charizard.lanzallamas())  # propio de PokemonFuego
 
 ---
 
+```quiz
+P: `PokemonFuego` hereda de `Pokemon`. Creás `charizard = PokemonFuego("Charizard", 50)`. ¿Puede usar el método `atacar()` definido en `Pokemon`?
++ Sí, porque la clase hija hereda todos los métodos del padre
+- No, los métodos del padre son privados
+- Solo si `PokemonFuego` lo copia manualmente
+> Con herencia, la clase hija recibe todos los atributos y métodos del padre sin necesidad de copiarlos. Solo necesita definir lo que quiere agregar o cambiar.
+```
+
+---
+
 ## 🆙 super(): llamar al padre
 
 Cuando el hijo define su propio `__init__`, puede llamar al del padre con `super()` para no repetir código.
@@ -96,6 +106,16 @@ for p in equipo:
 ```
 
 > 💡 Esto es potente: podés tratar a todos como "Pokémon" y cada uno hace lo suyo. No necesitás `if tipo == "fuego"` por todos lados.
+
+---
+
+```quiz
+P: `PokemonFuego` y `PokemonAgua` tienen cada una su propio método `atacar()`. Cuando en un `for` llamás `p.atacar()` para cada uno, ¿qué resultado obtenés?
+- Siempre se llama el `atacar()` de la clase padre `Pokemon`
+- Un error porque hay dos métodos con el mismo nombre
++ Cada objeto ejecuta su propio `atacar()` según su clase
+> Eso es el polimorfismo: el mismo nombre de método, comportamiento distinto según la clase del objeto. Python sabe a cuál llamar.
+```
 
 ---
 

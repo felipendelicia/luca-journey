@@ -22,6 +22,14 @@ print("El nivel de Charizard:", niveles["Charizard"])
 
 > 💡 pandas se importa como `pd`, siempre. Y por dentro usa NumPy: una Series es un array con etiquetas.
 
+```quiz
+P: ¿Qué diferencia hay entre una `Series` y un `DataFrame` en pandas?
+- Una Series tiene etiquetas; un DataFrame no.
++ Una Series es una columna; un DataFrame es una tabla con muchas columnas.
+- Son lo mismo, solo cambia el nombre.
+> Una `Series` es una sola columna con etiquetas. Un `DataFrame` agrupa muchas Series en una tabla completa (como una Pokédex).
+```
+
 ## 🗂️ Crear un DataFrame
 
 Lo más común: desde un **diccionario** donde cada clave es una columna.
@@ -67,6 +75,14 @@ pokedex = pd.DataFrame({
 print(pokedex["nivel"])            # la columna
 print(pokedex["nivel"].mean())     # promedio de la columna
 print(list(pokedex.columns))       # nombres de columnas
+```
+
+```quiz
+P: ¿Qué devuelve `pokedex.shape` si el DataFrame tiene 4 Pokémon y 3 columnas?
+- `(3, 4)`
+- `12`
++ `(4, 3)`
+> `.shape` devuelve `(filas, columnas)`. Primero las filas, después las columnas.
 ```
 
 ## ➕ Agregar una columna

@@ -62,6 +62,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 <code>request.json</code> te da el cuerpo del pedido ya convertido a diccionario. En el cliente, <code>c.post(url, json={...})</code> manda ese cuerpo.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Cómo se lee el cuerpo JSON que mandó el cliente en una ruta POST de Flask?</span></span>
+<span class="line"><span>- `request.args.get("datos")`</span></span>
+<span class="line"><span>- `request.body`</span></span>
+<span class="line"><span>+ `request.json`</span></span>
+<span class="line"><span>> `request.json` parsea automáticamente el cuerpo JSON del pedido y te da un diccionario. `request.args` es para la query string (lo del `?`).</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-usar-los-datos-recibidos">➕ Usar los datos recibidos</h2>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">from</span><span style="color:#ABB2BF"> flask </span><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> Flask, jsonify, request</span></span>
 <span class="line"><span style="color:#ABB2BF">app </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> Flask</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">__name__</span><span style="color:#ABB2BF">)</span></span>
@@ -74,6 +80,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#ABB2BF">c </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> app.</span><span style="color:#61AFEF">test_client</span><span style="color:#ABB2BF">()</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(c.</span><span style="color:#61AFEF">post</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"/sumar"</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75;font-style:italic">json</span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF">{</span><span style="color:#98C379">"a"</span><span style="color:#ABB2BF">: </span><span style="color:#D19A66">25</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"b"</span><span style="color:#ABB2BF">: </span><span style="color:#D19A66">17</span><span style="color:#ABB2BF">}).</span><span style="color:#61AFEF">get_json</span><span style="color:#ABB2BF">())   </span><span style="color:#7F848E;font-style:italic"># {'suma': 42}</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué código de estado HTTP se usa por convención cuando una API **crea** un recurso nuevo?</span></span>
+<span class="line"><span>- `200`</span></span>
+<span class="line"><span>- `404`</span></span>
+<span class="line"><span>+ `201`</span></span>
+<span class="line"><span>> `200` significa "OK" (pedido procesado). `201` significa "Creado": se usa cuando el resultado del POST fue crear algo nuevo. `404` es "no encontrado".</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="️-devolver-un-código-de-estado">🏷️ Devolver un código de estado</h2>
 <p>Cuando <strong>creás</strong> algo, la convención es responder <strong>201</strong> (creado). Devolvés una tupla <code>(respuesta, código)</code>.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">from</span><span style="color:#ABB2BF"> flask </span><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> Flask, jsonify, request</span></span>

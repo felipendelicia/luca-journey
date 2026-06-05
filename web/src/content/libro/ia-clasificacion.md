@@ -43,6 +43,14 @@ print(modelo.predict(nuevos))   # ['Fuego' 'Agua' 'Fuego']
 
 > 💡 Las etiquetas pueden ser textos (`"Fuego"`) o números (`0`). El modelo no se da cuenta de la diferencia: aprende del patrón de las features.
 
+```quiz
+P: En `KNeighborsClassifier(n_neighbors=3)`, ¿qué significa `n_neighbors=3`?
+- El modelo necesita mínimo 3 datos para entrenarse
++ Mira los 3 ejemplos más parecidos y hace que voten
+- Divide los datos en 3 grupos iguales
+> Con `k=3` el modelo busca los 3 vecinos más cercanos y elige la categoría que más se repite entre ellos. Más vecinos = decisión más estable.
+```
+
 ## 🎯 ¿Y qué tan seguro está?
 
 Muchos modelos te dan la **probabilidad** de cada categoría con `predict_proba`:
@@ -54,6 +62,14 @@ y = [0, 0, 0, 1, 1, 1]
 modelo = KNeighborsClassifier(n_neighbors=3).fit(X, y)
 
 print(modelo.predict_proba([[60, 60]]))   # [[prob_Fuego, prob_Agua]]
+```
+
+```quiz
+P: ¿Qué devuelve `modelo.predict_proba([[60, 60]])`?
+- El nombre de la categoría predicha
+- Un número entre 0 y 1 que indica el nivel de confianza total
++ Un arreglo con la probabilidad de cada categoría posible
+> `predict_proba` da la **probabilidad** de cada clase. Por ejemplo `[[0.67, 0.33]]` significa 67% Fuego y 33% Agua. `predict` solo da la más probable.
 ```
 
 ## 📝 Resumen

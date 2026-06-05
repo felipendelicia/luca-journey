@@ -27,6 +27,14 @@ print(modelo.predict([[50]]))   # [500.]
 
 > 💡 A diferencia del clasificador, acá `predict` devuelve un **número con decimales**, no una categoría.
 
+```quiz
+P: ¿Cuál es la diferencia principal entre clasificación y regresión?
+- La regresión usa más datos que la clasificación
++ La clasificación predice una categoría; la regresión predice un número continuo
+- La regresión solo funciona con una feature de entrada
+> Clasificar responde "¿qué tipo es?" (una categoría). Regresión responde "¿cuánto?" (un número como el CP o el precio de una casa).
+```
+
 ## 🔢 La fórmula que aprendió
 
 El modelo aprende una **pendiente** y una **ordenada** (`y = pendiente·x + ordenada`):
@@ -56,6 +64,14 @@ y = [100, 120, 120, 180]
 
 modelo = LinearRegression().fit(X, y)
 print(modelo.predict([[70, 70]]).round(1))
+```
+
+```quiz
+P: Si el modelo aprendió `pendiente = 2` y `ordenada = 1`, ¿qué predice para `x = 5`?
+- 7
++ 11
+- 10
+> La fórmula es `y = pendiente * x + ordenada` = `2 * 5 + 1 = 11`. El modelo guarda esos valores en `coef_[0]` e `intercept_`.
 ```
 
 ## 📝 Resumen

@@ -76,6 +76,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 Las etiquetas pueden ser textos (<code>"Fuego"</code>) o números (<code>0</code>). El modelo no se da cuenta de la diferencia: aprende del patrón de las features.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: En `KNeighborsClassifier(n_neighbors=3)`, ¿qué significa `n_neighbors=3`?</span></span>
+<span class="line"><span>- El modelo necesita mínimo 3 datos para entrenarse</span></span>
+<span class="line"><span>+ Mira los 3 ejemplos más parecidos y hace que voten</span></span>
+<span class="line"><span>- Divide los datos en 3 grupos iguales</span></span>
+<span class="line"><span>> Con `k=3` el modelo busca los 3 vecinos más cercanos y elige la categoría que más se repite entre ellos. Más vecinos = decisión más estable.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-y-qué-tan-seguro-está">🎯 ¿Y qué tan seguro está?</h2>
 <p>Muchos modelos te dan la <strong>probabilidad</strong> de cada categoría con <code>predict_proba</code>:</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">from</span><span style="color:#ABB2BF"> sklearn.neighbors </span><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> KNeighborsClassifier</span></span>
@@ -85,6 +91,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(modelo.</span><span style="color:#61AFEF">predict_proba</span><span style="color:#ABB2BF">([[</span><span style="color:#D19A66">60</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">60</span><span style="color:#ABB2BF">]]))   </span><span style="color:#7F848E;font-style:italic"># [[prob_Fuego, prob_Agua]]</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué devuelve `modelo.predict_proba([[60, 60]])`?</span></span>
+<span class="line"><span>- El nombre de la categoría predicha</span></span>
+<span class="line"><span>- Un número entre 0 y 1 que indica el nivel de confianza total</span></span>
+<span class="line"><span>+ Un arreglo con la probabilidad de cada categoría posible</span></span>
+<span class="line"><span>> `predict_proba` da la **probabilidad** de cada clase. Por ejemplo `[[0.67, 0.33]]` significa 67% Fuego y 33% Agua. `predict` solo da la más probable.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

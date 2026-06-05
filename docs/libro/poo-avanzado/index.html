@@ -71,6 +71,13 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(charizard.</span><span style="color:#61AFEF">lanzallamas</span><span style="color:#ABB2BF">())  </span><span style="color:#7F848E;font-style:italic"># propio de PokemonFuego</span></span>
 <span class="line"></span></code></pre>
 <hr>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: `PokemonFuego` hereda de `Pokemon`. Creás `charizard = PokemonFuego("Charizard", 50)`. ¿Puede usar el método `atacar()` definido en `Pokemon`?</span></span>
+<span class="line"><span>+ Sí, porque la clase hija hereda todos los métodos del padre</span></span>
+<span class="line"><span>- No, los métodos del padre son privados</span></span>
+<span class="line"><span>- Solo si `PokemonFuego` lo copia manualmente</span></span>
+<span class="line"><span>> Con herencia, la clase hija recibe todos los atributos y métodos del padre sin necesidad de copiarlos. Solo necesita definir lo que quiere agregar o cambiar.</span></span>
+<span class="line"><span></span></span></code></pre>
+<hr>
 <h2 id="-super-llamar-al-padre">🆙 super(): llamar al padre</h2>
 <p>Cuando el hijo define su propio <code>__init__</code>, puede llamar al del padre con <code>super()</code> para no repetir código.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">class</span><span style="color:#E5C07B"> Pokemon</span><span style="color:#ABB2BF">:</span></span>
@@ -118,6 +125,13 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 Esto es potente: podés tratar a todos como “Pokémon” y cada uno hace lo suyo. No necesitás <code>if tipo == "fuego"</code> por todos lados.</p>
 </div>
+<hr>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: `PokemonFuego` y `PokemonAgua` tienen cada una su propio método `atacar()`. Cuando en un `for` llamás `p.atacar()` para cada uno, ¿qué resultado obtenés?</span></span>
+<span class="line"><span>- Siempre se llama el `atacar()` de la clase padre `Pokemon`</span></span>
+<span class="line"><span>- Un error porque hay dos métodos con el mismo nombre</span></span>
+<span class="line"><span>+ Cada objeto ejecuta su propio `atacar()` según su clase</span></span>
+<span class="line"><span>> Eso es el polimorfismo: el mismo nombre de método, comportamiento distinto según la clase del objeto. Python sabe a cuál llamar.</span></span>
+<span class="line"><span></span></span></code></pre>
 <hr>
 <h2 id="️-métodos-de-clase-y-estáticos">🏛️ Métodos de clase y estáticos</h2>
 <h3 id="método-estático-staticmethod">Método estático (<code>@staticmethod</code>)</h3>

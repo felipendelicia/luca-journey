@@ -48,6 +48,14 @@ probar_dividir_seguro(dividir_seguro)
 print("✅ pasó")
 ```
 
+```quiz
+P: ¿Por qué `dividir_seguro(1, 0)` devuelve `None` en vez de explotar?
+- Porque Python ignora la división por cero automáticamente
++ Porque el `try/except ZeroDivisionError` atrapa el error y retorna `None`
+- Porque `None / 0` es `None` por definición
+> El `try` intenta `a / b`; cuando `b == 0` Python lanza `ZeroDivisionError`; el `except` lo atrapa y retorna `None` en vez de crashear.
+```
+
 ## 🗺️ Lo que aprendiste en Kalos
 
 1. **try / except** — atrapar errores sin crashear.
@@ -57,6 +65,14 @@ print("✅ pasó")
 5. **Escribir tests** — probar el código automáticamente.
 6. **Casos límite** — cazar los bugs donde se esconden.
 7. **TDD** — el test primero, el código después.
+
+```quiz
+P: ¿Qué combina un módulo de calidad profesional según este capítulo?
+- Solo tests: el código de producción va separado
+- Solo manejo de errores: los tests son opcionales
++ Código robusto (valida y maneja errores) junto con sus tests automáticos
+> Un módulo pro tiene dos caras: el código que valida entradas y atrapa errores, **y** los tests que verifican que eso funcione. Separados no alcanzan.
+```
 
 Con esto escribís código que **no se rompe en silencio** y que podés cambiar con confianza. Es lo que separa a quien "hace que ande una vez" de quien construye software serio. 🏆
 

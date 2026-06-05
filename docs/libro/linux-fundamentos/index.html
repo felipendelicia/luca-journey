@@ -150,6 +150,13 @@ window.__BASE = base;})();</script> <script>
 <p>⚠️ <strong>Nunca, jamás</strong> corras <code>rm -rf /</code>. Eso intenta borrar TODO el sistema. Es el “Autodestrucción” definitivo. No lo hagas nunca.</p>
 </div>
 <hr>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: Estás en `/home/felipe` y querés ir a `/home/felipe/pokecenter`. ¿Qué comando usás?</span></span>
+<span class="line"><span>- `cd /pokecenter`</span></span>
+<span class="line"><span>- `cd ~pokecenter`</span></span>
+<span class="line"><span>+ `cd pokecenter`</span></span>
+<span class="line"><span>> Como ya estás en `/home/felipe`, podés usar la ruta relativa `pokecenter` directamente. La ruta absoluta `/home/felipe/pokecenter` también funciona, pero es más larga.</span></span>
+<span class="line"><span></span></span></code></pre>
+<hr>
 <h2 id="️-rutas-absolutas-vs-relativas">🛣️ Rutas absolutas vs relativas</h2>
 <p>Una <strong>ruta</strong> es la dirección de un archivo o carpeta. Hay dos formas de escribirla:</p>
 <h3 id="ruta-absoluta--la-dirección-completa">Ruta absoluta — la dirección completa</h3>
@@ -168,6 +175,13 @@ window.__BASE = base;})();</script> <script>
 <li><code>~</code> → tu home.</li>
 <li><code>/</code> → la raíz.</li>
 </ul>
+<hr>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué hace `mv pikachu.txt raichu.txt`?</span></span>
+<span class="line"><span>- Crea una copia de `pikachu.txt` con el nombre `raichu.txt`</span></span>
+<span class="line"><span>- Borra `pikachu.txt` y crea `raichu.txt` vacío</span></span>
+<span class="line"><span>+ Renombra `pikachu.txt` a `raichu.txt`</span></span>
+<span class="line"><span>> `mv` mueve archivos, pero si el destino es un nombre en la misma carpeta, simplemente renombra. No crea copia: el archivo original desaparece con el nombre viejo.</span></span>
+<span class="line"><span></span></span></code></pre>
 <hr>
 <h2 id="-permisos-básicos">🔐 Permisos básicos</h2>
 <p>En Linux, cada archivo tiene <strong>permisos</strong> que dicen quién puede leerlo, escribirlo o ejecutarlo. Es como decidir quién puede entrar a tu gimnasio.</p>

@@ -56,6 +56,14 @@ print("Hay", cantidad, "Pokémon")
 
 > 💡 `COUNT(*)` cuenta las filas. `.fetchone()` trae **una** fila de resultado; `[0]` es su primer (y único) valor.
 
+```quiz
+P: ¿Qué hace `SELECT COUNT(*) FROM pokemon`?
+- Devuelve la primera fila de la tabla
+- Devuelve el nombre de todas las columnas
++ Cuenta cuántas filas hay en la tabla
+> `COUNT(*)` cuenta filas y devuelve un único número. Para traer datos usarías `SELECT *` (sin `COUNT`).
+```
+
 ## 🏛️ Elegir columnas
 
 ```python
@@ -66,6 +74,14 @@ con.execute("INSERT INTO pokemon VALUES ('Snorlax', 70, 'Normal')")
 
 for nombre, nivel in con.execute("SELECT nombre, nivel FROM pokemon"):
     print(nombre, "es nivel", nivel)
+```
+
+```quiz
+P: ¿Qué devuelve `con.execute("SELECT nombre FROM pokemon")` al iterar?
+- Una lista de strings con los nombres
+- Una sola string con todos los nombres unidos
++ Tuplas de un elemento, ej: `('Pikachu',)`
+> `execute` devuelve filas como **tuplas**. Por eso necesitás `fila[0]` para sacar el primer (y único) valor de cada fila.
 ```
 
 ## 📝 Resumen

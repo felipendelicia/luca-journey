@@ -99,6 +99,16 @@ Regla práctica: si querés **usar** el resultado después, usá `return`.
 
 ---
 
+```quiz
+P: Una función tiene `print(x * 2)` en vez de `return x * 2`. Si hacés `resultado = mi_funcion(5)`, ¿qué vale `resultado`?
+- 10
+- 5
++ `None`
+> Sin `return`, la función no devuelve nada útil: Python le asigna `None` a `resultado`. El `print` solo muestra en pantalla, no devuelve el valor.
+```
+
+---
+
 ## 🎚️ Valores por defecto
 
 Podés darle a un parámetro un valor por defecto, que se usa si no pasás nada:
@@ -162,6 +172,16 @@ print(sumar(3, 4))    # 7
 ```
 
 > 💡 Las lambda se usan mucho para ordenar o filtrar (lo vas a ver más adelante). Por ahora, alcanza con saber qué son.
+
+---
+
+```quiz
+P: Tenés `def atacar(nombre, dano=10)`. ¿Qué imprime `atacar("Pikachu")`?
++ Pikachu hizo 10 de daño
+- Error: falta el argumento `dano`
+- Pikachu hizo None de daño
+> `dano=10` es un valor por defecto: si no lo pasás, se usa 10 automáticamente.
+```
 
 ---
 

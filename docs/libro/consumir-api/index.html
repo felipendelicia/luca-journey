@@ -57,6 +57,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout cuidado"><span class="et">CUIDADO</span>
 <p>⚠️ Hacer pedidos de red <strong>de verdad</strong> desde el navegador tiene límites (CORS, permisos). Por eso acá practicamos la parte clave y siempre necesaria: <strong>procesar la respuesta</strong> que te da la API. El pedido lo simulamos con el JSON ya recibido.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: En una compu normal, ¿qué librería de Python se usa para hacer pedidos HTTP a una API externa?</span></span>
+<span class="line"><span>- `urllib`</span></span>
+<span class="line"><span>- `json`</span></span>
+<span class="line"><span>+ `requests`</span></span>
+<span class="line"><span>> `requests` es la librería estándar para consumir APIs: `requests.get(url)` hace el pedido y `.json()` convierte la respuesta. `json` solo maneja texto JSON, no hace pedidos de red.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-procesar-la-respuesta">🔎 Procesar la respuesta</h2>
 <p>Lo que recibís es JSON (texto). Lo convertís a Python y extraés lo que necesitás.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> json</span></span>
@@ -80,6 +86,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#C678DD">for</span><span style="color:#ABB2BF"> p </span><span style="color:#C678DD">in</span><span style="color:#ABB2BF"> datos[</span><span style="color:#98C379">"results"</span><span style="color:#ABB2BF">]:</span></span>
 <span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"-"</span><span style="color:#ABB2BF">, p[</span><span style="color:#98C379">"name"</span><span style="color:#ABB2BF">])</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: Una API devuelve `'{"results": [{"name": "bulbasaur"}, {"name": "ivysaur"}]}'`. ¿Cómo accedés al nombre del primer Pokémon?</span></span>
+<span class="line"><span>- `datos["name"]`</span></span>
+<span class="line"><span>- `datos[0]["name"]`</span></span>
+<span class="line"><span>+ `datos["results"][0]["name"]`</span></span>
+<span class="line"><span>> Primero accedés a la clave `"results"` (que es una lista), luego al índice `[0]` (primer elemento), y finalmente a `"name"`.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="️-manejar-errores">⚠️ Manejar errores</h2>
 <p>No siempre sale bien. Revisás el <strong>código de estado</strong> antes de confiar en los datos.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> json</span></span>

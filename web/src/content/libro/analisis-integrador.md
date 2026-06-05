@@ -37,6 +37,14 @@ limpia = pokedex.dropna().reset_index(drop=True)
 print(limpia)
 ```
 
+```quiz
+P: ¿Qué hace `pokedex.dropna().reset_index(drop=True)` en el paso de limpieza?
+- Rellena los valores faltantes con 0 y reinicia el índice.
+- Solo reinicia el índice sin tocar los NaN.
++ Elimina las filas con valores faltantes y renumera el índice desde 0.
+> `dropna()` saca las filas con NaN. `reset_index(drop=True)` renumera las filas desde 0 (sin guardar el índice viejo como columna).
+```
+
 ## 3️⃣ Resumir: las preguntas clave
 
 ```python
@@ -51,6 +59,14 @@ print("nivel promedio:", pokedex["nivel"].mean())
 print("tipo más común:", pokedex["tipo"].value_counts().idxmax())
 print("promedio por tipo:")
 print(pokedex.groupby("tipo")["nivel"].mean())
+```
+
+```quiz
+P: ¿En qué orden van los pasos del flujo de análisis de datos?
+- Limpiar → Cargar → Resumir → Explorar → Graficar
+- Graficar → Resumir → Limpiar → Cargar → Explorar
++ Cargar → Explorar → Limpiar → Resumir → Graficar
+> El orden es siempre: primero cargás los datos, los explorás (`head`, `describe`), los limpiás (NaN, duplicados), los resumís (`groupby`, `mean`) y finalmente graficás.
 ```
 
 ## 4️⃣ Graficar la conclusión

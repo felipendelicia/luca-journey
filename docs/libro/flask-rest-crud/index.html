@@ -85,6 +85,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 Fijate el patrón: la <strong>misma ruta</strong> (<code>/pokedex</code>) hace cosas distintas según el <strong>método</strong>. Eso es REST.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: En una API REST, ¿qué método HTTP y ruta se usan para **obtener un Pokémon específico** por su id?</span></span>
+<span class="line"><span>- POST `/pokedex`</span></span>
+<span class="line"><span>- DELETE `/pokedex/&#x3C;id>`</span></span>
+<span class="line"><span>+ GET `/pokedex/&#x3C;id>`</span></span>
+<span class="line"><span>> GET es para leer; la ruta con `&#x3C;id>` identifica el recurso específico. POST crea, DELETE borra; la ruta sin id (`/pokedex`) opera sobre la colección completa.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-read-listar-y-obtener">📖 Read: listar y obtener</h2>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">from</span><span style="color:#ABB2BF"> flask </span><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> Flask, jsonify</span></span>
 <span class="line"><span style="color:#ABB2BF">app </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> Flask</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">__name__</span><span style="color:#ABB2BF">)</span></span>
@@ -113,6 +119,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 Cuando el recurso <strong>no existe</strong>, se responde <strong>404</strong>. Manejar el error es parte de hacer una buena API.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué código de estado devuelve la ruta cuando el Pokémon buscado **no existe**?</span></span>
+<span class="line"><span>- `200`</span></span>
+<span class="line"><span>- `201`</span></span>
+<span class="line"><span>+ `404`</span></span>
+<span class="line"><span>> `404` significa "Not Found": el recurso pedido no existe. Es importante manejarlo explícitamente (`return jsonify(...), 404`) para que el cliente entienda qué pasó.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-create-y-️-delete">➕ Create y 🗑️ Delete</h2>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">from</span><span style="color:#ABB2BF"> flask </span><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> Flask, jsonify, request</span></span>
 <span class="line"><span style="color:#ABB2BF">app </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> Flask</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">__name__</span><span style="color:#ABB2BF">)</span></span>

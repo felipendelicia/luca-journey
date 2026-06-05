@@ -59,6 +59,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 <code>COUNT</code>, <code>AVG</code>, <code>MAX</code>, <code>MIN</code>, <code>SUM</code> toman toda la columna y devuelven <strong>un</strong> valor. Por eso usás <code>.fetchone()[0]</code>.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué función SQL devuelve el promedio de una columna numérica?</span></span>
+<span class="line"><span>- `SUM(col)`</span></span>
+<span class="line"><span>+ `AVG(col)`</span></span>
+<span class="line"><span>- `COUNT(col)`</span></span>
+<span class="line"><span>> `AVG` (average) calcula el promedio. `SUM` suma todos los valores y `COUNT` cuenta cuántos hay.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-group-by-resumir-por-grupo">🧮 GROUP BY: resumir por grupo</h2>
 <p><code>GROUP BY</code> arma grupos y calcula la agregación <strong>por cada grupo</strong>. Es lo más potente de SQL.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> sqlite3</span></span>
@@ -81,6 +87,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 El patrón: <code>SELECT columna_grupo, AGREGACIÓN FROM tabla GROUP BY columna_grupo</code>. Pensalo como “por cada tipo, contame/promediame…”.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué hace `SELECT tipo, COUNT(*) FROM pokemon GROUP BY tipo`?</span></span>
+<span class="line"><span>- Filtra solo los Pokémon de un tipo específico</span></span>
+<span class="line"><span>- Cuenta el total de Pokémon sin importar el tipo</span></span>
+<span class="line"><span>+ Muestra cuántos Pokémon hay de cada tipo</span></span>
+<span class="line"><span>> `GROUP BY tipo` forma un grupo por cada tipo distinto, y `COUNT(*)` cuenta las filas de cada grupo por separado.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

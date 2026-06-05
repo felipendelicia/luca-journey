@@ -57,6 +57,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(df.</span><span style="color:#61AFEF">isna</span><span style="color:#ABB2BF">())            </span><span style="color:#7F848E;font-style:italic"># True donde falta</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"faltan:"</span><span style="color:#ABB2BF">, df.</span><span style="color:#61AFEF">isna</span><span style="color:#ABB2BF">().</span><span style="color:#61AFEF">sum</span><span style="color:#ABB2BF">().</span><span style="color:#61AFEF">sum</span><span style="color:#ABB2BF">())   </span><span style="color:#7F848E;font-style:italic"># cuántos NaN en total</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué función de pandas se usa para detectar valores faltantes en un DataFrame?</span></span>
+<span class="line"><span>- `df.null()`</span></span>
+<span class="line"><span>+ `df.isna()`</span></span>
+<span class="line"><span>- `df.empty()`</span></span>
+<span class="line"><span>> `df.isna()` devuelve un DataFrame de `True/False`: `True` donde falta un valor (`NaN`). `.isna().sum()` cuenta cuántos hay por columna.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h3 id="rellenar-o-eliminar">Rellenar o eliminar</h3>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> pandas </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> pd</span></span>
 <span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> numpy </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> np</span></span>
@@ -68,6 +74,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout cuidado"><span class="et">CUIDADO</span>
 <p>⚠️ <code>fillna</code> y <code>dropna</code> <strong>devuelven una copia</strong>; no cambian el original salvo que se lo asignes (<code>df = df.dropna()</code>).</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: `df.fillna(0)` y `df.dropna()`: ¿cuál es la diferencia principal?</span></span>
+<span class="line"><span>- `fillna` borra filas; `dropna` las rellena.</span></span>
+<span class="line"><span>- Son iguales, solo cambia el nombre.</span></span>
+<span class="line"><span>+ `fillna` reemplaza los `NaN` con un valor; `dropna` elimina las filas que los tienen.</span></span>
+<span class="line"><span>> `fillna(0)` pone 0 donde había `NaN`. `dropna()` directamente saca esas filas. Ninguna modifica el original: devuelven una copia.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-tipos-de-datos">🔢 Tipos de datos</h2>
 <p>A veces un número viene como texto. Lo convertís con <code>.astype()</code>.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> pandas </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> pd</span></span>

@@ -26,6 +26,14 @@ Tres piezas:
 
 > 💡 `@app.route(...)` es un **decorador**: "engancha" la función de abajo a una URL. Cuando alguien pide esa URL, Flask llama a tu función.
 
+```quiz
+P: ¿Qué hace `@app.route("/ping")` en Flask?
+- Crea una variable llamada `ping`.
+- Instala la ruta en el servidor de producción.
++ Conecta la función que está abajo a la URL `/ping`: cuando alguien pide esa URL, Flask llama a esa función.
+> `@app.route(...)` es un decorador. "Engancha" la función siguiente a la URL indicada. Sin él, Flask no sabe que esa función existe.
+```
+
 ## 🧪 Probar sin servidor: test_client
 
 Normalmente la app se prende con `app.run()` y queda escuchando. Pero para **probar** (¡y para correr acá en el navegador!) usamos el **cliente de pruebas**, que simula pedidos sin levantar un servidor real.
@@ -51,6 +59,14 @@ print("status:", cliente.get("/ping").status_code)
 ```
 
 > 💡 Tocá **▶ ejecutar**: corre Flask de verdad en tu navegador y ves las respuestas. La primera vez tarda un poco más porque instala Flask.
+
+```quiz
+P: ¿Para qué sirve `app.test_client()` en Flask?
+- Para prender el servidor y escuchar pedidos reales.
+- Para instalar Flask automáticamente.
++ Para simular pedidos HTTP sin levantar un servidor real, ideal para probar.
+> `test_client()` simula un cliente que hace `GET`, `POST`, etc. contra tu app sin necesitar internet ni un puerto abierto. Perfecto para tests y para practicar en el navegador.
+```
 
 ## 🛣️ Muchas rutas
 

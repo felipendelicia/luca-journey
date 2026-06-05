@@ -78,6 +78,13 @@ window.__BASE = base;})();</script> <script>
 <p>💡 <code>split</code> y <code>join</code> son <strong>clave</strong> para trabajar con archivos CSV (lo vemos abajo).</p>
 </div>
 <hr>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué devuelve `"Pikachu,Electrico,25".split(",")`?</span></span>
+<span class="line"><span>- "Pikachu Electrico 25"</span></span>
+<span class="line"><span>+ `['Pikachu', 'Electrico', '25']`</span></span>
+<span class="line"><span>- `('Pikachu', 'Electrico', '25')`</span></span>
+<span class="line"><span>> `split(",")` parte el string en cada coma y devuelve una **lista** de strings. El 25 también queda como string "25", no como número.</span></span>
+<span class="line"><span></span></span></code></pre>
+<hr>
 <h2 id="️-slicing-rebanar-strings">✂️ Slicing: rebanar strings</h2>
 <p>El <strong>slicing</strong> saca una “rebanada” de un string usando <code>[inicio:fin]</code>. El <code>fin</code> NO se incluye.</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#ABB2BF">texto </span><span style="color:#56B6C2">=</span><span style="color:#98C379"> "Pikachu"</span></span>
@@ -143,6 +150,13 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 Usá <strong>siempre</strong> <code>with</code>. Es más corto, más seguro, y es lo que vas a ver en todos lados.</p>
 </div>
+<hr>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: Abrís un archivo con `open("equipo.txt", "w")`. ¿Qué pasa con el contenido que ya tenía?</span></span>
+<span class="line"><span>- Se agrega al final</span></span>
+<span class="line"><span>+ Se borra y se empieza de cero</span></span>
+<span class="line"><span>- Se genera un error si el archivo existe</span></span>
+<span class="line"><span>> El modo `"w"` (*write*) crea el archivo si no existe, pero si ya existe **reemplaza todo** su contenido. Usá `"a"` para agregar sin borrar.</span></span>
+<span class="line"><span></span></span></code></pre>
 <hr>
 <h2 id="-csv-datos-en-filas-y-columnas">📊 CSV: datos en filas y columnas</h2>
 <p>Un <strong>CSV</strong> (<em>Comma-Separated Values</em>) es un archivo de texto donde cada línea es una fila y los datos van separados por comas. Es como una mini planilla de Excel.</p>

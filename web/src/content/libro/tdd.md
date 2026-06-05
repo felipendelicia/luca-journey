@@ -28,6 +28,14 @@ test_es_palindromo()
 print("✅ verde")
 ```
 
+```quiz
+P: En TDD, ¿qué significa la fase "Rojo"?
+- El test pasó y el código está listo
++ El test falla porque el código que prueba todavía no existe
+- El test tiene un error de sintaxis
+> En el ciclo Rojo → Verde → Refactor, el **rojo** es intencional: escribís el test antes que el código, así que falla. Es la señal de que hay algo por hacer.
+```
+
 ## 🧭 Por qué TDD funciona
 
 - **Pensás primero qué querés** (el test te obliga a definir el comportamiento).
@@ -52,6 +60,14 @@ print("✅ verde")
 ```
 
 > 💡 En estos ejercicios el test ya está escrito por nosotros: tu trabajo es escribir el código que lo ponga en **verde**. Eso es vivir el lado lindo de TDD. 🟢
+
+```quiz
+P: ¿Cuánto código debería escribir en la fase "Verde" del TDD?
+- Todo el código posible para cubrir casos futuros
++ El mínimo necesario para que el test pase, nada más
+- Primero el test, después refactorizás antes de que pase
+> La idea es escribir lo **mínimo** para pasar el test. Nada de más. Si necesitás más casos, primero escribís otro test (rojo) y después lo implementás (verde).
+```
 
 ## 📝 Resumen
 

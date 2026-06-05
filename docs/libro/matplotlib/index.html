@@ -64,6 +64,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 El patrón es siempre el mismo: <code>fig, ax = plt.subplots()</code> crea el lienzo, después dibujás sobre <code>ax</code>, y <code>plt.show()</code> lo muestra.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: En matplotlib, ¿cuál es el rol de `fig, ax = plt.subplots()`?</span></span>
+<span class="line"><span>- Muestra el gráfico en pantalla.</span></span>
+<span class="line"><span>- Guarda el gráfico en un archivo.</span></span>
+<span class="line"><span>+ Crea el lienzo (`fig`) y los ejes (`ax`) sobre los que vas a dibujar.</span></span>
+<span class="line"><span>> `plt.subplots()` es el primer paso: prepara el espacio. Después usás `ax.bar(...)`, `ax.plot(...)`, etc. para dibujar sobre ese lienzo.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-gráfico-de-línea">📈 Gráfico de línea</h2>
 <p>Ideal para ver una evolución (ej: cómo sube el nivel con la experiencia).</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> matplotlib.pyplot </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> plt</span></span>
@@ -78,6 +84,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#ABB2BF">ax.</span><span style="color:#61AFEF">set_ylabel</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Nivel"</span><span style="color:#ABB2BF">)</span></span>
 <span class="line"><span style="color:#ABB2BF">plt.</span><span style="color:#61AFEF">show</span><span style="color:#ABB2BF">()</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué tipo de gráfico usarías para ver cómo evoluciona el nivel de un Pokémon a lo largo de sus batallas?</span></span>
+<span class="line"><span>- `ax.bar(...)` — barras</span></span>
+<span class="line"><span>+ `ax.plot(...)` — línea</span></span>
+<span class="line"><span>- `ax.scatter(...)` — dispersión</span></span>
+<span class="line"><span>> El gráfico de línea (`plot`) es ideal para mostrar una **evolución en el tiempo** o una secuencia. Las barras comparan categorías; la dispersión muestra relación entre dos variables.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-dispersión-scatter">⚬ Dispersión (scatter)</h2>
 <p>Para ver la <strong>relación</strong> entre dos variables (ej: ataque vs defensa).</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> matplotlib.pyplot </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> plt</span></span>

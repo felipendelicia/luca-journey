@@ -109,6 +109,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 <code>COUNT(*)</code> cuenta las filas. <code>.fetchone()</code> trae <strong>una</strong> fila de resultado; <code>[0]</code> es su primer (y único) valor.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué hace `SELECT COUNT(*) FROM pokemon`?</span></span>
+<span class="line"><span>- Devuelve la primera fila de la tabla</span></span>
+<span class="line"><span>- Devuelve el nombre de todas las columnas</span></span>
+<span class="line"><span>+ Cuenta cuántas filas hay en la tabla</span></span>
+<span class="line"><span>> `COUNT(*)` cuenta filas y devuelve un único número. Para traer datos usarías `SELECT *` (sin `COUNT`).</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="️-elegir-columnas">🏛️ Elegir columnas</h2>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> sqlite3</span></span>
 <span class="line"><span style="color:#ABB2BF">con </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> sqlite3.</span><span style="color:#61AFEF">connect</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">":memory:"</span><span style="color:#ABB2BF">)</span></span>
@@ -118,6 +124,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#C678DD">for</span><span style="color:#ABB2BF"> nombre, nivel </span><span style="color:#C678DD">in</span><span style="color:#ABB2BF"> con.</span><span style="color:#61AFEF">execute</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"SELECT nombre, nivel FROM pokemon"</span><span style="color:#ABB2BF">):</span></span>
 <span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(nombre, </span><span style="color:#98C379">"es nivel"</span><span style="color:#ABB2BF">, nivel)</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué devuelve `con.execute("SELECT nombre FROM pokemon")` al iterar?</span></span>
+<span class="line"><span>- Una lista de strings con los nombres</span></span>
+<span class="line"><span>- Una sola string con todos los nombres unidos</span></span>
+<span class="line"><span>+ Tuplas de un elemento, ej: `('Pikachu',)`</span></span>
+<span class="line"><span>> `execute` devuelve filas como **tuplas**. Por eso necesitás `fila[0]` para sacar el primer (y único) valor de cada fila.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

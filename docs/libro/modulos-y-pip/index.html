@@ -64,6 +64,13 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> math </span><span style="color:#C678DD">as</span><span style="color:#ABB2BF"> m             </span><span style="color:#7F848E;font-style:italic"># le ponés un apodo: m.sqrt(16)</span></span>
 <span class="line"></span></code></pre>
 <hr>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué diferencia hay entre `import math` y `from math import sqrt`?</span></span>
+<span class="line"><span>- Ninguna, hacen lo mismo</span></span>
+<span class="line"><span>+ Con `import math` usás `math.sqrt()`; con `from math import sqrt` usás `sqrt()` directo</span></span>
+<span class="line"><span>- `from math import sqrt` descarga una versión más nueva de `math`</span></span>
+<span class="line"><span>> La segunda forma importa solo la función `sqrt` al espacio de nombres local, así la llamás sin el prefijo `math.`. Útil cuando usás mucho esa función.</span></span>
+<span class="line"><span></span></span></code></pre>
+<hr>
 <h2 id="-módulos-estándar-útiles">🧰 Módulos estándar útiles</h2>
 <h3 id="math--matemática"><code>math</code> — matemática</h3>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> math</span></span>
@@ -161,6 +168,13 @@ window.__BASE = base;})();</script> <script>
 <p>Se instalan todas juntas con:</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#61AFEF">pip</span><span style="color:#98C379"> install</span><span style="color:#D19A66"> -r</span><span style="color:#98C379"> requirements.txt</span></span>
 <span class="line"></span></code></pre>
+<hr>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Para qué sirve un entorno virtual (`venv`)?</span></span>
+<span class="line"><span>- Para correr Python más rápido</span></span>
+<span class="line"><span>+ Para tener las librerías de cada proyecto aisladas, sin mezclarse</span></span>
+<span class="line"><span>- Para instalar Python sin necesitar permisos de administrador</span></span>
+<span class="line"><span>> Cada proyecto puede tener sus propias versiones de librerías sin pisar las de otros proyectos. Es la práctica estándar en proyectos Python reales.</span></span>
+<span class="line"><span></span></span></code></pre>
 <hr>
 <h2 id="-requests-consumir-una-api">🌐 requests: consumir una API</h2>
 <p>Una <strong>API</strong> es un servicio en internet que te devuelve datos. La <strong>PokéAPI</strong> (<a href="https://pokeapi.co">https://pokeapi.co</a>) tiene datos de TODOS los Pokémon, gratis.</p>

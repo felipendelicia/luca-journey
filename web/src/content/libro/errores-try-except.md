@@ -31,6 +31,14 @@ print(dividir_seguro(10, 2))   # 5.0
 print(dividir_seguro(10, 0))   # None  (no explota)
 ```
 
+```quiz
+P: ¿Qué hace el bloque `except` en un `try/except`?
+- Evita que el error ocurra
++ Define qué hacer cuando el código del `try` lanza una excepción
+- Repite el código del `try` hasta que funcione
+> `except` no evita el error: lo **atrapa** después de que ocurre. Define el camino alternativo para que el programa siga vivo en vez de crashear.
+```
+
 ## 🎯 Atrapar el error correcto
 
 Cada error tiene su **tipo**. Conviene atrapar el específico (no todos a ciegas):
@@ -69,6 +77,14 @@ print(valor(pokemon, "tipo"))    # no encontrado
 ```
 
 > 💡 Atrapá solo lo que esperás. Un `except:` pelado (sin tipo) esconde bugs reales. Mejor `except ValueError:` que tapar todo.
+
+```quiz
+P: ¿Qué excepción lanza `int("pikachu")`?
+- `TypeError`
+- `IndexError`
++ `ValueError`
+> `ValueError` ocurre cuando el tipo está bien (es un string) pero el valor no se puede convertir. `TypeError` sería si pasaras un tipo completamente incompatible, como una lista.
+```
 
 ## 📝 Resumen
 

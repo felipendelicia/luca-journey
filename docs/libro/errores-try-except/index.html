@@ -61,6 +61,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#61AFEF">dividir_seguro</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">10</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">2</span><span style="color:#ABB2BF">))   </span><span style="color:#7F848E;font-style:italic"># 5.0</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#61AFEF">dividir_seguro</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">10</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">))   </span><span style="color:#7F848E;font-style:italic"># None  (no explota)</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué hace el bloque `except` en un `try/except`?</span></span>
+<span class="line"><span>- Evita que el error ocurra</span></span>
+<span class="line"><span>+ Define qué hacer cuando el código del `try` lanza una excepción</span></span>
+<span class="line"><span>- Repite el código del `try` hasta que funcione</span></span>
+<span class="line"><span>> `except` no evita el error: lo **atrapa** después de que ocurre. Define el camino alternativo para que el programa siga vivo en vez de crashear.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-atrapar-el-error-correcto">🎯 Atrapar el error correcto</h2>
 <p>Cada error tiene su <strong>tipo</strong>. Conviene atrapar el específico (no todos a ciegas):</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> a_entero</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66;font-style:italic">texto</span><span style="color:#ABB2BF">):</span></span>
@@ -116,6 +122,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 Atrapá solo lo que esperás. Un <code>except:</code> pelado (sin tipo) esconde bugs reales. Mejor <code>except ValueError:</code> que tapar todo.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué excepción lanza `int("pikachu")`?</span></span>
+<span class="line"><span>- `TypeError`</span></span>
+<span class="line"><span>- `IndexError`</span></span>
+<span class="line"><span>+ `ValueError`</span></span>
+<span class="line"><span>> `ValueError` ocurre cuando el tipo está bien (es un string) pero el valor no se puede convertir. `TypeError` sería si pasaras un tipo completamente incompatible, como una lista.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

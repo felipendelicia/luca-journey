@@ -80,6 +80,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#61AFEF">probar_dividir_seguro</span><span style="color:#ABB2BF">(dividir_seguro)</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"✅ pasó"</span><span style="color:#ABB2BF">)</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Por qué `dividir_seguro(1, 0)` devuelve `None` en vez de explotar?</span></span>
+<span class="line"><span>- Porque Python ignora la división por cero automáticamente</span></span>
+<span class="line"><span>+ Porque el `try/except ZeroDivisionError` atrapa el error y retorna `None`</span></span>
+<span class="line"><span>- Porque `None / 0` es `None` por definición</span></span>
+<span class="line"><span>> El `try` intenta `a / b`; cuando `b == 0` Python lanza `ZeroDivisionError`; el `except` lo atrapa y retorna `None` en vez de crashear.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="️-lo-que-aprendiste-en-kalos">🗺️ Lo que aprendiste en Kalos</h2>
 <ol>
 <li><strong>try / except</strong> — atrapar errores sin crashear.</li>
@@ -90,6 +96,12 @@ window.__BASE = base;})();</script> <script>
 <li><strong>Casos límite</strong> — cazar los bugs donde se esconden.</li>
 <li><strong>TDD</strong> — el test primero, el código después.</li>
 </ol>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué combina un módulo de calidad profesional según este capítulo?</span></span>
+<span class="line"><span>- Solo tests: el código de producción va separado</span></span>
+<span class="line"><span>- Solo manejo de errores: los tests son opcionales</span></span>
+<span class="line"><span>+ Código robusto (valida y maneja errores) junto con sus tests automáticos</span></span>
+<span class="line"><span>> Un módulo pro tiene dos caras: el código que valida entradas y atrapa errores, **y** los tests que verifican que eso funcione. Separados no alcanzan.</span></span>
+<span class="line"><span></span></span></code></pre>
 <p>Con esto escribís código que <strong>no se rompe en silencio</strong> y que podés cambiar con confianza. Es lo que separa a quien “hace que ande una vez” de quien construye software serio. 🏆</p>
 <h2 id="️-y-ahora-qué">➡️ ¿Y ahora qué?</h2>
 <p>Cerrá Kalos con los <a href="/luca-journey/ejercicios/proyecto-testing">ejercicios de este tema</a>. Al completarlos ganás la medalla <strong>Iceberg</strong> y sos <strong>Campeón de Kalos</strong>. 🏔️🏆</p>

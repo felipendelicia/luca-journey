@@ -28,6 +28,14 @@ except EquipoLlenoError as e:
 
 > 💡 Con `pass` alcanza para una excepción simple: hereda todo de `Exception`. El nombre (`EquipoLlenoError`) ya cuenta la historia.
 
+```quiz
+P: ¿Qué hace `class EquipoLlenoError(Exception): pass`?
+- Crea una función que lanza un error al llamarse
++ Define un nuevo tipo de excepción que hereda de `Exception`
+- Captura automáticamente todos los errores del programa
+> Al heredar de `Exception`, `EquipoLlenoError` es una excepción válida de Python. El `pass` alcanza porque hereda todo el comportamiento de `Exception`.
+```
+
 ## 🎒 Por qué conviene
 
 Quien usa tu código puede atrapar **justo** tu error, sin confundirlo con otros:
@@ -65,6 +73,14 @@ except EntrenadorError as e:
 ```
 
 > 💡 `super().__init__(mensaje)` hace que `str(e)` muestre el mensaje, como cualquier error. `self.codigo` agrega tu dato propio.
+
+```quiz
+P: ¿Por qué conviene crear excepciones propias en vez de usar siempre `ValueError`?
+- Porque `ValueError` es más lento de lanzar
++ Porque permiten atrapar exactamente tu tipo de error sin confundirlo con otros `ValueError`
+- Porque Python no permite lanzar `ValueError` con `raise`
+> Con `except EquipoLlenoError` atraparías solo ese error. Si usaras `ValueError`, un `except ValueError` capturaría también conversiones fallidas u otros errores completamente distintos.
+```
 
 ## 📝 Resumen
 

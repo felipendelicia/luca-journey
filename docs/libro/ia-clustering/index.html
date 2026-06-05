@@ -71,6 +71,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#7F848E;font-style:italic"># un Pokémon nuevo cercano a la primera familia</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(modelo.</span><span style="color:#61AFEF">predict</span><span style="color:#ABB2BF">([[</span><span style="color:#D19A66">1.5</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">1.5</span><span style="color:#ABB2BF">]]))   </span><span style="color:#7F848E;font-style:italic"># el grupo de los primeros</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué diferencia al clustering (aprendizaje no supervisado) de la clasificación?</span></span>
+<span class="line"><span>- El clustering necesita más datos para funcionar</span></span>
+<span class="line"><span>+ En clustering no hay etiquetas `y`; el modelo descubre los grupos solo</span></span>
+<span class="line"><span>- El clustering predice números en vez de categorías</span></span>
+<span class="line"><span>> En clasificación tenés `y` (las respuestas correctas). En clustering **no tenés `y`**: el modelo agrupa los datos por similitud sin que nadie le diga cuáles van juntos.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-supervisado-vs-no-supervisado">🎯 Supervisado vs no supervisado</h2>
 
 
@@ -101,6 +107,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 El clustering sirve para <strong>explorar</strong>: segmentar clientes, agrupar noticias parecidas, detectar familias de Pokémon… todo sin etiquetas previas.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué guarda `modelo.labels_` después de un `KMeans.fit(X)`?</span></span>
+<span class="line"><span>- Los centros (centroides) de cada grupo</span></span>
+<span class="line"><span>- Los datos de entrada `X` ordenados por grupo</span></span>
+<span class="line"><span>+ Un número de grupo para cada dato de `X`</span></span>
+<span class="line"><span>> `labels_` es un arreglo con el mismo largo que `X`. Cada posición tiene el número de grupo al que pertenece ese dato: `[0, 0, 0, 1, 1, 1]` significa que los 3 primeros van al grupo 0 y los 3 últimos al grupo 1.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

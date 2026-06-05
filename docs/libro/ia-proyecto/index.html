@@ -80,6 +80,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#ABB2BF">tipo </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> modelo.</span><span style="color:#61AFEF">predict</span><span style="color:#ABB2BF">([stats])[</span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">]</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Predicción:"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Fuego"</span><span style="color:#C678DD"> if</span><span style="color:#ABB2BF"> tipo </span><span style="color:#56B6C2">==</span><span style="color:#D19A66"> 0</span><span style="color:#C678DD"> else</span><span style="color:#98C379"> "Agua"</span><span style="color:#ABB2BF">)</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿En qué orden correcto se aplican los 4 pasos de un proyecto de ML?</span></span>
+<span class="line"><span>- Entrenar → dividir → preparar → evaluar</span></span>
+<span class="line"><span>- Dividir → preparar → entrenar → evaluar</span></span>
+<span class="line"><span>+ Preparar datos → dividir train/test → entrenar → evaluar</span></span>
+<span class="line"><span>> Primero separás features de etiquetas (preparar), después dividís en train/test para no hacer trampa, luego entrenás el modelo y finalmente evaluás con el test set.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-lo-que-aprendiste-en-unova">🧠 Lo que aprendiste en Unova</h2>
 <ol>
 <li><strong>ML</strong> = aprender de ejemplos (<code>fit</code> / <code>predict</code>).</li>
@@ -91,6 +97,12 @@ window.__BASE = base;})();</script> <script>
 <li><strong>Clustering</strong> — agrupar sin etiquetas (KMeans).</li>
 </ol>
 <p>Con esto entendés la base de la IA moderna. Las redes neuronales y los modelos gigantes (como los que generan texto) son <strong>la misma idea, a lo grande</strong>: aprender de un montón de ejemplos. 🚀</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: En el pipeline del proyecto, `X = datos[:, :-1]` hace ¿qué?</span></span>
+<span class="line"><span>- Selecciona solo la última columna del arreglo</span></span>
+<span class="line"><span>+ Selecciona todas las columnas menos la última (las features)</span></span>
+<span class="line"><span>- Selecciona las primeras dos columnas</span></span>
+<span class="line"><span>> `[:, :-1]` significa "todas las filas, todas las columnas excepto la última". La última columna es la etiqueta `y`; el resto son las features `X`.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="️-y-ahora-qué">➡️ ¿Y ahora qué?</h2>
 <p>Cerrá Unova con los <a href="/luca-journey/ejercicios/ia-proyecto">ejercicios de este tema</a>. Al completarlos ganás la medalla <strong>Leyenda</strong> y sos <strong>Campeón de Unova</strong>. 🦾🏆</p>
 <div class="callout tip"><span class="et">ÁNIMO</span>

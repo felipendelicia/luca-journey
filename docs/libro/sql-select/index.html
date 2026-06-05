@@ -60,6 +60,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 <code>WHERE</code> filtra filas por una condición. Y de nuevo: el valor va con <code>?</code> y una tupla <code>(50,)</code>.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué cláusula SQL filtra filas por una condición?</span></span>
+<span class="line"><span>- ORDER BY</span></span>
+<span class="line"><span>+ WHERE</span></span>
+<span class="line"><span>- GROUP BY</span></span>
+<span class="line"><span>> `WHERE` filtra qué filas entran al resultado. `ORDER BY` ordena el resultado y `GROUP BY` agrupa para calcular resúmenes.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="️-order-by-ordenar">↕️ ORDER BY: ordenar</h2>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">import</span><span style="color:#ABB2BF"> sqlite3</span></span>
 <span class="line"><span style="color:#ABB2BF">con </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> sqlite3.</span><span style="color:#61AFEF">connect</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">":memory:"</span><span style="color:#ABB2BF">)</span></span>
@@ -91,6 +97,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#C678DD">for</span><span style="color:#ABB2BF"> fila </span><span style="color:#C678DD">in</span><span style="color:#ABB2BF"> con.</span><span style="color:#61AFEF">execute</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"SELECT nombre FROM pokemon ORDER BY nivel DESC LIMIT 2"</span><span style="color:#ABB2BF">):</span></span>
 <span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(fila[</span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">])</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué hace `ORDER BY nivel DESC`?</span></span>
+<span class="line"><span>- Ordena los Pokémon de nivel más bajo a más alto</span></span>
+<span class="line"><span>- Ordena por nombre en vez de por nivel</span></span>
+<span class="line"><span>+ Ordena de nivel más alto a más bajo</span></span>
+<span class="line"><span>> `DESC` = descendente (mayor a menor). `ASC` sería ascendente (menor a mayor), que es el orden por defecto.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

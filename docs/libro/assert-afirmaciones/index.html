@@ -61,6 +61,12 @@ window.__BASE = base;})();</script> <script>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#61AFEF">verificar_positivo</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">5</span><span style="color:#ABB2BF">))    </span><span style="color:#7F848E;font-style:italic"># 5</span></span>
 <span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#61AFEF">verificar_positivo</span><span style="color:#ABB2BF">(</span><span style="color:#56B6C2">-</span><span style="color:#D19A66">2</span><span style="color:#ABB2BF">))   </span><span style="color:#7F848E;font-style:italic"># 💥 AssertionError: n debe ser positivo</span></span>
 <span class="line"></span></code></pre>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué pasa si ejecutás `assert 5 > 10, "el cinco no es mayor que diez"`?</span></span>
+<span class="line"><span>- No pasa nada: `assert` solo muestra advertencias</span></span>
+<span class="line"><span>- Lanza un `ValueError` con el mensaje</span></span>
+<span class="line"><span>+ Lanza un `AssertionError` con el mensaje "el cinco no es mayor que diez"</span></span>
+<span class="line"><span>> Cuando la condición de `assert` es **falsa**, Python lanza `AssertionError`. El texto después de la coma es el mensaje que aparece para saber qué falló.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-assert-como-chequeo-de-supuestos">🧪 assert como chequeo de supuestos</h2>
 <p>Sirve para validar supuestos en medio de un cálculo:</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">def</span><span style="color:#61AFEF"> promedio</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66;font-style:italic">numeros</span><span style="color:#ABB2BF">):</span></span>
@@ -100,6 +106,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 Regla práctica: <strong><code>raise</code></strong> para validar datos que vienen de afuera; <strong><code>assert</code></strong> para verificar cosas que <em>deberían</em> ser ciertas si tu código está bien (y en los <strong>tests</strong>, que es lo que viene ahora).</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Cuándo es mejor usar `raise` en vez de `assert`?</span></span>
+<span class="line"><span>- Cuando querés que el error tenga un mensaje</span></span>
+<span class="line"><span>+ Cuando validás datos que vienen de afuera del programa (usuario, archivo, API)</span></span>
+<span class="line"><span>- Cuando estás escribiendo tests</span></span>
+<span class="line"><span>> `assert` puede desactivarse con el modo optimizado de Python. `raise` siempre actúa. Para validar entradas del usuario o datos externos, usá `raise`; para checks internos y tests, `assert`.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 

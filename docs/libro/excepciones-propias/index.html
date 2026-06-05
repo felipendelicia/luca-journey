@@ -64,6 +64,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 Con <code>pass</code> alcanza para una excepción simple: hereda todo de <code>Exception</code>. El nombre (<code>EquipoLlenoError</code>) ya cuenta la historia.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué hace `class EquipoLlenoError(Exception): pass`?</span></span>
+<span class="line"><span>- Crea una función que lanza un error al llamarse</span></span>
+<span class="line"><span>+ Define un nuevo tipo de excepción que hereda de `Exception`</span></span>
+<span class="line"><span>- Captura automáticamente todos los errores del programa</span></span>
+<span class="line"><span>> Al heredar de `Exception`, `EquipoLlenoError` es una excepción válida de Python. El `pass` alcanza porque hereda todo el comportamiento de `Exception`.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-por-qué-conviene">🎒 Por qué conviene</h2>
 <p>Quien usa tu código puede atrapar <strong>justo</strong> tu error, sin confundirlo con otros:</p>
 <pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#C678DD">class</span><span style="color:#E5C07B"> PokemonNoEncontrado</span><span style="color:#ABB2BF">(Exception):</span></span>
@@ -95,6 +101,12 @@ window.__BASE = base;})();</script> <script>
 <div class="callout tip"><span class="et">TIP</span>
 <p>💡 <code>super().__init__(mensaje)</code> hace que <code>str(e)</code> muestre el mensaje, como cualquier error. <code>self.codigo</code> agrega tu dato propio.</p>
 </div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Por qué conviene crear excepciones propias en vez de usar siempre `ValueError`?</span></span>
+<span class="line"><span>- Porque `ValueError` es más lento de lanzar</span></span>
+<span class="line"><span>+ Porque permiten atrapar exactamente tu tipo de error sin confundirlo con otros `ValueError`</span></span>
+<span class="line"><span>- Porque Python no permite lanzar `ValueError` con `raise`</span></span>
+<span class="line"><span>> Con `except EquipoLlenoError` atraparías solo ese error. Si usaras `ValueError`, un `except ValueError` capturaría también conversiones fallidas u otros errores completamente distintos.</span></span>
+<span class="line"><span></span></span></code></pre>
 <h2 id="-resumen">📝 Resumen</h2>
 
 
