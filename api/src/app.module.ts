@@ -4,9 +4,10 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { ProgresoModule } from './progreso/progreso.module';
+import { RealtimeModule } from './realtime/realtime.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, ProgresoModule],
+  imports: [PrismaModule, AuthModule, ProgresoModule, RealtimeModule],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
 export class AppModule {}
