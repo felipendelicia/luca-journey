@@ -1,0 +1,175 @@
+---
+import Base from '../layouts/Base.astro';
+import pokemon from '../data/pokemon.json';
+const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
+---
+<Base title="Amigos — Python con Pokémon" active="Amigos">
+  <main class="wrap am-wrap">
+    <h1>👥 Amigos</h1>
+
+    <p class="social-login" id="am-login" hidden>Iniciá sesión (botón ☁️ arriba) y creá tu perfil en la <b>Liga</b> para usar amigos.</p>
+
+    <div id="am-app" hidden>
+      <p class="social-login" id="am-sinperfil" hidden>Primero elegí tu <b>@usuario</b> en la <a id="am-liga-link" href="#">Liga</a> para poder agregar y que te agreguen.</p>
+
+      <section class="am-sec">
+        <h2 class="liga-h">🔎 Buscar entrenadores</h2>
+        <div class="social-row">
+          <input id="am-q" placeholder="@usuario o nombre…" autocapitalize="off" />
+          <button class="btn-sec" id="am-buscar" type="button">Buscar</button>
+        </div>
+        <div class="social-row" style="margin-top:.4rem">
+          <span class="social-at">🎴</span>
+          <input id="am-codigo" placeholder="CÓDIGO de amigo" maxlength="6" style="text-transform:uppercase" />
+          <button class="btn-sec" id="am-add-codigo" type="button">Agregar por código</button>
+        </div>
+        <div class="am-lista" id="am-resultados"></div>
+      </section>
+
+      <section class="am-sec" id="am-solis-sec" hidden>
+        <h2 class="liga-h">📨 Solicitudes <span class="reg-estado" id="am-solis-n"></span></h2>
+        <div class="am-lista" id="am-solis"></div>
+      </section>
+
+      <section class="am-sec" id="am-ofertas-sec" hidden>
+        <h2 class="liga-h">🔄 Intercambios pendientes</h2>
+        <div class="am-lista" id="am-ofertas"></div>
+      </section>
+
+      <section class="am-sec">
+        <h2 class="liga-h">🧑‍🤝‍🧑 Mis amigos <span class="reg-estado" id="am-amigos-n"></span></h2>
+        <div class="am-lista" id="am-amigos"></div>
+      </section>
+    </div>
+    <p class="social-msg" id="am-msg"></p>
+  </main>
+
+  <script type="application/json" id="am-data" set:html={JSON.stringify({ nombres })}></script>
+  <script>
+    import { buscar, solicitar, responder, quitar, amigos, solicitudes, ofertas, responderOferta, cancelarOferta, haySupabase } from '../lib/social.js';
+    import { usuario, init as initNube, refrescarDesdeNube } from '../lib/nube.js';
+
+    const D = JSON.parse(document.getElementById('am-data').textContent);
+    const nombres = D.nombres;
+    const $ = (id) => document.getElementById(id);
+    const B = (window.__BASE || '/').replace(/\/$/, '');
+    const sprite = (id, sh) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${sh ? 'shiny/' : ''}${id}.png`;
+    const avSprite = (av) => av ? `<img src="${sprite(av)}" alt="" />` : '🎓';
+    const msg = (t) => { $('am-msg').textContent = t; };
+
+    function fila(p, acciones) {
+      const div = document.createElement('div');
+      div.className = 'am-fila';
+      div.innerHTML = `<div class="am-av">${avSprite(p.avatar)}</div>`
+        + `<a class="am-info" href="${B}/u?h=${p.handle}"><b>${p.nombre || 'Entrenador/a'}</b><span>@${p.handle}</span></a>`;
+      const acc = document.createElement('div'); acc.className = 'am-acc';
+      acciones.forEach((a) => acc.appendChild(a));
+      div.appendChild(acc);
+      return div;
+    }
+    function btn(txt, cls, fn) {
+      const b = document.createElement('button'); b.className = cls; b.textContent = txt; b.type = 'button';
+      b.addEventListener('click', () => fn(b)); return b;
+    }
+    const chips = (arr) => (arr && arr.length)
+      ? arr.map((x) => `<img class="am-chip" src="${sprite(x.id, x.shiny)}" title="${nombres[x.id] || x.id}${x.shiny ? ' ✨' : ''}" />`).join('')
+      : '<span class="tr-vacio">(nada)</span>';
+
+    async function cargarResultados(lista) {
+      const cont = $('am-resultados'); cont.innerHTML = '';
+      if (!lista.length) { cont.innerHTML = '<p class="tr-colec-vacio">Sin resultados.</p>'; return; }
+      const yo = usuario();
+      lista.forEach((p) => {
+        const acc = [];
+        if (!yo || p.handle) acc.push(btn('＋ Agregar', 'tr-aceptar', async (b) => {
+          b.disabled = true;
+          try { await solicitar({ handle: p.handle }); b.textContent = '✓ enviada'; }
+          catch (e) { b.disabled = false; msg('⚠️ ' + (e.message || e)); }
+        }));
+        cont.appendChild(fila(p, acc));
+      });
+    }
+
+    async function cargarSolicitudes() {
+      let lista = [];
+      try { lista = await solicitudes(); } catch {}
+      $('am-solis-sec').hidden = lista.length === 0;
+      $('am-solis-n').textContent = lista.length || '';
+      const cont = $('am-solis'); cont.innerHTML = '';
+      lista.forEach((p) => {
+        const aceptar = btn('Aceptar', 'tr-aceptar', async () => { try { await responder(p.id, true); refrescarTodo(); } catch (e) { msg('⚠️ ' + e.message); } });
+        const rechazar = btn('✕', 'tr-rechazar', async () => { try { await responder(p.id, false); refrescarTodo(); } catch (e) { msg('⚠️ ' + e.message); } });
+        cont.appendChild(fila(p, [aceptar, rechazar]));
+      });
+    }
+
+    async function cargarAmigos() {
+      let lista = [];
+      try { lista = await amigos(); } catch {}
+      $('am-amigos-n').textContent = lista.length || '';
+      const cont = $('am-amigos'); cont.innerHTML = '';
+      if (!lista.length) { cont.innerHTML = '<p class="tr-colec-vacio">Todavía no tenés amigos. Buscá arriba. 👆</p>'; return; }
+      lista.forEach((p) => {
+        const ver = document.createElement('a'); ver.className = 'btn-sec'; ver.textContent = '🔄 Intercambiar'; ver.href = `${B}/u?h=${p.handle}`;
+        const quita = btn('✕', 'tr-rechazar', async (b) => { b.disabled = true; try { await quitar(p.id); refrescarTodo(); } catch (e) { b.disabled = false; msg('⚠️ ' + e.message); } });
+        cont.appendChild(fila(p, [ver, quita]));
+      });
+    }
+
+    async function cargarOfertas() {
+      let lista = [];
+      try { lista = await ofertas(); } catch {}
+      $('am-ofertas-sec').hidden = lista.length === 0;
+      const cont = $('am-ofertas'); cont.innerHTML = '';
+      lista.forEach((o) => {
+        const div = document.createElement('div'); div.className = 'am-oferta';
+        const quien = o.soy_de ? ('Le ofreciste a @' + o.otro_handle) : ('@' + o.otro_handle + ' te ofrece');
+        // desde TU lado: das = (soy_de ? doy : pido) ; recibís = (soy_de ? pido : doy)
+        const das = o.soy_de ? o.doy : o.pido;
+        const recibis = o.soy_de ? o.pido : o.doy;
+        div.innerHTML = `<div class="am-of-tit">${quien}</div>`
+          + `<div class="am-of-trato"><div><span class="tr-lab">Das</span>${chips(das)}</div>`
+          + `<div class="tr-vs">⇄</div><div><span class="tr-lab">Recibís</span>${chips(recibis)}</div></div>`;
+        const acc = document.createElement('div'); acc.className = 'am-acc';
+        if (o.soy_de) {
+          acc.appendChild(btn('Cancelar', 'tr-rechazar', async (b) => { b.disabled = true; try { await cancelarOferta(o.id); refrescarTodo(); } catch (e) { b.disabled = false; msg('⚠️ ' + e.message); } }));
+        } else {
+          acc.appendChild(btn('Aceptar', 'tr-aceptar', async (b) => {
+            b.disabled = true;
+            try { await responderOferta(o.id, true); await refrescarDesdeNube(); msg('🎉 ¡Intercambio hecho! Tu colección se actualizó.'); refrescarTodo(); }
+            catch (e) { b.disabled = false; msg('⚠️ ' + (e.message || e)); }
+          }));
+          acc.appendChild(btn('✕', 'tr-rechazar', async (b) => { b.disabled = true; try { await responderOferta(o.id, false); refrescarTodo(); } catch (e) { b.disabled = false; msg('⚠️ ' + e.message); } }));
+        }
+        div.appendChild(acc);
+        cont.appendChild(div);
+      });
+    }
+
+    function refrescarTodo() { cargarSolicitudes(); cargarAmigos(); cargarOfertas(); }
+
+    $('am-buscar').addEventListener('click', async () => {
+      const q = $('am-q').value.trim();
+      if (q.length < 2) { msg('Escribí al menos 2 letras.'); return; }
+      try { cargarResultados(await buscar(q)); } catch (e) { msg('⚠️ ' + e.message); }
+    });
+    $('am-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('am-buscar').click(); });
+    $('am-add-codigo').addEventListener('click', async () => {
+      const codigo = $('am-codigo').value.trim().toUpperCase();
+      if (codigo.length < 4) { msg('Código incompleto.'); return; }
+      try { await solicitar({ codigo }); msg('✅ Solicitud enviada.'); $('am-codigo').value = ''; }
+      catch (e) { msg('⚠️ ' + (e.message || e)); }
+    });
+
+    function estado() {
+      if (!haySupabase) { $('am-login').hidden = false; return; }
+      $('am-liga-link').href = B + '/liga';
+      if (!usuario()) { $('am-login').hidden = false; $('am-app').hidden = true; return; }
+      $('am-login').hidden = true; $('am-app').hidden = false;
+      refrescarTodo();
+    }
+    if (haySupabase) initNube();
+    window.addEventListener('nube:cambio', estado);
+    estado();
+  </script>
+</Base>

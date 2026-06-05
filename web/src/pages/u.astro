@@ -1,0 +1,202 @@
+---
+import Base from '../layouts/Base.astro';
+import pokemon from '../data/pokemon.json';
+const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
+---
+<Base title="Perfil — Python con Pokémon" active="">
+  <main class="wrap u-wrap">
+    <p class="u-cargando" id="u-cargando">Cargando perfil…</p>
+    <p class="u-error" id="u-error" hidden>Perfil no encontrado. 🔍</p>
+
+    <article class="u-perfil" id="u-perfil" hidden>
+      <header class="u-hero">
+        <div class="u-av" id="u-av">🎓</div>
+        <div>
+          <div class="u-nombre" id="u-nombre"></div>
+          <div class="u-handle"><span id="u-handle"></span> · 🎴 <b id="u-codigo"></b></div>
+        </div>
+      </header>
+
+      <div class="u-acciones" id="u-acciones"></div>
+      <p class="social-msg" id="u-msg"></p>
+
+      <section class="u-sec" id="u-titulos-sec" hidden>
+        <h3 class="u-h">🏆 Títulos</h3>
+        <div class="u-titulos" id="u-titulos"></div>
+      </section>
+
+      <section class="u-sec">
+        <h3 class="u-h">📊 Conteos</h3>
+        <div class="u-counts" id="u-counts"></div>
+      </section>
+
+      <section class="u-sec">
+        <h3 class="u-h">📕 Pokédex <span id="u-dex-n"></span></h3>
+        <div class="tr-grid" id="u-dex"></div>
+      </section>
+
+      <section class="u-sec" id="u-logros-sec" hidden>
+        <h3 class="u-h">🌟 Logros</h3>
+        <div class="u-logros" id="u-logros"></div>
+      </section>
+    </article>
+
+    <!-- modal proponer intercambio -->
+    <div class="av-modal" id="of-modal" hidden>
+      <div class="av-card">
+        <div class="av-head"><b>🔄 Proponer intercambio</b><button class="av-x" id="of-x" type="button">✕</button></div>
+        <p class="av-sub">Elegí qué <b>das</b> (de lo tuyo) y qué <b>pedís</b> (de su Pokédex). El otro acepta cuando entre.</p>
+        <div class="tr-lab">Vos das</div>
+        <div class="tr-grid of-grid" id="of-doy"></div>
+        <div class="tr-lab" style="margin-top:.8rem">Le pedís</div>
+        <div class="tr-grid of-grid" id="of-pido"></div>
+        <p class="social-msg" id="of-msg"></p>
+        <button class="btn-grande" id="of-enviar" type="button">Enviar oferta</button>
+      </div>
+    </div>
+  </main>
+
+  <script type="application/json" id="u-data" set:html={JSON.stringify({ nombres })}></script>
+  <script>
+    import { perfilPublico, sonAmigos, solicitar, crearOferta, haySupabase } from '../lib/social.js';
+    import { usuario, init as initNube } from '../lib/nube.js';
+
+    const D = JSON.parse(document.getElementById('u-data').textContent);
+    const nombres = D.nombres;
+    const $ = (id) => document.getElementById(id);
+    const B = (window.__BASE || '/').replace(/\/$/, '');
+    const sprite = (id, sh) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${sh ? 'shiny/' : ''}${id}.png`;
+    const handle = new URLSearchParams(location.search).get('h');
+
+    const atrapados = () => { try { return JSON.parse(localStorage.getItem('col:atrapados')) || {}; } catch { return {}; } };
+    const misShiny = () => { try { return new Set(JSON.parse(localStorage.getItem('col:shiny')) || []); } catch { return new Set(); } };
+
+    let perfil = null, doy = [], pido = [];
+
+    function pintarPerfil(p) {
+      const pub = p.publico || {};
+      $('u-nombre').textContent = p.nombre || 'Entrenador/a';
+      $('u-handle').textContent = '@' + p.handle;
+      $('u-codigo').textContent = p.codigo_amigo;
+      $('u-av').innerHTML = p.avatar ? `<img src="${sprite(p.avatar)}" alt="avatar" />` : '🎓';
+
+      const titulos = pub.titulos || [];
+      if (titulos.length) {
+        $('u-titulos-sec').hidden = false;
+        $('u-titulos').innerHTML = titulos.map((t) => `<span class="u-titulo">🏆 Campeón de ${t}</span>`).join('');
+      }
+      const c = pub.conteos || {};
+      $('u-counts').innerHTML = [
+        ['Pokédex', c.unicos || 0], ['total', c.total || 0],
+        ['✨ shiny', c.shinies || 0], ['ejercicios', c.ejercicios || 0],
+        ['medallas', pub.medallas || 0],
+      ].map(([l, v]) => `<div><b>${v}</b><small>${l}</small></div>`).join('');
+
+      const at = pub.atrapados || {}, shi = new Set(pub.shiny || []);
+      const ids = Object.keys(at).map(Number).filter((id) => at[id] > 0).sort((a, b) => a - b);
+      $('u-dex-n').textContent = '(' + ids.length + ')';
+      $('u-dex').innerHTML = ids.length
+        ? ids.map((id) => `<div class="tr-cell"><img src="${sprite(id, false)}" title="${nombres[id] || id} (x${at[id]})" />`
+            + `<span class="tr-cnt">x${at[id]}</span>${shi.has(id) ? '<span class="u-shi">✨</span>' : ''}</div>`).join('')
+        : '<div class="tr-colec-vacio">Todavía no atrapó ninguno.</div>';
+
+      const logros = pub.logros || [];
+      if (logros.length) {
+        $('u-logros-sec').hidden = false;
+        $('u-logros').innerHTML = logros.map((l) => `<span class="u-logro" title="${l.nombre}">${l.ico}</span>`).join('');
+      }
+    }
+
+    async function pintarAcciones() {
+      const cont = $('u-acciones'); cont.innerHTML = '';
+      const yo = usuario();
+      const linkBtn = document.createElement('button');
+      linkBtn.className = 'btn-sec'; linkBtn.textContent = '🔗 Copiar link';
+      linkBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(location.origin + B + '/u?h=' + perfil.handle);
+        linkBtn.textContent = '✓ copiado';
+      });
+      // si no estás logueado, o es tu propio perfil → solo copiar link
+      if (yo && perfil.user_id !== yo.id) {
+        const amigos = await sonAmigos(perfil.user_id).catch(() => false);
+        if (amigos) {
+          const b = document.createElement('button');
+          b.className = 'btn-grande'; b.textContent = '🔄 Proponer intercambio';
+          b.addEventListener('click', abrirOferta);
+          cont.appendChild(b);
+        } else {
+          const b = document.createElement('button');
+          b.className = 'btn-grande'; b.textContent = '＋ Agregar amigo';
+          b.addEventListener('click', async () => {
+            b.disabled = true;
+            try { await solicitar({ handle: perfil.handle }); $('u-msg').textContent = '✅ Solicitud enviada a @' + perfil.handle; }
+            catch (e) { b.disabled = false; $('u-msg').textContent = '⚠️ ' + (e.message || e); }
+          });
+          cont.appendChild(b);
+        }
+      }
+      cont.appendChild(linkBtn);
+    }
+
+    // ---- modal de oferta ----
+    function gridSeleccion(el, fuente, shinySet, seleccion, onChange) {
+      const ids = Object.keys(fuente).map(Number).filter((id) => fuente[id] > 0).sort((a, b) => a - b);
+      el.innerHTML = '';
+      if (!ids.length) { el.innerHTML = '<div class="tr-colec-vacio">(sin Pokémon)</div>'; return; }
+      ids.forEach((id) => {
+        const cell = document.createElement('div'); cell.className = 'tr-cell';
+        cell.innerHTML = `<img src="${sprite(id, false)}" title="${nombres[id] || id} (x${fuente[id]})" /><span class="tr-cnt">x${fuente[id]}</span>`;
+        const mk = (sh) => {
+          const btn = document.createElement('button');
+          const on = () => seleccion.filter((x) => x.id === id && !!x.shiny === sh).length;
+          btn.className = 'tr-pedir' + (sh ? ' shiny' : '') + (on() ? ' on' : '');
+          btn.type = 'button'; btn.textContent = sh ? '✨' : '＋';
+          btn.addEventListener('click', () => {
+            const i = seleccion.findIndex((x) => x.id === id && !!x.shiny === sh);
+            if (i >= 0) seleccion.splice(i, 1);
+            else { if (seleccion.filter((x) => x.id === id).length >= fuente[id]) return; seleccion.push({ id, shiny: sh }); }
+            btn.classList.toggle('on', on() > 0);
+            onChange();
+          });
+          return btn;
+        };
+        cell.appendChild(mk(false));
+        if (shinySet.has(id)) cell.appendChild(mk(true));
+        el.appendChild(cell);
+      });
+    }
+    function abrirOferta() {
+      doy = []; pido = []; $('of-msg').textContent = '';
+      const pub = perfil.publico || {};
+      gridSeleccion($('of-doy'), atrapados(), misShiny(), doy, () => {});
+      gridSeleccion($('of-pido'), pub.atrapados || {}, new Set(pub.shiny || []), pido, () => {});
+      $('of-modal').hidden = false;
+    }
+    $('of-x').addEventListener('click', () => { $('of-modal').hidden = true; });
+    $('of-modal').addEventListener('click', (e) => { if (e.target === $('of-modal')) $('of-modal').hidden = true; });
+    $('of-enviar').addEventListener('click', async () => {
+      if (!doy.length && !pido.length) { $('of-msg').textContent = 'Elegí al menos un Pokémon.'; return; }
+      $('of-enviar').disabled = true;
+      try {
+        await crearOferta(perfil.user_id, doy, pido);
+        $('of-msg').textContent = '✅ ¡Oferta enviada! La verá en Amigos.';
+        setTimeout(() => { $('of-modal').hidden = true; $('of-enviar').disabled = false; }, 1200);
+      } catch (e) { $('of-enviar').disabled = false; $('of-msg').textContent = '⚠️ ' + (e.message || e); }
+    });
+
+    async function arrancar() {
+      if (haySupabase) initNube();
+      if (!handle) { $('u-cargando').hidden = true; $('u-error').hidden = false; return; }
+      try {
+        perfil = await perfilPublico(handle);
+      } catch { perfil = null; }
+      $('u-cargando').hidden = true;
+      if (!perfil) { $('u-error').hidden = false; return; }
+      $('u-perfil').hidden = false;
+      pintarPerfil(perfil);
+      pintarAcciones();
+      window.addEventListener('nube:cambio', pintarAcciones);
+    }
+    arrancar();
+  </script>
+</Base>

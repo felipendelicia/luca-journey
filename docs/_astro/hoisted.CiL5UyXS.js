@@ -1,4 +1,4 @@
-import{e as h}from"./editor.C-mImdU9.js";import{c as f,s as x}from"./sonidos.RiAsfTje.js";import"./hoisted.6S1n0TZ-.js";const w=`# runner.py — corre los tests de una semana en el navegador con pytest real (Pyodide).
+import{e as h}from"./editor.C-mImdU9.js";import{c as f,s as x}from"./sonidos.RiAsfTje.js";import"./hoisted.BnT0wFEY.js";const w=`# runner.py — corre los tests de una semana en el navegador con pytest real (Pyodide).
 # Escribe el código del alumno como ejercicios.py + el test + helpers, con
 # CURSO_MODULO=ejercicios, y ejecuta pytest recolectando el resultado por test.
 import os

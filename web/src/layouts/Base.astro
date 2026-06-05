@@ -7,6 +7,7 @@ const nav = [
   ['Libro', '/libro'],
   ['Ejercicios', '/ejercicios'],
   ['Liga', '/liga'],
+  ['Amigos', '/amigos'],
   ['Pokédex', '/pokedex'],
   ['Playground', '/playground'],
 ];
@@ -36,7 +37,7 @@ const nav = [
     <a class="brand-link" href={u('/')}><span class="pb"></span><span class="brand">Pokédex <b>Codex</b></span></a>
     <div class="tools">
       {nav.map(([t, h]) => (
-        <a class={'navlink' + (t === active ? ' activo' : '')} href={u(h)}>{t}</a>
+        <a class={'navlink' + (t === active ? ' activo' : '')} href={u(h)} data-nav={t}>{t}</a>
       ))}
       <button class="theme-toggle" id="pwa-install" type="button" title="Instalar como app" style="display:none">📲</button>
       <button class="theme-toggle" id="nube-btn" type="button" title="Guardar progreso en la nube" style="display:none">☁️</button>
@@ -157,6 +158,26 @@ const nav = [
   </script>
 
   <slot />
+
+  <script>
+    import { pendientes, haySupabase } from '../lib/social.js';
+    import { usuario } from '../lib/nube.js';
+    if (haySupabase) {
+      const link = document.querySelector('.navlink[data-nav="Amigos"]');
+      const pintar = async () => {
+        if (!link) return;
+        if (!usuario()) { const b = link.querySelector('.nav-badge'); if (b) b.remove(); return; }
+        const n = await pendientes();
+        let b = link.querySelector('.nav-badge');
+        if (n > 0) {
+          if (!b) { b = document.createElement('span'); b.className = 'nav-badge'; link.appendChild(b); }
+          b.textContent = n;
+        } else if (b) { b.remove(); }
+      };
+      window.addEventListener('nube:cambio', pintar);
+      pintar();
+    }
+  </script>
 
   <script is:inline>
     (function () {

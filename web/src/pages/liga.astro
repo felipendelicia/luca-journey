@@ -54,6 +54,23 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
       </div>
     </section>
 
+    <section class="social-card" id="social-card" hidden>
+      <h2 class="liga-h">👥 Tu perfil social</h2>
+      <p class="liga-nota">Elegí tu usuario único para tener un perfil público compartible y agregar amigos.</p>
+      <div class="social-row">
+        <span class="social-at">@</span>
+        <input id="social-handle" placeholder="tu_usuario" maxlength="20" autocapitalize="off" autocomplete="off" />
+        <button class="btn-sec" id="social-guardar" type="button">Guardar</button>
+      </div>
+      <p class="social-msg" id="social-msg"></p>
+      <div class="social-meta" id="social-meta" hidden>
+        <span>🎴 Código de amigo: <b id="social-codigo"></b></span>
+        <button class="btn-sec" id="social-link" type="button">🔗 Copiar link de mi perfil</button>
+        <a class="btn-sec" id="social-vermio" target="_blank" rel="noopener">👁️ Ver mi perfil</a>
+      </div>
+    </section>
+    <p class="social-login" id="social-login" hidden>Iniciá sesión (botón ☁️ arriba) para tener perfil público y amigos.</p>
+
     <h2 class="liga-h">🏆 Logros <span class="reg-estado" id="logros-n"></span></h2>
     <div class="logros-grid" id="logros"></div>
 
@@ -89,6 +106,50 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
       '<span class="logro-ico">' + l.ico + '</span>' +
       '<div class="logro-txt"><b>' + l.nombre + '</b><span>' + l.desc + '</span></div></div>'
     ).join('');
+  </script>
+
+  <script>
+    import { miPerfil, guardarPerfil, actualizarSnapshot, snapshotPublico, haySupabase } from '../lib/social.js';
+    import { usuario } from '../lib/nube.js';
+    const LD = JSON.parse(document.getElementById('liga-data').textContent);
+    const temas = LD.regiones.flatMap((r) => r.temas.map((t) => ({ slug: t.slug, region: r.id, ejercicios: t.exIds.map((id) => ({ id })) })));
+    const B = (window.__BASE || '/').replace(/\/$/, '');
+    const $ = (id) => document.getElementById(id);
+    let perfilActual = null;
+
+    function mostrarPerfil(p) {
+      perfilActual = p;
+      $('social-handle').value = p.handle;
+      $('social-codigo').textContent = p.codigo_amigo;
+      $('social-vermio').href = B + '/u?h=' + p.handle;
+      $('social-meta').hidden = false;
+    }
+    async function cargar() {
+      if (!haySupabase) { $('social-card').hidden = true; $('social-login').hidden = true; return; }
+      if (!usuario()) { $('social-card').hidden = true; $('social-login').hidden = false; return; }
+      $('social-login').hidden = true; $('social-card').hidden = false;
+      try {
+        const p = await miPerfil();
+        if (p) { mostrarPerfil(p); actualizarSnapshot(temas); }
+      } catch {}
+    }
+    $('social-guardar').addEventListener('click', async () => {
+      const handle = $('social-handle').value.trim().toLowerCase();
+      const nombre = localStorage.getItem('liga:nombre') || '';
+      const avatar = Number(localStorage.getItem('col:avatar')) || 0;
+      $('social-msg').textContent = 'Guardando…';
+      try {
+        mostrarPerfil(await guardarPerfil({ handle, nombre, avatar, publico: snapshotPublico(temas) }));
+        $('social-msg').textContent = '✅ Perfil guardado: @' + perfilActual.handle;
+      } catch (e) { $('social-msg').textContent = '⚠️ ' + (e.message || e); }
+    });
+    $('social-link').addEventListener('click', () => {
+      if (!perfilActual) return;
+      navigator.clipboard.writeText(location.origin + B + '/u?h=' + perfilActual.handle);
+      $('social-link').textContent = '✓ copiado';
+    });
+    window.addEventListener('nube:cambio', cargar);
+    cargar();
   </script>
 
   <script type="application/json" id="liga-data" set:html={JSON.stringify({ regiones, totalEj, nombres })}></script>
