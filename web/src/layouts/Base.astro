@@ -239,14 +239,16 @@ const nav = [
       const pintar = async () => {
         if (!link) return;
         if (!usuario()) { const b = link.querySelector('.nav-badge'); if (b) b.remove(); return; }
-        const n = await pendientes();
+        const n = await pendientes().catch(() => 0);
         let b = link.querySelector('.nav-badge');
         if (n > 0) {
           if (!b) { b = document.createElement('span'); b.className = 'nav-badge'; link.appendChild(b); }
           b.textContent = n;
         } else if (b) { b.remove(); }
       };
+      window.addEventListener('nube:listo', pintar);
       window.addEventListener('nube:cambio', pintar);
+      setInterval(pintar, 60000);
       pintar();
     }
   </script>
