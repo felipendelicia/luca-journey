@@ -106,6 +106,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       for (const t of tests) {
         h += '<li class="' + (t.ok ? 'ok' : 'no') + '"><span class="ic">' + (t.ok ? '✅' : '❌') + '</span><code>' + esc(t.name) + '</code>';
         if (t.msg) h += '<div class="m">' + esc(t.msg) + '</div>';
+        if (t.out) h += '<div class="ej-out"><span class="lbl">🖨️ tus prints</span>' + esc(t.out) + '</div>';
         h += '</li>';
       }
       box.innerHTML = h + '</ul>';
@@ -154,7 +155,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
         // Paso actual — interactivo
         html += '<p class="ej-prompt" style="margin:.3rem 0 .8rem; white-space:pre-wrap;">' + esc(paso.consigna) + '</p>';
         html += '<div class="cw"><div class="cw-bar"><span class="dots"><i></i><i></i><i></i></span><span class="cw-lang">python</span><span class="cw-hint">✎ editable</span></div><div id="editor-' + paso.id + '"></div></div>';
-        html += '<div class="ejer-acciones"><button class="btn-corregir" id="btn-' + paso.id + '" type="button">✅ Corregir paso</button><span class="ejer-estado" id="est-' + paso.id + '"></span></div>';
+        html += '<div class="ejer-acciones"><button class="btn-sec" id="run-' + paso.id + '" type="button">▶ Ejecutar</button><button class="btn-corregir" id="btn-' + paso.id + '" type="button">✅ Corregir paso</button><span class="ejer-estado" id="est-' + paso.id + '"></span></div>';
         html += '<div class="ejer-result" id="res-' + paso.id + '"></div>';
         div.innerHTML = html;
         area.appendChild(div);
@@ -172,9 +173,34 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
         });
         editors[paso.id] = ed;
 
-        // Botón corregir
+        // Botones
         document.getElementById('btn-' + paso.id).addEventListener('click', () => corregirPaso(i, ed, paso));
+        document.getElementById('run-' + paso.id).addEventListener('click', () => ejecutarPaso(i, ed, paso));
       });
+    }
+
+    // ▶ Ejecutar: corre el código acumulado y muestra prints (stdout) + lo que devuelve la
+    // última expresión. Reusa runner.py `ejecutar`.
+    async function ejecutarPaso(n, ed, paso) {
+      const btn = document.getElementById('run-' + paso.id);
+      const est = document.getElementById('est-' + paso.id);
+      const res = document.getElementById('res-' + paso.id);
+      btn.disabled = true; est.textContent = '⏳ Cargando Python (~20s la primera vez)…';
+      try {
+        const py = await getPy();
+        est.textContent = 'Ejecutando…';
+        py.globals.set('_code', codigoAcumulado(n, ed));
+        const out = JSON.parse(await py.runPythonAsync('ejecutar(_code)'));
+        let h = '<div class="ejer-run"><span class="lbl">▶ Ejecutar</span>';
+        if (out.out) h += '<pre class="ej-stdout">' + esc(out.out) + '</pre>';
+        if (out.ret !== null) h += '<div class="ej-ret">↩ devuelve <code>' + esc(out.ret) + '</code></div>';
+        if (!out.out && out.ret === null) h += '<div class="ej-vacio">Sin salida. Agregá <code>print(...)</code> o poné una llamada como última línea (ej. <code>buscar("pikachu")</code>) para ver qué devuelve.</div>';
+        res.innerHTML = h + '</div>';
+      } catch (e) {
+        res.innerHTML = '<div class="ejer-err">⚠️ ' + esc((e && e.message) || String(e)) + '</div>';
+      } finally {
+        btn.disabled = false; est.textContent = '';
+      }
     }
 
     async function corregirPaso(n, ed, paso) {
