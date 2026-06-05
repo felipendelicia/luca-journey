@@ -8,8 +8,11 @@ import { supa, haySupabase } from './supa.js';
 
 const PREFIJOS = ['ej:', 'col:'];
 let _user = null;
-let _ultima = '';        // hash de lo último subido
+// hash de lo último sincronizado. Se persiste para saber, entre cargas de página, si el
+// local tiene cambios sin subir (y NO pisarlos con la nube en el boot).
+let _ultima = (() => { try { return localStorage.getItem('nube:ultima') || ''; } catch { return ''; } })();
 let _subiendo = false;
+function setUltima(s) { _ultima = s; try { localStorage.setItem('nube:ultima', s); } catch {} }
 
 // ---- snapshot del progreso en localStorage ----
 function snapshot() {
@@ -42,7 +45,7 @@ function limpiarLocal() {
 function aplicarNube(estado) {
   limpiarLocal();
   aplicar(estado);
-  _ultima = serial(snapshot());
+  setUltima(serial(snapshot()));
 }
 
 // ---- Supabase I/O ----
@@ -54,7 +57,7 @@ async function bajar(userId) {
 async function subir(userId, estado) {
   const { error } = await supa.from('progreso').upsert({ user_id: userId, estado }, { onConflict: 'user_id' });
   if (error) console.warn('[nube] subir:', error.message);
-  else _ultima = serial(estado);
+  else setUltima(serial(estado));
 }
 
 // ---- boot: la NUBE manda. Hidrata el cache desde la nube una vez por carga de página. ----
@@ -63,20 +66,29 @@ async function boot() {
   if (_booteado || !_user) return;
   _booteado = true;
   const yaHidratado = sessionStorage.getItem('nube:hidratado') === '1';
+  const persistida = (() => { try { return localStorage.getItem('nube:ultima') || ''; } catch { return ''; } })();
+  const localSerial = serial(snapshot());
+  const hayLocal = Object.keys(snapshot()).length > 0;
   const cloud = await bajar(_user.id);
-  if (cloud && Object.keys(cloud).length > 0) {
-    const antes = serial(snapshot());
-    aplicarNube(cloud);                        // la nube pisa el cache (setea _ultima)
-    if (!yaHidratado && antes !== serial(snapshot())) {
+  const hayCloud = cloud && Object.keys(cloud).length > 0;
+  const cloudSerial = hayCloud ? serial(cloud) : '';
+
+  if (!hayCloud) {
+    // cuenta nueva: el cache local siembra la cuenta
+    if (hayLocal) await subir(_user.id, snapshot()); else setUltima(localSerial);
+  } else if (hayLocal && localSerial !== persistida && cloudSerial === persistida) {
+    // cambios locales SIN subir y la nube no cambió → subirlos (no perder lo local)
+    await subir(_user.id, snapshot());
+  } else {
+    // la nube manda (sin cambios locales pendientes, o conflicto raro → gana la nube)
+    aplicarNube(cloud);
+    const cambio = localSerial !== serial(snapshot());
+    if (cambio && !yaHidratado) {
       sessionStorage.setItem('nube:hidratado', '1');
       location.reload();                       // reflejar lo importado; acotado (no loopea)
       return;
     }
-  } else {
-    // cuenta nueva / migración: el cache local siembra la cuenta una vez
-    const local = snapshot();
-    if (Object.keys(local).length) await subir(_user.id, local);
-    else _ultima = serial(snapshot());
+    if (cambio) window.dispatchEvent(new CustomEvent('nube:sincronizado'));  // refrescar la UI
   }
   sessionStorage.setItem('nube:hidratado', '1');
   window.dispatchEvent(new CustomEvent('nube:listo'));
@@ -90,9 +102,9 @@ function vigilar() {
     const s = serial(snapshot());
     if (s !== _ultima && !_subiendo) {
       clearTimeout(_t);
-      _t = setTimeout(async () => { _subiendo = true; await subir(_user.id, snapshot()); _subiendo = false; }, 1500);
+      _t = setTimeout(async () => { _subiendo = true; await subir(_user.id, snapshot()); _subiendo = false; }, 600);
     }
-  }, 4000);
+  }, 2000);
   const flush = () => { if (_user && serial(snapshot()) !== _ultima) subir(_user.id, snapshot()); };
   window.addEventListener('pagehide', flush);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });

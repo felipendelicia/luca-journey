@@ -127,5 +127,7 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
     }));
 
     pintar();
+    // si la nube cambió por fuera (ej. un intercambio), re-render para no quedar desfasado
+    window.addEventListener('nube:sincronizado', pintar);
   </script>
 </Base>
