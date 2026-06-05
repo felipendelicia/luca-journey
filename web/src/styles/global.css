@@ -938,12 +938,13 @@ body.claro .hero-home h1{ color:#eafff0; }
 .df-modbtn:hover{ color:var(--ink); }
 .df-modbtn.danger:hover{ color:var(--red-deep); border-color:var(--red-deep); }
 /* líder de gimnasio / proyectos */
-.lider-card{ display:flex; align-items:center; gap:12px; background:linear-gradient(135deg,#3a2f12,#4a3a14); border:1px solid var(--yellow-deep); border-radius:14px; padding:12px 16px; margin:.6rem 0 1.2rem; text-decoration:none; color:var(--ink); }
-.lider-card.bloq{ filter:grayscale(.6); opacity:.7; cursor:default; }
+/* badge dorado fijo (mismo look en light y dark) → texto crema, NO var(--ink) que voltea con el tema */
+.lider-card{ display:flex; align-items:center; gap:12px; background:linear-gradient(135deg,#4a3a12,#6b5418); border:1px solid #d9a800; border-radius:14px; padding:12px 16px; margin:.6rem 0 1.2rem; text-decoration:none; color:#f7eccb; box-shadow:0 4px 14px rgba(0,0,0,.25); }
+.lider-card.bloq{ filter:grayscale(.55) brightness(.92); opacity:.8; cursor:default; }
 .lider-card .lc-ico{ font-size:1.6rem; flex:none; }
-.lider-card .lc-tit{ font-weight:800; }
-.lider-card .lc-sub{ color:var(--ink-soft); font-size:.85rem; }
-.lider-card .lc-estado{ margin-left:auto; font-weight:800; }
+.lider-card .lc-tit{ font-weight:800; color:#fff; }
+.lider-card .lc-sub{ color:#e2cf9c; font-size:.85rem; }
+.lider-card .lc-estado{ margin-left:auto; font-weight:800; color:#ffe23d; }
 .proy-paso{ background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:14px; margin:.8rem 0; }
 .proy-paso.bloq{ opacity:.5; }
 .proy-paso.ok{ border-color:#1f8b4c; }
