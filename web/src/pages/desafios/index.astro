@@ -21,14 +21,19 @@ const REGIONES = [['todas','Todas'],['libre','🎲 Libre'],['kanto','🔴 Kanto'
     const $ = (id) => document.getElementById(id);
     const B = (window.__BASE || '/').replace(/\/$/, '');
     const REGN = { kanto:'🔴', johto:'⚪', hoenn:'🟢', sinnoh:'🔵', unova:'⚫', kalos:'🟠', libre:'🎲' };
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
     let region = 'todas';
     async function cargar() {
       const lista = await listarDesafios({ orden: $('df-orden').value, q: $('df-q').value, region }).catch(() => []);
       const cont = $('df-lista');
       cont.innerHTML = lista.length ? lista.map((d) =>
         '<a class="df-item' + (d.resuelto ? ' ok' : '') + '" href="' + B + '/desafios/ver?id=' + d.id + '">' +
-        '<span class="df-reg">' + (REGN[d.region]||'🎲') + '</span><span class="df-tit">' + (d.resuelto ? '✅ ' : '') + d.titulo + '</span>' +
-        '<span class="df-meta">★' + d.dificultad + ' · ' + d.resoluciones + ' resueltos · @' + (d.autor_handle || '?') + '</span></a>').join('')
+        '<span class="df-reg">' + (REGN[d.region]||'🎲') + '</span>' +
+        '<div class="df-body">' +
+          '<span class="df-tit">' + (d.resuelto ? '✅ ' : '') + esc(d.titulo) + '</span>' +
+          (d.consigna ? '<span class="df-desc">' + esc(d.consigna) + '</span>' : '') +
+          '<span class="df-meta">★' + d.dificultad + ' · ' + d.resoluciones + ' resueltos · @' + esc(d.autor_handle || '?') + '</span>' +
+        '</div></a>').join('')
         : '<p class="tr-colec-vacio">No hay desafíos todavía. ¡Creá el primero!</p>';
     }
     $('df-q').addEventListener('input', cargar);

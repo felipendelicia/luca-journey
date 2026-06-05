@@ -21,6 +21,13 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       <h1>🏟️ {proyecto.titulo}</h1>
       <p class="ej-prompt">{proyecto.intro}</p>
 
+      {proyecto.preamble && (
+        <details class="proy-base" open>
+          <summary>📦 Código base — ya está disponible, no lo escribís (lo podés usar en tus funciones)</summary>
+          <pre class="proy-base-pre">{proyecto.preamble}</pre>
+        </details>
+      )}
+
       <div id="proy-area"></div>
 
       <nav class="cap-nav" style="margin-top:2rem;">
@@ -145,7 +152,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
         }
 
         // Paso actual — interactivo
-        html += '<p class="ej-prompt" style="margin:.3rem 0 .8rem;">' + esc(paso.consigna) + '</p>';
+        html += '<p class="ej-prompt" style="margin:.3rem 0 .8rem; white-space:pre-wrap;">' + esc(paso.consigna) + '</p>';
         html += '<div class="cw"><div class="cw-bar"><span class="dots"><i></i><i></i><i></i></span><span class="cw-lang">python</span><span class="cw-hint">✎ editable</span></div><div id="editor-' + paso.id + '"></div></div>';
         html += '<div class="ejer-acciones"><button class="btn-corregir" id="btn-' + paso.id + '" type="button">✅ Corregir paso</button><span class="ejer-estado" id="est-' + paso.id + '"></span></div>';
         html += '<div class="ejer-result" id="res-' + paso.id + '"></div>';
