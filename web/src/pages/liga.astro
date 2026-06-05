@@ -164,6 +164,9 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
       nombre.value = localStorage.getItem('liga:nombre') || '';
       nombre.addEventListener('input', () => localStorage.setItem('liga:nombre', nombre.value));
 
+      const proyOk = (k) => localStorage.getItem('proy:' + k + ':ok') === '1';
+      const hitos = (() => { try { return new Set(JSON.parse(localStorage.getItem('col:hitos')) || []); } catch { return new Set(); } })();
+
       let doneTotal = 0, medallas = 0, regionesCompletas = 0;
       for (const r of data.regiones) {
         let medReg = 0;
@@ -171,7 +174,8 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
         for (const t of r.temas) {
           const done = t.exIds.filter((id) => localStorage.getItem('ej:' + t.slug + ':' + id + ':ok') === '1').length;
           const total = t.exIds.length;
-          const completo = total > 0 && done === total;
+          const yaTeniaMedalla = hitos.has('tema:' + t.slug);
+          const completo = total > 0 && done === total && (proyOk(t.slug) || yaTeniaMedalla);
           doneTotal += done;
           if (completo) { medallas++; medReg++; }
           const pct = total ? Math.round((done / total) * 100) : 0;

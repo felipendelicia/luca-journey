@@ -6,7 +6,7 @@
 //   - Sin sesión: la app no entra (Base muestra la pantalla de login).
 import { supa, haySupabase } from './supa.js';
 
-const PREFIJOS = ['ej:', 'col:'];
+const PREFIJOS = ['ej:', 'col:', 'proy:'];
 let _user = null;
 // hash de lo último sincronizado. Se persiste para saber, entre cargas de página, si el
 // local tiene cambios sin subir (y NO pisarlos con la nube en el boot).

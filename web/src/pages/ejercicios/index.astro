@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import datos from '../../data/ejercicios.json';
+import proyectos from '../../data/proyectos.json';
 import { u } from '../../lib/url.ts';
 
 const REGIONES = [
@@ -20,6 +21,16 @@ const grupos = REGIONES.map(([id, label]) => ({
     ids: it.ejercicios.map((e) => e.id).join(','),
   })),
 })).filter((g) => g.temas.length);
+
+// Líderes por tema (tipo=lider) e integradores por región (tipo=integrador)
+const lideresPorTema = Object.fromEntries(
+  Object.values(proyectos).filter((p) => p.tipo === 'lider' && p.tema).map((p) => [p.tema, p])
+);
+const integradoresPorRegion = Object.fromEntries(
+  Object.values(proyectos).filter((p) => p.tipo === 'integrador' && p.region).map((p) => [p.region, p])
+);
+
+const BASE = import.meta.env.BASE_URL || '/';
 ---
 <Base title="Ejercicios — Python con Pokémon" active="Ejercicios">
   <div class="wrap">
@@ -35,14 +46,50 @@ const grupos = REGIONES.map(([id, label]) => ({
           <summary>{g.label}<span class="g-count">{g.temas.length}</span></summary>
           <div class="cards indice">
             {g.temas.map((s) => (
-              <a class="card" href={u(`/ejercicios/${s.slug}`)} data-slug={s.slug} data-total={s.total} data-ids={s.ids} style="display:flex; align-items:center; gap:8px;">
-                <span class="num">{s.n}</span>
-                <span>
-                  <h3 style="margin:0; font-size:.98rem;">{s.titulo}</h3>
-                  <p class="ej-prog">{s.total} ejercicios</p>
-                </span>
-              </a>
+              <>
+                <a class="card" href={u(`/ejercicios/${s.slug}`)} data-slug={s.slug} data-total={s.total} data-ids={s.ids} style="display:flex; align-items:center; gap:8px;">
+                  <span class="num">{s.n}</span>
+                  <span>
+                    <h3 style="margin:0; font-size:.98rem;">{s.titulo}</h3>
+                    <p class="ej-prog">{s.total} ejercicios</p>
+                  </span>
+                </a>
+                {lideresPorTema[s.slug] && (
+                  <div
+                    class="lider-card bloq"
+                    id={'lider-' + lideresPorTema[s.slug].slug}
+                    data-lider-slug={lideresPorTema[s.slug].slug}
+                    data-lider-tema={s.slug}
+                    data-lider-ids={s.ids}
+                    data-lider-total={s.total}
+                    data-lider-href={u('/proyectos/' + lideresPorTema[s.slug].slug)}
+                  >
+                    <span class="lc-ico">🏟️</span>
+                    <span>
+                      <div class="lc-tit">Líder de Gimnasio: {lideresPorTema[s.slug].lider}</div>
+                      <div class="lc-sub" id={'lider-sub-' + lideresPorTema[s.slug].slug}>Completá los ejercicios del tema para desafiar al líder</div>
+                    </span>
+                    <span class="lc-estado" id={'lider-est-' + lideresPorTema[s.slug].slug}></span>
+                  </div>
+                )}
+              </>
             ))}
+            {integradoresPorRegion[g.id] && (
+              <div
+                class="lider-card bloq"
+                id={'lider-' + integradoresPorRegion[g.id].slug}
+                data-integrador-slug={integradoresPorRegion[g.id].slug}
+                data-integrador-region={g.id}
+                data-integrador-href={u('/proyectos/' + integradoresPorRegion[g.id].slug)}
+              >
+                <span class="lc-ico">👑</span>
+                <span>
+                  <div class="lc-tit">Integrador: {integradoresPorRegion[g.id].titulo}</div>
+                  <div class="lc-sub" id={'lider-sub-' + integradoresPorRegion[g.id].slug}>Vencé a todos los líderes de la región para desbloquear</div>
+                </span>
+                <span class="lc-estado" id={'lider-est-' + integradoresPorRegion[g.id].slug}></span>
+              </div>
+            )}
           </div>
         </details>
       ))}
@@ -50,15 +97,66 @@ const grupos = REGIONES.map(([id, label]) => ({
   </div>
 
   <script is:inline>
-    document.querySelectorAll('#grid .card').forEach((c) => {
-      const slug = c.dataset.slug, total = +c.dataset.total;
-      const ids = (c.dataset.ids || '').split(',').filter(Boolean);
-      const done = ids.filter((id) => localStorage.getItem('ej:' + slug + ':' + id + ':ok') === '1').length;
-      if (done > 0) {
-        const p = c.querySelector('.ej-prog');
-        p.textContent = done + ' / ' + total + ' ejercicios' + (done === total ? ' ✅' : '');
-        if (done === total) c.classList.add('done');
-      }
-    });
+    (function () {
+      // Progreso de ejercicios en las cards normales
+      document.querySelectorAll('#grid .card').forEach((c) => {
+        const slug = c.dataset.slug, total = +c.dataset.total;
+        const ids = (c.dataset.ids || '').split(',').filter(Boolean);
+        const done = ids.filter((id) => localStorage.getItem('ej:' + slug + ':' + id + ':ok') === '1').length;
+        if (done > 0) {
+          const p = c.querySelector('.ej-prog');
+          p.textContent = done + ' / ' + total + ' ejercicios' + (done === total ? ' ✅' : '');
+          if (done === total) c.classList.add('done');
+        }
+      });
+
+      // Cards de líderes por tema
+      document.querySelectorAll('[data-lider-slug]').forEach((card) => {
+        const slug = card.dataset.liderSlug;
+        const tema = card.dataset.liderTema;
+        const ids = (card.dataset.liderIds || '').split(',').filter(Boolean);
+        const total = +card.dataset.liderTotal;
+        const href = card.dataset.liderHref;
+        const done = ids.filter((id) => localStorage.getItem('ej:' + tema + ':' + id + ':ok') === '1').length;
+        const desbloqueado = total > 0 && done === total;
+        const ganado = localStorage.getItem('proy:' + slug + ':ok') === '1';
+        const sub = document.getElementById('lider-sub-' + slug);
+        const est = document.getElementById('lider-est-' + slug);
+        if (desbloqueado) {
+          card.classList.remove('bloq');
+          // Hacer clickeable: convertir en enlace
+          card.style.cursor = 'pointer';
+          card.addEventListener('click', () => { window.location.href = href; });
+          if (sub) sub.textContent = ganado ? '¡Líder vencido!' : 'Hacé clic para desafiarlo';
+          if (est) est.textContent = ganado ? '🏅' : '→';
+        } else {
+          if (sub) sub.textContent = done + '/' + total + ' ejercicios — completá el tema para desafiar al líder';
+        }
+      });
+
+      // Cards de integradores por región
+      document.querySelectorAll('[data-integrador-slug]').forEach((card) => {
+        const slug = card.dataset.integradorSlug;
+        const region = card.dataset.integradorRegion;
+        const href = card.dataset.integradorHref;
+        const sub = document.getElementById('lider-sub-' + slug);
+        const est = document.getElementById('lider-est-' + slug);
+        const ganado = localStorage.getItem('proy:' + slug + ':ok') === '1';
+        // Desbloqueado cuando todos los líderes de la región están vencidos
+        // (buscamos todas las lider-cards de esta región)
+        const lideresDeLaRegion = document.querySelectorAll('[data-lider-slug]');
+        // Filtramos los que pertenecen a temas de esta región: no tenemos esa info aquí directamente,
+        // así que comprobamos si todos están ganados revisando los slugs de líderes con :ok
+        // En Fase 1 no hay integradores, así que esta lógica no se activa — dejamos bloqueada
+        // a menos que ganado === true
+        if (ganado) {
+          card.classList.remove('bloq');
+          card.style.cursor = 'pointer';
+          card.addEventListener('click', () => { window.location.href = href; });
+          if (sub) sub.textContent = '¡Completado!';
+          if (est) est.textContent = '👑';
+        }
+      });
+    })();
   </script>
 </Base>

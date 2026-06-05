@@ -63,6 +63,7 @@ export function sincronizar(temas) {
   const nuevo = { balls: 0, capturas: [] };
 
   const capturar = (id) => { if (id) { at[id] = (at[id] || 0) + 1; nuevo.capturas.push(id); } };
+  const proyOk = (k) => localStorage.getItem('proy:' + k + ':ok') === '1';
 
   for (const t of temas) {
     let hechos = 0;
@@ -73,7 +74,7 @@ export function sincronizar(temas) {
         if (!ganados.has(gk)) { ganados.add(gk); balls += BALLS_POR_EJERCICIO; nuevo.balls += BALLS_POR_EJERCICIO; }
       }
     }
-    if (t.ejercicios.length && hechos === t.ejercicios.length) {
+    if (t.ejercicios.length && hechos === t.ejercicios.length && (proyOk(t.slug) || hitos.has(`tema:${t.slug}`))) {
       const hk = `tema:${t.slug}`;
       if (!hitos.has(hk)) { hitos.add(hk); capturar(INSIGNIAS[t.slug]); }
     }
@@ -82,7 +83,7 @@ export function sincronizar(temas) {
   for (const t of temas) (porReg[t.region] ||= []).push(t);
   for (const [region, ts] of Object.entries(porReg)) {
     const completa = ts.every((t) => t.ejercicios.length && t.ejercicios.every((ex) => ejDone(t.slug, ex.id)));
-    if (completa) {
+    if (completa && (proyOk(region + '-integrador') || hitos.has(`region:${region}`))) {
       const hk = `region:${region}`;
       if (!hitos.has(hk)) { hitos.add(hk); capturar(LEGENDARIOS[region]); }
     }

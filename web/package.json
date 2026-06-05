@@ -6,9 +6,9 @@
   "description": "Plataforma web del curso Python con Pokémon (Astro)",
   "scripts": {
     "dev": "npm run prep && astro dev",
-    "build": "node scripts/sync-ejercicios.mjs && DEPLOY_BASE=/luca-journey astro build && rm -rf ../docs/astro",
+    "build": "node scripts/sync-ejercicios.mjs && node scripts/sync-proyectos.mjs && DEPLOY_BASE=/luca-journey astro build && rm -rf ../docs/astro",
     "preview": "astro preview",
-    "prep": "node scripts/sync-ejercicios.mjs"
+    "prep": "node scripts/sync-ejercicios.mjs && node scripts/sync-proyectos.mjs"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.3",
