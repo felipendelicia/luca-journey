@@ -954,3 +954,16 @@ body.claro .hero-home h1{ color:#eafff0; }
 .proy-base{ background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:10px 14px; margin:.6rem 0 1rem; }
 .proy-base summary{ cursor:pointer; font-weight:700; font-size:.9rem; color:var(--ink-soft); }
 .proy-base-pre{ margin:.6rem 0 0; background:var(--code-bg); color:#e8eaf2; border-radius:8px; padding:11px 14px; overflow:auto; font-family:var(--font-mono); font-size:12.5px; line-height:1.5; }
+/* listas de desafíos en el perfil */
+.u-df-grupo{ margin-bottom:.9rem; }
+.u-df-lista{ display:flex; flex-direction:column; gap:5px; margin-top:6px; }
+.u-df-item{ background:var(--paper-2); border:1px solid var(--line); border-radius:9px; padding:6px 11px; text-decoration:none; color:var(--ink); font-size:.9rem; }
+.u-df-item:hover{ border-color:var(--teal-deep); }
+.u-df-item small{ color:var(--ink-mute); }
+/* ranking de desafíos */
+.df-ranking{ margin-top:1.4rem; background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:10px 14px; }
+.df-ranking summary{ cursor:pointer; font-weight:800; }
+.df-rank-tabla{ width:100%; border-collapse:collapse; margin-top:.6rem; font-size:.9rem; }
+.df-rank-tabla th, .df-rank-tabla td{ text-align:left; padding:5px 8px; border-bottom:1px solid var(--line); }
+.df-rank-tabla th:nth-child(n+3), .df-rank-tabla td:nth-child(n+3){ text-align:center; }
+.df-rank-tabla a{ color:var(--ink); font-weight:700; text-decoration:none; }

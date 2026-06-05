@@ -42,6 +42,11 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
         <div class="u-counts" id="u-counts"></div>
       </section>
 
+      <section class="u-sec" id="u-desafios-sec" hidden>
+        <h3 class="u-h">🧩 Desafíos</h3>
+        <div id="u-desafios"></div>
+      </section>
+
       <section class="u-sec">
         <h3 class="u-h">📕 Pokédex <span id="u-dex-n"></span></h3>
         <div id="u-dex"></div>
@@ -71,7 +76,7 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
   <script type="application/json" id="u-data" set:html={JSON.stringify({ nombres, regionDe })}></script>
   <script>
     import { perfilPublico, sonAmigos, solicitar, crearOferta, guardarDescripcion, haySupabase } from '../lib/social.js';
-    import { statsDesafios } from '../lib/desafios.js';
+    import { statsDesafios, desafiosDeUsuario } from '../lib/desafios.js';
     import { usuario, init as initNube } from '../lib/nube.js';
 
     const D = JSON.parse(document.getElementById('u-data').textContent);
@@ -92,7 +97,7 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
 
     const esc = (s) => (s || '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
     function celda(id, at, shi) {
-      return `<div class="tr-cell"><img src="${sprite(id, false)}" title="${nombres[id] || id} (x${at[id]})" />`
+      return `<div class="tr-cell"><img src="${sprite(id, false)}" alt="${esc(nombres[id] || id)}" title="${nombres[id] || id} (x${at[id]})" />`
         + `<span class="tr-cnt">x${at[id]}</span>${shi.has(id) ? '<span class="u-shi">✨</span>' : ''}</div>`;
     }
     function pintarPerfil(p) {
@@ -131,6 +136,15 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
         const extra = '<div><b>' + (s.resueltos || 0) + '</b><small>desafíos</small></div>'
           + '<div><b>' + (s.creados || 0) + '</b><small>creados</small></div>';
         $('u-counts').insertAdjacentHTML('beforeend', extra);
+      }).catch(() => {});
+
+      desafiosDeUsuario(p.user_id).then((ds) => {
+        if (!ds || !ds.length) return;
+        const REG = { kanto: '🔴', johto: '⚪', hoenn: '🟢', sinnoh: '🔵', unova: '⚫', kalos: '🟠', libre: '🎲' };
+        const item = (d) => `<a class="u-df-item" href="${B}/desafios/ver?id=${d.id}">${REG[d.region] || '🎲'} ${esc(d.titulo)} <small>★${d.dificultad}</small></a>`;
+        const grupo = (titulo, arr) => arr.length ? `<div class="u-df-grupo"><b>${titulo} (${arr.length})</b><div class="u-df-lista">${arr.map(item).join('')}</div></div>` : '';
+        const h = grupo('🛠️ Creados', ds.filter((d) => d.rol === 'creado')) + grupo('✅ Resueltos', ds.filter((d) => d.rol === 'resuelto'));
+        if (h) { $('u-desafios').innerHTML = h; $('u-desafios-sec').hidden = false; }
       }).catch(() => {});
 
       const at = pub.atrapados || {}, shi = new Set(pub.shiny || []);
@@ -209,7 +223,7 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
       if (!ids.length) { el.innerHTML = '<div class="tr-colec-vacio">(sin Pokémon)</div>'; return; }
       ids.forEach((id) => {
         const cell = document.createElement('div'); cell.className = 'tr-cell';
-        cell.innerHTML = `<img src="${sprite(id, false)}" title="${nombres[id] || id} (x${fuente[id]})" /><span class="tr-cnt">x${fuente[id]}</span>`;
+        cell.innerHTML = `<img src="${sprite(id, false)}" alt="${esc(nombres[id] || id)}" title="${nombres[id] || id} (x${fuente[id]})" /><span class="tr-cnt">x${fuente[id]}</span>`;
         const mk = (sh) => {
           const btn = document.createElement('button');
           const on = () => seleccion.filter((x) => x.id === id && !!x.shiny === sh).length;

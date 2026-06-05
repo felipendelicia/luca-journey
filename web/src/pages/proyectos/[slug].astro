@@ -42,7 +42,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
   <script>
     import { editorPython } from '../../lib/editor.js';
     import runnerPy from '../../lib/runner.py?raw';
-    import { sincronizar } from '../../lib/coleccion.js';
+    import { sincronizar, INSIGNIAS, LEGENDARIOS, spriteUrl } from '../../lib/coleccion.js';
     import { sonarExito, sonarError } from '../../lib/sonidos.js';
 
     const D = JSON.parse(document.getElementById('proy-data').textContent);
@@ -122,7 +122,9 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       area.innerHTML = '';
 
       if (victoriaTotal && localStorage.getItem(KEY_PROY_OK) === '1') {
-        area.innerHTML += '<div class="ejer-resumen win" style="margin-bottom:1.2rem;">🏅 ¡Venciste a ' + esc(proyecto.lider) + '! Medalla obtenida. +' + proyecto.premio + ' EXP</div>';
+        const recId = proyecto.tipo === 'integrador' ? LEGENDARIOS[proyecto.region] : INSIGNIAS[proyecto.tema];
+        const premio = recId ? ' y el Pokémon insignia <img src="' + spriteUrl(recId) + '" alt="Pokémon insignia" style="height:46px;vertical-align:middle;image-rendering:pixelated;">' : '';
+        area.innerHTML += '<div class="ejer-resumen win" style="margin-bottom:1.2rem;">🏅 ¡Venciste a ' + esc(proyecto.lider) + '! Conseguiste la <b>medalla</b>' + premio + '.</div>';
       }
 
       proyecto.pasos.forEach((paso, i) => {

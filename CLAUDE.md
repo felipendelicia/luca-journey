@@ -59,6 +59,11 @@ La CLI ya está **linkeada** a este proyecto:
 - **Consignas (ejercicios y proyectos): NO incluir pistas que revelen la solución.** Las
   consignas pueden ser explicativas y tener **ejemplos** (entrada → salida esperada), pero
   **nunca** una "Pista:" con el código/solución. El alumno tiene que pensarla.
+- **Ayuda:** mantené `web/src/pages/ayuda.astro` al día cuando agregues o cambies features
+  (desafíos de la comunidad, líderes de gimnasio, intercambios, etc.).
+- **Aprovechá las features nuevas:** al autorar/diseñar contenido o proponer ideas, contemplá
+  las capacidades de la plataforma (desafíos de comunidad estilo CodeWars, líderes de gimnasio
+  = proyectos por pasos, ▶ Ejecutar, logros, ranking) para no quedarnos atrás.
 - **Links internos:** usá `u('/ruta')` (de `src/lib/url.ts`), nunca hardcodees `/...`,
   porque en Pages el sitio vive bajo `/luca-journey/`. En scripts de cliente usá `window.__BASE`.
 - **Deploy:** `npm run build` actualiza `docs/`; commiteá `docs/` junto con los cambios de `web/`.

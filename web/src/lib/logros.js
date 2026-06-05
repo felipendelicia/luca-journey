@@ -18,6 +18,9 @@ export const LOGROS = [
   { id: 'shiny', ico: '✨', nombre: '¡Brilla!', desc: 'Atrapá un Pokémon shiny', check: (c) => c.shinies >= 1 },
   { id: 'cazashiny', ico: '💎', nombre: 'Cazador de shinies', desc: 'Atrapá 5 shinies', check: (c) => c.shinies >= 5 },
   { id: 'repetido', ico: '👯', nombre: 'De a montones', desc: 'Tené 5 del mismo Pokémon', check: (c) => c.maxRepe >= 5 },
+  { id: 'desafiante', ico: '⚔️', nombre: 'Desafiante', desc: 'Resolvé un desafío de la comunidad', check: (c) => c.desafiosResueltos >= 1 },
+  { id: 'creador', ico: '🛠️', nombre: 'Creador', desc: 'Creá tu primer desafío', check: (c) => c.desafiosCreados >= 1 },
+  { id: 'arquitecto', ico: '🏗️', nombre: 'Arquitecto', desc: 'Creá 5 desafíos para la comunidad', check: (c) => c.desafiosCreados >= 5 },
 ];
 
 export function contexto(temas) {
@@ -41,6 +44,8 @@ export function contexto(temas) {
     shinies: st.shiny.size,
     kanto: ids.filter((id) => id <= 151).length,
     maxRepe: valores.length ? Math.max(...valores) : 0,
+    desafiosCreados: Number(localStorage.getItem('col:desafios_creados') || 0),
+    desafiosResueltos: Number(localStorage.getItem('col:desafios_resueltos') || 0),
     reg,
     regiones: Object.keys(porReg),
   };

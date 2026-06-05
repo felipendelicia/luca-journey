@@ -14,9 +14,14 @@ const REGIONES = [['todas','Todas'],['libre','🎲 Libre'],['kanto','🔴 Kanto'
     <div class="dex-filtros" id="df-regiones">{REGIONES.map(([v,t],i) => <button class={'dex-f' + (i===0?' activo':'')} data-r={v} type="button">{t}</button>)}</div>
     <div class="df-lista" id="df-lista"></div>
     <p id="df-login" hidden>Iniciá sesión para crear y resolver desafíos.</p>
+
+    <details class="df-ranking">
+      <summary>🏆 Ranking de la comunidad</summary>
+      <div id="df-rank"><p class="auth-fine">Cargando…</p></div>
+    </details>
   </main>
   <script>
-    import { listarDesafios } from '../../lib/desafios.js';
+    import { listarDesafios, rankingDesafios } from '../../lib/desafios.js';
     import { usuario } from '../../lib/nube.js';
     const $ = (id) => document.getElementById(id);
     const B = (window.__BASE || '/').replace(/\/$/, '');
@@ -43,5 +48,16 @@ const REGIONES = [['todas','Todas'],['libre','🎲 Libre'],['kanto','🔴 Kanto'
       b.classList.add('activo'); region = b.dataset.r; cargar();
     }));
     cargar();
+
+    async function rankear() {
+      const top = await rankingDesafios().catch(() => []);
+      const cont = $('df-rank');
+      if (!top.length) { cont.innerHTML = '<p class="auth-fine">Todavía nadie creó ni resolvió desafíos.</p>'; return; }
+      cont.innerHTML = '<table class="df-rank-tabla"><thead><tr><th></th><th>Entrenador/a</th><th>🛠️ creados</th><th>✅ resueltos</th></tr></thead><tbody>'
+        + top.map((r, i) => '<tr><td>' + (i + 1) + '</td><td><a href="' + B + '/u?h=' + encodeURIComponent(r.handle) + '">@' + esc(r.handle) + '</a></td><td>' + r.creados + '</td><td>' + r.resueltos + '</td></tr>').join('')
+        + '</tbody></table>';
+    }
+    const ranking = document.querySelector('.df-ranking');
+    if (ranking) ranking.addEventListener('toggle', function () { if (this.open && !this._cargado) { this._cargado = true; rankear(); } });
   </script>
 </Base>

@@ -1,12 +1,16 @@
 // desafios.js — API de los desafíos de la comunidad (RPCs + lecturas).
 import { supa, haySupabase } from './supa.js';
 
+// contador local (sincronizado vía col:) para los logros de crear/resolver desafíos.
+const bump = (k) => { try { localStorage.setItem(k, String((Number(localStorage.getItem(k)) || 0) + 1)); } catch {} };
+
 export async function crearDesafio(d) {
   const { data, error } = await supa.rpc('crear_desafio', {
     p_titulo: d.titulo, p_consigna: d.consigna, p_func: d.func, p_starter: d.starter,
     p_casos: d.casos, p_dificultad: d.dificultad, p_region: d.region,
   });
   if (error) throw error;
+  bump('col:desafios_creados');
   return data; // id
 }
 export async function leerDesafio(id) {
@@ -24,7 +28,22 @@ export async function listarDesafios({ orden = 'recientes', q = '', region = 'to
 export async function registrarResolucion(desafioId, codigo) {
   const { data, error } = await supa.rpc('registrar_resolucion', { p_desafio_id: desafioId, p_codigo: codigo });
   if (error) throw error;
+  if (data > 0) bump('col:desafios_resueltos'); // primera vez (premio > 0)
   return data; // balls ganadas (0 si ya estaba)
+}
+
+// lista de desafíos creados + resueltos por un usuario (sin código, sin spoilers).
+export async function desafiosDeUsuario(userId) {
+  const { data, error } = await supa.rpc('desafios_de_usuario', { p_user_id: userId });
+  if (error) throw error;
+  return data || [];
+}
+
+// ranking: top creadores y top solvers de la comunidad.
+export async function rankingDesafios() {
+  const { data, error } = await supa.rpc('ranking_desafios');
+  if (error) throw error;
+  return data || [];
 }
 export async function solucionesDe(desafioId) {
   const { data, error } = await supa.rpc('soluciones_de', { p_desafio_id: desafioId });
