@@ -57,23 +57,4 @@ export function suscribir(id, miId, { onCambio, onPresencia }) {
   return () => supa.removeChannel(canal);
 }
 
-// Lobby global del intercambio: presencia (quién está en la página) + invitaciones directas.
-// onPresencia(idsPresentes) cada vez que cambia quién está; onInvitacion(payload) al recibir una.
-// Devuelve { invitar(toId, codigo, deHandle), salir() }.
-export function entrarLobby(miId, miHandle, { onPresencia, onInvitacion }) {
-  const canal = supa.channel('intercambio-lobby', { config: { presence: { key: miId } } });
-  canal.on('presence', { event: 'sync' }, () => {
-    onPresencia && onPresencia(Object.keys(canal.presenceState()));
-  });
-  canal.on('broadcast', { event: 'invitacion' }, ({ payload }) => {
-    if (payload && payload.to === miId) onInvitacion && onInvitacion(payload);
-  });
-  canal.subscribe((status) => { if (status === 'SUBSCRIBED') canal.track({ handle: miHandle, at: Date.now() }); });
-  return {
-    invitar: (toId, codigo, deHandle) =>
-      canal.send({ type: 'broadcast', event: 'invitacion', payload: { to: toId, codigo, de: deHandle } }),
-    salir: () => supa.removeChannel(canal),
-  };
-}
-
 export { haySupabase };

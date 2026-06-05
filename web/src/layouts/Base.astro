@@ -131,6 +131,7 @@ const nav = [
   <script>
     import { init, usuario, loginGoogle, logout } from '../lib/nube.js';
     import { haySupabase } from '../lib/supa.js';
+    import { iniciarPresencia } from '../lib/presencia.js';
     const overlay = document.getElementById('boot-overlay');
     if (!haySupabase && overlay) overlay.hidden = true;   // sin Supabase configurado, sin gate (dev)
     const btn = document.getElementById('nube-btn');
@@ -155,6 +156,30 @@ const nav = [
           if (error) { bg.disabled = false; err.textContent = error.message; err.hidden = false; }
         });
       }
+
+      // presencia global: anunciarse en toda la app + recibir invitaciones de intercambio
+      let presIniciada = false;
+      const baseP = (window.__BASE || '/').replace(/\/$/, '');
+      const avisarInvitacion = (inv) => {
+        const d = document.createElement('div'); d.className = 'invite-toast';
+        const t = document.createElement('span');
+        t.textContent = '🔄 @' + (inv.de || 'alguien') + ' te invita a intercambiar';
+        const ok = document.createElement('button'); ok.className = 'ok'; ok.textContent = 'Unirme';
+        ok.addEventListener('click', () => { location.href = baseP + '/intercambio?codigo=' + encodeURIComponent(inv.codigo || ''); });
+        const x = document.createElement('button'); x.className = 'x'; x.textContent = '✕';
+        x.addEventListener('click', () => d.remove());
+        d.appendChild(t); d.appendChild(ok); d.appendChild(x);
+        document.body.appendChild(d);
+        setTimeout(() => d.remove(), 30000);
+      };
+      const arrancarPresencia = () => {
+        if (presIniciada || !usuario()) return;
+        presIniciada = true;
+        iniciarPresencia(usuario().id, localStorage.getItem('liga:nombre') || '', avisarInvitacion);
+      };
+      window.addEventListener('nube:cambio', arrancarPresencia);
+      arrancarPresencia();
+
       const $ = (id) => document.getElementById(id);
       const panes = { out: $('auth-out'), in: $('auth-in') };
       const mostrar = (cual) => { for (const k in panes) panes[k].hidden = k !== cual; };
