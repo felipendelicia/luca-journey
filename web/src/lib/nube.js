@@ -36,6 +36,12 @@ function limpiarLocal() {
   }
   claves.forEach((k) => localStorage.removeItem(k));
 }
+// reemplaza el progreso local por el de la nube (y marca _ultima para no re-subir lo viejo)
+function aplicarNube(estado) {
+  limpiarLocal();
+  aplicar(estado);
+  _ultima = serial(estado);
+}
 
 // ---- Supabase I/O ----
 async function bajar(userId) {
@@ -92,12 +98,41 @@ export function usuario() { return _user; }
 export async function refrescarDesdeNube() {
   if (!haySupabase || !_user) return false;
   const nube = await bajar(_user.id);
-  if (nube && Object.keys(nube).length) {
-    limpiarLocal();
-    aplicar(nube);
-    _ultima = serial(nube);   // evitar que el watcher re-suba lo viejo
-  }
+  if (nube && Object.keys(nube).length) aplicarNube(nube);
   return true;
+}
+
+// Aviso flotante (toast) breve.
+function toast(msg) {
+  try {
+    const d = document.createElement('div');
+    d.textContent = msg;
+    d.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);max-width:90%;'
+      + 'background:#0c1713;color:#cdebd2;border:1px solid #2b5b41;border-radius:12px;padding:10px 16px;'
+      + 'z-index:9999;box-shadow:0 12px 34px rgba(0,0,0,.45);font:600 14px system-ui,sans-serif;text-align:center';
+    document.body.appendChild(d);
+    setTimeout(() => { d.style.transition = 'opacity .5s'; d.style.opacity = '0'; setTimeout(() => d.remove(), 500); }, 3800);
+  } catch {}
+}
+
+// Suscribe a cambios EXTERNOS de tu propia fila de progreso (ej: un intercambio async
+// hecho por el otro). Los aplica al localStorage sin necesidad de re-loguear.
+let _canalProg = null;
+function suscribirProgreso(userId) {
+  if (_canalProg) { supa.removeChannel(_canalProg); _canalProg = null; }
+  _canalProg = supa
+    .channel(`prog:${userId}`)
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'progreso', filter: `user_id=eq.${userId}` },
+      (payload) => {
+        const nuevo = payload.new && payload.new.estado;
+        if (!nuevo) return;
+        if (serial(nuevo) === _ultima) return;        // eco de mi propia subida → ignorar
+        aplicarNube(nuevo);                            // cambio externo (intercambio) → aplicar
+        window.dispatchEvent(new CustomEvent('nube:cambio', { detail: { user: _user } }));
+        window.dispatchEvent(new CustomEvent('nube:sincronizado'));
+        toast('🔄 Tu colección se actualizó (intercambio)');
+      })
+    .subscribe();
 }
 
 // URL a la que vuelve el usuario tras autenticarse. __BASE ya trae '/' final en prod
@@ -123,12 +158,16 @@ export function init() {
   supa.auth.onAuthStateChange((evento, sesion) => {
     _user = (sesion && sesion.user) || null;
     window.dispatchEvent(new CustomEvent('nube:cambio', { detail: { user: _user } }));
-    if (_user && !fusionado) {
-      fusionado = true;
-      sessionStorage.setItem('nube:fusionado', '1');
-      alLoguear(_user);
-    } else if (!_user) {
+    if (_user) {
+      if (!fusionado) {
+        fusionado = true;
+        sessionStorage.setItem('nube:fusionado', '1');
+        alLoguear(_user);
+      }
+      suscribirProgreso(_user.id);     // escuchar cambios externos (intercambios)
+    } else {
       sessionStorage.removeItem('nube:fusionado');
+      if (_canalProg) { supa.removeChannel(_canalProg); _canalProg = null; }
     }
   });
   vigilar();
