@@ -926,3 +926,10 @@ body.claro .hero-home h1{ color:#eafff0; }
 .df-ej{ font-family:var(--font-mono); font-size:.82rem; margin-top:4px; }
 .df-ej code{ background:var(--card); border:1px solid var(--line); border-radius:5px; padding:0 4px; }
 @media(max-width:560px){ .df-item{ flex-wrap:wrap; } .df-item .df-meta{ flex-basis:100%; } }
+.df-sols{ margin-top:1.6rem; }
+.df-sols[hidden]{ display:none; }
+.df-sol{ background:var(--paper-2); border:1px solid var(--line); border-radius:12px; margin-top:10px; overflow:hidden; }
+.df-sol-bar{ display:flex; align-items:center; justify-content:space-between; padding:7px 12px; border-bottom:1px solid var(--line); font-size:.85rem; color:var(--ink-soft); }
+.df-sol-cod{ margin:0; padding:11px 14px; background:var(--code-bg); color:#e8eaf2; font-family:var(--font-mono); font-size:12.5px; line-height:1.5; overflow:auto; white-space:pre; }
+.df-voto{ border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:9px; font-weight:700; font-size:.8rem; padding:4px 10px; cursor:pointer; }
+.df-voto.on{ background:var(--red); border-color:var(--red); color:#fff; }

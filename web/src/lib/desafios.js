@@ -26,4 +26,18 @@ export async function registrarResolucion(desafioId, codigo) {
   if (error) throw error;
   return data; // balls ganadas (0 si ya estaba)
 }
+export async function solucionesDe(desafioId) {
+  const { data, error } = await supa.rpc('soluciones_de', { p_desafio_id: desafioId });
+  if (error) throw error;
+  return data || [];
+}
+export async function votar(resolucionId, on) {
+  const { error } = await supa.rpc('votar', { p_resolucion_id: resolucionId, p_on: on });
+  if (error) throw error;
+}
+export async function statsDesafios(userId) {
+  const { data, error } = await supa.rpc('stats_desafios', { p_user_id: userId });
+  if (error) throw error;
+  return Array.isArray(data) ? data[0] : data; // {resueltos, creados}
+}
 export { haySupabase };

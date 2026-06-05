@@ -71,6 +71,7 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
   <script type="application/json" id="u-data" set:html={JSON.stringify({ nombres, regionDe })}></script>
   <script>
     import { perfilPublico, sonAmigos, solicitar, crearOferta, guardarDescripcion, haySupabase } from '../lib/social.js';
+    import { statsDesafios } from '../lib/desafios.js';
     import { usuario, init as initNube } from '../lib/nube.js';
 
     const D = JSON.parse(document.getElementById('u-data').textContent);
@@ -124,6 +125,13 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
         ['✨ shiny', c.shinies || 0], ['ejercicios', c.ejercicios || 0],
         ['medallas', pub.medallas || 0],
       ].map(([l, v]) => `<div><b>${v}</b><small>${l}</small></div>`).join('');
+
+      statsDesafios(p.user_id).then((s) => {
+        if (!s) return;
+        const extra = '<div><b>' + (s.resueltos || 0) + '</b><small>desafíos</small></div>'
+          + '<div><b>' + (s.creados || 0) + '</b><small>creados</small></div>';
+        $('u-counts').insertAdjacentHTML('beforeend', extra);
+      }).catch(() => {});
 
       const at = pub.atrapados || {}, shi = new Set(pub.shiny || []);
       const ids = Object.keys(at).map(Number).filter((id) => at[id] > 0);

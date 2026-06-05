@@ -16,13 +16,17 @@ import Base from '../../layouts/Base.astro';
         <span class="ejer-estado" id="dv-estado"></span>
       </div>
       <div class="ejer-result" id="dv-result"></div>
+      <section class="df-sols" id="dv-sols" hidden>
+        <h2 class="liga-h">💡 Soluciones de la comunidad</h2>
+        <div id="dv-sols-lista"></div>
+      </section>
     </article>
   </main>
   <script is:inline src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
   <script>
     import { editorPython } from '../../lib/editor.js';
     import evalPy from '../../lib/desafios-eval.py?raw';
-    import { leerDesafio, registrarResolucion } from '../../lib/desafios.js';
+    import { leerDesafio, registrarResolucion, solucionesDe, votar } from '../../lib/desafios.js';
     import { usuario, refrescarDesdeNube } from '../../lib/nube.js';
     const $ = (id) => document.getElementById(id);
     const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c]));
@@ -31,6 +35,30 @@ import Base from '../../layouts/Base.astro';
     let des = null, editor = null, py = null;
     async function getPy() { if (!py) { py = await window.loadPyodide(); await py.runPythonAsync(evalPy); } return py; }
 
+    async function pintarSoluciones() {
+      let sols = [];
+      try { sols = await solucionesDe(id); } catch { sols = []; }
+      if (!sols.length) { $('dv-sols').hidden = true; return; }   // gated: aún no resolviste
+      $('dv-sols').hidden = false;
+      const cont = $('dv-sols-lista'); cont.innerHTML = '';
+      sols.forEach((s) => {
+        const card = document.createElement('div'); card.className = 'df-sol';
+        const pre = document.createElement('pre'); pre.className = 'df-sol-cod'; pre.textContent = s.codigo;
+        const bar = document.createElement('div'); bar.className = 'df-sol-bar';
+        const quien = document.createElement('span'); quien.textContent = (s.es_mia ? 'Tu solución' : ('@' + (s.autor_handle || '?')));
+        const vbtn = document.createElement('button');
+        vbtn.className = 'df-voto' + (s.mi_voto ? ' on' : '');
+        vbtn.type = 'button'; vbtn.textContent = '👍 ' + s.votos;
+        let voto = s.mi_voto, n = Number(s.votos);
+        vbtn.addEventListener('click', async () => {
+          voto = !voto; n += voto ? 1 : -1;
+          vbtn.classList.toggle('on', voto); vbtn.textContent = '👍 ' + n;
+          try { await votar(s.id, voto); } catch {}
+        });
+        bar.appendChild(quien); bar.appendChild(vbtn);
+        card.appendChild(bar); card.appendChild(pre); cont.appendChild(card);
+      });
+    }
     async function arrancar() {
       if (!id) { $('dv-cargando').textContent = 'Desafío no encontrado.'; return; }
       des = await leerDesafio(id);
@@ -44,6 +72,7 @@ import Base from '../../layouts/Base.astro';
       $('dv-ejemplos').innerHTML = ejs.length ? '<b>Ejemplos:</b>' + ejs.map((c) =>
         '<div class="df-ej"><code>' + esc(des.func) + '(' + esc(c.args.map((a) => JSON.stringify(a)).join(', ')) + ')</code> → <code>' + esc(c.esperado) + '</code></div>').join('') : '';
       editor = editorPython({ doc: des.starter || ('def ' + des.func + '():\n    '), parent: $('dv-editor'), onRun: enviar });
+      pintarSoluciones();
     }
     async function enviar() {
       if (!usuario()) { $('dv-estado').textContent = 'Iniciá sesión para enviar.'; return; }
@@ -59,6 +88,7 @@ import Base from '../../layouts/Base.astro';
           let premio = 0;
           try { premio = await registrarResolucion(id, editor.state.doc.toString()); await refrescarDesdeNube(); } catch {}
           box.innerHTML = '<div class="ejer-resumen win">✅ ¡Resuelto!' + (premio ? ' +' + premio + ' 🔴 Pokéballs' : '') + '</div>';
+          pintarSoluciones();
         } else if (res.error) {
           box.innerHTML = '<div class="ejer-err">⚠️ ' + esc(res.error) + '</div>';
         } else {
