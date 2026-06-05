@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "sql-update-delete",
+  "region": "sinnoh",
+  "titulo": "Líder Crasher Wake: Gestión del Lago",
+  "lider": "Crasher Wake",
+  "premio": 417,
+  "intro": "Crasher Wake entrena junto al Lago Valor y necesita mantener actualizado el registro de su equipo: subir niveles, corregir datos y eliminar Pokémon que ya no están. Ayudalo con UPDATE y DELETE. ¡Derrotá a Crasher Wake!",
+  "preamble": "import sqlite3\n\nconexion = sqlite3.connect(':memory:')\nconexion.execute('CREATE TABLE pokemon (nombre TEXT, nivel INTEGER, tipo TEXT)')\nconexion.executemany('INSERT INTO pokemon VALUES (?, ?, ?)', [\n    ('Gyarados',  34, 'Agua'),\n    ('Quagsire',  27, 'Agua'),\n    ('Floatzel',  29, 'Agua'),\n    ('Gastrodon', 30, 'Agua'),\n    ('Magikarp',   8, 'Agua'),\n])",
+  "packages": ["sqlite3"],
+  "pasos": [
+    {
+      "id": "cambiar_nivel",
+      "titulo": "1 · Cambiar nivel",
+      "consigna": "En el 📦 Código base ya está la conexión con la tabla `pokemon` y cinco Pokémon cargados.\n\nEscribí `cambiar_nivel(conexion, nombre, nuevo_nivel)` que actualice el nivel del Pokémon con ese nombre al nuevo valor.\n\nEjemplos:\n  cambiar_nivel(conexion, 'Magikarp', 20)\n  # Ahora Magikarp tiene nivel 20",
+      "starter": "def cambiar_nivel(conexion, nombre, nuevo_nivel):\n    ",
+      "tests": ["test_cambiar_nivel"]
+    },
+    {
+      "id": "subir_todos",
+      "titulo": "2 · Subir todos",
+      "consigna": "Escribí `subir_todos(conexion, cuanto)` que aumente el nivel de TODOS los Pokémon en `cuanto` puntos.\n\nEjemplos:\n  subir_todos(conexion, 5)\n  # Gyarados pasa de 34 a 39, Quagsire de 27 a 32, etc.",
+      "starter": "def subir_todos(conexion, cuanto):\n    ",
+      "tests": ["test_subir_todos"]
+    },
+    {
+      "id": "borrar",
+      "titulo": "3 · Borrar un Pokémon",
+      "consigna": "Escribí `borrar(conexion, nombre)` que elimine de la tabla el Pokémon con ese nombre.\n\nEjemplos:\n  borrar(conexion, 'Magikarp')\n  # Magikarp ya no está en la tabla",
+      "starter": "def borrar(conexion, nombre):\n    ",
+      "tests": ["test_borrar"]
+    },
+    {
+      "id": "borrar_debiles",
+      "titulo": "4 · Borrar los débiles (final)",
+      "consigna": "Escribí `borrar_debiles(conexion, umbral)` que elimine todos los Pokémon cuyo nivel sea estrictamente menor a `umbral`.\n\nEjemplos:\n  borrar_debiles(conexion, 28)\n  # Se eliminan Quagsire (27) y Magikarp (8); quedan Gyarados, Floatzel y Gastrodon",
+      "starter": "def borrar_debiles(conexion, umbral):\n    ",
+      "tests": ["test_borrar_debiles"]
+    }
+  ]
+}

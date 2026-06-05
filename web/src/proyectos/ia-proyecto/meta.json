@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "ia-proyecto",
+  "region": "unova",
+  "titulo": "Líder Drayden: Clasificador Pokédex",
+  "lider": "Drayden",
+  "premio": 637,
+  "intro": "Drayden, el Alcalde Dragón de Opelucid, construyó una Pokédex que identifica tipos por stats. En este proyecto final de Unova armás un clasificador completo: preparar datos, entrenar, evaluar y predecir. ¡Derrotá a Drayden!",
+  "preamble": "import numpy as np\n# Pokédex: [HP, ataque, defensa, velocidad] → tipo\n# 0=Fuego, 1=Agua, 2=Planta, 3=Eléctrico\n# Fuego: ataque alto, velocidad alta\n# Agua: defensa alta, velocidad baja\n# Planta: HP alto, stats moderados\n# Eléctrico: velocidad muy alta, defensa baja\nPOKEDEX_DATA = np.array([\n    [45, 72, 43, 80], [50, 80, 47, 85], [55, 88, 50, 90],\n    [42, 75, 45, 78], [52, 82, 48, 88], [58, 90, 52, 95],\n    [46, 74, 44, 82], [53, 84, 49, 87], [60, 92, 55, 98],\n    [55, 50, 82, 40], [60, 55, 90, 45], [65, 60, 98, 50],\n    [52, 48, 85, 38], [58, 52, 88, 42], [62, 56, 95, 48],\n    [56, 51, 84, 40], [61, 54, 92, 46], [66, 58, 100, 50],\n    [72, 55, 60, 45], [80, 58, 65, 48], [88, 62, 70, 52],\n    [74, 56, 62, 46], [82, 59, 67, 49], [90, 63, 72, 50],\n    [70, 54, 58, 44], [78, 57, 64, 47], [85, 60, 68, 51],\n    [38, 60, 30, 98], [42, 65, 33, 105], [48, 70, 36, 112],\n    [40, 62, 32, 100], [44, 66, 35, 108], [50, 72, 38, 115],\n    [39, 61, 31, 99], [43, 67, 34, 106], [49, 71, 37, 113],\n])\nPOKEDEX_TIPOS = np.array([0]*9 + [1]*9 + [2]*9 + [3]*9)\nNOMBRES_TIPO = {0: 'Fuego', 1: 'Agua', 2: 'Planta', 3: 'Electrico'}",
+  "packages": ["numpy", "scikit-learn"],
+  "pasos": [
+    {
+      "id": "preparar",
+      "titulo": "1 · Preparar los datos",
+      "consigna": "Arriba (en 📦 Código base) tenés POKEDEX_DATA (las stats) y POKEDEX_TIPOS (los tipos). Hay 36 Pokémon de 4 tipos.\n\nEscribí preparar(X, y) que divida los datos en train (75%) y test (25%) con random_state=0 y devuelva X_train, X_test, y_train, y_test.\n\nEjemplos:\n  X_train, X_test, y_train, y_test = preparar(POKEDEX_DATA, POKEDEX_TIPOS)\n  len(X_train)  →  27\n  len(X_test)   →  9",
+      "starter": "from sklearn.model_selection import train_test_split\n\ndef preparar(X, y):\n    ",
+      "tests": ["test_preparar"]
+    },
+    {
+      "id": "entrenar_pokedex",
+      "titulo": "2 · Entrenar la Pokédex",
+      "consigna": "Escribí entrenar_pokedex(X_train, y_train) que entrene un KNN con 3 vecinos y devuelva el modelo.\n\nEjemplos:\n  X_train, X_test, y_train, y_test = preparar(POKEDEX_DATA, POKEDEX_TIPOS)\n  modelo = entrenar_pokedex(X_train, y_train)\n  type(modelo).__name__  →  'KNeighborsClassifier'",
+      "starter": "from sklearn.neighbors import KNeighborsClassifier\n\ndef entrenar_pokedex(X_train, y_train):\n    ",
+      "tests": ["test_entrenar_pokedex"]
+    },
+    {
+      "id": "evaluar_pokedex",
+      "titulo": "3 · Evaluar la Pokédex",
+      "consigna": "Escribí evaluar_pokedex(modelo, X_test, y_test) que devuelva la exactitud del modelo sobre los datos de prueba como float.\n\nEjemplos:\n  X_train, X_test, y_train, y_test = preparar(POKEDEX_DATA, POKEDEX_TIPOS)\n  modelo = entrenar_pokedex(X_train, y_train)\n  evaluar_pokedex(modelo, X_test, y_test)  →  1.0",
+      "starter": "from sklearn.metrics import accuracy_score\n\ndef evaluar_pokedex(modelo, X_test, y_test):\n    ",
+      "tests": ["test_evaluar_pokedex"]
+    },
+    {
+      "id": "identificar_tipo",
+      "titulo": "4 · Identificar tipo (final)",
+      "consigna": "Integrá todo: escribí identificar_tipo(stats) que use POKEDEX_DATA y POKEDEX_TIPOS para entrenar la Pokédex completa (sin split), prediga el tipo de las stats y devuelva el nombre del tipo como string.\n\nEjemplos:\n  identificar_tipo([45, 72, 43, 80])  →  'Fuego'\n  identificar_tipo([55, 50, 82, 40])  →  'Agua'\n  identificar_tipo([72, 55, 60, 45])  →  'Planta'\n  identificar_tipo([38, 60, 30, 98])  →  'Electrico'",
+      "starter": "def identificar_tipo(stats):\n    ",
+      "tests": ["test_identificar_tipo"]
+    }
+  ]
+}

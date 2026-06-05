@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "flask-rest-crud",
+  "region": "hoenn",
+  "titulo": "Líder Winona: API REST CRUD",
+  "lider": "Winona",
+  "premio": 376,
+  "intro": "Winona lidera con precisión aérea. Vas a construir una API REST completa: leer, crear y borrar Pokémon en memoria, siguiendo las convenciones de HTTP. ¡Vencé a Winona!",
+  "preamble": "",
+  "packages": ["flask"],
+  "pasos": [
+    {
+      "id": "listar_y_obtener",
+      "titulo": "1 · Listar y obtener",
+      "consigna": "Escribí la función crear_app() que crea y devuelve una app Flask que maneja una lista en memoria (inicialmente vacía: []).\n\nAgregá dos rutas GET:\n- GET /pokemon  →  devuelve la lista completa\n- GET /pokemon/<int:pid>  →  devuelve el Pokémon con ese 'id', o {\"error\": \"no existe\"} con estado 404\n\nEjemplos (con la lista vacía al inicio):\n  GET /pokemon          →  []\n  GET /pokemon/1        →  {\"error\": \"no existe\"}  (estado 404)",
+      "starter": "from flask import Flask, jsonify, request\n\ndef crear_app():\n    app = Flask(__name__)\n    pokemon_lista = []\n\n    # definí las rutas GET \"/pokemon\" y \"/pokemon/<int:pid>\" acá\n\n    return app\n",
+      "tests": ["test_listar_y_obtener"]
+    },
+    {
+      "id": "crear",
+      "titulo": "2 · Crear (POST)",
+      "consigna": "Agregá dentro de crear_app() una ruta POST en \"/pokemon\" que agrega el JSON recibido a la lista y lo devuelve con estado 201.\n\nLas rutas GET del paso anterior deben seguir funcionando.\n\nEjemplo:\n  POST /pokemon con {\"id\": 1, \"nombre\": \"Swablu\"}  →  {\"id\": 1, \"nombre\": \"Swablu\"}  (estado 201)\n  GET /pokemon  →  [{\"id\": 1, \"nombre\": \"Swablu\"}]",
+      "starter": "",
+      "tests": ["test_crear"]
+    },
+    {
+      "id": "borrar",
+      "titulo": "3 · Borrar (DELETE)",
+      "consigna": "Agregá dentro de crear_app() una ruta DELETE en \"/pokemon/<int:pid>\" que borra el Pokémon con ese 'id' y devuelve {\"borrado\": pid}. Si no existe, devolvé {\"error\": \"no existe\"} con estado 404.\n\nTodas las rutas anteriores deben seguir funcionando.\n\nEjemplos:\n  DELETE /pokemon/1   →  {\"borrado\": 1}\n  DELETE /pokemon/99  →  {\"error\": \"no existe\"}  (estado 404)",
+      "starter": "",
+      "tests": ["test_crear", "test_borrar"]
+    },
+    {
+      "id": "actualizar",
+      "titulo": "4 · Actualizar (PUT, final)",
+      "consigna": "Agregá dentro de crear_app() una ruta PUT en \"/pokemon/<int:pid>\" que reemplaza el Pokémon con ese 'id' por el JSON recibido y lo devuelve. Si no existe, devolvé {\"error\": \"no existe\"} con estado 404.\n\nTodas las rutas anteriores deben seguir funcionando.\n\nEjemplos:\n  (después de haber creado {\"id\": 1, \"nombre\": \"Swablu\"})\n  PUT /pokemon/1 con {\"id\": 1, \"nombre\": \"Altaria\"}  →  {\"id\": 1, \"nombre\": \"Altaria\"}\n  PUT /pokemon/99 con {...}  →  {\"error\": \"no existe\"}  (estado 404)",
+      "starter": "",
+      "tests": ["test_crear", "test_borrar", "test_actualizar"]
+    }
+  ]
+}

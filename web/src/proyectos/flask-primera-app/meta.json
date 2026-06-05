@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "flask-primera-app",
+  "region": "hoenn",
+  "titulo": "Líder Brawly: Tu primera API",
+  "lider": "Brawly",
+  "premio": 255,
+  "intro": "Brawly entrena con fuerza y precisión. En esta batalla vas a levantar tu primera app Flask: rutas que responden texto, paso a paso. ¡Vencé a Brawly!",
+  "preamble": "",
+  "packages": ["flask"],
+  "pasos": [
+    {
+      "id": "crear_app",
+      "titulo": "1 · Crear la app",
+      "consigna": "Escribí la función crear_app() que crea y devuelve una app Flask con una ruta GET en \"/\" que responde el texto: ¡Bienvenido, Entrenador!\n\nEjemplo:\n  GET /  →  \"¡Bienvenido, Entrenador!\"",
+      "starter": "from flask import Flask\n\ndef crear_app():\n    app = Flask(__name__)\n\n    # definí la ruta \"/\" acá\n\n    return app\n",
+      "tests": ["test_crear_app"]
+    },
+    {
+      "id": "ruta_ping",
+      "titulo": "2 · Ruta /ping",
+      "consigna": "Agregá dentro de crear_app() una segunda ruta GET en \"/ping\" que responde el texto: pong\n\nLa ruta \"/\" del paso anterior debe seguir funcionando.\n\nEjemplo:\n  GET /ping  →  \"pong\"",
+      "starter": "",
+      "tests": ["test_crear_app", "test_ping"]
+    },
+    {
+      "id": "ruta_version",
+      "titulo": "3 · Ruta /version",
+      "consigna": "Agregá dentro de crear_app() una ruta GET en \"/version\" que responde el texto: 1.0\n\nLas rutas anteriores deben seguir funcionando.\n\nEjemplo:\n  GET /version  →  \"1.0\"",
+      "starter": "",
+      "tests": ["test_crear_app", "test_ping", "test_version"]
+    },
+    {
+      "id": "ruta_estado",
+      "titulo": "4 · Ruta /estado (final)",
+      "consigna": "Agregá dentro de crear_app() una ruta GET en \"/estado\" que responde el texto: online\n\nTodas las rutas anteriores deben seguir funcionando.\n\nEjemplo:\n  GET /estado  →  \"online\"",
+      "starter": "",
+      "tests": ["test_crear_app", "test_ping", "test_version", "test_estado"]
+    }
+  ]
+}

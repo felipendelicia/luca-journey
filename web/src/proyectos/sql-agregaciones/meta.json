@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "sql-agregaciones",
+  "region": "sinnoh",
+  "titulo": "Líder Fantina: Estadísticas del Concurso",
+  "lider": "Fantina",
+  "premio": 403,
+  "intro": "Fantina organiza concursos de Pokémon en Hearthome City y necesita estadísticas de sus participantes: promedios, totales, y resúmenes por tipo. Ayudala con COUNT, AVG y GROUP BY. ¡Derrotá a Fantina!",
+  "preamble": "import sqlite3\n\nconexion = sqlite3.connect(':memory:')\nconexion.execute('CREATE TABLE pokemon (nombre TEXT, nivel INTEGER, tipo TEXT)')\nconexion.executemany('INSERT INTO pokemon VALUES (?, ?, ?)', [\n    ('Gengar',    38, 'Fantasma'),\n    ('Mismagius', 36, 'Fantasma'),\n    ('Duskull',   21, 'Fantasma'),\n    ('Clefable',  35, 'Normal'),\n    ('Jigglypuff', 17, 'Normal'),\n])",
+  "packages": ["sqlite3"],
+  "pasos": [
+    {
+      "id": "nivel_promedio",
+      "titulo": "1 · Nivel promedio",
+      "consigna": "En el 📦 Código base ya está la conexión con la tabla `pokemon` y cinco Pokémon cargados.\n\nEscribí `nivel_promedio(conexion)` que devuelva el nivel promedio de todos los Pokémon (un número).\n\nEjemplos:\n  nivel_promedio(conexion)  →  29.4",
+      "starter": "def nivel_promedio(conexion):\n    ",
+      "tests": ["test_nivel_promedio"]
+    },
+    {
+      "id": "nivel_maximo",
+      "titulo": "2 · Nivel máximo",
+      "consigna": "Escribí `nivel_maximo(conexion)` que devuelva el nivel más alto entre todos los Pokémon.\n\nEjemplos:\n  nivel_maximo(conexion)  →  38",
+      "starter": "def nivel_maximo(conexion):\n    ",
+      "tests": ["test_nivel_maximo"]
+    },
+    {
+      "id": "cuantos_por_tipo",
+      "titulo": "3 · Cuántos por tipo",
+      "consigna": "Escribí `cuantos_por_tipo(conexion)` que devuelva un diccionario `{tipo: cantidad}` con la cantidad de Pokémon de cada tipo.\n\nEjemplos:\n  cuantos_por_tipo(conexion)  →  {'Fantasma': 3, 'Normal': 2}",
+      "starter": "def cuantos_por_tipo(conexion):\n    ",
+      "tests": ["test_cuantos_por_tipo"]
+    },
+    {
+      "id": "promedio_por_tipo",
+      "titulo": "4 · Promedio por tipo (final)",
+      "consigna": "Escribí `promedio_por_tipo(conexion)` que devuelva un diccionario `{tipo: promedio_de_nivel}` con el nivel promedio de cada tipo.\n\nEjemplos:\n  promedio_por_tipo(conexion)  →  {'Fantasma': 31.666..., 'Normal': 26.0}",
+      "starter": "def promedio_por_tipo(conexion):\n    ",
+      "tests": ["test_promedio_por_tipo"]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "proyecto-testing",
+  "region": "kalos",
+  "titulo": "Líder Wulfric: Función blindada",
+  "lider": "Wulfric",
+  "premio": 714,
+  "intro": "Wulfric es el líder del gimnasio de Snowbelle, el último antes de la Liga. Sus Pokémon hielo son poderosos y sin piedad con el código descuidado. Un programa profesional combina validación, manejo de errores y sus propios tests. ¡Derrotá a Wulfric para estar listo para la Liga!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "calcular_dano",
+      "titulo": "1 · Calcular daño",
+      "consigna": "Escribí la función calcular_dano(ataque, defensa) que calcule el daño de un golpe:\n- El daño es ataque - defensa.\n- Si el resultado es negativo, devolvá 0 (un golpe nunca da daño negativo).\n- Si ataque o defensa son negativos, lanzá ValueError con el mensaje \"Los valores deben ser positivos\".\n\nEjemplos:\n  calcular_dano(50, 20)   →  30\n  calcular_dano(10, 30)   →  0\n  calcular_dano(25, 25)   →  0\n  calcular_dano(-5, 10)   →  lanza ValueError\n  calcular_dano(10, -3)   →  lanza ValueError",
+      "starter": "def calcular_dano(ataque, defensa):\n    ",
+      "tests": ["test_calcular_dano"]
+    },
+    {
+      "id": "aplicar_dano",
+      "titulo": "2 · Aplicar daño",
+      "consigna": "Escribí la función aplicar_dano(hp, dano) que reste el daño a los HP.\n- Si hp o dano son negativos, lanzá ValueError con el mensaje \"Los valores deben ser positivos\".\n- Los HP nunca pueden bajar de 0: devolvá max(0, hp - dano).\n\nEjemplos:\n  aplicar_dano(100, 30)  →  70\n  aplicar_dano(20, 50)   →  0\n  aplicar_dano(0, 10)    →  0\n  aplicar_dano(-1, 10)   →  lanza ValueError",
+      "starter": "def aplicar_dano(hp, dano):\n    ",
+      "tests": ["test_aplicar_dano"]
+    },
+    {
+      "id": "probar_calcular_dano",
+      "titulo": "3 · Testear calcular_dano",
+      "consigna": "Escribí la función probar_calcular_dano() que verifique que calcular_dano funciona correctamente.\n\nVerificá con assert:\n- calcular_dano(50, 20) == 30\n- calcular_dano(10, 30) == 0\n- calcular_dano(25, 25) == 0\n\nY verificá que lanza ValueError cuando corresponde:\n- calcular_dano(-5, 10) debe lanzar ValueError\n- calcular_dano(10, -3) debe lanzar ValueError",
+      "starter": "def probar_calcular_dano():\n    ",
+      "tests": ["test_probar_calcular_dano"]
+    },
+    {
+      "id": "simular_turno",
+      "titulo": "4 · Simular turno (final)",
+      "consigna": "Integrá todo: escribí simular_turno(hp_rival, ataque_propio, defensa_rival) que simule un turno de combate:\n1. Calculá el daño con calcular_dano(ataque_propio, defensa_rival). Si lanza ValueError, devolvá {\"error\": \"valores inválidos\", \"hp_final\": hp_rival}.\n2. Aplicá el daño al rival con aplicar_dano(hp_rival, dano). Si lanza ValueError, devolvá {\"error\": \"valores inválidos\", \"hp_final\": hp_rival}.\n3. Si todo está bien, devolvá {\"dano\": <dano calculado>, \"hp_final\": <hp resultante>}.\n\nEjemplos:\n  simular_turno(100, 50, 20)  →  {\"dano\": 30, \"hp_final\": 70}\n  simular_turno(20, 10, 30)   →  {\"dano\": 0, \"hp_final\": 20}\n  simular_turno(100, -5, 20)  →  {\"error\": \"valores inválidos\", \"hp_final\": 100}",
+      "starter": "def simular_turno(hp_rival, ataque_propio, defensa_rival):\n    ",
+      "tests": ["test_simular_turno"]
+    }
+  ]
+}

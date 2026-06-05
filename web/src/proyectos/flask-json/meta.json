@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "flask-json",
+  "region": "hoenn",
+  "titulo": "Líder Wattson: Rutas con JSON",
+  "lider": "Wattson",
+  "premio": 258,
+  "intro": "Wattson ilumina todo con energía eléctrica. Vas a construir rutas que devuelven JSON usando jsonify, el formato que usan todas las APIs modernas. ¡Vencé a Wattson!",
+  "preamble": "",
+  "packages": ["flask"],
+  "pasos": [
+    {
+      "id": "ruta_pokemon",
+      "titulo": "1 · Ficha Pokémon",
+      "consigna": "Escribí la función crear_app() que crea y devuelve una app Flask con una ruta GET en \"/pokemon\" que devuelve el JSON: {\"nombre\": \"Voltorb\", \"tipo\": \"eléctrico\", \"nivel\": 20}\n\nEjemplo:\n  GET /pokemon  →  {\"nombre\": \"Voltorb\", \"tipo\": \"eléctrico\", \"nivel\": 20}",
+      "starter": "from flask import Flask, jsonify\n\ndef crear_app():\n    app = Flask(__name__)\n\n    # definí la ruta \"/pokemon\" acá\n\n    return app\n",
+      "tests": ["test_ruta_pokemon"]
+    },
+    {
+      "id": "ruta_equipo",
+      "titulo": "2 · Equipo completo",
+      "consigna": "Agregá dentro de crear_app() una ruta GET en \"/equipo\" que devuelve la lista JSON: [\"Voltorb\", \"Electrode\", \"Magneton\"]\n\nLa ruta \"/pokemon\" del paso anterior debe seguir funcionando.\n\nEjemplo:\n  GET /equipo  →  [\"Voltorb\", \"Electrode\", \"Magneton\"]",
+      "starter": "",
+      "tests": ["test_ruta_pokemon", "test_ruta_equipo"]
+    },
+    {
+      "id": "ruta_stats",
+      "titulo": "3 · Stats",
+      "consigna": "Agregá dentro de crear_app() una ruta GET en \"/stats\" que devuelve el JSON: {\"ataque\": 55, \"defensa\": 40, \"velocidad\": 90}\n\nLas rutas anteriores deben seguir funcionando.\n\nEjemplo:\n  GET /stats  →  {\"ataque\": 55, \"defensa\": 40, \"velocidad\": 90}",
+      "starter": "",
+      "tests": ["test_ruta_pokemon", "test_ruta_equipo", "test_ruta_stats"]
+    },
+    {
+      "id": "ruta_info",
+      "titulo": "4 · Info de la liga (final)",
+      "consigna": "Agregá dentro de crear_app() una ruta GET en \"/info\" que devuelve: {\"region\": \"Hoenn\", \"gimnasio\": 3, \"tipo\": \"eléctrico\"}\n\nTodas las rutas anteriores deben seguir funcionando.\n\nEjemplo:\n  GET /info  →  {\"region\": \"Hoenn\", \"gimnasio\": 3, \"tipo\": \"eléctrico\"}",
+      "starter": "",
+      "tests": ["test_ruta_pokemon", "test_ruta_equipo", "test_ruta_stats", "test_ruta_info"]
+    }
+  ]
+}

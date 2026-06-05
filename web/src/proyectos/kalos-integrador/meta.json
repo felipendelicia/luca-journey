@@ -1,0 +1,48 @@
+{
+  "tipo": "integrador",
+  "tema": "kalos-integrador",
+  "region": "kalos",
+  "titulo": "Integrador de Kalos: Sistema de batalla",
+  "lider": "Liga de Kalos",
+  "premio": 716,
+  "intro": "Llegaste al final de Kalos. La Liga te desafía a construir un sistema de batalla completo: validación de entradas, manejo de errores con excepciones propias, manejo de casos límite, y sus propios tests. Todo junto, como un programa profesional. ¡Demostrá que dominás el arte del código robusto!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "excepciones_y_validacion",
+      "titulo": "1 · Excepciones y validación",
+      "consigna": "Definí la excepción propia ErrorBatalla que herede de Exception.\n\nLuego escribí la función crear_pokemon(nombre, nivel, hp) que cree un dict con los datos de un Pokémon.\nValidá con raise ErrorBatalla (no ValueError) en estos casos:\n- nombre no es string o es vacío → \"Nombre inválido\"\n- nivel no está entre 1 y 100 → \"Nivel fuera de rango\"\n- hp no es mayor a 0 → \"HP inválido\"\n\nSi todo está bien, devolvá {\"nombre\": nombre.lower(), \"nivel\": nivel, \"hp\": hp}.\n\nEjemplos:\n  crear_pokemon(\"Pikachu\", 25, 100)  →  {\"nombre\": \"pikachu\", \"nivel\": 25, \"hp\": 100}\n  crear_pokemon(\"\", 25, 100)          →  lanza ErrorBatalla\n  crear_pokemon(\"Raichu\", 0, 100)    →  lanza ErrorBatalla\n  crear_pokemon(\"Surskit\", 10, 0)    →  lanza ErrorBatalla",
+      "starter": "class ErrorBatalla(Exception):\n    pass\n\ndef crear_pokemon(nombre, nivel, hp):\n    ",
+      "tests": ["test_excepciones_y_validacion"]
+    },
+    {
+      "id": "combate_robusto",
+      "titulo": "2 · Combate robusto",
+      "consigna": "Escribí la función atacar(atacante, defensor, poder) que simule un ataque:\n- poder debe ser mayor a 0; si no, lanzá ErrorBatalla con \"Poder inválido\".\n- El daño es max(0, atacante[\"nivel\"] * poder // 10 - defensor[\"nivel\"] // 5).\n- Devolvá un nuevo dict del defensor con su HP reducido: max(0, defensor[\"hp\"] - daño).\n- Si atacante o defensor son None, devolvá None.\n\nEjemplos:\n  atacante = {\"nombre\": \"pikachu\", \"nivel\": 25, \"hp\": 100}\n  defensor = {\"nombre\": \"surskit\", \"nivel\": 10, \"hp\": 50}\n  atacar(atacante, defensor, 4)  →  {\"nombre\": \"surskit\", \"nivel\": 10, \"hp\": 42}   # daño = 25*4//10 - 10//5 = 10-2 = 8, hp: 50-8 = 42\n  atacar(None, defensor, 4)      →  None\n  atacar(atacante, defensor, 0)  →  lanza ErrorBatalla",
+      "starter": "def atacar(atacante, defensor, poder):\n    ",
+      "tests": ["test_combate_robusto"]
+    },
+    {
+      "id": "casos_limite_equipo",
+      "titulo": "3 · Casos límite del equipo",
+      "consigna": "Escribí la función hp_total(equipo) que sume los HP de todos los Pokémon de una lista.\nManejá estos casos límite:\n- Si equipo es None, devolvá 0.\n- Si equipo está vacío, devolvá 0.\n- Si un elemento no tiene clave \"hp\", ignoralo.\n\nLuego escribí equipo_vivo(equipo) que devuelva True si al menos un Pokémon tiene hp > 0, o False si todos tienen hp <= 0 (o el equipo es None/vacío).\n\nEjemplos:\n  hp_total([{\"hp\": 50}, {\"hp\": 30}])          →  80\n  hp_total([{\"hp\": 0}, {\"nombre\": \"raro\"}])    →  0\n  hp_total([])                                   →  0\n  hp_total(None)                                 →  0\n  equipo_vivo([{\"hp\": 50}, {\"hp\": 0}])         →  True\n  equipo_vivo([{\"hp\": 0}, {\"hp\": 0}])          →  False\n  equipo_vivo([])                                →  False",
+      "starter": "def hp_total(equipo):\n    \n\ndef equipo_vivo(equipo):\n    ",
+      "tests": ["test_casos_limite_equipo"]
+    },
+    {
+      "id": "ronda_completa",
+      "titulo": "4 · Ronda completa",
+      "consigna": "Escribí la función ronda(equipo_a, equipo_b, poder) que simule una ronda de batalla entre dos equipos:\n1. Si algún equipo es None o está vacío, devolvá {\"error\": \"equipo inválido\"}.\n2. Tomá el primer Pokémon vivo (hp > 0) de cada equipo. Si alguno no existe, devolvá {\"resultado\": \"sin combatientes\"}.\n3. Hacé que el primero de A ataque al primero de B con atacar(..., poder). Si lanza ErrorBatalla, devolvá {\"error\": \"poder inválido\"}.\n4. Devolvá {\"atacante\": nombre del atacante, \"defensor\": nombre del defensor, \"dano\": hp_antes - hp_despues, \"hp_defensor\": hp del defensor tras el ataque}.\n\nEjemplos:\n  a = [{\"nombre\": \"pikachu\", \"nivel\": 25, \"hp\": 100}]\n  b = [{\"nombre\": \"surskit\", \"nivel\": 10, \"hp\": 50}]\n  ronda(a, b, 4)   →  {\"atacante\": \"pikachu\", \"defensor\": \"surskit\", \"dano\": 8, \"hp_defensor\": 42}\n  ronda(None, b, 4)  →  {\"error\": \"equipo inválido\"}\n  ronda(a, b, 0)   →  {\"error\": \"poder inválido\"}",
+      "starter": "def ronda(equipo_a, equipo_b, poder):\n    ",
+      "tests": ["test_ronda_completa"]
+    },
+    {
+      "id": "verificar_sistema",
+      "titulo": "5 · Verificar el sistema",
+      "consigna": "Escribí la función verificar_sistema() que pruebe que todo el sistema funciona correctamente.\nUsá assert para verificar al menos:\n- crear_pokemon funciona con datos válidos.\n- crear_pokemon lanza ErrorBatalla con datos inválidos.\n- atacar devuelve None si el atacante es None.\n- hp_total de lista vacía es 0.\n- equipo_vivo de lista vacía es False.\n\nSi todos los asserts pasan, la función termina sin errores.",
+      "starter": "def verificar_sistema():\n    ",
+      "tests": ["test_verificar_sistema"]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "primer-test",
+  "region": "kalos",
+  "titulo": "Líder Clemont: El inventor de tests",
+  "lider": "Clemont",
+  "premio": 667,
+  "intro": "Clemont es un inventor genial y líder del gimnasio de Lumiose. Antes de construir cualquier gadget, verifica que funcione. En programación, un test es una función que llama a otra función y comprueba que da el resultado correcto. ¡Derrotá a Clemont!",
+  "preamble": "def doble(n):\n    return n * 2\n\ndef es_par(n):\n    return n % 2 == 0\n\ndef mayor(a, b):\n    if a >= b:\n        return a\n    return b\n\ndef sumar_lista(lista):\n    total = 0\n    for x in lista:\n        total += x\n    return total",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "probar_doble",
+      "titulo": "1 · Probar doble",
+      "consigna": "En el Código base ya está la función doble(n) que devuelve el doble de n.\n\nEscribí la función probar_doble() que verifique que doble funciona correctamente usando assert:\n- doble(3) debe dar 6\n- doble(0) debe dar 0\n- doble(-2) debe dar -4\n\nSi todos los asserts pasan, la función termina normalmente (devuelve None).",
+      "starter": "def probar_doble():\n    ",
+      "tests": ["test_probar_doble"]
+    },
+    {
+      "id": "probar_es_par",
+      "titulo": "2 · Probar es_par",
+      "consigna": "En el Código base ya está es_par(n) que devuelve True si n es par, False si no.\n\nEscribí la función probar_es_par() que verifique con assert:\n- es_par(2) debe ser True\n- es_par(3) debe ser False\n- es_par(0) debe ser True\n- es_par(7) debe ser False",
+      "starter": "def probar_es_par():\n    ",
+      "tests": ["test_probar_es_par"]
+    },
+    {
+      "id": "probar_mayor",
+      "titulo": "3 · Probar mayor",
+      "consigna": "En el Código base ya está mayor(a, b) que devuelve el mayor de los dos.\n\nEscribí la función probar_mayor() que verifique con assert:\n- mayor(5, 3) debe dar 5\n- mayor(2, 8) debe dar 8\n- mayor(4, 4) debe dar 4",
+      "starter": "def probar_mayor():\n    ",
+      "tests": ["test_probar_mayor"]
+    },
+    {
+      "id": "probar_sumar_lista",
+      "titulo": "4 · Probar sumar_lista (final)",
+      "consigna": "En el Código base ya está sumar_lista(lista) que suma todos los números de una lista.\n\nEscribí la función probar_sumar_lista() que verifique con assert:\n- sumar_lista([1, 2, 3]) debe dar 6\n- sumar_lista([10, -10]) debe dar 0\n- sumar_lista([]) debe dar 0\n- sumar_lista([5]) debe dar 5",
+      "starter": "def probar_sumar_lista():\n    ",
+      "tests": ["test_probar_sumar_lista"]
+    }
+  ]
+}

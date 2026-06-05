@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "poo-avanzado",
+  "region": "kanto",
+  "titulo": "Líder Blaine: Pokémon evolucionados",
+  "lider": "Blaine",
+  "premio": 149,
+  "intro": "Blaine conoce los secretos de la evolución Pokémon. En este proyecto vas a usar herencia para modelar Pokémon que evolucionan: subclases, métodos especiales y todo el poder de la POO. ¡Derrotá a Blaine!",
+  "preamble": "# Clase base ya definida (la usarán las subclases)\nclass Pokemon:\n    def __init__(self, nombre, tipo, nivel):\n        self.nombre = nombre\n        self.tipo = tipo\n        self.nivel = nivel\n\n    def __str__(self):\n        return \"%s (Nv.%d)\" % (self.nombre, self.nivel)",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "subclase_fuego",
+      "titulo": "1 · PokemonFuego",
+      "consigna": "Arriba (en 📦 Código base) ya existe la clase base Pokemon con __init__ y __str__.\n\nCreá la subclase PokemonFuego que herede de Pokemon y agregue el atributo temperatura (pasado al constructor) además de nombre, tipo y nivel.\n\nEjemplos:\n  p = PokemonFuego(\"Vulpix\", 12, 400)\n  p.nombre       →  \"Vulpix\"\n  p.tipo         →  \"fuego\"   # siempre \"fuego\", fijado en la subclase\n  p.nivel        →  12\n  p.temperatura  →  400",
+      "starter": "class PokemonFuego(Pokemon):\n    def __init__(self, nombre, nivel, temperatura):\n        ",
+      "tests": ["test_subclase_fuego"]
+    },
+    {
+      "id": "metodo_especial",
+      "titulo": "2 · Método __str__ en PokemonFuego",
+      "consigna": "Sobrescribí __str__ en PokemonFuego para que devuelva también la temperatura.\n\nFormato: \"<nombre> (Nv.<nivel>) — 🔥 <temperatura>°C\"\n\nEjemplos:\n  str(PokemonFuego(\"Vulpix\", 12, 400))     →  \"Vulpix (Nv.12) — 🔥 400°C\"\n  str(PokemonFuego(\"Arcanine\", 35, 800))   →  \"Arcanine (Nv.35) — 🔥 800°C\"",
+      "starter": "    def __str__(self):\n        ",
+      "tests": ["test_metodo_especial"]
+    },
+    {
+      "id": "metodo_evolucionar",
+      "titulo": "3 · Evolucionar",
+      "consigna": "Agregá a PokemonFuego el método evolucionar(nuevo_nombre) que cambia el nombre del Pokémon, sube el nivel en 10, aumenta la temperatura en 200 y devuelve el propio objeto (self) para que se puedan encadenar operaciones.\n\nEjemplos:\n  p = PokemonFuego(\"Vulpix\", 12, 400)\n  p.evolucionar(\"Ninetales\")\n  p.nombre       →  \"Ninetales\"\n  p.nivel        →  22\n  p.temperatura  →  600",
+      "starter": "    def evolucionar(self, nuevo_nombre):\n        ",
+      "tests": ["test_metodo_evolucionar"]
+    },
+    {
+      "id": "equipo_fuego",
+      "titulo": "4 · Equipo de fuego (final)",
+      "consigna": "Escribí la función equipo_fuego(datos) que reciba una lista de dicts con claves \"nombre\", \"nivel\" y \"temperatura\", y devuelva una lista de objetos PokemonFuego.\n\nLuego, la función mas_caliente(equipo) que reciba esa lista y devuelva el objeto con mayor temperatura.\n\nEjemplos:\n  datos = [\n    {\"nombre\": \"Vulpix\",   \"nivel\": 12, \"temperatura\": 400},\n    {\"nombre\": \"Growlithe\", \"nivel\": 18, \"temperatura\": 550},\n  ]\n  pokis = equipo_fuego(datos)\n  pokis[0].nombre         →  \"Vulpix\"\n  mas_caliente(pokis).nombre  →  \"Growlithe\"",
+      "starter": "def equipo_fuego(datos):\n    \n\ndef mas_caliente(equipo):\n    ",
+      "tests": ["test_equipo_fuego"]
+    }
+  ]
+}

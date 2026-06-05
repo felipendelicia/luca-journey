@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "ia-regresion",
+  "region": "unova",
+  "titulo": "Líder Clay: Predecir números",
+  "lider": "Clay",
+  "premio": 587,
+  "intro": "Clay, el minero de Driftveil, predice dónde están los minerales a partir de los datos de excavación. En ML, la regresión predice un NÚMERO (no una categoría). Predecí el CP de un Pokémon a partir de su nivel. ¡Derrotá a Clay!",
+  "preamble": "import numpy as np\n# Relación: CP ≈ nivel * 3.5 + 10 (con algo de ruido)\nNIVELES = np.array([[5], [10], [15], [20], [25], [30], [35], [40], [45], [50],\n                    [8], [12], [18], [22], [28], [32], [38], [42], [48]])\nCP_REAL = np.array([27.5, 45.0, 62.5, 80.0, 97.5, 115.0, 132.5, 150.0, 167.5, 185.0,\n                    38.0, 52.0, 73.0, 87.0, 108.0, 122.0, 143.0, 157.0, 178.0])",
+  "packages": ["numpy", "scikit-learn"],
+  "pasos": [
+    {
+      "id": "entrenar_regresion",
+      "titulo": "1 · Entrenar la regresión",
+      "consigna": "Arriba (en 📦 Código base) tenés NIVELES (los niveles de los Pokémon, como array 2D) y CP_REAL (sus puntos de combate).\n\nEscribí entrenar_regresion(X, y) que entrene un modelo de regresión lineal y lo devuelva.\n\nEjemplos:\n  modelo = entrenar_regresion(NIVELES, CP_REAL)\n  type(modelo).__name__  →  'LinearRegression'",
+      "starter": "from sklearn.linear_model import LinearRegression\n\ndef entrenar_regresion(X, y):\n    ",
+      "tests": ["test_entrenar_regresion"]
+    },
+    {
+      "id": "predecir_cp",
+      "titulo": "2 · Predecir el CP",
+      "consigna": "Escribí predecir_cp(modelo, fila) que reciba un modelo entrenado y una fila (el nivel como lista), y devuelva el CP predicho como float.\n\nEjemplos:\n  modelo = entrenar_regresion(NIVELES, CP_REAL)\n  predecir_cp(modelo, [10])  →  aprox. 45.0\n  predecir_cp(modelo, [50])  →  aprox. 185.0",
+      "starter": "def predecir_cp(modelo, fila):\n    ",
+      "tests": ["test_predecir_cp"]
+    },
+    {
+      "id": "coeficientes",
+      "titulo": "3 · Coeficientes del modelo",
+      "consigna": "Escribí coeficientes(modelo) que devuelva una tupla (pendiente, intercepto) como floats. La pendiente es cuánto sube el CP por cada nivel y el intercepto es el CP base.\n\nEjemplos:\n  modelo = entrenar_regresion(NIVELES, CP_REAL)\n  pendiente, intercepto = coeficientes(modelo)\n  round(pendiente, 1)    →  aprox. 3.5\n  round(intercepto, 0)   →  aprox. 10.0",
+      "starter": "def coeficientes(modelo):\n    ",
+      "tests": ["test_coeficientes"]
+    },
+    {
+      "id": "cp_varios",
+      "titulo": "4 · CP de varios niveles (final)",
+      "consigna": "Integrá todo: escribí cp_varios(niveles_lista) que reciba una lista de niveles (ints), entrene la regresión con NIVELES y CP_REAL, y devuelva la lista de CPs predichos como floats redondeados a 1 decimal.\n\nEjemplos:\n  cp_varios([10, 20, 30])  →  [45.0, 80.0, 115.0]   (aprox.)",
+      "starter": "def cp_varios(niveles_lista):\n    ",
+      "tests": ["test_cp_varios"]
+    }
+  ]
+}

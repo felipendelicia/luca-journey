@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "consumir-api",
+  "region": "hoenn",
+  "titulo": "Líder Tate y Liza: Procesar respuestas de API",
+  "lider": "Tate y Liza",
+  "premio": 351,
+  "intro": "Tate y Liza batallan en sincronía perfecta. Cuando tu programa consume una API externa, recibe JSON que tiene que saber procesar. Vas a practicar extraer, filtrar y transformar esas respuestas. ¡Vencé a Tate y Liza!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "extraer_nombre",
+      "titulo": "1 · Extraer nombre y nivel",
+      "consigna": "Una API devuelve respuestas como dicts Python con los campos 'nombre' y 'nivel'. Escribí la función extraer_nombre_nivel(respuesta) que recibe un dict y devuelve la tupla (nombre, nivel).\n\nEjemplos:\n  extraer_nombre_nivel({\"nombre\": \"Solrock\", \"nivel\": 26})  →  (\"Solrock\", 26)\n  extraer_nombre_nivel({\"nombre\": \"Lunatone\", \"nivel\": 26}) →  (\"Lunatone\", 26)",
+      "starter": "def extraer_nombre_nivel(respuesta):\n    ",
+      "tests": ["test_extraer_nombre_nivel"]
+    },
+    {
+      "id": "filtrar_por_tipo",
+      "titulo": "2 · Filtrar por tipo",
+      "consigna": "Escribí la función filtrar_por_tipo(lista, tipo) que recibe una lista de dicts (cada uno con 'nombre' y 'tipo') y devuelve los NOMBRES de los que coincidan con el tipo buscado.\n\nEjemplos:\n  lista = [{\"nombre\": \"Solrock\", \"tipo\": \"roca\"}, {\"nombre\": \"Lunatone\", \"tipo\": \"roca\"}, {\"nombre\": \"Ralts\", \"tipo\": \"psíquico\"}]\n  filtrar_por_tipo(lista, \"roca\")     →  [\"Solrock\", \"Lunatone\"]\n  filtrar_por_tipo(lista, \"psíquico\") →  [\"Ralts\"]\n  filtrar_por_tipo(lista, \"agua\")     →  []",
+      "starter": "def filtrar_por_tipo(lista, tipo):\n    ",
+      "tests": ["test_extraer_nombre_nivel", "test_filtrar_por_tipo"]
+    },
+    {
+      "id": "manejar_error",
+      "titulo": "3 · Manejar errores de la API",
+      "consigna": "Escribí la función manejar_respuesta(status, datos) que recibe un código de estado HTTP y un dict. Si status es 200, devolvé los datos. Si es cualquier otro código, devolvé None.\n\nEjemplos:\n  manejar_respuesta(200, {\"nombre\": \"Ralts\"})  →  {\"nombre\": \"Ralts\"}\n  manejar_respuesta(404, {\"error\": \"nope\"})    →  None\n  manejar_respuesta(500, {})                   →  None",
+      "starter": "def manejar_respuesta(status, datos):\n    ",
+      "tests": ["test_extraer_nombre_nivel", "test_filtrar_por_tipo", "test_manejar_respuesta"]
+    },
+    {
+      "id": "resumen_equipo",
+      "titulo": "4 · Resumen del equipo (final)",
+      "consigna": "Escribí la función resumen_equipo(lista) que recibe una lista de dicts con 'nombre', 'tipo' y 'nivel', y devuelve una lista de strings con el formato: \"<nombre> (tipo: <tipo>, nivel: <nivel>)\"\n\nEjemplo:\n  lista = [{\"nombre\": \"Solrock\", \"tipo\": \"roca\", \"nivel\": 26}, {\"nombre\": \"Lunatone\", \"tipo\": \"roca\", \"nivel\": 26}]\n  resumen_equipo(lista)  →  [\"Solrock (tipo: roca, nivel: 26)\", \"Lunatone (tipo: roca, nivel: 26)\"]",
+      "starter": "def resumen_equipo(lista):\n    ",
+      "tests": ["test_extraer_nombre_nivel", "test_filtrar_por_tipo", "test_manejar_respuesta", "test_resumen_equipo"]
+    }
+  ]
+}

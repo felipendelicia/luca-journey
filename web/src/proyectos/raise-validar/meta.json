@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "raise-validar",
+  "region": "kalos",
+  "titulo": "Líder Grant: Validador de entradas",
+  "lider": "Grant",
+  "premio": 653,
+  "intro": "Grant es paleontólogo y líder del gimnasio de Cyllage. Sus Pokémon roca son duros como las reglas: si una entrada no cumple las condiciones, el programa debe avisarlo con un error claro. Aprendé a usar raise ValueError para validar datos. ¡Derrotá a Grant!",
+  "preamble": "NIVELES_VALIDOS = range(1, 101)",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "validar_nivel",
+      "titulo": "1 · Validar nivel",
+      "consigna": "Escribí la función validar_nivel(nivel) que reciba un número y:\n- Si está entre 1 y 100 (inclusive), devolvá el nivel.\n- Si está fuera de ese rango, lanzá ValueError con el mensaje \"Nivel fuera de rango\".\n\nEjemplos:\n  validar_nivel(50)   →  50\n  validar_nivel(1)    →  1\n  validar_nivel(100)  →  100\n  validar_nivel(0)    →  lanza ValueError\n  validar_nivel(101)  →  lanza ValueError",
+      "starter": "def validar_nivel(nivel):\n    ",
+      "tests": ["test_validar_nivel"]
+    },
+    {
+      "id": "validar_nombre",
+      "titulo": "2 · Validar nombre",
+      "consigna": "Escribí la función validar_nombre(nombre) que reciba un string y:\n- Si es un string no vacío, devolvalo en minúsculas.\n- Si es un string vacío, lanzá ValueError con el mensaje \"Nombre vacío\".\n- Si no es un string, lanzá ValueError con el mensaje \"Nombre inválido\".\n\nEjemplos:\n  validar_nombre(\"Pikachu\")  →  \"pikachu\"\n  validar_nombre(\"SURSKIT\") →  \"surskit\"\n  validar_nombre(\"\")         →  lanza ValueError\n  validar_nombre(42)         →  lanza ValueError",
+      "starter": "def validar_nombre(nombre):\n    ",
+      "tests": ["test_validar_nombre"]
+    },
+    {
+      "id": "validar_tipo",
+      "titulo": "3 · Validar tipo",
+      "consigna": "Escribí la función validar_tipo(tipo) que reciba un string y:\n- Si es uno de los tipos válidos: \"agua\", \"fuego\", \"planta\", \"roca\", \"bug\", \"normal\", devolvalo tal cual.\n- Si no es un tipo válido, lanzá ValueError con el mensaje \"Tipo desconocido\".\n\nEjemplos:\n  validar_tipo(\"fuego\")   →  \"fuego\"\n  validar_tipo(\"roca\")    →  \"roca\"\n  validar_tipo(\"dragón\")  →  lanza ValueError\n  validar_tipo(\"\")         →  lanza ValueError",
+      "starter": "def validar_tipo(tipo):\n    ",
+      "tests": ["test_validar_tipo"]
+    },
+    {
+      "id": "registrar_pokemon",
+      "titulo": "4 · Registrar Pokémon (final)",
+      "consigna": "Integrá todo: escribí registrar_pokemon(nombre, tipo, nivel) que valide los tres campos usando las funciones anteriores y devuelva un dict con los valores ya limpios.\n\nSi cualquier validación falla, el ValueError se propaga sin atrapar.\n\nEjemplos:\n  registrar_pokemon(\"Pikachu\", \"fuego\", 25)  →  {\"nombre\": \"pikachu\", \"tipo\": \"fuego\", \"nivel\": 25}\n  registrar_pokemon(\"\", \"fuego\", 25)          →  lanza ValueError\n  registrar_pokemon(\"Raichu\", \"dragón\", 50)  →  lanza ValueError\n  registrar_pokemon(\"Surskit\", \"bug\", 200)   →  lanza ValueError",
+      "starter": "def registrar_pokemon(nombre, tipo, nivel):\n    ",
+      "tests": ["test_registrar_pokemon"]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "ia-datos",
+  "region": "unova",
+  "titulo": "Líder Lenora: Preparar los datos",
+  "lider": "Lenora",
+  "premio": 498,
+  "intro": "Lenora, directora del museo, sabe que un buen catálogo es la base de todo. En Machine Learning, preparar bien los datos es el primer paso. Separar features, dividir en sets y escalar. ¡Derrotá a Lenora!",
+  "preamble": "import numpy as np\n# Dataset de Pokémon: [HP, ataque, defensa, velocidad, tipo]\n# tipo: 0=Normal, 1=Fuego, 2=Agua\nDATASET = np.array([\n    [45,  49,  49,  45, 0],\n    [60,  62,  63,  60, 0],\n    [80,  82,  83,  80, 0],\n    [39,  52,  43,  65, 1],\n    [58,  64,  58,  80, 1],\n    [78,  84,  78,  100, 1],\n    [44,  48,  65,  43, 2],\n    [59,  63,  80,  58, 2],\n    [79,  83,  100, 78, 2],\n    [55,  55,  50,  55, 0],\n    [70,  45,  48,  70, 2],\n    [65,  69,  65,  45, 1],\n])",
+  "packages": ["numpy", "scikit-learn"],
+  "pasos": [
+    {
+      "id": "separar_columnas",
+      "titulo": "1 · Separar features y etiquetas",
+      "consigna": "Arriba (en 📦 Código base) tenés DATASET: una matriz donde cada fila es un Pokémon. Las primeras 4 columnas son sus stats (features) y la última es su tipo (etiqueta).\n\nEscribí separar_columnas(matriz) que devuelva la tupla (X, y): X con todas las columnas menos la última, e y con solo la última.\n\nEjemplos:\n  X, y = separar_columnas(DATASET)\n  X.shape   →  (12, 4)\n  y.shape   →  (12,)\n  y[0]      →  0.0",
+      "starter": "def separar_columnas(matriz):\n    ",
+      "tests": ["test_separar_columnas"]
+    },
+    {
+      "id": "dividir",
+      "titulo": "2 · Dividir en train y test",
+      "consigna": "Escribí dividir(X, y) que divida los datos en entrenamiento (75%) y prueba (25%), con random_state=42 para reproducibilidad. Devolvé los 4 arrays: X_train, X_test, y_train, y_test.\n\nEjemplos:\n  X, y = separar_columnas(DATASET)\n  X_train, X_test, y_train, y_test = dividir(X, y)\n  len(X_train)  →  9\n  len(X_test)   →  3",
+      "starter": "from sklearn.model_selection import train_test_split\n\ndef dividir(X, y):\n    ",
+      "tests": ["test_dividir"]
+    },
+    {
+      "id": "escalar",
+      "titulo": "3 · Escalar los datos",
+      "consigna": "Escribí escalar(X) que normalice los datos para que cada columna tenga media 0 y desvío 1. Devolvé el array escalado.\n\nEscalar es importante para que columnas con valores grandes (como HP=100) no dominen sobre columnas con valores chicos.\n\nEjemplos:\n  X, _ = separar_columnas(DATASET)\n  Xs = escalar(X)\n  Xs.shape   →  (12, 4)\n  round(float(Xs[:, 0].mean()), 10)  →  0.0",
+      "starter": "from sklearn.preprocessing import StandardScaler\n\ndef escalar(X):\n    ",
+      "tests": ["test_escalar"]
+    },
+    {
+      "id": "preparar_datos",
+      "titulo": "4 · Preparar datos completo (final)",
+      "consigna": "Integrá todo: escribí preparar_datos(dataset) que reciba la matriz completa y devuelva X_train, X_test, y_train, y_test con X escalado (fit sobre train, transform sobre ambos).\n\nOrden de operaciones: separar columnas → dividir → escalar X_train → transformar X_test con el mismo scaler.\n\nEjemplos:\n  X_train, X_test, y_train, y_test = preparar_datos(DATASET)\n  len(X_train)  →  9\n  len(X_test)   →  3\n  round(float(X_train[:, 0].mean()), 10)  →  0.0",
+      "starter": "def preparar_datos(dataset):\n    ",
+      "tests": ["test_preparar_datos"]
+    }
+  ]
+}

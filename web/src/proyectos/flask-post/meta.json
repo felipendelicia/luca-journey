@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "flask-post",
+  "region": "hoenn",
+  "titulo": "Líder Norman: Recibir datos con POST",
+  "lider": "Norman",
+  "premio": 304,
+  "intro": "Norman es el papá de May: serio, directo y poderoso. Hasta ahora tus APIs solo leían (GET). Con POST el cliente te ENVÍA datos en JSON. Vas a construir rutas que los reciben y procesan. ¡Vencé a Norman!",
+  "preamble": "",
+  "packages": ["flask"],
+  "pasos": [
+    {
+      "id": "ruta_eco",
+      "titulo": "1 · Eco",
+      "consigna": "Escribí la función crear_app() que crea y devuelve una app Flask con una ruta POST en \"/eco\" que devuelve exactamente el mismo JSON que recibió. Usá request.json para leer el cuerpo.\n\nEjemplos:\n  POST /eco con {\"saludo\": \"Hola\"}       →  {\"saludo\": \"Hola\"}\n  POST /eco con {\"pokemon\": \"Slaking\"}   →  {\"pokemon\": \"Slaking\"}",
+      "starter": "from flask import Flask, jsonify, request\n\ndef crear_app():\n    app = Flask(__name__)\n\n    # definí la ruta POST \"/eco\" acá\n\n    return app\n",
+      "tests": ["test_ruta_eco"]
+    },
+    {
+      "id": "ruta_registrar",
+      "titulo": "2 · Registrar Pokémon",
+      "consigna": "Agregá dentro de crear_app() una ruta POST en \"/registrar\" que recibe {\"nombre\": ..., \"nivel\": ...} y devuelve: {\"registrado\": <nombre>, \"nivel\": <nivel>} con estado 201.\n\nLa ruta \"/eco\" debe seguir funcionando.\n\nEjemplos:\n  POST /registrar con {\"nombre\": \"Vigoroth\", \"nivel\": 28}  →  {\"registrado\": \"Vigoroth\", \"nivel\": 28}  (estado 201)\n  POST /registrar con {\"nombre\": \"Slaking\", \"nivel\": 36}   →  {\"registrado\": \"Slaking\", \"nivel\": 36}   (estado 201)",
+      "starter": "",
+      "tests": ["test_ruta_eco", "test_ruta_registrar"]
+    },
+    {
+      "id": "ruta_sumar_niveles",
+      "titulo": "3 · Sumar niveles",
+      "consigna": "Agregá dentro de crear_app() una ruta POST en \"/sumar-niveles\" que recibe {\"niveles\": [lista de números]} y devuelve {\"total\": <suma>}.\n\nLas rutas anteriores deben seguir funcionando.\n\nEjemplos:\n  POST /sumar-niveles con {\"niveles\": [10, 20, 30]}  →  {\"total\": 60}\n  POST /sumar-niveles con {\"niveles\": [5]}            →  {\"total\": 5}",
+      "starter": "",
+      "tests": ["test_ruta_eco", "test_ruta_registrar", "test_ruta_sumar_niveles"]
+    },
+    {
+      "id": "ruta_tipo_fuerte",
+      "titulo": "4 · Tipo más fuerte (final)",
+      "consigna": "Agregá dentro de crear_app() una ruta POST en \"/tipo-fuerte\" que recibe {\"equipo\": [{\"nombre\": ..., \"nivel\": ...}, ...]} y devuelve {\"mas_fuerte\": <nombre del de mayor nivel>}.\n\nTodas las rutas anteriores deben seguir funcionando.\n\nEjemplo:\n  POST /tipo-fuerte con {\"equipo\": [{\"nombre\": \"Slaking\", \"nivel\": 36}, {\"nombre\": \"Vigoroth\", \"nivel\": 28}]}\n  →  {\"mas_fuerte\": \"Slaking\"}",
+      "starter": "",
+      "tests": ["test_ruta_eco", "test_ruta_registrar", "test_ruta_sumar_niveles", "test_ruta_tipo_fuerte"]
+    }
+  ]
+}

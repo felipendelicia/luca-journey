@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "api-http-json",
+  "region": "hoenn",
+  "titulo": "Líder Roxanne: Enciclopedia JSON",
+  "lider": "Roxanne",
+  "premio": 252,
+  "intro": "Roxanne estudia cada Pokémon a fondo: sus datos, sus tipos, sus stats. Vas a construir funciones que arman, leen y transforman JSON, la lengua que hablan las APIs. ¡Vencé a Roxanne!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "armar_ficha",
+      "titulo": "1 · Armar la ficha",
+      "consigna": "Escribí la función armar_ficha(nombre, tipo, nivel) que devuelve un diccionario con esas tres claves.\n\nEjemplos:\n  armar_ficha(\"Treecko\", \"planta\", 5)  →  {\"nombre\": \"Treecko\", \"tipo\": \"planta\", \"nivel\": 5}\n  armar_ficha(\"Geodude\", \"roca\", 14)  →  {\"nombre\": \"Geodude\", \"tipo\": \"roca\", \"nivel\": 14}",
+      "starter": "def armar_ficha(nombre, tipo, nivel):\n    ",
+      "tests": ["test_armar_ficha"]
+    },
+    {
+      "id": "ficha_a_json",
+      "titulo": "2 · Ficha a JSON",
+      "consigna": "Escribí la función ficha_a_json(nombre, tipo, nivel) que devuelve un STRING en formato JSON con esas tres claves. Usá el módulo json.\n\nEjemplos:\n  ficha_a_json(\"Mudkip\", \"agua\", 5)  →  '{\"nombre\": \"Mudkip\", \"tipo\": \"agua\", \"nivel\": 5}'\n\nNota: el orden de las claves en el dict importa (tiene que matchear el ejemplo exacto); usá sort_keys=False y construí el dict en el orden correcto.",
+      "starter": "import json\n\ndef ficha_a_json(nombre, tipo, nivel):\n    ",
+      "tests": ["test_ficha_a_json"]
+    },
+    {
+      "id": "json_a_ficha",
+      "titulo": "3 · JSON a ficha",
+      "consigna": "Escribí la función json_a_ficha(texto) que recibe un STRING JSON con los campos 'nombre', 'tipo' y 'nivel', y devuelve una tupla (nombre, tipo, nivel).\n\nEjemplos:\n  json_a_ficha('{\"nombre\": \"Ralts\", \"tipo\": \"psíquico\", \"nivel\": 3}')  →  (\"Ralts\", \"psíquico\", 3)\n  json_a_ficha('{\"nombre\": \"Aron\", \"tipo\": \"acero\", \"nivel\": 10}')  →  (\"Aron\", \"acero\", 10)",
+      "starter": "def json_a_ficha(texto):\n    ",
+      "tests": ["test_json_a_ficha"]
+    },
+    {
+      "id": "filtrar_fichas",
+      "titulo": "4 · Filtrar fichas (final)",
+      "consigna": "Escribí la función filtrar_fichas(lista_json, tipo) que recibe una LISTA de dicts (cada uno con 'nombre', 'tipo', 'nivel') y un tipo, y devuelve una lista con solo los NOMBRES de los Pokémon de ese tipo.\n\nEjemplos:\n  fichas = [{\"nombre\": \"Geodude\", \"tipo\": \"roca\", \"nivel\": 5}, {\"nombre\": \"Treecko\", \"tipo\": \"planta\", \"nivel\": 5}, {\"nombre\": \"Nosepass\", \"tipo\": \"roca\", \"nivel\": 8}]\n  filtrar_fichas(fichas, \"roca\")   →  [\"Geodude\", \"Nosepass\"]\n  filtrar_fichas(fichas, \"planta\") →  [\"Treecko\"]\n  filtrar_fichas(fichas, \"fuego\")  →  []",
+      "starter": "def filtrar_fichas(lista_json, tipo):\n    ",
+      "tests": ["test_filtrar_fichas"]
+    }
+  ]
+}

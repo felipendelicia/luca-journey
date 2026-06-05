@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "matplotlib",
+  "region": "johto",
+  "titulo": "Líder Pryce: El gráfico del Hielo",
+  "lider": "Pryce",
+  "premio": 197,
+  "intro": "Pryce visualiza el rendimiento de sus Pokémon de hielo en gráficos. Preparás los datos y luego los graficás. ¡Derrotá a Pryce!",
+  "preamble": "import pandas as pd\n\nEQUIPO = pd.DataFrame({\n    \"nombre\":  [\"Seel\",  \"Dewgong\", \"Jynx\", \"Piloswine\", \"Sneasel\", \"Lapras\"],\n    \"nivel\":   [20,      30,        28,     35,          22,        32],\n    \"hp\":      [65,      90,        65,     100,         55,        130],\n    \"tipo\":    [\"Agua\",  \"Agua\",    \"Hielo\",\"Tierra\",    \"Hielo\",   \"Agua\"],\n})",
+  "packages": ["pandas", "matplotlib"],
+  "pasos": [
+    {
+      "id": "datos_barras",
+      "titulo": "1 · Datos para barras",
+      "consigna": "Arriba (en 📦 Código base) tenés el DataFrame EQUIPO con el equipo de Pryce.\n\nEscribí la función datos_barras(df) que devuelve una tupla (nombres, niveles): una lista con los nombres y una lista con los niveles correspondientes, en el mismo orden que el DataFrame.\n\nEjemplos:\n  datos_barras(EQUIPO)\n      →  ([\"Seel\", \"Dewgong\", \"Jynx\", \"Piloswine\", \"Sneasel\", \"Lapras\"],\n          [20, 30, 28, 35, 22, 32])",
+      "starter": "def datos_barras(df):\n    ",
+      "tests": ["test_datos_barras"]
+    },
+    {
+      "id": "datos_dispersion",
+      "titulo": "2 · Datos para dispersión",
+      "consigna": "Escribí la función datos_dispersion(df) que devuelve una tupla (niveles, hp): una lista con los niveles y una lista con los hp, en el mismo orden que el DataFrame. Estos datos se usan para graficar nivel vs HP.\n\nEjemplos:\n  datos_dispersion(EQUIPO)\n      →  ([20, 30, 28, 35, 22, 32], [65, 90, 65, 100, 55, 130])",
+      "starter": "def datos_dispersion(df):\n    ",
+      "tests": ["test_datos_dispersion"]
+    },
+    {
+      "id": "datos_histograma",
+      "titulo": "3 · Datos para histograma",
+      "consigna": "Escribí la función datos_histograma(df, col) que devuelve una lista con todos los valores de la columna indicada. Estos valores se usan para construir un histograma.\n\nEjemplos:\n  datos_histograma(EQUIPO, \"hp\")    →  [65, 90, 65, 100, 55, 130]\n  datos_histograma(EQUIPO, \"nivel\") →  [20, 30, 28, 35, 22, 32]",
+      "starter": "def datos_histograma(df, col):\n    ",
+      "tests": ["test_datos_histograma"]
+    },
+    {
+      "id": "graficar_equipo",
+      "titulo": "4 · Graficar el equipo (final)",
+      "consigna": "Integrá todo: escribí graficar_equipo(df) que prepara y grafica el nivel de cada Pokémon en un gráfico de barras. La función debe:\n1. Obtener los datos con datos_barras(df).\n2. Crear una figura con matplotlib: fig, ax = plt.subplots().\n3. Dibujar las barras: ax.bar(nombres, niveles).\n4. Ponerle un título: \"Niveles del equipo de Pryce\".\n5. Devolver los nombres y niveles como una tupla (no la figura), para que podamos verificar los datos.\n\nEjemplos:\n  nombres, niveles = graficar_equipo(EQUIPO)\n  nombres  →  [\"Seel\", \"Dewgong\", \"Jynx\", \"Piloswine\", \"Sneasel\", \"Lapras\"]\n  niveles  →  [20, 30, 28, 35, 22, 32]",
+      "starter": "import matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\n\ndef graficar_equipo(df):\n    ",
+      "tests": ["test_graficar_equipo"]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "numpy-calculo",
+  "region": "johto",
+  "titulo": "Líder Bugsy: Análisis de poder de combate",
+  "lider": "Bugsy",
+  "premio": 196,
+  "intro": "Bugsy estudia el poder de combate de cada insecto. Usá cálculo vectorizado con NumPy para normalizar stats y comparar equipos. ¡Derrotá a Bugsy!",
+  "preamble": "import numpy as np\n\nSTATS_BUGSY = np.array([60, 45, 50, 80, 35, 75, 55, 40])\n# Stats de: Scyther, Metapod, Kakuna, Beedrill, Caterpie, Weedle, Butterfree, Yanma",
+  "packages": ["numpy"],
+  "pasos": [
+    {
+      "id": "normalizar",
+      "titulo": "1 · Normalizar stats",
+      "consigna": "Arriba tenés STATS_BUGSY con las stats del equipo.\n\nEscribí la función normalizar(arr) que escala los valores del array al rango 0.0–1.0 usando la fórmula: (x - mínimo) / (máximo - mínimo).\n\nEjemplos:\n  normalizar(np.array([0, 5, 10]))   →  array([0. , 0.5, 1. ])\n  normalizar(np.array([10, 10, 20])) →  array([0. , 0. , 1. ])",
+      "starter": "def normalizar(arr):\n    ",
+      "tests": ["test_normalizar"]
+    },
+    {
+      "id": "por_encima_promedio",
+      "titulo": "2 · Por encima del promedio",
+      "consigna": "Escribí la función por_encima_promedio(arr) que devuelve un array solo con los valores que son estrictamente mayores al promedio del array. Usá una máscara booleana (sin for).\n\nEjemplos:\n  por_encima_promedio(np.array([10, 20, 30, 40]))  →  array([30, 40])\n  por_encima_promedio(np.array([5, 5, 10]))        →  array([10])",
+      "starter": "def por_encima_promedio(arr):\n    ",
+      "tests": ["test_por_encima_promedio"]
+    },
+    {
+      "id": "comparar_equipos",
+      "titulo": "3 · Comparar equipos",
+      "consigna": "Escribí la función comparar_equipos(a, b) que recibe dos arrays del mismo tamaño y devuelve una tupla (ganadas_a, ganadas_b): cuántas posiciones tiene a mayor que b, y cuántas tiene b mayor que a. Los empates no cuentan para ninguno.\n\nEjemplos:\n  comparar_equipos(np.array([10, 50, 30]), np.array([20, 40, 30]))\n      →  (1, 1)   # a gana en pos 1 (50>40); b gana en pos 0 (20>10); pos 2 empate\n  comparar_equipos(np.array([5, 5, 5]), np.array([5, 5, 5]))\n      →  (0, 0)",
+      "starter": "def comparar_equipos(a, b):\n    ",
+      "tests": ["test_comparar_equipos"]
+    },
+    {
+      "id": "informe_poder",
+      "titulo": "4 · Informe de poder (final)",
+      "consigna": "Combiná todo: escribí informe_poder(stats) que recibe un array de stats y devuelve un diccionario con estas claves:\n- \"normalizadas\": el array normalizado (resultado de normalizar)\n- \"sobre_promedio\": cantidad (int) de valores por encima del promedio\n- \"puntuacion\": la suma de los valores normalizados (float), redondeada a 2 decimales\n\nEjemplos:\n  informe_poder(np.array([0, 5, 10]))\n      →  {\"normalizadas\": array([0., 0.5, 1.]), \"sobre_promedio\": 1, \"puntuacion\": 1.5}",
+      "starter": "def informe_poder(stats):\n    ",
+      "tests": ["test_informe_poder"]
+    }
+  ]
+}

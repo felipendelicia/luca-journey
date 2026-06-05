@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "flask-parametros",
+  "region": "hoenn",
+  "titulo": "Líder Flannery: Rutas con parámetros",
+  "lider": "Flannery",
+  "premio": 280,
+  "intro": "Flannery es nueva como líder, pero sus Pokémon de fuego no perdonan. Vas a construir rutas que reciben parámetros en el path y en la query, para que cada respuesta se adapte al pedido. ¡Vencé a Flannery!",
+  "preamble": "POKEDEX = {\n    1: {\"nombre\": \"Bulbasaur\", \"tipo\": \"planta\"},\n    4: {\"nombre\": \"Charmander\", \"tipo\": \"fuego\"},\n    7: {\"nombre\": \"Squirtle\", \"tipo\": \"agua\"},\n    25: {\"nombre\": \"Pikachu\", \"tipo\": \"eléctrico\"},\n    255: {\"nombre\": \"Torchic\", \"tipo\": \"fuego\"},\n}",
+  "packages": ["flask"],
+  "pasos": [
+    {
+      "id": "ruta_saludo",
+      "titulo": "1 · Saludar al entrenador",
+      "consigna": "Escribí la función crear_app() que crea y devuelve una app Flask con una ruta GET en \"/saludo/<nombre>\" que responde el texto: Hola, <nombre>!\n\nEjemplos:\n  GET /saludo/Ash    →  \"Hola, Ash!\"\n  GET /saludo/Misty  →  \"Hola, Misty!\"",
+      "starter": "from flask import Flask, jsonify, request\n\n# El diccionario POKEDEX está disponible (viene del preamble).\n\ndef crear_app():\n    app = Flask(__name__)\n\n    # definí la ruta \"/saludo/<nombre>\" acá\n\n    return app\n",
+      "tests": ["test_ruta_saludo"]
+    },
+    {
+      "id": "ruta_pokemon_id",
+      "titulo": "2 · Buscar por ID",
+      "consigna": "Agregá dentro de crear_app() una ruta GET en \"/pokemon/<int:pid>\" que busca el Pokémon en POKEDEX por su ID y devuelve su JSON. Si no existe, devolvé {\"error\": \"no encontrado\"} con estado 404.\n\nEjemplos:\n  GET /pokemon/25   →  {\"nombre\": \"Pikachu\", \"tipo\": \"eléctrico\"}\n  GET /pokemon/999  →  {\"error\": \"no encontrado\"}  (estado 404)",
+      "starter": "",
+      "tests": ["test_ruta_saludo", "test_ruta_pokemon_id"]
+    },
+    {
+      "id": "ruta_buscar_tipo",
+      "titulo": "3 · Buscar por tipo (query)",
+      "consigna": "Agregá dentro de crear_app() una ruta GET en \"/buscar\" que lee el parámetro de query 'tipo' y devuelve la lista de nombres de los Pokémon de ese tipo. Usá request.args.get('tipo').\n\nEjemplos:\n  GET /buscar?tipo=fuego     →  [\"Charmander\", \"Torchic\"]\n  GET /buscar?tipo=planta    →  [\"Bulbasaur\"]\n  GET /buscar?tipo=fantasma  →  []",
+      "starter": "",
+      "tests": ["test_ruta_saludo", "test_ruta_pokemon_id", "test_ruta_buscar_tipo"]
+    },
+    {
+      "id": "ruta_nivel",
+      "titulo": "4 · Calcular nivel final (final)",
+      "consigna": "Agregá dentro de crear_app() una ruta GET en \"/nivel/<int:base>/<int:bonus>\" que devuelve el JSON: {\"nivel_final\": base + bonus}\n\nTodas las rutas anteriores deben seguir funcionando.\n\nEjemplos:\n  GET /nivel/10/5   →  {\"nivel_final\": 15}\n  GET /nivel/50/20  →  {\"nivel_final\": 70}",
+      "starter": "",
+      "tests": ["test_ruta_saludo", "test_ruta_pokemon_id", "test_ruta_buscar_tipo", "test_ruta_nivel"]
+    }
+  ]
+}

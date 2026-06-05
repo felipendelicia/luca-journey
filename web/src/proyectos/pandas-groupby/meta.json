@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "pandas-groupby",
+  "region": "johto",
+  "titulo": "Líder Jasmine: El ranking del Acero",
+  "lider": "Jasmine",
+  "premio": 181,
+  "intro": "Jasmine entrena Pokémon de acero y lleva un ranking detallado. Usá groupby para agrupar y agregar datos. ¡Derrotá a Jasmine!",
+  "preamble": "import pandas as pd\n\nRANKING = pd.DataFrame({\n    \"nombre\":  [\"Steelix\",  \"Magnemite\", \"Magneton\",  \"Onix\",    \"Scizor\",  \"Forretress\", \"Skarmory\"],\n    \"tipo\":    [\"Acero\",    \"Eléctrico\", \"Eléctrico\", \"Roca\",    \"Acero\",   \"Acero\",      \"Acero\"],\n    \"nivel\":   [35,         20,          28,          15,        32,        25,           30],\n    \"hp\":      [75,         25,          50,          35,        65,        58,           65],\n    \"victorias\": [10,       3,           7,           2,         9,         6,            8],\n})",
+  "packages": ["pandas"],
+  "pasos": [
+    {
+      "id": "contar_por_tipo",
+      "titulo": "1 · Contar por tipo",
+      "consigna": "Arriba (en 📦 Código base) tenés el DataFrame RANKING con el equipo de Jasmine.\n\nEscribí la función contar_por_tipo(df) que devuelve un diccionario: tipo → cantidad de Pokémon de ese tipo.\n\nEjemplos:\n  contar_por_tipo(RANKING)  →  {\"Acero\": 4, \"Eléctrico\": 2, \"Roca\": 1}",
+      "starter": "def contar_por_tipo(df):\n    ",
+      "tests": ["test_contar_por_tipo"]
+    },
+    {
+      "id": "nivel_promedio_por_tipo",
+      "titulo": "2 · Nivel promedio por tipo",
+      "consigna": "Escribí la función nivel_promedio_por_tipo(df) que devuelve un diccionario: tipo → nivel promedio (float redondeado a 2 decimales).\n\nEjemplos:\n  nivel_promedio_por_tipo(RANKING)\n      →  {\"Acero\": 30.5, \"Eléctrico\": 24.0, \"Roca\": 15.0}",
+      "starter": "def nivel_promedio_por_tipo(df):\n    ",
+      "tests": ["test_nivel_promedio_por_tipo"]
+    },
+    {
+      "id": "tipo_mas_victorias",
+      "titulo": "3 · Tipo con más victorias",
+      "consigna": "Escribí la función tipo_mas_victorias(df) que devuelve el nombre del tipo que acumula más victorias en total (str).\n\nEjemplos:\n  tipo_mas_victorias(RANKING)\n      →  \"Acero\"  (Steelix 10 + Scizor 9 + Forretress 6 + Skarmory 8 = 33 victorias)",
+      "starter": "def tipo_mas_victorias(df):\n    ",
+      "tests": ["test_tipo_mas_victorias"]
+    },
+    {
+      "id": "resumen_por_tipo",
+      "titulo": "4 · Resumen por tipo (final)",
+      "consigna": "Combiná todo: escribí resumen_por_tipo(df) que devuelve una lista de strings ordenada alfabéticamente por tipo. Cada string tiene el formato: \"<tipo>: <cantidad> Pokémon | Nivel promedio: <promedio> | Victorias: <total victorias>\".\n\nEjemplos:\n  resumen_por_tipo(RANKING)\n      →  [\n           \"Acero: 4 Pokémon | Nivel promedio: 30.5 | Victorias: 33\",\n           \"Eléctrico: 2 Pokémon | Nivel promedio: 24.0 | Victorias: 10\",\n           \"Roca: 1 Pokémon | Nivel promedio: 15.0 | Victorias: 2\"\n         ]",
+      "starter": "def resumen_por_tipo(df):\n    ",
+      "tests": ["test_resumen_por_tipo"]
+    }
+  ]
+}

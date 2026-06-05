@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "pandas-seleccion",
+  "region": "johto",
+  "titulo": "Líder Morty: El registro de Ecruteak",
+  "lider": "Morty",
+  "premio": 215,
+  "intro": "Morty lleva un registro de los Pokémon fantasma de Ecruteak. Usá filtros y selección para encontrar exactamente lo que buscás. ¡Derrotá a Morty!",
+  "preamble": "import pandas as pd\n\nREGISTRO = pd.DataFrame({\n    \"nombre\": [\"Gastly\",  \"Haunter\", \"Gengar\",  \"Misdreavus\", \"Murkrow\",  \"Umbreon\"],\n    \"tipo\":   [\"Fantasma\",\"Fantasma\",\"Fantasma\",\"Fantasma\",   \"Siniestro\",\"Siniestro\"],\n    \"nivel\":  [15,        25,        38,        20,           18,         30],\n    \"hp\":     [30,        45,        60,        45,           40,         65],\n})",
+  "packages": ["pandas"],
+  "pasos": [
+    {
+      "id": "filtrar_nivel_minimo",
+      "titulo": "1 · Filtrar por nivel mínimo",
+      "consigna": "Arriba (en 📦 Código base) tenés el DataFrame REGISTRO con el equipo de Morty.\n\nEscribí la función filtrar_nivel_minimo(df, minimo) que devuelve un DataFrame con solo las filas donde el nivel es mayor o igual al mínimo.\n\nEjemplos:\n  filtrar_nivel_minimo(REGISTRO, 25)  →  DataFrame con Haunter (25), Gengar (38) y Umbreon (30)\n  filtrar_nivel_minimo(REGISTRO, 40)  →  DataFrame con solo Gengar (38)... espera, 38 < 40, así que vacío\n  filtrar_nivel_minimo(REGISTRO, 38)  →  DataFrame con solo Gengar",
+      "starter": "def filtrar_nivel_minimo(df, minimo):\n    ",
+      "tests": ["test_filtrar_nivel_minimo"]
+    },
+    {
+      "id": "de_tipo",
+      "titulo": "2 · Filtrar por tipo",
+      "consigna": "Escribí la función de_tipo(df, tipo) que devuelve un DataFrame con solo las filas donde la columna \"tipo\" es igual al valor dado.\n\nEjemplos:\n  de_tipo(REGISTRO, \"Fantasma\")   →  DataFrame con Gastly, Haunter, Gengar, Misdreavus\n  de_tipo(REGISTRO, \"Siniestro\")  →  DataFrame con Murkrow y Umbreon\n  de_tipo(REGISTRO, \"Fuego\")      →  DataFrame vacío",
+      "starter": "def de_tipo(df, tipo):\n    ",
+      "tests": ["test_de_tipo"]
+    },
+    {
+      "id": "top_n",
+      "titulo": "3 · Top N más fuertes",
+      "consigna": "Escribí la función top_n(df, n) que devuelve una lista con los nombres de los N Pokémon con mayor nivel, de mayor a menor. Si hay empate en nivel, el orden entre empatados no importa.\n\nEjemplos:\n  top_n(REGISTRO, 3)  →  [\"Gengar\", \"Umbreon\", \"Haunter\"]  (o Haunter antes de Umbreon si empatan)\n  top_n(REGISTRO, 1)  →  [\"Gengar\"]",
+      "starter": "def top_n(df, n):\n    ",
+      "tests": ["test_top_n"]
+    },
+    {
+      "id": "buscar_y_mostrar",
+      "titulo": "4 · Buscar y mostrar (final)",
+      "consigna": "Integrá todo: escribí buscar_y_mostrar(df, tipo, nivel_minimo) que filtra primero por tipo y luego por nivel mínimo, y devuelve una lista de strings con el formato \"<nombre> (Lv.<nivel>)\", ordenada de mayor a menor nivel.\n\nSi no hay resultados, devolvé una lista vacía.\n\nEjemplos:\n  buscar_y_mostrar(REGISTRO, \"Fantasma\", 20)\n      →  [\"Gengar (Lv.38)\", \"Haunter (Lv.25)\", \"Misdreavus (Lv.20)\"]\n  buscar_y_mostrar(REGISTRO, \"Fuego\", 10)\n      →  []",
+      "starter": "def buscar_y_mostrar(df, tipo, nivel_minimo):\n    ",
+      "tests": ["test_buscar_y_mostrar"]
+    }
+  ]
+}

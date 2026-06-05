@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "ia-intro",
+  "region": "unova",
+  "titulo": "Líder Cilan: Tu primer modelo",
+  "lider": "Cilan",
+  "premio": 495,
+  "intro": "Cilan es un sommelier Pokémon: clasifica Pokémon según sus características. Construí tu primer modelo de Machine Learning paso a paso: crear, entrenar y predecir. ¡Derrotá a Cilan!",
+  "preamble": "import numpy as np\n# Dataset de entrenamiento: [ataque, defensa] → tipo (0=Fuego, 1=Agua)\nX_TRAIN = np.array([\n    [88, 42],  # Fuego\n    [90, 55],  # Fuego\n    [75, 38],  # Fuego\n    [82, 60],  # Fuego\n    [41, 89],  # Agua\n    [48, 95],  # Agua\n    [35, 85],  # Agua\n    [50, 92],  # Agua\n])\nY_TRAIN = np.array([0, 0, 0, 0, 1, 1, 1, 1])",
+  "packages": ["numpy", "scikit-learn"],
+  "pasos": [
+    {
+      "id": "crear_modelo",
+      "titulo": "1 · Crear el modelo",
+      "consigna": "Arriba (en 📦 Código base) tenés X_TRAIN e Y_TRAIN: las stats de Pokémon y su tipo (0=Fuego, 1=Agua).\n\nEscribí crear_modelo() que devuelva un clasificador KNN listo para entrenar. Usá n_neighbors=1 para que el modelo busque al vecino más cercano.\n\nEjemplos:\n  modelo = crear_modelo()\n  type(modelo).__name__  →  'KNeighborsClassifier'",
+      "starter": "from sklearn.neighbors import KNeighborsClassifier\n\ndef crear_modelo():\n    ",
+      "tests": ["test_crear_modelo"]
+    },
+    {
+      "id": "entrenar",
+      "titulo": "2 · Entrenar",
+      "consigna": "Escribí entrenar(modelo, X, y) que entrene el modelo con los datos X e y y lo devuelva listo para predecir.\n\nEjemplos:\n  modelo = crear_modelo()\n  modelo = entrenar(modelo, X_TRAIN, Y_TRAIN)\n  # Ahora el modelo conoce los datos y puede predecir",
+      "starter": "def entrenar(modelo, X, y):\n    ",
+      "tests": ["test_entrenar"]
+    },
+    {
+      "id": "predecir",
+      "titulo": "3 · Predecir",
+      "consigna": "Escribí predecir(modelo, fila) que reciba un modelo ya entrenado y una fila de stats, y devuelva el tipo predicho como int.\n\nEjemplos:\n  predecir(modelo, [88, 42])  →  0   (Fuego: ataque alto, defensa baja)\n  predecir(modelo, [41, 89])  →  1   (Agua: ataque bajo, defensa alta)",
+      "starter": "def predecir(modelo, fila):\n    ",
+      "tests": ["test_predecir"]
+    },
+    {
+      "id": "clasificador_completo",
+      "titulo": "4 · Clasificador completo (final)",
+      "consigna": "Integrá todo: escribí clasificador_completo(X_train, y_train, nuevos) que cree un KNN(1), lo entrene y devuelva las predicciones para la lista de filas nuevas como lista de ints.\n\nEjemplos:\n  clasificador_completo(\n      X_TRAIN, Y_TRAIN,\n      [[88, 42], [41, 89], [80, 50]]\n  )  →  [0, 1, 0]",
+      "starter": "def clasificador_completo(X_train, y_train, nuevos):\n    ",
+      "tests": ["test_clasificador_completo"]
+    }
+  ]
+}

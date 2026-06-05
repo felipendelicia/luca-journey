@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "tdd",
+  "region": "kalos",
+  "titulo": "Líder Olympia: Tests primero",
+  "lider": "Olympia",
+  "premio": 696,
+  "intro": "Olympia es vidente y líder del gimnasio de Anistar. Ella ve el futuro antes de actuar. En programación, TDD (desarrollo guiado por tests) significa escribir los tests ANTES de la implementación: primero definís qué debe hacer la función, y después la hacés funcionar. ¡Derrotá a Olympia!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "implementar_invertir",
+      "titulo": "1 · Implementar invertir",
+      "consigna": "Los tests ya están escritos (podés verlos abajo si querés, se llaman test_invertir). Tu tarea es implementar la función que los hace pasar.\n\nImplementá invertir(texto) que devuelva el texto al revés.\n\nEjemplos:\n  invertir(\"pikachu\")  →  \"uhcakip\"\n  invertir(\"abc\")      →  \"cba\"\n  invertir(\"\")          →  \"\"",
+      "starter": "def invertir(texto):\n    ",
+      "tests": ["test_invertir"]
+    },
+    {
+      "id": "implementar_contar_vocales",
+      "titulo": "2 · Implementar contar_vocales",
+      "consigna": "Implementá contar_vocales(texto) que cuente cuántas vocales (a, e, i, o, u, sin importar mayúsculas) tiene el texto.\n\nEjemplos:\n  contar_vocales(\"pikachu\")   →  3\n  contar_vocales(\"Eevee\")     →  4\n  contar_vocales(\"rhythm\")    →  0\n  contar_vocales(\"\")           →  0",
+      "starter": "def contar_vocales(texto):\n    ",
+      "tests": ["test_contar_vocales"]
+    },
+    {
+      "id": "implementar_es_palindromo",
+      "titulo": "3 · Implementar es_palindromo",
+      "consigna": "Implementá es_palindromo(texto) que devuelva True si el texto se lee igual al derecho y al revés (ignorando mayúsculas), o False si no.\n\nEjemplos:\n  es_palindromo(\"aba\")    →  True\n  es_palindromo(\"ABA\")    →  True\n  es_palindromo(\"abc\")    →  False\n  es_palindromo(\"radar\")  →  True\n  es_palindromo(\"\")        →  True",
+      "starter": "def es_palindromo(texto):\n    ",
+      "tests": ["test_es_palindromo"]
+    },
+    {
+      "id": "implementar_resumir",
+      "titulo": "4 · Implementar resumir (final)",
+      "consigna": "Implementá resumir(texto) que analice un texto y devuelva un dict con:\n- \"largo\": cantidad de caracteres.\n- \"vocales\": cantidad de vocales (usá contar_vocales).\n- \"invertido\": el texto al revés (usá invertir).\n- \"palindromo\": True si es palíndromo (usá es_palindromo).\n\nEjemplos:\n  resumir(\"aba\")  →  {\"largo\": 3, \"vocales\": 2, \"invertido\": \"aba\", \"palindromo\": True}\n  resumir(\"abc\")  →  {\"largo\": 3, \"vocales\": 1, \"invertido\": \"cba\", \"palindromo\": False}",
+      "starter": "def resumir(texto):\n    ",
+      "tests": ["test_resumir"]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "proyecto-db",
+  "region": "sinnoh",
+  "titulo": "Líder Volkner: Mini Pokédex en SQLite",
+  "lider": "Volkner",
+  "premio": 466,
+  "intro": "Volkner, el líder más poderoso de Sinnoh, quiere una Pokédex propia guardada en SQLite: crear, agregar, consultar, modificar y borrar. Combiná todo lo que sabés de SQL y Python. ¡Derrotá a Volkner!",
+  "preamble": "import sqlite3",
+  "packages": ["sqlite3"],
+  "pasos": [
+    {
+      "id": "crear_pokedex",
+      "titulo": "1 · Crear la Pokédex",
+      "consigna": "En el 📦 Código base tenés `import sqlite3`.\n\nEscribí `crear_pokedex()` que cree una base en memoria con la tabla `pokemon` (columnas: `nombre` TEXT, `tipo` TEXT, `nivel` INTEGER) y devuelva la conexión.\n\nEjemplos:\n  con = crear_pokedex()\n  # con es una conexión con la tabla 'pokemon' vacía",
+      "starter": "def crear_pokedex():\n    ",
+      "tests": ["test_crear_pokedex"]
+    },
+    {
+      "id": "agregar",
+      "titulo": "2 · Agregar y listar",
+      "consigna": "Escribí `agregar(conexion, nombre, tipo, nivel)` que inserte un Pokémon y haga commit.\n\nEscribí también `listar(conexion)` que devuelva los nombres de todos los Pokémon ordenados alfabéticamente.\n\nEjemplos:\n  agregar(conexion, 'Raichu', 'Electrico', 45)\n  agregar(conexion, 'Luxray', 'Electrico', 42)\n  listar(conexion)  →  ['Luxray', 'Raichu']",
+      "starter": "def agregar(conexion, nombre, tipo, nivel):\n    \n\ndef listar(conexion):\n    ",
+      "tests": ["test_agregar_y_listar"]
+    },
+    {
+      "id": "por_tipo_y_fuerte",
+      "titulo": "3 · Buscar por tipo y el más fuerte",
+      "consigna": "Escribí `por_tipo(conexion, tipo)` que devuelva los nombres de los Pokémon de ese tipo.\n\nEscribí también `el_mas_fuerte(conexion)` que devuelva el nombre del Pokémon con mayor nivel.\n\nEjemplos:\n  por_tipo(conexion, 'Electrico')  →  ['Raichu', 'Luxray']\n  el_mas_fuerte(conexion)          →  'Raichu'",
+      "starter": "def por_tipo(conexion, tipo):\n    \n\ndef el_mas_fuerte(conexion):\n    ",
+      "tests": ["test_por_tipo_y_fuerte"]
+    },
+    {
+      "id": "actualizar_y_borrar",
+      "titulo": "4 · Actualizar y borrar (final)",
+      "consigna": "Escribí `actualizar_nivel(conexion, nombre, nuevo_nivel)` que actualice el nivel de un Pokémon.\n\nEscribí también `borrar(conexion, nombre)` que elimine un Pokémon de la tabla.\n\nEjemplos:\n  actualizar_nivel(conexion, 'Luxray', 50)\n  # Luxray ahora tiene nivel 50\n  borrar(conexion, 'Raichu')\n  # Raichu ya no está en la tabla",
+      "starter": "def actualizar_nivel(conexion, nombre, nuevo_nivel):\n    \n\ndef borrar(conexion, nombre):\n    ",
+      "tests": ["test_actualizar_y_borrar"]
+    }
+  ]
+}

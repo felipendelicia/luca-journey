@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "analisis-integrador",
+  "region": "johto",
+  "titulo": "Líder Clair: El análisis del Dragón",
+  "lider": "Clair",
+  "premio": 248,
+  "intro": "Clair es la líder más poderosa de Johto. Para vencerla tenés que hacer un análisis completo: armar el DataFrame, filtrar, agrupar y resumir. ¡Derrotá a Clair!",
+  "preamble": "import pandas as pd\n\nDRAGONES = pd.DataFrame({\n    \"nombre\":    [\"Dratini\",  \"Dragonair\", \"Dragonite\", \"Kingdra\",  \"Seadra\",  \"Horsea\",  \"Gyarados\"],\n    \"tipo\":      [\"Dragón\",   \"Dragón\",    \"Dragón\",    \"Agua\",     \"Agua\",    \"Agua\",    \"Agua\"],\n    \"nivel\":     [20,         35,          55,          40,         28,        15,        45],\n    \"hp\":        [41,         61,          91,          75,         55,        30,        95],\n    \"victorias\": [3,          8,           20,          14,         6,         1,         18],\n})",
+  "packages": ["pandas"],
+  "pasos": [
+    {
+      "id": "filtrar_elite",
+      "titulo": "1 · Filtrar la élite",
+      "consigna": "Arriba (en 📦 Código base) tenés el DataFrame DRAGONES con el equipo de Clair.\n\nEscribí la función filtrar_elite(df, nivel_minimo) que devuelve un DataFrame con los Pokémon cuyo nivel es mayor o igual al mínimo, ordenados de mayor a menor nivel.\n\nEjemplos:\n  filtrar_elite(DRAGONES, 35)\n      →  DataFrame con Dragonite (55), Gyarados (45), Kingdra (40), Dragonair (35), en ese orden",
+      "starter": "def filtrar_elite(df, nivel_minimo):\n    ",
+      "tests": ["test_filtrar_elite"]
+    },
+    {
+      "id": "resumen_por_tipo",
+      "titulo": "2 · Resumen por tipo",
+      "consigna": "Escribí la función resumen_por_tipo(df) que devuelve un diccionario donde cada clave es un tipo y el valor es otro diccionario con: \"cantidad\", \"nivel_promedio\" (float redondeado a 1 decimal) y \"victorias_totales\" (int).\n\nEjemplos:\n  resumen_por_tipo(DRAGONES)[\"Dragón\"]\n      →  {\"cantidad\": 3, \"nivel_promedio\": 36.7, \"victorias_totales\": 31}\n  resumen_por_tipo(DRAGONES)[\"Agua\"]\n      →  {\"cantidad\": 4, \"nivel_promedio\": 32.0, \"victorias_totales\": 39}",
+      "starter": "def resumen_por_tipo(df):\n    ",
+      "tests": ["test_resumen_por_tipo"]
+    },
+    {
+      "id": "mvp",
+      "titulo": "3 · MVP del equipo",
+      "consigna": "Escribí la función mvp(df) que devuelve el nombre del Pokémon con más victorias (str). Si hay empate, devolvé el que aparece primero en el DataFrame.\n\nEjemplos:\n  mvp(DRAGONES)  →  \"Dragonite\"  (20 victorias, el máximo)",
+      "starter": "def mvp(df):\n    ",
+      "tests": ["test_mvp"]
+    },
+    {
+      "id": "reporte_final",
+      "titulo": "4 · Reporte final (final)",
+      "consigna": "Integrá todo: escribí reporte_final(df) que devuelve un diccionario con:\n- \"elite\": lista de nombres de los Pokémon de nivel >= 35 (de mayor a menor nivel).\n- \"mvp\": nombre del Pokémon con más victorias.\n- \"tipo_dominante\": el tipo con más victorias totales.\n- \"victoria_rate\": victorias totales dividido cantidad de Pokémon, redondeado a 2 decimales (float).\n\nEjemplos:\n  reporte_final(DRAGONES)\n      →  {\n           \"elite\": [\"Dragonite\", \"Gyarados\", \"Kingdra\", \"Dragonair\"],\n           \"mvp\": \"Dragonite\",\n           \"tipo_dominante\": \"Agua\",\n           \"victoria_rate\": 10.0\n         }",
+      "starter": "def reporte_final(df):\n    ",
+      "tests": ["test_reporte_final"]
+    }
+  ]
+}

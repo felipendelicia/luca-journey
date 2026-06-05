@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "assert-afirmaciones",
+  "region": "kalos",
+  "titulo": "Líder Ramos: Afirmaciones de batalla",
+  "lider": "Ramos",
+  "premio": 659,
+  "intro": "Ramos es un jardinero sabio y líder del gimnasio de Coumarine. Sus Pokémon planta crecen con paciencia y reglas claras. En programación, assert sirve para afirmar que algo DEBE ser verdad: si no lo es, el programa avisa inmediatamente. ¡Derrotá a Ramos!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "verificar_positivo",
+      "titulo": "1 · Verificar positivo",
+      "consigna": "Escribí la función verificar_positivo(n) que use assert para asegurarse de que n es mayor a 0.\nSi la afirmación falla, Python lanzará AssertionError automáticamente.\nSi pasa, devolvá n.\n\nEjemplos:\n  verificar_positivo(5)   →  5\n  verificar_positivo(1)   →  1\n  verificar_positivo(0)   →  lanza AssertionError\n  verificar_positivo(-3)  →  lanza AssertionError",
+      "starter": "def verificar_positivo(n):\n    ",
+      "tests": ["test_verificar_positivo"]
+    },
+    {
+      "id": "verificar_lista",
+      "titulo": "2 · Verificar lista no vacía",
+      "consigna": "Escribí la función verificar_lista(lista) que use assert para asegurarse de que la lista no está vacía.\nSi la afirmación falla, Python lanzará AssertionError.\nSi pasa, devolvá el primer elemento de la lista.\n\nEjemplos:\n  verificar_lista([10, 20, 30])  →  10\n  verificar_lista([\"pikachu\"])   →  \"pikachu\"\n  verificar_lista([])             →  lanza AssertionError",
+      "starter": "def verificar_lista(lista):\n    ",
+      "tests": ["test_verificar_lista"]
+    },
+    {
+      "id": "calcular_promedio",
+      "titulo": "3 · Calcular promedio con assert",
+      "consigna": "Escribí la función calcular_promedio(valores) que calcule el promedio de una lista de números.\nUsá assert para garantizar que la lista no esté vacía antes de calcular.\nDevolvá el promedio como float.\n\nEjemplos:\n  calcular_promedio([10, 20, 30])  →  20.0\n  calcular_promedio([5, 5])        →  5.0\n  calcular_promedio([])            →  lanza AssertionError",
+      "starter": "def calcular_promedio(valores):\n    ",
+      "tests": ["test_calcular_promedio"]
+    },
+    {
+      "id": "resumen_equipo",
+      "titulo": "4 · Resumen del equipo (final)",
+      "consigna": "Integrá todo: escribí resumen_equipo(niveles) que recibe una lista de niveles (enteros) y devuelve un dict con el resumen.\nUsá assert para garantizar que:\n1. La lista no esté vacía.\n2. Todos los niveles sean positivos (podés recorrer la lista y verificar cada uno).\n\nDevolvá: {\"cantidad\": <largo>, \"promedio\": <promedio float>, \"max\": <máximo>, \"min\": <mínimo>}.\n\nEjemplos:\n  resumen_equipo([10, 20, 30])  →  {\"cantidad\": 3, \"promedio\": 20.0, \"max\": 30, \"min\": 10}\n  resumen_equipo([])             →  lanza AssertionError\n  resumen_equipo([5, -1, 10])   →  lanza AssertionError",
+      "starter": "def resumen_equipo(niveles):\n    ",
+      "tests": ["test_resumen_equipo"]
+    }
+  ]
+}

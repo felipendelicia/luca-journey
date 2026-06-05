@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "poo-introduccion",
+  "region": "kanto",
+  "titulo": "Líder Sabrina: Pokémon en clases",
+  "lider": "Sabrina",
+  "premio": 132,
+  "intro": "Sabrina usa sus poderes psíquicos para entender la estructura de las cosas. En este proyecto vas a modelar Pokémon con clases: atributos, métodos y todo lo que hace a un objeto. ¡Derrotá a Sabrina!",
+  "preamble": "# Datos de ejemplo para los tests\nDATA = [\n    {\"nombre\": \"Abra\",    \"tipo\": \"psíquico\", \"nivel\": 10},\n    {\"nombre\": \"Kadabra\", \"tipo\": \"psíquico\", \"nivel\": 30},\n    {\"nombre\": \"Gengar\",  \"tipo\": \"fantasma\", \"nivel\": 25},\n]",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "clase_pokemon",
+      "titulo": "1 · La clase Pokémon",
+      "consigna": "Arriba (en 📦 Código base) tenés DATA, una lista de dicts con info de Pokémon.\n\nCreá la clase Pokemon con un constructor __init__ que reciba nombre, tipo y nivel, y los guarde como atributos de instancia.\n\nEjemplos:\n  p = Pokemon(\"Pikachu\", \"eléctrico\", 10)\n  p.nombre  →  \"Pikachu\"\n  p.tipo    →  \"eléctrico\"\n  p.nivel   →  10",
+      "starter": "class Pokemon:\n    def __init__(self, nombre, tipo, nivel):\n        ",
+      "tests": ["test_clase_pokemon"]
+    },
+    {
+      "id": "metodo_presentar",
+      "titulo": "2 · Método presentar",
+      "consigna": "Agregá a la clase Pokemon el método presentar() que devuelva un string con el nombre, el tipo y el nivel del Pokémon.\n\nFormato: \"Soy <nombre>, de tipo <tipo>. Nivel: <nivel>.\"\n\nEjemplos:\n  Pokemon(\"Pikachu\", \"eléctrico\", 10).presentar()\n  →  \"Soy Pikachu, de tipo eléctrico. Nivel: 10.\"\n\n  Pokemon(\"Charizard\", \"fuego\", 36).presentar()\n  →  \"Soy Charizard, de tipo fuego. Nivel: 36.\"",
+      "starter": "    def presentar(self):\n        ",
+      "tests": ["test_metodo_presentar"]
+    },
+    {
+      "id": "metodo_subir_nivel",
+      "titulo": "3 · Subir de nivel",
+      "consigna": "Agregá a la clase Pokemon el método subir_nivel(cantidad) que sume la cantidad al nivel del Pokémon. El método no devuelve nada (modifica el objeto).\n\nEjemplos:\n  p = Pokemon(\"Bulbasaur\", \"planta\", 5)\n  p.subir_nivel(3)\n  p.nivel  →  8\n\n  p.subir_nivel(10)\n  p.nivel  →  18",
+      "starter": "    def subir_nivel(self, cantidad):\n        ",
+      "tests": ["test_metodo_subir_nivel"]
+    },
+    {
+      "id": "desde_dict",
+      "titulo": "4 · Desde diccionario (final)",
+      "consigna": "Escribí la función desde_dict(data) que reciba una lista de dicts (con claves \"nombre\", \"tipo\", \"nivel\") y devuelva una lista de objetos Pokemon.\n\nEjemplo:\n  pokemons = desde_dict(DATA)\n  pokemons[0].nombre  →  \"Abra\"\n  pokemons[0].tipo    →  \"psíquico\"\n  [p.nivel for p in pokemons]  →  [10, 30, 25]",
+      "starter": "def desde_dict(data):\n    ",
+      "tests": ["test_desde_dict"]
+    }
+  ]
+}

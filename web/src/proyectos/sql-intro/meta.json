@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "sql-intro",
+  "region": "sinnoh",
+  "titulo": "Líder Roark: Registro de la Mina",
+  "lider": "Roark",
+  "premio": 387,
+  "intro": "Roark excava en la Mina de Oreburgh y lleva un registro de todos los Pokémon que encuentra. Ayudalo a leer y consultar esos datos con SQL. ¡Derrotá a Roark!",
+  "preamble": "import sqlite3\n\nconexion = sqlite3.connect(':memory:')\nconexion.execute('CREATE TABLE pokemon (nombre TEXT, nivel INTEGER, tipo TEXT)')\nconexion.executemany('INSERT INTO pokemon VALUES (?, ?, ?)', [\n    ('Geodude',  11, 'Roca'),\n    ('Onix',     14, 'Roca'),\n    ('Machop',    8, 'Lucha'),\n    ('Zubat',     9, 'Veneno'),\n    ('Nosepass', 12, 'Roca'),\n])",
+  "packages": ["sqlite3"],
+  "pasos": [
+    {
+      "id": "todos_los_nombres",
+      "titulo": "1 · Todos los nombres",
+      "consigna": "En el 📦 Código base ya está la conexión con la tabla `pokemon` (columnas: `nombre`, `nivel`, `tipo`) y cinco Pokémon cargados.\n\nEscribí `todos_los_nombres(conexion)` que devuelva una lista con los nombres de todos los Pokémon de la tabla, en el orden en que aparecen.\n\nEjemplos:\n  todos_los_nombres(conexion)  →  ['Geodude', 'Onix', 'Machop', 'Zubat', 'Nosepass']",
+      "starter": "def todos_los_nombres(conexion):\n    ",
+      "tests": ["test_todos_los_nombres"]
+    },
+    {
+      "id": "cuantos_hay",
+      "titulo": "2 · ¿Cuántos hay?",
+      "consigna": "Escribí `cuantos_hay(conexion)` que devuelva la cantidad total de Pokémon en la tabla (un número entero).\n\nEjemplos:\n  cuantos_hay(conexion)  →  5",
+      "starter": "def cuantos_hay(conexion):\n    ",
+      "tests": ["test_cuantos_hay"]
+    },
+    {
+      "id": "nombres_y_niveles",
+      "titulo": "3 · Nombres y niveles",
+      "consigna": "Escribí `nombres_y_niveles(conexion)` que devuelva una lista de tuplas `(nombre, nivel)` para cada Pokémon, en el orden en que aparecen en la tabla.\n\nEjemplos:\n  nombres_y_niveles(conexion)  →  [('Geodude', 11), ('Onix', 14), ('Machop', 8), ('Zubat', 9), ('Nosepass', 12)]",
+      "starter": "def nombres_y_niveles(conexion):\n    ",
+      "tests": ["test_nombres_y_niveles"]
+    },
+    {
+      "id": "el_primero",
+      "titulo": "4 · El primero (final)",
+      "consigna": "Escribí `el_primero(conexion)` que devuelva el nombre del primer Pokémon de la tabla (el primero que se ingresó).\n\nEjemplos:\n  el_primero(conexion)  →  'Geodude'",
+      "starter": "def el_primero(conexion):\n    ",
+      "tests": ["test_el_primero"]
+    }
+  ]
+}

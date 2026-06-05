@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "ia-clasificacion",
+  "region": "unova",
+  "titulo": "Líder Burgh: Clasificar tipos",
+  "lider": "Burgh",
+  "premio": 501,
+  "intro": "Burgh es artista: categoriza todo con precisión. En Machine Learning, clasificar es predecir a qué categoría pertenece algo. Construí un clasificador que adivine el tipo de un Pokémon por sus stats. ¡Derrotá a Burgh!",
+  "preamble": "import numpy as np\n# Dataset: [ataque, defensa, velocidad] → tipo (0=Fuego, 1=Agua, 2=Planta)\n# Fuego: ataque alto, defensa baja, velocidad alta\n# Agua: ataque bajo, defensa muy alta, velocidad baja\n# Planta: ataque medio, defensa media, velocidad media\nX_DATOS = np.array([\n    [84, 43, 78],\n    [90, 55, 90],\n    [72, 38, 70],\n    [80, 48, 80],\n    [88, 60, 85],\n    [40, 90, 30],\n    [48, 95, 25],\n    [35, 85, 28],\n    [52, 88, 32],\n    [44, 78, 22],\n    [58, 62, 45],\n    [62, 65, 40],\n    [55, 58, 42],\n    [65, 70, 38],\n    [50, 55, 48],\n])\nY_DATOS = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2])",
+  "packages": ["numpy", "scikit-learn"],
+  "pasos": [
+    {
+      "id": "entrenar_clasificador",
+      "titulo": "1 · Entrenar el clasificador",
+      "consigna": "Arriba (en 📦 Código base) tenés X_DATOS e Y_DATOS: stats de Pokémon y su tipo.\n\nEscribí entrenar_clasificador(X, y) que entrene un KNN con 3 vecinos y devuelva el modelo listo para predecir.\n\nEjemplos:\n  modelo = entrenar_clasificador(X_DATOS, Y_DATOS)\n  type(modelo).__name__  →  'KNeighborsClassifier'",
+      "starter": "from sklearn.neighbors import KNeighborsClassifier\n\ndef entrenar_clasificador(X, y):\n    ",
+      "tests": ["test_entrenar_clasificador"]
+    },
+    {
+      "id": "clasificar",
+      "titulo": "2 · Clasificar un Pokémon",
+      "consigna": "Escribí clasificar(modelo, fila) que reciba un modelo entrenado y una fila de stats, y devuelva el tipo predicho como int.\n\nEjemplos:\n  modelo = entrenar_clasificador(X_DATOS, Y_DATOS)\n  clasificar(modelo, [84, 43, 78])  →  0   (Fuego)\n  clasificar(modelo, [40, 90, 30])  →  1   (Agua)",
+      "starter": "def clasificar(modelo, fila):\n    ",
+      "tests": ["test_clasificar"]
+    },
+    {
+      "id": "clasificar_varios",
+      "titulo": "3 · Clasificar varios Pokémon",
+      "consigna": "Escribí clasificar_varios(modelo, filas) que clasifique una lista de filas y devuelva la lista de tipos predichos (ints).\n\nEjemplos:\n  modelo = entrenar_clasificador(X_DATOS, Y_DATOS)\n  clasificar_varios(modelo, [[84, 43, 78], [40, 90, 30], [58, 62, 45]])\n  →  [0, 1, 2]",
+      "starter": "def clasificar_varios(modelo, filas):\n    ",
+      "tests": ["test_clasificar_varios"]
+    },
+    {
+      "id": "tipo_nombre",
+      "titulo": "4 · Tipo con nombre (final)",
+      "consigna": "Integrá todo: escribí tipo_nombre(X_train, y_train, stats) que entrene un KNN(3) con los datos, clasifique las stats recibidas y devuelva el nombre del tipo como string (0 → 'Fuego', 1 → 'Agua', 2 → 'Planta').\n\nEjemplos:\n  tipo_nombre(X_DATOS, Y_DATOS, [84, 43, 78])  →  'Fuego'\n  tipo_nombre(X_DATOS, Y_DATOS, [40, 90, 30])  →  'Agua'\n  tipo_nombre(X_DATOS, Y_DATOS, [58, 62, 45])  →  'Planta'",
+      "starter": "NOMBRES_TIPO = {0: 'Fuego', 1: 'Agua', 2: 'Planta'}\n\ndef tipo_nombre(X_train, y_train, stats):\n    ",
+      "tests": ["test_tipo_nombre"]
+    }
+  ]
+}

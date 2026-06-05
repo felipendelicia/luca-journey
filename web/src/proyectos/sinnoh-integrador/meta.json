@@ -1,0 +1,48 @@
+{
+  "tipo": "integrador",
+  "tema": "sinnoh-integrador",
+  "region": "sinnoh",
+  "titulo": "Integrador de Sinnoh: La Pokédex Completa",
+  "lider": "Liga de Sinnoh",
+  "premio": 483,
+  "intro": "Llegaste al final de Sinnoh. El Gran Campeón Cynthia te desafía a construir una Pokédex completa en SQLite desde cero: diseñar la base de datos, cargar datos, hacer consultas avanzadas con GROUP BY y relacionar tablas con JOIN. ¡Demostrá todo lo que aprendiste!",
+  "preamble": "import sqlite3",
+  "packages": ["sqlite3"],
+  "pasos": [
+    {
+      "id": "disenar_base",
+      "titulo": "1 · Diseñar la base",
+      "consigna": "Empezamos desde cero. Escribí `crear_base()` que cree una base de datos en memoria con DOS tablas:\n\n- `tipos` (tipo TEXT, debilidad TEXT) — guarda el tipo y su debilidad.\n- `pokemon` (nombre TEXT, tipo TEXT, nivel INTEGER) — guarda los Pokémon.\n\nDevolvé la conexión.\n\nEjemplos:\n  con = crear_base()\n  # con tiene las tablas 'tipos' y 'pokemon' vacías",
+      "starter": "def crear_base():\n    ",
+      "tests": ["test_crear_base"]
+    },
+    {
+      "id": "cargar_datos",
+      "titulo": "2 · Cargar datos",
+      "consigna": "Escribí `cargar_datos(conexion)` que inserte los siguientes datos en las tablas:\n\nEn `tipos`:\n- ('Agua', 'Planta')\n- ('Fuego', 'Agua')\n- ('Planta', 'Fuego')\n- ('Dragon', 'Hielo')\n- ('Psiquico', 'Siniestro')\n\nEn `pokemon`:\n- ('Piplup', 'Agua', 15)\n- ('Empoleon', 'Agua', 58)\n- ('Chimchar', 'Fuego', 14)\n- ('Infernape', 'Fuego', 62)\n- ('Turtwig', 'Planta', 13)\n- ('Torterra', 'Planta', 55)\n- ('Garchomp', 'Dragon', 66)\n- ('Alakazam', 'Psiquico', 54)\n\nNo devuelvas nada (None).\n\nEjemplos:\n  cargar_datos(conexion)\n  # 5 filas en tipos, 8 en pokemon",
+      "starter": "def cargar_datos(conexion):\n    ",
+      "tests": ["test_cargar_datos"]
+    },
+    {
+      "id": "estadisticas",
+      "titulo": "3 · Estadísticas con GROUP BY",
+      "consigna": "Escribí dos funciones:\n\n`promedio_por_tipo(conexion)` → devuelve un dict `{tipo: promedio_de_nivel}` con el nivel promedio de los Pokémon de cada tipo.\n\n`el_mas_fuerte_por_tipo(conexion)` → devuelve un dict `{tipo: nombre_del_mas_fuerte}` con el Pokémon de mayor nivel de cada tipo.\n\nEjemplos (con los datos del paso 2):\n  promedio_por_tipo(conexion)  →  {'Agua': 36.5, 'Fuego': 38.0, 'Planta': 34.0, 'Dragon': 66.0, 'Psiquico': 54.0}\n  el_mas_fuerte_por_tipo(conexion)  →  {'Agua': 'Empoleon', 'Fuego': 'Infernape', 'Planta': 'Torterra', 'Dragon': 'Garchomp', 'Psiquico': 'Alakazam'}",
+      "starter": "def promedio_por_tipo(conexion):\n    \n\ndef el_mas_fuerte_por_tipo(conexion):\n    ",
+      "tests": ["test_estadisticas"]
+    },
+    {
+      "id": "debilidades_join",
+      "titulo": "4 · Debilidades con JOIN",
+      "consigna": "Escribí dos funciones que combinen las tablas `pokemon` y `tipos` con JOIN:\n\n`con_debilidad(conexion)` → devuelve una lista de tuplas `(nombre, debilidad)` para cada Pokémon, en el orden de inserción.\n\n`mas_debiles_a(conexion, elemento)` → devuelve los nombres de los Pokémon débiles a ese elemento, ordenados por nivel descendente.\n\nEjemplos (con los datos del paso 2):\n  con_debilidad(conexion)[0]  →  ('Piplup', 'Planta')\n  mas_debiles_a(conexion, 'Agua')  →  ['Infernape', 'Chimchar']",
+      "starter": "def con_debilidad(conexion):\n    \n\ndef mas_debiles_a(conexion, elemento):\n    ",
+      "tests": ["test_debilidades_join"]
+    },
+    {
+      "id": "buscar_y_actualizar",
+      "titulo": "5 · Buscar y actualizar (final)",
+      "consigna": "Escribí dos funciones para completar el CRUD:\n\n`buscar(conexion, nombre)` → devuelve la fila del Pokémon como tupla `(nombre, tipo, nivel)`, o `None` si no existe.\n\n`evolucionar(conexion, nombre, nuevo_nombre, nuevo_nivel)` → actualiza el nombre y el nivel de un Pokémon (simula una evolución), y hace commit.\n\nEjemplos:\n  buscar(conexion, 'Garchomp')   →  ('Garchomp', 'Dragon', 66)\n  buscar(conexion, 'Mew')        →  None\n  evolucionar(conexion, 'Chimchar', 'Monferno', 26)\n  buscar(conexion, 'Monferno')   →  ('Monferno', 'Fuego', 26)",
+      "starter": "def buscar(conexion, nombre):\n    \n\ndef evolucionar(conexion, nombre, nuevo_nombre, nuevo_nivel):\n    ",
+      "tests": ["test_buscar_y_actualizar"]
+    }
+  ]
+}

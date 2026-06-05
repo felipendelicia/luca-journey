@@ -1,0 +1,48 @@
+{
+  "tipo": "integrador",
+  "tema": "johto-integrador",
+  "region": "johto",
+  "titulo": "Integrador de Johto: La Liga completa",
+  "lider": "Liga de Johto",
+  "premio": 249,
+  "intro": "Es el desafío final de Johto. Tenés que procesar los datos completos de la Liga: limpiar, normalizar con NumPy, agrupar con pandas y producir el informe final. ¡Completá la Liga de Johto!",
+  "preamble": "import numpy as np\nimport pandas as pd\n\nLIGA = pd.DataFrame({\n    \"nombre\":  [\"Pikachu\",  \"Raichu\",  \"Gengar\",   \"Alakazam\", \"Machamp\",  \"Steelix\",  \"Gyarados\", \"Dragonite\", \"Espeon\",   \"Umbreon\"],\n    \"tipo\":    [\"Eléctrico\",\"Eléctrico\",\"Fantasma\",\"Psíquico\",\"Pelea\",    \"Acero\",    \"Agua\",     \"Dragón\",   \"Psíquico\", \"Siniestro\"],\n    \"nivel\":   [25,         40,         38,         45,         42,         35,         45,         55,         38,         32],\n    \"hp\":      [35,         60,         60,         55,         90,         75,         95,         91,         65,         65],\n    \"ataque\":  [55,         90,         65,         50,         130,        85,         125,        134,        65,         65],\n    \"victorias\":[5,         12,         10,         15,         11,         8,          16,         20,         9,          7],\n})",
+  "packages": ["numpy", "pandas"],
+  "pasos": [
+    {
+      "id": "preparar_stats",
+      "titulo": "1 · Preparar stats con NumPy",
+      "consigna": "Arriba (en 📦 Código base) tenés el DataFrame LIGA con todos los Pokémon de la Liga de Johto.\n\nEscribí la función preparar_stats(df) que toma las columnas \"hp\" y \"ataque\" del DataFrame, las combina en una matriz 2D de NumPy (cada fila es un Pokémon, columna 0 = hp, columna 1 = ataque), y devuelve esa matriz.\n\nEjemplos:\n  mat = preparar_stats(LIGA)\n  mat.shape    →  (10, 2)\n  mat[0]       →  array([35, 55])   # hp y ataque de Pikachu\n  mat[-1]      →  array([65, 65])   # hp y ataque de Umbreon",
+      "starter": "def preparar_stats(df):\n    ",
+      "tests": ["test_preparar_stats"]
+    },
+    {
+      "id": "normalizar_columna",
+      "titulo": "2 · Normalizar una columna",
+      "consigna": "Escribí la función normalizar_columna(df, col) que toma la columna numérica indicada del DataFrame, la normaliza al rango 0.0–1.0 usando NumPy (fórmula: (x - min) / (max - min)) y devuelve el array normalizado.\n\nEjemplos:\n  normalizar_columna(LIGA, \"nivel\")\n      →  array de 10 valores entre 0.0 y 1.0, donde el mínimo (25) → 0.0 y el máximo (55) → 1.0\n  El valor de Pikachu (nivel 25) debe ser 0.0\n  El valor de Dragonite (nivel 55) debe ser 1.0",
+      "starter": "def normalizar_columna(df, col):\n    ",
+      "tests": ["test_normalizar_columna"]
+    },
+    {
+      "id": "ranking_por_tipo",
+      "titulo": "3 · Ranking por tipo",
+      "consigna": "Escribí la función ranking_por_tipo(df) que devuelve un DataFrame con una fila por tipo, que incluye: \"tipo\", \"cantidad\" (int), \"nivel_max\" (int) y \"victorias_totales\" (int). El resultado debe estar ordenado de mayor a menor victorias_totales.\n\nEjemplos:\n  ranking_por_tipo(LIGA).iloc[0]\n      →  tipo=\"Psíquico\", cantidad=2, nivel_max=45, victorias_totales=24\n  La última fila debe ser el tipo con menos victorias totales.",
+      "starter": "def ranking_por_tipo(df):\n    ",
+      "tests": ["test_ranking_por_tipo"]
+    },
+    {
+      "id": "informe_liga",
+      "titulo": "4 · Informe de la Liga (final)",
+      "consigna": "Combiná todo: escribí informe_liga(df) que devuelve un diccionario con:\n- \"total_pokemon\": cantidad total de Pokémon (int).\n- \"nivel_promedio\": promedio de nivel redondeado a 2 decimales (float).\n- \"mvp\": nombre del Pokémon con más victorias (str).\n- \"tipo_dominante\": tipo con más victorias totales (str).\n- \"stats_normalizadas\": array de numpy con los niveles normalizados (misma fórmula que normalizar_columna).\n\nEjemplos:\n  informe = informe_liga(LIGA)\n  informe[\"total_pokemon\"]   →  10\n  informe[\"nivel_promedio\"]  →  39.5\n  informe[\"mvp\"]             →  \"Dragonite\"\n  informe[\"tipo_dominante\"]  →  \"Psíquico\"\n  informe[\"stats_normalizadas\"][0]  →  0.0   # Pikachu nivel 25, normalizado = 0.0",
+      "starter": "def informe_liga(df):\n    ",
+      "tests": ["test_informe_liga"]
+    },
+    {
+      "id": "reporte_texto",
+      "titulo": "5 · Reporte en texto (bonus)",
+      "consigna": "Escribí la función reporte_texto(df) que usa informe_liga y devuelve un string con el reporte formateado:\n\n\"Liga de Johto — Informe\\nTotal: <N> Pokémon\\nNivel promedio: <X>\\nMVP: <nombre>\\nTipo dominante: <tipo>\"\n\nEjemplos:\n  reporte_texto(LIGA)\n      →  \"Liga de Johto — Informe\\nTotal: 10 Pokémon\\nNivel promedio: 39.5\\nMVP: Dragonite\\nTipo dominante: Psíquico\"",
+      "starter": "def reporte_texto(df):\n    ",
+      "tests": ["test_reporte_texto"]
+    }
+  ]
+}

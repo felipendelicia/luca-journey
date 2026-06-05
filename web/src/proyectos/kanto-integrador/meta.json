@@ -1,0 +1,48 @@
+{
+  "tipo": "integrador",
+  "tema": "kanto-integrador",
+  "region": "kanto",
+  "titulo": "Integrador de Kanto: La Liga Pokémon",
+  "lider": "Liga Pokémon",
+  "premio": 150,
+  "intro": "Lo lograste: llegaste a la Liga Pokémon. Ahora vas a integrar todo lo que aprendiste — funciones, listas, dicts y clases — para construir el sistema que gestiona los torneos de la Liga. ¡El desafío final de Kanto!",
+  "preamble": "# Datos del torneo\nENTRENADORES = [\n    {\"nombre\": \"Ash\",     \"insignias\": 8, \"pokemones\": [{\"nombre\": \"Pikachu\",    \"nivel\": 55}, {\"nombre\": \"Charizard\",  \"nivel\": 60}]},\n    {\"nombre\": \"Gary\",    \"insignias\": 8, \"pokemones\": [{\"nombre\": \"Blastoise\",  \"nivel\": 58}, {\"nombre\": \"Nidoking\",   \"nivel\": 52}]},\n    {\"nombre\": \"Misty\",   \"insignias\": 5, \"pokemones\": [{\"nombre\": \"Starmie\",    \"nivel\": 42}, {\"nombre\": \"Psyduck\",    \"nivel\": 28}]},\n    {\"nombre\": \"Brock\",   \"insignias\": 4, \"pokemones\": [{\"nombre\": \"Onix\",       \"nivel\": 35}, {\"nombre\": \"Geodude\",    \"nivel\": 18}]},\n    {\"nombre\": \"Jessie\",  \"insignias\": 2, \"pokemones\": [{\"nombre\": \"Arbok\",      \"nivel\": 24}, {\"nombre\": \"Wobbuffet\", \"nivel\": 22}]},\n]",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "clasificados",
+      "titulo": "1 · Entrenadores clasificados",
+      "consigna": "Arriba (en 📦 Código base) tenés ENTRENADORES, una lista de dicts. Cada entrenador tiene nombre, cantidad de insignias y una lista de pokemones (cada uno con nombre y nivel).\n\nEscribí clasificados(entrenadores, minimo) que devuelva solo los entrenadores que tengan al menos minimo insignias, ordenados de mayor a menor cantidad de insignias.\n\nEjemplos:\n  clasificados(ENTRENADORES, 5)\n  →  [Ash (8), Gary (8), Misty (5)]  (en ese orden)\n\n  clasificados(ENTRENADORES, 8)\n  →  [Ash (8), Gary (8)]",
+      "starter": "def clasificados(entrenadores, minimo):\n    ",
+      "tests": ["test_clasificados"]
+    },
+    {
+      "id": "nivel_equipo",
+      "titulo": "2 · Nivel del equipo",
+      "consigna": "Escribí nivel_promedio(entrenador) que calcule el nivel promedio del equipo de un entrenador (como float).\n\nY nivel_maximo(entrenador) que devuelva el nivel del Pokémon más alto del equipo.\n\nEjemplos:\n  ash = ENTRENADORES[0]  # Pikachu nv.55, Charizard nv.60\n  nivel_promedio(ash)   →  57.5\n  nivel_maximo(ash)     →  60\n\n  brock = ENTRENADORES[3]  # Onix nv.35, Geodude nv.18\n  nivel_promedio(brock)  →  26.5\n  nivel_maximo(brock)    →  35",
+      "starter": "def nivel_promedio(entrenador):\n    \n\ndef nivel_maximo(entrenador):\n    ",
+      "tests": ["test_nivel_equipo"]
+    },
+    {
+      "id": "clase_entrenador",
+      "titulo": "3 · Clase Entrenador",
+      "consigna": "Creá la clase Entrenador que reciba un dict como los de ENTRENADORES y almacene nombre, insignias y pokemones como atributos.\n\nAgregá el método es_finalista() que devuelva True si tiene 8 insignias, y __str__ que devuelva \"<nombre> [<insignias> insignias]\".\n\nEjemplos:\n  e = Entrenador({\"nombre\": \"Ash\", \"insignias\": 8, \"pokemones\": [...]})\n  e.nombre        →  \"Ash\"\n  e.insignias     →  8\n  e.es_finalista()  →  True\n  str(e)          →  \"Ash [8 insignias]\"\n\n  e2 = Entrenador({\"nombre\": \"Misty\", \"insignias\": 5, \"pokemones\": [...]})\n  e2.es_finalista()  →  False\n  str(e2)            →  \"Misty [5 insignias]\"",
+      "starter": "class Entrenador:\n    def __init__(self, datos):\n        \n\n    def es_finalista(self):\n        \n\n    def __str__(self):\n        ",
+      "tests": ["test_clase_entrenador"]
+    },
+    {
+      "id": "ranking",
+      "titulo": "4 · Ranking del torneo",
+      "consigna": "Usando todo lo anterior, escribí la función ranking(entrenadores) que:\n1. Convierte cada dict de entrenadores en un objeto Entrenador.\n2. Filtra solo los finalistas (8 insignias).\n3. Los ordena de mayor a menor según el nivel máximo de su equipo.\n4. Devuelve la lista de objetos Entrenador ordenada.\n\nEjemplos:\n  resultado = ranking(ENTRENADORES)\n  # Ash tiene Charizard nv.60 (máximo=60), Gary tiene Blastoise nv.58 (máximo=58)\n  [str(e) for e in resultado]  →  [\"Ash [8 insignias]\", \"Gary [8 insignias]\"]",
+      "starter": "def ranking(entrenadores):\n    ",
+      "tests": ["test_ranking"]
+    },
+    {
+      "id": "campeon",
+      "titulo": "5 · ¡El Campeón! (final)",
+      "consigna": "Escribí campeon(entrenadores) que use ranking() y devuelva el nombre del primer clasificado (el de mayor nivel máximo entre los finalistas).\n\nSi no hay finalistas (nadie con 8 insignias), devolvé None.\n\nEjemplos:\n  campeon(ENTRENADORES)  →  \"Ash\"\n\n  campeon([{\"nombre\": \"Jessie\", \"insignias\": 2, \"pokemones\": [{\"nombre\": \"Arbok\", \"nivel\": 24}]}])\n  →  None",
+      "starter": "def campeon(entrenadores):\n    ",
+      "tests": ["test_campeon"]
+    }
+  ]
+}

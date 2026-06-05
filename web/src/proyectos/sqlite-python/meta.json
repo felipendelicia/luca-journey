@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "sqlite-python",
+  "region": "sinnoh",
+  "titulo": "Líder Candice: Archivo del Hielo",
+  "lider": "Candice",
+  "premio": 474,
+  "intro": "Candice lleva un registro de los Pokémon de Hielo en Snowpoint City usando Python directamente. Ayudala a manejar la base de datos desde código: conectarte, crear cursores, insertar y buscar. ¡Derrotá a Candice!",
+  "preamble": "import sqlite3",
+  "packages": ["sqlite3"],
+  "pasos": [
+    {
+      "id": "crear_conexion",
+      "titulo": "1 · Crear la conexión",
+      "consigna": "En el 📦 Código base tenés `import sqlite3`.\n\nEscribí `crear_conexion()` que cree una base de datos en memoria, cree la tabla `pokemon` con columnas `nombre` (TEXT) y `nivel` (INTEGER), y devuelva la conexión.\n\nEjemplos:\n  con = crear_conexion()\n  # con es una conexión sqlite3 con la tabla 'pokemon' ya creada",
+      "starter": "def crear_conexion():\n    ",
+      "tests": ["test_crear_conexion"]
+    },
+    {
+      "id": "guardar",
+      "titulo": "2 · Guardar con commit",
+      "consigna": "Escribí `guardar(conexion, nombre, nivel)` que inserte un Pokémon en la tabla `pokemon` y confirme los cambios con `commit()`.\n\nEjemplos:\n  guardar(conexion, 'Snover', 40)\n  # Snover queda guardado en la tabla",
+      "starter": "def guardar(conexion, nombre, nivel):\n    ",
+      "tests": ["test_guardar"]
+    },
+    {
+      "id": "cantidad",
+      "titulo": "3 · Contar con cursor",
+      "consigna": "Escribí `cantidad(conexion)` que devuelva la cantidad de Pokémon en la tabla usando un cursor explícito y `fetchone()`.\n\nEjemplos:\n  # Si guardaste 2 Pokémon:\n  cantidad(conexion)  →  2",
+      "starter": "def cantidad(conexion):\n    ",
+      "tests": ["test_cantidad"]
+    },
+    {
+      "id": "buscar",
+      "titulo": "4 · Buscar o None (final)",
+      "consigna": "Escribí `buscar(conexion, nombre)` que devuelva la fila del Pokémon con ese nombre como tupla `(nombre, nivel)`, o `None` si no existe.\n\nEjemplos:\n  buscar(conexion, 'Snover')   →  ('Snover', 40)\n  buscar(conexion, 'Mew')      →  None",
+      "starter": "def buscar(conexion, nombre):\n    ",
+      "tests": ["test_buscar"]
+    }
+  ]
+}

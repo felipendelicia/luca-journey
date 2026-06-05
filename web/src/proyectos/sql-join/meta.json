@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "sql-join",
+  "region": "sinnoh",
+  "titulo": "Líder Byron: Debilidades del Castillo",
+  "lider": "Byron",
+  "premio": 462,
+  "intro": "Byron defiende el Canalave Gym con Pokémon de Acero. Para planear su estrategia, necesita cruzar los datos de sus Pokémon con la tabla de debilidades por tipo. Ayudalo a combinar tablas con JOIN. ¡Derrotá a Byron!",
+  "preamble": "import sqlite3\n\nconexion = sqlite3.connect(':memory:')\nconexion.execute('CREATE TABLE pokemon (nombre TEXT, tipo TEXT)')\nconexion.execute('CREATE TABLE tipos (tipo TEXT, debilidad TEXT)')\nconexion.executemany('INSERT INTO pokemon VALUES (?, ?)', [\n    ('Bronzor',   'Acero'),\n    ('Steelix',   'Acero'),\n    ('Magneton',  'Acero'),\n    ('Bastiodon', 'Acero'),\n])\nconexion.executemany('INSERT INTO tipos VALUES (?, ?)', [\n    ('Acero',    'Fuego'),\n    ('Agua',     'Planta'),\n    ('Planta',   'Fuego'),\n    ('Fuego',    'Agua'),\n])",
+  "packages": ["sqlite3"],
+  "pasos": [
+    {
+      "id": "con_debilidad",
+      "titulo": "1 · Pokémon con su debilidad",
+      "consigna": "En el 📦 Código base ya están las tablas `pokemon` (nombre, tipo) y `tipos` (tipo, debilidad), relacionadas por la columna `tipo`.\n\nEscribí `con_debilidad(conexion)` que devuelva una lista de tuplas `(nombre, debilidad)` combinando ambas tablas.\n\nEjemplos:\n  con_debilidad(conexion)  →  [('Bronzor', 'Fuego'), ('Steelix', 'Fuego'), ('Magneton', 'Fuego'), ('Bastiodon', 'Fuego')]",
+      "starter": "def con_debilidad(conexion):\n    ",
+      "tests": ["test_con_debilidad"]
+    },
+    {
+      "id": "debilidad_de",
+      "titulo": "2 · Debilidad de uno",
+      "consigna": "Escribí `debilidad_de(conexion, nombre)` que devuelva la debilidad (string) del Pokémon con ese nombre.\n\nEjemplos:\n  debilidad_de(conexion, 'Steelix')   →  'Fuego'\n  debilidad_de(conexion, 'Magneton')  →  'Fuego'",
+      "starter": "def debilidad_de(conexion, nombre):\n    ",
+      "tests": ["test_debilidad_de"]
+    },
+    {
+      "id": "nombres_y_tipos",
+      "titulo": "3 · Nombres y tipos",
+      "consigna": "Escribí `nombres_y_tipos(conexion)` que devuelva una lista de tuplas `(nombre, tipo)` con todos los Pokémon, en el orden en que aparecen en la tabla `pokemon`.\n\nEjemplos:\n  nombres_y_tipos(conexion)  →  [('Bronzor', 'Acero'), ('Steelix', 'Acero'), ('Magneton', 'Acero'), ('Bastiodon', 'Acero')]",
+      "starter": "def nombres_y_tipos(conexion):\n    ",
+      "tests": ["test_nombres_y_tipos"]
+    },
+    {
+      "id": "debiles_a",
+      "titulo": "4 · Débiles a un elemento (final)",
+      "consigna": "Escribí `debiles_a(conexion, elemento)` que devuelva los nombres de los Pokémon cuyo tipo es débil al elemento dado, en el orden en que aparecen en la tabla `pokemon`.\n\nEjemplos:\n  debiles_a(conexion, 'Fuego')  →  ['Bronzor', 'Steelix', 'Magneton', 'Bastiodon']\n  debiles_a(conexion, 'Agua')   →  []",
+      "starter": "def debiles_a(conexion, elemento):\n    ",
+      "tests": ["test_debiles_a"]
+    }
+  ]
+}

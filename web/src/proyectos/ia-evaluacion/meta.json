@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "ia-evaluacion",
+  "region": "unova",
+  "titulo": "Líder Elesa: Evaluar un modelo",
+  "lider": "Elesa",
+  "premio": 522,
+  "intro": "Elesa, la supermodelo de la Nimbasa Gym, sabe que no basta con tener un look: hay que validar los resultados. Un modelo de ML vale por cuánto acierta. Aprendé a medir accuracy y a dividir bien los datos. ¡Derrotá a Elesa!",
+  "preamble": "import numpy as np\n# Dataset: [ataque, defensa, velocidad] → tipo (0=Fuego, 1=Agua, 2=Planta)\n# Clases bien separadas para resultados estables\nX_EVAL = np.array([\n    [85, 40, 80], [92, 50, 88], [70, 35, 72], [80, 45, 78], [88, 55, 85],\n    [78, 42, 75], [95, 48, 92], [68, 38, 68], [83, 52, 82], [76, 44, 70],\n    [38, 92, 28], [45, 98, 22], [32, 88, 30], [50, 90, 26], [42, 82, 24],\n    [48, 95, 20], [36, 85, 32], [55, 92, 18], [40, 88, 28], [44, 80, 25],\n    [58, 62, 44], [63, 66, 38], [54, 58, 46], [66, 68, 36], [52, 55, 50],\n    [60, 64, 42], [56, 60, 48], [64, 70, 34], [50, 52, 52], [62, 66, 40],\n])\nY_EVAL = np.array([0]*10 + [1]*10 + [2]*10)",
+  "packages": ["numpy", "scikit-learn"],
+  "pasos": [
+    {
+      "id": "calcular_precision",
+      "titulo": "1 · Calcular exactitud",
+      "consigna": "Arriba (en 📦 Código base) tenés X_EVAL e Y_EVAL: 30 Pokémon con sus stats y tipos.\n\nEscribí calcular_precision(y_real, y_pred) que reciba dos arrays (los tipos reales y los predichos) y devuelva la proporción de aciertos como float entre 0 y 1.\n\nEjemplos:\n  calcular_precision([0, 1, 1, 0], [0, 1, 0, 0])  →  0.75\n  calcular_precision([0, 1, 2], [0, 1, 2])         →  1.0\n  calcular_precision([0, 1, 2], [1, 0, 2])         →  0.333...",
+      "starter": "from sklearn.metrics import accuracy_score\n\ndef calcular_precision(y_real, y_pred):\n    ",
+      "tests": ["test_calcular_precision"]
+    },
+    {
+      "id": "dividir_y_evaluar",
+      "titulo": "2 · Dividir y evaluar",
+      "consigna": "Escribí dividir_y_evaluar(X, y) que divida los datos 50/50 (test_size=0.5, random_state=0), entrene un KNN(3) con el train y devuelva la exactitud sobre el test como float.\n\nEjemplos:\n  dividir_y_evaluar(X_EVAL, Y_EVAL)  →  1.0",
+      "starter": "from sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\n\ndef dividir_y_evaluar(X, y):\n    ",
+      "tests": ["test_dividir_y_evaluar"]
+    },
+    {
+      "id": "score_modelo",
+      "titulo": "3 · Score del modelo",
+      "consigna": "Escribí score_modelo(modelo, X_test, y_test) que devuelva el score de un modelo ya entrenado sobre datos de prueba. El score es equivalente a la exactitud.\n\nEjemplos:\n  from sklearn.neighbors import KNeighborsClassifier\n  modelo = KNeighborsClassifier(n_neighbors=1).fit(X_EVAL, Y_EVAL)\n  score_modelo(modelo, X_EVAL, Y_EVAL)  →  1.0",
+      "starter": "def score_modelo(modelo, X_test, y_test):\n    ",
+      "tests": ["test_score_modelo"]
+    },
+    {
+      "id": "evaluar_completo",
+      "titulo": "4 · Evaluación completa (final)",
+      "consigna": "Integrá todo: escribí evaluar_completo(X, y) que divida 70/30 (random_state=0), entrene KNN(3), prediga sobre el test y devuelva un dict con claves 'precision' (accuracy_score) y 'n_test' (cantidad de ejemplos de test, int).\n\nEjemplos:\n  resultado = evaluar_completo(X_EVAL, Y_EVAL)\n  resultado['n_test']    →  9\n  resultado['precision'] →  1.0",
+      "starter": "def evaluar_completo(X, y):\n    ",
+      "tests": ["test_evaluar_completo"]
+    }
+  ]
+}

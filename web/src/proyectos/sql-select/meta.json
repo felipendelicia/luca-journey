@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "sql-select",
+  "region": "sinnoh",
+  "titulo": "Líder Maylene: Ranking del Dojo",
+  "lider": "Maylene",
+  "premio": 393,
+  "intro": "Maylene entrena en el Dojo de Veilstone City y quiere ordenar a sus Pokémon por fuerza y filtrar los más preparados para la batalla. Ayudala a consultar los datos con WHERE y ORDER BY. ¡Derrotá a Maylene!",
+  "preamble": "import sqlite3\n\nconexion = sqlite3.connect(':memory:')\nconexion.execute('CREATE TABLE pokemon (nombre TEXT, nivel INTEGER, tipo TEXT)')\nconexion.executemany('INSERT INTO pokemon VALUES (?, ?, ?)', [\n    ('Meditite',  28, 'Lucha'),\n    ('Machoke',   27, 'Lucha'),\n    ('Lucario',   34, 'Lucha'),\n    ('Zubat',     18, 'Veneno'),\n    ('Geodude',   15, 'Roca'),\n])",
+  "packages": ["sqlite3"],
+  "pasos": [
+    {
+      "id": "de_tipo",
+      "titulo": "1 · Filtrar por tipo",
+      "consigna": "En el 📦 Código base ya está la conexión con la tabla `pokemon` y cinco Pokémon cargados.\n\nEscribí `de_tipo(conexion, tipo)` que devuelva una lista con los nombres de todos los Pokémon de ese tipo.\n\nEjemplos:\n  de_tipo(conexion, 'Lucha')   →  ['Meditite', 'Machoke', 'Lucario']\n  de_tipo(conexion, 'Roca')    →  ['Geodude']\n  de_tipo(conexion, 'Agua')    →  []",
+      "starter": "def de_tipo(conexion, tipo):\n    ",
+      "tests": ["test_de_tipo"]
+    },
+    {
+      "id": "fuertes",
+      "titulo": "2 · Los fuertes",
+      "consigna": "Escribí `fuertes(conexion, minimo)` que devuelva una lista con los nombres de los Pokémon cuyo nivel sea mayor o igual a `minimo`, ordenados de mayor a menor nivel.\n\nEjemplos:\n  fuertes(conexion, 27)  →  ['Lucario', 'Meditite', 'Machoke']\n  fuertes(conexion, 35)  →  []",
+      "starter": "def fuertes(conexion, minimo):\n    ",
+      "tests": ["test_fuertes"]
+    },
+    {
+      "id": "ordenados_por_nivel",
+      "titulo": "3 · Ordenar por nivel",
+      "consigna": "Escribí `ordenados_por_nivel(conexion)` que devuelva una lista con los nombres de todos los Pokémon, ordenados de mayor a menor nivel.\n\nEjemplos:\n  ordenados_por_nivel(conexion)  →  ['Lucario', 'Meditite', 'Machoke', 'Zubat', 'Geodude']",
+      "starter": "def ordenados_por_nivel(conexion):\n    ",
+      "tests": ["test_ordenados_por_nivel"]
+    },
+    {
+      "id": "top_tres",
+      "titulo": "4 · Top 3 (final)",
+      "consigna": "Escribí `top_tres(conexion)` que devuelva una lista con los nombres de los 3 Pokémon de mayor nivel, en orden descendente.\n\nEjemplos:\n  top_tres(conexion)  →  ['Lucario', 'Meditite', 'Machoke']",
+      "starter": "def top_tres(conexion):\n    ",
+      "tests": ["test_top_tres"]
+    }
+  ]
+}

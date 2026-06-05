@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "ia-clustering",
+  "region": "unova",
+  "titulo": "Líder Brycen: Clustering",
+  "lider": "Brycen",
+  "premio": 602,
+  "intro": "Brycen, el maestro del hielo, agrupa Pokémon por similitud sin etiquetas previas. En ML, esto se llama aprendizaje NO supervisado: el modelo encuentra grupos por su cuenta. Usamos KMeans para agrupar Pokémon por sus stats. ¡Derrotá a Brycen!",
+  "preamble": "import numpy as np\n# Dataset: [ataque, defensa] — sin etiquetas\n# Hay 3 grupos naturales: Físicos (alto ataque), Tanques (alta defensa), Equilibrados\nX_CLUSTER = np.array([\n    [90, 35], [85, 40], [95, 30], [88, 38], [92, 32],\n    [30, 90], [35, 88], [28, 95], [32, 92], [38, 85],\n    [55, 55], [58, 52], [52, 58], [60, 50], [50, 60],\n])",
+  "packages": ["numpy", "scikit-learn"],
+  "pasos": [
+    {
+      "id": "agrupar",
+      "titulo": "1 · Agrupar con KMeans",
+      "consigna": "Arriba (en 📦 Código base) tenés X_CLUSTER: 15 Pokémon con ataque y defensa, pero SIN etiquetas de tipo.\n\nEscribí agrupar(X, k) que agrupe los datos en k grupos usando KMeans con random_state=0 y n_init=10, y devuelva el modelo entrenado.\n\nEjemplos:\n  modelo = agrupar(X_CLUSTER, 3)\n  type(modelo).__name__  →  'KMeans'\n  modelo.n_clusters      →  3",
+      "starter": "from sklearn.cluster import KMeans\n\ndef agrupar(X, k):\n    ",
+      "tests": ["test_agrupar"]
+    },
+    {
+      "id": "etiquetas",
+      "titulo": "2 · Etiquetas de los grupos",
+      "consigna": "Escribí etiquetas(modelo) que devuelva a qué grupo fue asignado cada dato, como lista de ints.\n\nEjemplos:\n  modelo = agrupar(X_CLUSTER, 3)\n  labels = etiquetas(modelo)\n  len(labels)          →  15\n  labels.count(0) + labels.count(1) + labels.count(2)  →  15",
+      "starter": "def etiquetas(modelo):\n    ",
+      "tests": ["test_etiquetas"]
+    },
+    {
+      "id": "a_que_grupo",
+      "titulo": "3 · ¿A qué grupo va uno nuevo?",
+      "consigna": "Escribí a_que_grupo(modelo, fila) que reciba el modelo KMeans y una fila de stats, y devuelva el grupo asignado como int.\n\nEjemplos:\n  modelo = agrupar(X_CLUSTER, 3)\n  g1 = a_que_grupo(modelo, [90, 35])\n  g2 = a_que_grupo(modelo, [30, 90])\n  g3 = a_que_grupo(modelo, [55, 55])\n  # Los 3 deben pertenecer a grupos distintos\n  len({g1, g2, g3})  →  3",
+      "starter": "def a_que_grupo(modelo, fila):\n    ",
+      "tests": ["test_a_que_grupo"]
+    },
+    {
+      "id": "resumen_clusters",
+      "titulo": "4 · Resumen de los clusters (final)",
+      "consigna": "Integrá todo: escribí resumen_clusters(X, k) que agrupe los datos en k grupos y devuelva un dict con la cantidad de elementos en cada grupo. Las claves son los números de grupo (ints) y los valores son los conteos (ints).\n\nEjemplos:\n  resumen_clusters(X_CLUSTER, 3)\n  →  {0: 5, 1: 5, 2: 5}   (los 3 grupos tienen 5 elementos cada uno)",
+      "starter": "def resumen_clusters(X, k):\n    ",
+      "tests": ["test_resumen_clusters"]
+    }
+  ]
+}

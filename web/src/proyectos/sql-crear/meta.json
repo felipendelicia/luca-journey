@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "sql-crear",
+  "region": "sinnoh",
+  "titulo": "Líder Gardenia: Vivero Pokémon",
+  "lider": "Gardenia",
+  "premio": 390,
+  "intro": "Gardenia cuida su vivero de Pokémon de Planta en Eterna City y quiere organizar su registro en una base de datos. Ayudala a crear tablas e insertar datos con SQL. ¡Derrotá a Gardenia!",
+  "preamble": "import sqlite3\n\nconexion = sqlite3.connect(':memory:')",
+  "packages": ["sqlite3"],
+  "pasos": [
+    {
+      "id": "crear_tabla",
+      "titulo": "1 · Crear la tabla",
+      "consigna": "En el 📦 Código base ya tenés `conexion`, una base de datos vacía en memoria.\n\nEscribí `crear_tabla(conexion)` que cree una tabla llamada `pokemon` con las columnas:\n- `nombre` (TEXT)\n- `tipo` (TEXT)\n- `nivel` (INTEGER)\n\nDespués de llamar a la función, la tabla debe existir (aunque esté vacía).\n\nEjemplos:\n  crear_tabla(conexion)  →  la tabla 'pokemon' queda creada en la base",
+      "starter": "def crear_tabla(conexion):\n    ",
+      "tests": ["test_crear_tabla"]
+    },
+    {
+      "id": "insertar_uno",
+      "titulo": "2 · Insertar un Pokémon",
+      "consigna": "Escribí `insertar_uno(conexion, nombre, tipo, nivel)` que inserte un Pokémon en la tabla `pokemon` con los valores dados.\n\nAsumí que la tabla ya fue creada (vas a reusar la función del paso anterior o la tabla ya existe).\n\nEjemplos:\n  insertar_uno(conexion, 'Turtwig', 'Planta', 10)\n  # Ahora la tabla tiene una fila con Turtwig, Planta, 10",
+      "starter": "def insertar_uno(conexion, nombre, tipo, nivel):\n    ",
+      "tests": ["test_insertar_uno"]
+    },
+    {
+      "id": "insertar_varios",
+      "titulo": "3 · Insertar varios",
+      "consigna": "Escribí `insertar_varios(conexion, filas)` que inserte múltiples Pokémon de una vez. `filas` es una lista de tuplas `(nombre, tipo, nivel)`.\n\nEjemplos:\n  insertar_varios(conexion, [('Cherubi', 'Planta', 7), ('Roserade', 'Planta', 22)])\n  # La tabla recibe dos filas nuevas",
+      "starter": "def insertar_varios(conexion, filas):\n    ",
+      "tests": ["test_insertar_varios"]
+    },
+    {
+      "id": "contar_registros",
+      "titulo": "4 · Contar registros (final)",
+      "consigna": "Escribí `contar_registros(conexion)` que devuelva la cantidad de filas que hay actualmente en la tabla `pokemon`.\n\nEjemplos:\n  # Si insertaste 3 Pokémon:\n  contar_registros(conexion)  →  3",
+      "starter": "def contar_registros(conexion):\n    ",
+      "tests": ["test_contar_registros"]
+    }
+  ]
+}

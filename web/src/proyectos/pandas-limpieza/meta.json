@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "pandas-limpieza",
+  "region": "johto",
+  "titulo": "Líder Chuck: El censo de Cianwood",
+  "lider": "Chuck",
+  "premio": 194,
+  "intro": "Chuck recibió un censo desordenado de los Pokémon de Cianwood. Limpiá los datos: hay valores faltantes, tipos incorrectos y filas duplicadas. ¡Derrotá a Chuck!",
+  "preamble": "import pandas as pd\nimport numpy as np\n\nCENSO = pd.DataFrame({\n    \"nombre\": [\"Primeape\", \"Poliwrath\", \"Hitmonlee\", \"Poliwrath\", \"Hitmonchan\", \"Machoke\"],\n    \"tipo\":   [\"Pelea\",   \"Agua\",     \"Pelea\",    \"Agua\",      None,        \"Pelea\"],\n    \"nivel\":  [\"30\",      \"35\",       \"28\",        \"35\",        \"28\",        None],\n    \"hp\":     [65,        90,         50,          90,          50,          np.nan],\n})",
+  "packages": ["pandas"],
+  "pasos": [
+    {
+      "id": "contar_nulos",
+      "titulo": "1 · Contar valores faltantes",
+      "consigna": "Arriba (en 📦 Código base) tenés el DataFrame CENSO con datos incompletos del equipo de Chuck.\n\nEscribí la función contar_nulos(df) que devuelve la cantidad total de valores NaN o None en todo el DataFrame (un int).\n\nEjemplos:\n  contar_nulos(CENSO)  →  3  (hay None en tipo de Hitmonchan, None en nivel de Machoke, y NaN en hp de Machoke)",
+      "starter": "def contar_nulos(df):\n    ",
+      "tests": ["test_contar_nulos"]
+    },
+    {
+      "id": "limpiar_tipos",
+      "titulo": "2 · Limpiar tipos de datos",
+      "consigna": "Escribí la función limpiar_tipos(df) que devuelve una copia del DataFrame donde:\n- La columna \"nivel\" se convierte a entero, pero primero hay que rellenar los NaN con 0 para poder convertir. Usá fillna(0) y luego astype(int).\n- La columna \"tipo\" rellena los None con el string \"Desconocido\".\n\nLas otras columnas quedan igual.\n\nEjemplos:\n  En el df resultado, Machoke tiene nivel=0 y Hitmonchan tiene tipo=\"Desconocido\".",
+      "starter": "def limpiar_tipos(df):\n    ",
+      "tests": ["test_limpiar_tipos"]
+    },
+    {
+      "id": "sin_duplicados",
+      "titulo": "3 · Eliminar duplicados",
+      "consigna": "Escribí la función sin_duplicados(df) que devuelve una copia del DataFrame sin filas repetidas (mismos valores en todas las columnas).\n\nEjemplos:\n  sin_duplicados(CENSO)  →  DataFrame sin la fila duplicada de Poliwrath (que aparece dos veces)",
+      "starter": "def sin_duplicados(df):\n    ",
+      "tests": ["test_sin_duplicados"]
+    },
+    {
+      "id": "censo_limpio",
+      "titulo": "4 · Censo limpio (final)",
+      "consigna": "Integrá todo: escribí censo_limpio(df) que devuelve un DataFrame donde:\n1. Se eliminan las filas duplicadas.\n2. Se aplica limpiar_tipos (nivel a int con 0 en faltantes, tipo con \"Desconocido\" en faltantes).\n3. Se eliminan las filas donde hp es NaN.\n\nDevolvé el DataFrame resultante (resetear el índice no es necesario).\n\nEjemplos:\n  censo_limpio(CENSO)  →  5 filas (sin Poliwrath duplicado ni Machoke que tiene hp NaN), nivel como int, tipo sin None",
+      "starter": "def censo_limpio(df):\n    ",
+      "tests": ["test_censo_limpio"]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "errores-try-except",
+  "region": "kalos",
+  "titulo": "Líder Viola: Cazadora de errores",
+  "lider": "Viola",
+  "premio": 650,
+  "intro": "Viola es fotógrafa y líder del gimnasio de Santalune. Sus Pokémon bug atacan rápido: un error inesperado y tu programa explota. Aprendé a atrapar errores con try/except para que tu código nunca se caiga. ¡Derrotá a Viola!",
+  "preamble": "POKEDEX = {\n    \"surskit\": {\"nivel\": 10, \"tipo\": \"agua\"},\n    \"vivillon\": {\"nivel\": 12, \"tipo\": \"bug\"},\n    \"ledyba\": {\"nivel\": 6, \"tipo\": \"bug\"},\n}",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "dividir_seguro",
+      "titulo": "1 · División segura",
+      "consigna": "Escribí la función dividir_seguro(a, b) que devuelva a / b.\nSi b es 0, en lugar de explotar, devolvé None.\n\nEjemplos:\n  dividir_seguro(10, 2)  →  5.0\n  dividir_seguro(9, 3)   →  3.0\n  dividir_seguro(7, 0)   →  None",
+      "starter": "def dividir_seguro(a, b):\n    ",
+      "tests": ["test_dividir_seguro"]
+    },
+    {
+      "id": "a_entero",
+      "titulo": "2 · Convertir sin fallar",
+      "consigna": "Escribí la función a_entero(texto) que intente convertir texto a int.\nSi no se puede (por ejemplo si es letras), devolvé 0.\n\nEjemplos:\n  a_entero(\"42\")      →  42\n  a_entero(\"-5\")      →  -5\n  a_entero(\"pikachu\") →  0\n  a_entero(\"3.14\")    →  0",
+      "starter": "def a_entero(texto):\n    ",
+      "tests": ["test_a_entero"]
+    },
+    {
+      "id": "buscar_pokemon",
+      "titulo": "3 · Buscar en la Pokédex",
+      "consigna": "Escribí la función buscar_pokemon(nombre) que busque en el diccionario POKEDEX (disponible arriba en el Código base) y devuelva el dict del Pokémon.\nSi el nombre no existe en el diccionario, devolvé None en lugar de lanzar un error.\n\nEjemplos:\n  buscar_pokemon(\"surskit\")  →  {\"nivel\": 10, \"tipo\": \"agua\"}\n  buscar_pokemon(\"mewtwo\")   →  None",
+      "starter": "def buscar_pokemon(nombre):\n    ",
+      "tests": ["test_buscar_pokemon"]
+    },
+    {
+      "id": "nivel_seguro",
+      "titulo": "4 · Nivel seguro (final)",
+      "consigna": "Integrá todo: escribí nivel_seguro(nombre, divisor) que:\n1. Busque el Pokémon con buscar_pokemon.\n2. Si no existe, devolvé -1.\n3. Si existe, dividí su nivel por divisor con dividir_seguro.\n4. Si el divisor es 0, devolvé -1.\n5. Si todo está bien, devolvé el resultado de la división.\n\nEjemplos:\n  nivel_seguro(\"vivillon\", 4)   →  3.0\n  nivel_seguro(\"mewtwo\", 2)     →  -1\n  nivel_seguro(\"ledyba\", 0)     →  -1\n  nivel_seguro(\"surskit\", 2)    →  5.0",
+      "starter": "def nivel_seguro(nombre, divisor):\n    ",
+      "tests": ["test_nivel_seguro"]
+    }
+  ]
+}

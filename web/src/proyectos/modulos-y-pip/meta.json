@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "modulos-y-pip",
+  "region": "kanto",
+  "titulo": "Líder Giovanni: Módulo de utilidades",
+  "lider": "Giovanni",
+  "premio": 137,
+  "intro": "Giovanni organiza a su equipo con precisión: cada función cumple un rol específico y se pueden combinar. En este proyecto vas a construir un módulo de utilidades reutilizables para manejar datos de Pokémon. ¡Derrotá a Giovanni!",
+  "preamble": "# Dataset de ejemplo\nPOKEMON = [\n    {\"nombre\": \"Meowth\",    \"tipo\": \"normal\",  \"nivel\": 14, \"hp\": 45},\n    {\"nombre\": \"Arbok\",     \"tipo\": \"veneno\",  \"nivel\": 20, \"hp\": 60},\n    {\"nombre\": \"Weezing\",   \"tipo\": \"veneno\",  \"nivel\": 22, \"hp\": 65},\n    {\"nombre\": \"Rhydon\",    \"tipo\": \"roca\",    \"nivel\": 38, \"hp\": 105},\n    {\"nombre\": \"Persian\",   \"tipo\": \"normal\",  \"nivel\": 30, \"hp\": 65},\n]",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "filtrar_y_ordenar",
+      "titulo": "1 · Filtrar y ordenar",
+      "consigna": "Arriba (en 📦 Código base) tenés POKEMON, una lista de dicts con nombre, tipo, nivel y hp.\n\nEscribí dos funciones:\n- filtrar_tipo(lista, tipo): devuelve solo los Pokémon del tipo indicado.\n- ordenar_por(lista, clave): devuelve la lista ordenada de menor a mayor según la clave indicada (\"nivel\", \"hp\", etc.).\n\nEjemplos:\n  filtrar_tipo(POKEMON, \"veneno\")          →  [Arbok, Weezing]  (dicts con tipo veneno)\n  ordenar_por(POKEMON, \"nivel\")[0][\"nombre\"]  →  \"Meowth\"  (el de menor nivel)",
+      "starter": "def filtrar_tipo(lista, tipo):\n    \n\ndef ordenar_por(lista, clave):\n    ",
+      "tests": ["test_filtrar_y_ordenar"]
+    },
+    {
+      "id": "estadisticas",
+      "titulo": "2 · Estadísticas",
+      "consigna": "Escribí la función estadisticas(lista, clave) que reciba la lista de Pokémon y el nombre de un campo numérico, y devuelva un dict con tres valores:\n- \"minimo\": el menor valor del campo\n- \"maximo\": el mayor valor del campo\n- \"promedio\": el promedio (como float)\n\nEjemplos:\n  estadisticas(POKEMON, \"nivel\")\n  →  {\"minimo\": 14, \"maximo\": 38, \"promedio\": 24.8}\n\n  estadisticas(POKEMON, \"hp\")\n  →  {\"minimo\": 45, \"maximo\": 105, \"promedio\": 68.0}",
+      "starter": "def estadisticas(lista, clave):\n    ",
+      "tests": ["test_estadisticas"]
+    },
+    {
+      "id": "buscar_nombre",
+      "titulo": "3 · Buscar por nombre",
+      "consigna": "Escribí la función buscar_nombre(lista, texto) que devuelva todos los Pokémon cuyo nombre contenga el texto indicado, sin importar mayúsculas.\n\nEjemplos:\n  buscar_nombre(POKEMON, \"ok\")   →  [Arbok]          (\"ok\" aparece en \"Arbok\")\n  buscar_nombre(POKEMON, \"ing\")  →  [Weezing]        (\"ing\" aparece en \"Weezing\")\n  buscar_nombre(POKEMON, \"ME\")   →  [Meowth]         (case-insensitive: \"me\" en \"Meowth\")\n  buscar_nombre(POKEMON, \"xyz\")  →  []",
+      "starter": "def buscar_nombre(lista, texto):\n    ",
+      "tests": ["test_buscar_nombre"]
+    },
+    {
+      "id": "reporte",
+      "titulo": "4 · Reporte completo (final)",
+      "consigna": "Usando las funciones anteriores, escribí reporte(lista, tipo) que:\n1. Filtra la lista por el tipo indicado.\n2. Ordena el resultado por nivel (de menor a mayor).\n3. Devuelve un dict con:\n   - \"equipo\": la lista filtrada y ordenada\n   - \"stats_nivel\": estadísticas de nivel de ese subconjunto\n   - \"stats_hp\": estadísticas de hp de ese subconjunto\n\nEjemplo:\n  r = reporte(POKEMON, \"veneno\")\n  [p[\"nombre\"] for p in r[\"equipo\"]]   →  [\"Arbok\", \"Weezing\"]\n  r[\"stats_nivel\"][\"minimo\"]           →  20\n  r[\"stats_hp\"][\"promedio\"]            →  62.5",
+      "starter": "def reporte(lista, tipo):\n    ",
+      "tests": ["test_reporte"]
+    }
+  ]
+}

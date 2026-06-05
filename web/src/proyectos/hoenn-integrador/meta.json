@@ -1,0 +1,41 @@
+{
+  "tipo": "integrador",
+  "tema": "hoenn-integrador",
+  "region": "hoenn",
+  "titulo": "Integrador de Hoenn: API de Entrenadores",
+  "lider": "Liga de Hoenn",
+  "premio": 384,
+  "intro": "Es hora de enfrentar a la Liga de Hoenn. Vas a construir una API REST completa para gestionar entrenadores: registrarlos, consultar sus equipos, buscar por región y calcular el nivel total de su equipo. ¡Conquistá Hoenn!",
+  "preamble": "",
+  "packages": ["flask"],
+  "pasos": [
+    {
+      "id": "registrar_y_listar",
+      "titulo": "1 · Registrar y listar entrenadores",
+      "consigna": "Escribí la función crear_app() que crea y devuelve una app Flask que guarda entrenadores en memoria (lista vacía al inicio).\n\nCada entrenador tiene: 'id', 'nombre' y 'region'.\n\nAgregá dos rutas:\n- POST /entrenadores  →  recibe {\"id\": ..., \"nombre\": ..., \"region\": ...}, guarda y devuelve el entrenador con estado 201\n- GET /entrenadores   →  devuelve la lista completa\n\nEjemplos:\n  POST /entrenadores con {\"id\": 1, \"nombre\": \"Ash\", \"region\": \"kanto\"}  →  ese mismo dict (estado 201)\n  GET /entrenadores   →  [{\"id\": 1, \"nombre\": \"Ash\", \"region\": \"kanto\"}]",
+      "starter": "from flask import Flask, jsonify, request\n\ndef crear_app():\n    app = Flask(__name__)\n    entrenadores = []\n\n    # definí las rutas POST y GET de \"/entrenadores\" acá\n\n    return app\n",
+      "tests": ["test_registrar_y_listar"]
+    },
+    {
+      "id": "obtener_y_borrar",
+      "titulo": "2 · Obtener y borrar entrenador",
+      "consigna": "Agregá dentro de crear_app() dos rutas más:\n- GET /entrenadores/<int:eid>     →  devuelve el entrenador con ese id, o {\"error\": \"no existe\"} (estado 404)\n- DELETE /entrenadores/<int:eid>  →  borra ese entrenador y devuelve {\"borrado\": eid}, o {\"error\": \"no existe\"} (estado 404)\n\nLas rutas anteriores deben seguir funcionando.\n\nEjemplos:\n  GET /entrenadores/1   →  {\"id\": 1, \"nombre\": \"Ash\", \"region\": \"kanto\"}\n  GET /entrenadores/99  →  {\"error\": \"no existe\"}  (estado 404)\n  DELETE /entrenadores/1  →  {\"borrado\": 1}",
+      "starter": "",
+      "tests": ["test_registrar_y_listar", "test_obtener_y_borrar"]
+    },
+    {
+      "id": "buscar_por_region",
+      "titulo": "3 · Buscar por región",
+      "consigna": "Agregá dentro de crear_app() una ruta GET en \"/entrenadores/region/<region>\" que devuelve todos los entrenadores de esa región.\n\nLas rutas anteriores deben seguir funcionando.\n\nEjemplos:\n  (con Ash de kanto y May de hoenn registrados)\n  GET /entrenadores/region/kanto   →  [{\"id\": 1, \"nombre\": \"Ash\", \"region\": \"kanto\"}]\n  GET /entrenadores/region/johto   →  []",
+      "starter": "",
+      "tests": ["test_registrar_y_listar", "test_obtener_y_borrar", "test_buscar_por_region"]
+    },
+    {
+      "id": "equipo_y_stats",
+      "titulo": "4 · Equipo y nivel total (final)",
+      "consigna": "Cada entrenador puede tener un equipo. Agregá dentro de crear_app() tres rutas:\n- POST /entrenadores/<int:eid>/pokemon  →  recibe {\"nombre\": ..., \"nivel\": ...}, agrega el Pokémon al equipo del entrenador y lo devuelve (estado 201). Si el entrenador no existe, estado 404.\n- GET /entrenadores/<int:eid>/pokemon   →  devuelve el equipo del entrenador (lista). Si no existe, estado 404.\n- GET /entrenadores/<int:eid>/nivel-total  →  devuelve {\"nivel_total\": <suma de niveles del equipo>}. Si no existe, estado 404.\n\nLas rutas anteriores deben seguir funcionando.\n\nEjemplos:\n  POST /entrenadores/1/pokemon con {\"nombre\": \"Pikachu\", \"nivel\": 25}  →  {\"nombre\": \"Pikachu\", \"nivel\": 25} (201)\n  GET /entrenadores/1/pokemon   →  [{\"nombre\": \"Pikachu\", \"nivel\": 25}]\n  GET /entrenadores/1/nivel-total  →  {\"nivel_total\": 25}",
+      "starter": "",
+      "tests": ["test_registrar_y_listar", "test_obtener_y_borrar", "test_buscar_por_region", "test_equipo_y_stats"]
+    }
+  ]
+}

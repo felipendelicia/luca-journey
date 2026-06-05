@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "pandas-series-dataframe",
+  "region": "johto",
+  "titulo": "Líder Whitney: La Pokédex de Goldenrod",
+  "lider": "Whitney",
+  "premio": 175,
+  "intro": "Whitney lleva un registro de cada Pokémon de Goldenrod en una tabla. Construí un DataFrame y aprendé a consultarlo. ¡Derrotá a Whitney!",
+  "preamble": "import pandas as pd\n\nDATA = {\n    \"nombre\": [\"Clefairy\", \"Miltank\", \"Snubbull\", \"Jigglypuff\", \"Wigglytuff\"],\n    \"tipo\":   [\"Normal\",   \"Normal\",  \"Normal\",   \"Normal\",     \"Normal\"],\n    \"nivel\":  [18,          23,         15,          12,           20],\n    \"hp\":     [40,          95,         60,          45,           70],\n}",
+  "packages": ["pandas"],
+  "pasos": [
+    {
+      "id": "crear_pokedex",
+      "titulo": "1 · Crear la Pokédex",
+      "consigna": "Arriba (en 📦 Código base) tenés el diccionario DATA con la info del equipo de Whitney.\n\nEscribí la función crear_pokedex(data) que recibe ese diccionario y devuelve un DataFrame de pandas.\n\nEjemplos:\n  crear_pokedex(DATA)  →  un DataFrame con 5 filas y las columnas nombre, tipo, nivel, hp",
+      "starter": "def crear_pokedex(data):\n    ",
+      "tests": ["test_crear_pokedex"]
+    },
+    {
+      "id": "consultar_columna",
+      "titulo": "2 · Consultar columnas",
+      "consigna": "Escribí la función consultar_columna(df, col) que recibe un DataFrame y el nombre de una columna y devuelve esa columna como una lista de Python.\n\nEjemplos:\n  consultar_columna(df, \"nombre\")  →  [\"Clefairy\", \"Miltank\", \"Snubbull\", \"Jigglypuff\", \"Wigglytuff\"]\n  consultar_columna(df, \"nivel\")   →  [18, 23, 15, 12, 20]",
+      "starter": "def consultar_columna(df, col):\n    ",
+      "tests": ["test_consultar_columna"]
+    },
+    {
+      "id": "resumen_numerico",
+      "titulo": "3 · Resumen numérico",
+      "consigna": "Escribí la función resumen_numerico(df, col) que recibe un DataFrame y el nombre de una columna numérica, y devuelve un diccionario con tres claves: \"minimo\", \"maximo\" y \"promedio\" (float redondeado a 2 decimales).\n\nEjemplos:\n  resumen_numerico(df, \"nivel\")  →  {\"minimo\": 12, \"maximo\": 23, \"promedio\": 17.6}\n  resumen_numerico(df, \"hp\")     →  {\"minimo\": 40, \"maximo\": 95, \"promedio\": 62.0}",
+      "starter": "def resumen_numerico(df, col):\n    ",
+      "tests": ["test_resumen_numerico"]
+    },
+    {
+      "id": "ficha_pokemon",
+      "titulo": "4 · Ficha de un Pokémon (final)",
+      "consigna": "Integrá todo: escribí ficha_pokemon(df, nombre) que busca un Pokémon por nombre en la columna \"nombre\" y devuelve un string con el formato: \"<nombre> | Tipo: <tipo> | Nivel: <nivel> | HP: <hp>\". Si no existe, devolvé \"No encontrado.\".\n\nEjemplos:\n  ficha_pokemon(df, \"Miltank\")   →  \"Miltank | Tipo: Normal | Nivel: 23 | HP: 95\"\n  ficha_pokemon(df, \"Marill\")    →  \"No encontrado.\"",
+      "starter": "def ficha_pokemon(df, nombre):\n    ",
+      "tests": ["test_ficha_pokemon"]
+    }
+  ]
+}

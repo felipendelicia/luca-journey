@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "pokedex-api",
+  "region": "hoenn",
+  "titulo": "Líder Wallace: Mini Pokédex API",
+  "lider": "Wallace",
+  "premio": 373,
+  "intro": "Wallace es el Campeón de Hoenn. Para enfrentarlo tenés que construir una Pokédex API completa: múltiples rutas, parámetros, búsquedas y errores bien manejados. ¡Vencé a Wallace!",
+  "preamble": "POKEDEX = [\n    {\"id\": 1, \"nombre\": \"Bulbasaur\",  \"tipo\": \"planta\",    \"nivel\": 5},\n    {\"id\": 4, \"nombre\": \"Charmander\", \"tipo\": \"fuego\",     \"nivel\": 8},\n    {\"id\": 7, \"nombre\": \"Squirtle\",   \"tipo\": \"agua\",      \"nivel\": 7},\n    {\"id\": 25, \"nombre\": \"Pikachu\",   \"tipo\": \"eléctrico\", \"nivel\": 12},\n    {\"id\": 54, \"nombre\": \"Psyduck\",   \"tipo\": \"agua\",      \"nivel\": 15},\n    {\"id\": 129, \"nombre\": \"Magikarp\", \"tipo\": \"agua\",      \"nivel\": 3},\n]",
+  "packages": ["flask"],
+  "pasos": [
+    {
+      "id": "listar_y_buscar",
+      "titulo": "1 · Listar y buscar por ID",
+      "consigna": "Escribí la función crear_app() que crea y devuelve una app Flask que usa la lista POKEDEX del código base.\n\nAgregá dos rutas:\n- GET /pokemon         →  devuelve la lista completa\n- GET /pokemon/<int:pid>  →  devuelve el Pokémon con ese id, o {\"error\": \"no encontrado\"} con estado 404\n\nEjemplos:\n  GET /pokemon     →  lista con los 6 Pokémon\n  GET /pokemon/25  →  {\"id\": 25, \"nombre\": \"Pikachu\", \"tipo\": \"eléctrico\", \"nivel\": 12}\n  GET /pokemon/99  →  {\"error\": \"no encontrado\"}  (estado 404)",
+      "starter": "from flask import Flask, jsonify, request\n\n# La lista POKEDEX está disponible (viene del preamble).\n\ndef crear_app():\n    app = Flask(__name__)\n\n    # definí las rutas acá\n\n    return app\n",
+      "tests": ["test_listar_y_buscar"]
+    },
+    {
+      "id": "buscar_por_tipo",
+      "titulo": "2 · Buscar por tipo",
+      "consigna": "Agregá dentro de crear_app() una ruta GET en \"/pokemon/tipo/<tipo>\" que devuelve todos los Pokémon de ese tipo (la lista completa de dicts, no solo los nombres).\n\nLas rutas anteriores deben seguir funcionando.\n\nEjemplos:\n  GET /pokemon/tipo/agua      →  [{\"id\": 7, ...Squirtle...}, {\"id\": 54, ...Psyduck...}, {\"id\": 129, ...Magikarp...}]\n  GET /pokemon/tipo/fantasma  →  []",
+      "starter": "",
+      "tests": ["test_listar_y_buscar", "test_buscar_por_tipo"]
+    },
+    {
+      "id": "buscar_por_nombre",
+      "titulo": "3 · Buscar por nombre",
+      "consigna": "Agregá dentro de crear_app() una ruta GET en \"/buscar\" que lee el parámetro de query 'nombre' y devuelve los Pokémon cuyo nombre contenga ese texto (sin distinguir mayúsculas). Usá request.args.get('nombre').\n\nLas rutas anteriores deben seguir funcionando.\n\nEjemplos:\n  GET /buscar?nombre=char  →  [{\"id\": 4, \"nombre\": \"Charmander\", ...}]\n  GET /buscar?nombre=u     →  lista con Bulbasaur, Squirtle, Psyduck\n  GET /buscar?nombre=zzz   →  []",
+      "starter": "",
+      "tests": ["test_listar_y_buscar", "test_buscar_por_tipo", "test_buscar_por_nombre"]
+    },
+    {
+      "id": "stats",
+      "titulo": "4 · Stats de la Pokédex (final)",
+      "consigna": "Agregá dentro de crear_app() una ruta GET en \"/stats\" que devuelve estadísticas de la Pokédex:\n- \"total\": cantidad total de Pokémon\n- \"nivel_promedio\": promedio de niveles (puede ser float)\n- \"tipos\": lista de tipos únicos (sin repetir), en el orden en que aparecen en POKEDEX\n\nTodas las rutas anteriores deben seguir funcionando.\n\nEjemplo:\n  GET /stats  →  {\"total\": 6, \"nivel_promedio\": 8.333..., \"tipos\": [\"planta\", \"fuego\", \"agua\", \"eléctrico\"]}",
+      "starter": "",
+      "tests": ["test_listar_y_buscar", "test_buscar_por_tipo", "test_buscar_por_nombre", "test_stats"]
+    }
+  ]
+}

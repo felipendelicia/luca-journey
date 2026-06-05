@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "numpy-arrays",
+  "region": "johto",
+  "titulo": "Líder Falkner: Estadísticas de combate",
+  "lider": "Falkner",
+  "premio": 201,
+  "intro": "Falkner entrena Pokémon voladores y analiza cada stat con precisión. Usá NumPy para crear y operar arrays con las estadísticas de combate. ¡Derrotá a Falkner!",
+  "preamble": "import numpy as np\n\nSTATS_EQUIPO = np.array([45, 80, 65, 110, 55, 95])\n# HP, Ataque, Defensa, Vel. Especial, Def. Especial, Velocidad\nNOMBRES = [\"Pidgey\", \"Pidgeotto\", \"Pidgeot\", \"Hoothoot\", \"Noctowl\", \"Togetic\"]",
+  "packages": ["numpy"],
+  "pasos": [
+    {
+      "id": "crear_stats",
+      "titulo": "1 · Crear array de stats",
+      "consigna": "Arriba (en 📦 Código base) ya tenés el array STATS_EQUIPO con los niveles del equipo de Falkner.\n\nEscribí la función crear_stats(niveles) que recibe una lista de enteros y devuelve un array de NumPy.\n\nEjemplos:\n  crear_stats([10, 20, 30])  →  array([10, 20, 30])\n  crear_stats([45, 80])     →  array([45, 80])",
+      "starter": "def crear_stats(niveles):\n    ",
+      "tests": ["test_crear_stats"]
+    },
+    {
+      "id": "estadisticas",
+      "titulo": "2 · Estadísticas básicas",
+      "consigna": "Escribí la función estadisticas(arr) que recibe un array y devuelve un diccionario con cuatro claves: \"total\" (suma de todos los valores), \"promedio\" (media), \"maximo\" (valor más alto) y \"minimo\" (valor más bajo).\n\nEjemplos:\n  estadisticas(np.array([10, 20, 30]))  →  {\"total\": 60, \"promedio\": 20.0, \"maximo\": 30, \"minimo\": 10}\n  estadisticas(np.array([5, 5, 5]))    →  {\"total\": 15, \"promedio\": 5.0, \"maximo\": 5, \"minimo\": 5}",
+      "starter": "def estadisticas(arr):\n    ",
+      "tests": ["test_estadisticas"]
+    },
+    {
+      "id": "fuertes_y_debiles",
+      "titulo": "3 · Fuertes y débiles",
+      "consigna": "Escribí la función fuertes_y_debiles(arr, umbral) que usa una máscara booleana y devuelve una tupla (fuertes, debiles): fuertes es un array con los valores mayores o iguales al umbral, debiles es un array con los valores menores al umbral.\n\nEjemplos:\n  fuertes_y_debiles(np.array([45, 80, 65, 30]), 60)\n      →  (array([80, 65]), array([45, 30]))\n  fuertes_y_debiles(np.array([10, 50, 90]), 50)\n      →  (array([50, 90]), array([10]))",
+      "starter": "def fuertes_y_debiles(arr, umbral):\n    ",
+      "tests": ["test_fuertes_y_debiles"]
+    },
+    {
+      "id": "resumen_equipo",
+      "titulo": "4 · Resumen del equipo (final)",
+      "consigna": "Combiná todo: escribí resumen_equipo(nombres, stats) que recibe una lista de nombres y un array de stats (mismo orden) y devuelve una lista de strings. Cada string tiene el formato \"<Nombre>: <stat> pts\".\n\nAdemás, el último elemento de la lista siempre debe ser una línea de resumen: \"Promedio: <promedio con 1 decimal> pts\".\n\nEjemplos:\n  resumen_equipo([\"Pidgey\", \"Hoothoot\"], np.array([45, 60]))\n      →  [\"Pidgey: 45 pts\", \"Hoothoot: 60 pts\", \"Promedio: 52.5 pts\"]",
+      "starter": "def resumen_equipo(nombres, stats):\n    ",
+      "tests": ["test_resumen_equipo"]
+    }
+  ]
+}

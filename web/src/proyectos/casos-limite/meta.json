@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "casos-limite",
+  "region": "kalos",
+  "titulo": "Líder Valerie: Defensora de los bordes",
+  "lider": "Valerie",
+  "premio": 677,
+  "intro": "Valerie es diseñadora de moda y líder del gimnasio de Laverre. Sus Pokémon hada son elegantes pero implacables con los descuidos. Un buen programa no solo funciona con casos normales: también maneja listas vacías, valores None y los extremos. ¡Derrotá a Valerie!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "primero_seguro",
+      "titulo": "1 · Primero seguro",
+      "consigna": "Escribí la función primero_seguro(lista) que devuelva el primer elemento de la lista.\nSi la lista está vacía, devolvá None en vez de romper.\n\nEjemplos:\n  primero_seguro([10, 20, 30])  →  10\n  primero_seguro([\"pikachu\"])   →  \"pikachu\"\n  primero_seguro([])             →  None",
+      "starter": "def primero_seguro(lista):\n    ",
+      "tests": ["test_primero_seguro"]
+    },
+    {
+      "id": "maximo_seguro",
+      "titulo": "2 · Máximo seguro",
+      "consigna": "Escribí la función maximo_seguro(lista) que devuelva el máximo de una lista de números.\nSi la lista está vacía, devolvá None.\n\nEjemplos:\n  maximo_seguro([3, 1, 4, 1, 5])  →  5\n  maximo_seguro([7])               →  7\n  maximo_seguro([])                →  None",
+      "starter": "def maximo_seguro(lista):\n    ",
+      "tests": ["test_maximo_seguro"]
+    },
+    {
+      "id": "longitud_segura",
+      "titulo": "3 · Longitud segura",
+      "consigna": "Escribí la función longitud_segura(valor) que devuelva la longitud de valor si es una lista o un string.\nSi valor es None, devolvá 0.\nSi valor no es lista ni string ni None, devolvá 0.\n\nEjemplos:\n  longitud_segura([1, 2, 3])   →  3\n  longitud_segura(\"pikachu\")   →  7\n  longitud_segura([])           →  0\n  longitud_segura(None)         →  0\n  longitud_segura(42)           →  0",
+      "starter": "def longitud_segura(valor):\n    ",
+      "tests": ["test_longitud_segura"]
+    },
+    {
+      "id": "nivel_promedio",
+      "titulo": "4 · Nivel promedio (final)",
+      "consigna": "Escribí la función nivel_promedio(equipo) que reciba una lista de dicts de Pokémon (cada uno con clave \"nivel\") y devuelva el promedio de niveles.\n\nManejá estos casos límite:\n- Si equipo es None, devolvá 0.\n- Si equipo es una lista vacía, devolvá 0.\n- Si algún Pokémon no tiene clave \"nivel\", ignoralo (no lo incluyas en el promedio).\n\nEjemplos:\n  nivel_promedio([{\"nivel\": 10}, {\"nivel\": 20}])          →  15.0\n  nivel_promedio([{\"nivel\": 5}, {\"nombre\": \"raro\"}])      →  5.0\n  nivel_promedio([])                                        →  0\n  nivel_promedio(None)                                      →  0\n  nivel_promedio([{\"nombre\": \"sin_nivel\"}])                →  0",
+      "starter": "def nivel_promedio(equipo):\n    ",
+      "tests": ["test_nivel_promedio"]
+    }
+  ]
+}

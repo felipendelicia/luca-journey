@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "ia-arboles",
+  "region": "unova",
+  "titulo": "Líder Skyla: Árbol de decisión",
+  "lider": "Skyla",
+  "premio": 599,
+  "intro": "Skyla, piloto del Mistralton Gym, toma decisiones rápidas: ¿puede este Pokémon evolucionar? Un árbol de decisión aprende reglas tipo 'si nivel >= 16 → puede evolucionar'. Son fáciles de entender y muy poderosos. ¡Derrotá a Skyla!",
+  "preamble": "import numpy as np\n# Dataset: [nivel, ataque, defensa] → puede_evolucionar (0=No, 1=Si)\n# La regla clave es el nivel: >= 16 puede evolucionar\nX_ARBOL = np.array([\n    [8,  30, 25],\n    [10, 45, 28],\n    [12, 50, 31],\n    [13, 55, 33],\n    [15, 60, 35],\n    [7,  28, 22],\n    [11, 42, 29],\n    [6,  25, 20],\n    [9,  38, 27],\n    [14, 52, 34],\n    [16, 55, 40],\n    [18, 60, 42],\n    [20, 65, 45],\n    [22, 70, 48],\n    [25, 75, 50],\n    [17, 58, 38],\n    [19, 62, 44],\n    [21, 68, 46],\n    [24, 72, 49],\n    [30, 80, 55],\n])\nY_ARBOL = np.array([0,0,0,0,0, 0,0,0,0,0, 1,1,1,1,1, 1,1,1,1,1])",
+  "packages": ["numpy", "scikit-learn"],
+  "pasos": [
+    {
+      "id": "entrenar_arbol",
+      "titulo": "1 · Entrenar el árbol",
+      "consigna": "Arriba (en 📦 Código base) tenés X_ARBOL e Y_ARBOL: stats de Pokémon y si pueden evolucionar.\n\nEscribí entrenar_arbol(X, y) que entrene un árbol de decisión con random_state=0 y lo devuelva.\n\nEjemplos:\n  arbol = entrenar_arbol(X_ARBOL, Y_ARBOL)\n  type(arbol).__name__  →  'DecisionTreeClassifier'",
+      "starter": "from sklearn.tree import DecisionTreeClassifier\n\ndef entrenar_arbol(X, y):\n    ",
+      "tests": ["test_entrenar_arbol"]
+    },
+    {
+      "id": "clasificar_arbol",
+      "titulo": "2 · Clasificar con el árbol",
+      "consigna": "Escribí clasificar_arbol(arbol, fila) que reciba el árbol entrenado y una fila de stats, y devuelva la predicción como int.\n\nEjemplos:\n  arbol = entrenar_arbol(X_ARBOL, Y_ARBOL)\n  clasificar_arbol(arbol, [10, 45, 28])  →  0   (nivel 10, no puede evolucionar)\n  clasificar_arbol(arbol, [16, 55, 40])  →  1   (nivel 16, puede evolucionar)",
+      "starter": "def clasificar_arbol(arbol, fila):\n    ",
+      "tests": ["test_clasificar_arbol"]
+    },
+    {
+      "id": "importancias",
+      "titulo": "3 · Importancia de las features",
+      "consigna": "Escribí importancias(arbol) que devuelva la lista de importancias de cada feature como floats. Cuanto más alta, más decisiva fue esa columna para armar las reglas.\n\nEjemplos:\n  arbol = entrenar_arbol(X_ARBOL, Y_ARBOL)\n  imps = importancias(arbol)\n  len(imps)    →  3\n  imps[0]      →  1.0   (el nivel es la única feature decisiva)\n  imps[1]      →  0.0\n  imps[2]      →  0.0",
+      "starter": "def importancias(arbol):\n    ",
+      "tests": ["test_importancias"]
+    },
+    {
+      "id": "analizar_equipo",
+      "titulo": "4 · Analizar el equipo (final)",
+      "consigna": "Integrá todo: escribí analizar_equipo(equipo) que reciba una lista de listas [nivel, ataque, defensa], entrene el árbol con X_ARBOL e Y_ARBOL, y devuelva el recuento como dict: cuántos pueden evolucionar y cuántos no.\n\nEjemplos:\n  analizar_equipo([[10, 45, 28], [16, 55, 40], [20, 65, 45], [8, 30, 25]])\n  →  {'puede_evolucionar': 2, 'no_puede': 2}",
+      "starter": "def analizar_equipo(equipo):\n    ",
+      "tests": ["test_analizar_equipo"]
+    }
+  ]
+}
