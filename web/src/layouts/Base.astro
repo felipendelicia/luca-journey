@@ -132,10 +132,13 @@ const nav = [
       // boot overlay: login obligatorio + esperar a que cargue el progreso
       if (overlay) {
         const bl = document.getElementById('boot-loader'), bi = document.getElementById('boot-login');
-        const verBoot = () => { const u = usuario(); if (bl) bl.hidden = !!u; if (bi) bi.hidden = !u; };
+        // logueado → loader (hidratando); sin sesión → pantalla de login
+        const verBoot = () => { const u = usuario(); if (bl) bl.hidden = !u; if (bi) bi.hidden = !!u; };
         window.addEventListener('nube:listo', () => { overlay.hidden = true; });
         window.addEventListener('nube:sinsesion', verBoot);
         window.addEventListener('nube:cambio', verBoot);
+        // failsafe: si está logueado pero el boot no resolvió en 12s, revelar igual (no brickear)
+        setTimeout(() => { if (!overlay.hidden && usuario()) overlay.hidden = true; }, 12000);
         const bg = document.getElementById('boot-google');
         if (bg) bg.addEventListener('click', async () => {
           const err = document.getElementById('boot-err'); err.hidden = true; bg.disabled = true;

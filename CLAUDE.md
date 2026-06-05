@@ -38,8 +38,15 @@ La CLI ya está **linkeada** a este proyecto:
 - **Ver estado:** `supabase migration list` (compara local vs remoto; read-only).
 - **Aplicar migraciones al remoto:** `supabase db push --yes` (las credenciales están
   cacheadas; no pide password). El `build` **no** corre migraciones — esto es aparte.
-- **Cliente:** `src/lib/supa.js` (cliente), `src/lib/nube.js` (sincroniza el progreso de
-  localStorage ↔ tabla `progreso`), `src/lib/trades.js` (RPCs + Realtime de intercambios).
+- **Cliente:** `src/lib/supa.js` (cliente), `src/lib/nube.js` (sync del progreso),
+  `src/lib/social.js` (perfiles/amigos/ofertas), `src/lib/trades.js` (RPCs + Realtime de
+  intercambios).
+- **Sync = nube pura (login obligatorio):** la **nube es la única fuente de verdad**.
+  `Base.astro` muestra un **overlay de arranque** (pantalla de login si no hay sesión;
+  loader mientras hidrata). `nube.js` `boot()` baja `progreso` y **pisa** el cache local
+  (localStorage = espejo descartable, nunca manda); las escrituras son write-through y los
+  cambios externos llegan por realtime. `coleccion.js` y las páginas leen el cache síncrono
+  (no se reescribió a async). Diseño: `superpowers/specs/2026-06-04-nube-pura-design.md`.
 - Las tablas/RPC se acceden con la **anon key**; el cliente lee `PUBLIC_SUPABASE_URL` y
   `PUBLIC_SUPABASE_ANON_KEY` (env con prefijo `PUBLIC_`, Astro las expone al navegador). Si
   faltan, `supa` queda en `null` y la app corre en modo solo-localStorage. Las mutaciones
