@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { IntercambiosService } from './intercambios.service';
+import { salaDTO } from '../common/dto';
 
 @Controller('trades')
 export class IntercambiosController {
@@ -15,7 +16,9 @@ export class IntercambiosController {
   }
 
   @Get(':id')
-  leer(@CurrentUser() uid: string, @Param('id') id: string) { return this.svc.leer(uid, id); }
+  async leer(@CurrentUser() uid: string, @Param('id') id: string) {
+    return salaDTO(await this.svc.leer(uid, id));
+  }
 
   @Get(':id/otro')
   otro(@CurrentUser() uid: string, @Param('id') id: string) { return this.svc.coleccionDelOtro(uid, id); }

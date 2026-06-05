@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException, BadRequestException 
 import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeService } from '../realtime/realtime.service';
 import { swapColeccion, Item } from '../coleccion/coleccion';
+import { salaDTO } from '../common/dto';
 
 const ALF = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const code6 = () => Array.from({ length: 6 }, () => ALF[Math.floor(Math.random() * ALF.length)]).join('');
@@ -25,7 +26,7 @@ export class IntercambiosService {
     if (s.creadorId === uid) throw new BadRequestException('no podés unirte a tu propia sala');
     if (s.invitadoId && s.invitadoId !== uid) throw new BadRequestException('la sala ya está completa');
     await this.prisma.intercambio.update({ where: { id: s.id }, data: { invitadoId: uid, invitadoNombre: nombre || '' } });
-    this.rt.sala(s.id, await this.leer(uid, s.id));
+    this.rt.sala(s.id, salaDTO(await this.leer(uid, s.id)));
     return s.id;
   }
 
@@ -43,7 +44,7 @@ export class IntercambiosService {
       ? { creadorLote: lote as any, creadorOk: false, invitadoOk: false }
       : { invitadoLote: lote as any, creadorOk: false, invitadoOk: false };
     await this.prisma.intercambio.update({ where: { id }, data });
-    this.rt.sala(id, await this.prisma.intercambio.findUnique({ where: { id } }));
+    this.rt.sala(id, salaDTO(await this.prisma.intercambio.findUnique({ where: { id } })));
   }
 
   async ponerPedido(uid: string, id: string, pedido: Item[]) {
@@ -51,7 +52,7 @@ export class IntercambiosService {
     if (s.estado !== 'abierta') throw new BadRequestException('la sala no está abierta');
     const data = uid === s.creadorId ? { creadorPedido: pedido as any } : { invitadoPedido: pedido as any };
     await this.prisma.intercambio.update({ where: { id }, data });
-    this.rt.sala(id, await this.prisma.intercambio.findUnique({ where: { id } }));
+    this.rt.sala(id, salaDTO(await this.prisma.intercambio.findUnique({ where: { id } })));
   }
 
   async coleccionDelOtro(uid: string, id: string) {
@@ -71,7 +72,7 @@ export class IntercambiosService {
     const s = await this.leer(uid, id);
     if (s.estado === 'abierta') {
       await this.prisma.intercambio.update({ where: { id }, data: { estado: 'cancelada' } });
-      this.rt.sala(id, await this.prisma.intercambio.findUnique({ where: { id } }));
+      this.rt.sala(id, salaDTO(await this.prisma.intercambio.findUnique({ where: { id } })));
     }
   }
 
@@ -84,11 +85,11 @@ export class IntercambiosService {
     });
     const s = await this.prisma.intercambio.findUnique({ where: { id } });
     if (!(s!.creadorOk && s!.invitadoOk)) {
-      this.rt.sala(id, s);
+      this.rt.sala(id, salaDTO(s));
       return 'abierta';
     }
     await this.ejecutar(s!);
-    this.rt.sala(id, await this.prisma.intercambio.findUnique({ where: { id } }));
+    this.rt.sala(id, salaDTO(await this.prisma.intercambio.findUnique({ where: { id } })));
     return 'completada';
   }
 
