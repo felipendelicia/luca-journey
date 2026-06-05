@@ -56,6 +56,9 @@ La CLI ya está **linkeada** a este proyecto:
 
 - **Teoría:** editá `web/src/content/libro/*.md`. No dupliques contenido en otro lado.
 - **Ejercicios:** editá los `.py` en `web/src/ejercicios/<tema>/`; el build regenera el JSON.
+- **Consignas (ejercicios y proyectos): NO incluir pistas que revelen la solución.** Las
+  consignas pueden ser explicativas y tener **ejemplos** (entrada → salida esperada), pero
+  **nunca** una "Pista:" con el código/solución. El alumno tiene que pensarla.
 - **Links internos:** usá `u('/ruta')` (de `src/lib/url.ts`), nunca hardcodees `/...`,
   porque en Pages el sitio vive bajo `/luca-journey/`. En scripts de cliente usá `window.__BASE`.
 - **Deploy:** `npm run build` actualiza `docs/`; commiteá `docs/` junto con los cambios de `web/`.
