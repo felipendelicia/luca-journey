@@ -98,6 +98,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     const D = JSON.parse(document.getElementById('tr-data').textContent);
     const nombres = D.nombres;
     const sprite = (id, sh) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${sh ? 'shiny/' : ''}${id}.png`;
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
     const $ = (id) => document.getElementById(id);
     const panes = ['tr-login', 'tr-inicio', 'tr-espera', 'tr-sala', 'tr-listo'];
     const ver = (cual) => panes.forEach((p) => $(p).hidden = (p !== cual));
@@ -115,7 +116,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     const soyCreador = () => sala && usuario() && sala.creador_id === usuario().id;
 
     function chipQuitable(x, onQuitar) {
-      const img = `<img src="${sprite(x.id, x.shiny)}" title="${nombres[x.id] || x.id}${x.shiny ? ' ✨' : ''}" />`;
+      const img = `<img src="${sprite(x.id, x.shiny)}" alt="${esc(nombres[x.id] || x.id)}${x.shiny ? ' ✨' : ''}" title="${esc(nombres[x.id] || x.id)}${x.shiny ? ' ✨' : ''}" />`;
       const b = document.createElement('span');
       b.className = 'tr-chip';
       b.innerHTML = `${img}<button class="tr-quitar" type="button">×</button>`;
@@ -133,7 +134,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     function pintarLoteOtro(lote) {
       const el = $('tr-lote-otro');
       el.innerHTML = (lote && lote.length)
-        ? lote.map((x) => `<img src="${sprite(x.id, x.shiny)}" title="${nombres[x.id] || x.id}${x.shiny ? ' ✨' : ''}" />`).join('')
+        ? lote.map((x) => `<img src="${sprite(x.id, x.shiny)}" alt="${esc(nombres[x.id] || x.id)}${x.shiny ? ' ✨' : ''}" title="${esc(nombres[x.id] || x.id)}${x.shiny ? ' ✨' : ''}" />`).join('')
         : '<span class="tr-vacio">(vacío)</span>';
     }
     function yaEnLote(x) { return miLote.some((y) => y.id === x.id && !!y.shiny === !!x.shiny); }
@@ -150,7 +151,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
           : ` <small class="tr-tengo">tenés ${tengo}</small>`;
         const row = document.createElement('div');
         row.className = 'tr-piden-row' + (enLote ? ' hecho' : '');
-        row.innerHTML = `<img src="${sprite(x.id, x.shiny)}" />
+        row.innerHTML = `<img src="${sprite(x.id, x.shiny)}" alt="${esc(nombres[x.id] || x.id)}${x.shiny ? ' ✨' : ''}" />
           <span class="nm">${nombres[x.id] || x.id}${x.shiny ? ' ✨' : ''}${cuantos}</span>`;
         const acc = document.createElement('button');
         if (enLote) { acc.className = 'tr-rechazar'; acc.textContent = '✓ en tu lote'; acc.disabled = true; }
@@ -190,7 +191,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
       const pedidoCount = (id, sh) => miPedido.filter((p) => p.id === id && !!p.shiny === sh).length;
       ids.forEach((id) => {
         const cell = document.createElement('div'); cell.className = 'tr-cell';
-        cell.innerHTML = `<img src="${sprite(id, false)}" title="${nombres[id] || id} (x${at[id]})" /><span class="tr-cnt">x${at[id]}</span>`;
+        cell.innerHTML = `<img src="${sprite(id, false)}" alt="${esc(nombres[id] || id)}" title="${esc(nombres[id] || id)} (x${at[id]})" /><span class="tr-cnt">x${at[id]}</span>`;
         const mk = (sh) => {
           const on = pedidoCount(id, sh) > 0;
           const btn = document.createElement('button');
@@ -296,7 +297,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
       const cont = $('tr-amigos-lista'); cont.innerHTML = '';
       online.forEach((a) => {
         const row = document.createElement('div'); row.className = 'tr-amigo-row';
-        row.innerHTML = `<span class="tr-amigo-pt">🟢</span><b>${a.nombre || ('@' + a.handle)}</b> <span class="auth-fine">@${a.handle}</span>`;
+        row.innerHTML = `<span class="tr-amigo-pt">🟢</span><b>${esc(a.nombre) || ('@' + esc(a.handle))}</b> <span class="auth-fine">@${esc(a.handle)}</span>`;
         const b = document.createElement('button'); b.className = 'btn-sec'; b.textContent = '🔄 Invitar';
         b.addEventListener('click', () => invitarAmigo(a));
         row.appendChild(b); cont.appendChild(row);

@@ -8,6 +8,8 @@ const features = [
   ['🏆', 'La Liga', 'Tu progreso se vuelve un juego: <strong>EXP</strong>, <strong>niveles</strong>, <strong>medallas</strong> de gimnasio y <strong>logros</strong>. Completá una región para ser su Campeón.', '/liga'],
   ['📕', 'Pokédex', 'Coleccionás Pokémon (¡con repetidos y shiny ✨!). Buscador, filtros y <strong>evoluciones</strong>: juntás 3 repetidos y evolucionás.', '/pokedex'],
   ['🎒', 'Safari', 'Ganás <strong>Pokéballs</strong> resolviendo ejercicios y tirás para atrapar Pokémon salvajes, con animación y suspenso.', '/safari'],
+  ['⚔️', 'Desafíos de la comunidad', 'Creá o resolvé retos de Python hechos por otros entrenadores. Ganá Pokéballs, votá los mejores y mirá cómo los resolvieron los demás.', '/desafios'],
+  ['🥊', 'Líderes de Gimnasio', 'Mini-proyectos por pasos que se desbloquean al terminar los ejercicios de cada tema. Vencerlos te da la medalla del gimnasio.', '/ejercicios'],
 ];
 
 const regiones = [
@@ -63,6 +65,24 @@ const regiones = [
 
       <h2 class="ayuda-h">⚙️ ¿Cómo corre Python en el navegador?</h2>
       <p class="ayuda-p">Usamos <strong>Pyodide</strong>: Python compilado a WebAssembly, que corre dentro de la página. Por eso podés ejecutar código, correr <code>pytest</code>, y usar librerías como NumPy, pandas, Flask, SQLite o scikit-learn <strong>sin instalar absolutamente nada</strong>. La primera ejecución descarga Python (~15s); después es instantáneo.</p>
+
+      <h2 class="ayuda-h">⚔️ Desafíos de la comunidad</h2>
+      <p class="ayuda-p">En <a href={u('/desafios')}>Desafíos</a> podés crear tus propios retos de Python o resolver los de otros entrenadores. Cada desafío es una función con casos de prueba: si tu solución pasa todos los tests, ganás <strong>Pokéballs</strong>. Una vez que lo resolvés, podés ver cómo lo resolvieron los demás y aprender de sus enfoques. También podés <strong>votar</strong> los retos que más te gustaron y reportar los que tengan algún problema.</p>
+      <ol class="ayuda-pasos">
+        <li><b>Resolver</b>: elegís un desafío, escribís tu solución y tocás <strong>Corregir</strong>. Si pasa los tests, gana Pokéballs.</li>
+        <li><b>Ver soluciones</b>: después de resolver, podés ver cómo lo hicieron los demás.</li>
+        <li><b>Crear</b>: escribís la consigna, la función, los casos de prueba y la publicás. La comunidad la resuelve y la vota.</li>
+        <li><b>Categorías</b>: los desafíos están organizados por región (Kanto, Johto, etc.) según el tema que usan.</li>
+      </ol>
+
+      <h2 class="ayuda-h">🥊 Líderes de Gimnasio</h2>
+      <p class="ayuda-p">Dentro de <a href={u('/ejercicios')}>Ejercicios</a>, al terminar todos los ejercicios de un tema, se desbloquea el <strong>Líder de Gimnasio</strong>: un mini-proyecto por pasos que pone a prueba todo lo que aprendiste en esa sección.</p>
+      <ol class="ayuda-pasos">
+        <li>Completás los ejercicios del tema → aparece el botón del Líder.</li>
+        <li>El proyecto se divide en <b>pasos</b>: cada uno tiene su propia consigna y tests.</li>
+        <li>Usás el botón <strong>▶ Ejecutar</strong> para ver los <code>print</code> y el valor de retorno de tu código.</li>
+        <li>Al pasar todos los pasos, <b>vencés al Líder</b> y ganás la medalla del gimnasio.</li>
+      </ol>
 
       <div class="ayuda-cta">
         <a class="btn-grande" href={u('/libro')}>📖 Empezar el libro</a>

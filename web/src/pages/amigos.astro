@@ -65,6 +65,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     const $ = (id) => document.getElementById(id);
     const B = (window.__BASE || '/').replace(/\/$/, '');
     const sprite = (id, sh) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${sh ? 'shiny/' : ''}${id}.png`;
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
     const avSprite = (av) => av ? `<img src="${sprite(av)}" alt="" />` : '🎓';
     const msg = (t) => { $('am-msg').textContent = t; };
     const miHandle = () => (localStorage.getItem('liga:nombre') || '').toLowerCase();
@@ -89,7 +90,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
       const div = document.createElement('div');
       div.className = 'am-fila';
       div.innerHTML = `<div class="am-av">${avSprite(p.avatar)}</div>`
-        + `<a class="am-info" href="${B}/u?h=${p.handle}"><b>${p.nombre || 'Entrenador/a'}</b><span>@${p.handle}</span></a>`;
+        + `<a class="am-info" href="${B}/u?h=${esc(p.handle)}"><b>${esc(p.nombre) || 'Entrenador/a'}</b><span>@${esc(p.handle)}</span></a>`;
       const acc = document.createElement('div'); acc.className = 'am-acc';
       acciones.forEach((a) => acc.appendChild(a));
       div.appendChild(acc);
@@ -100,7 +101,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
       b.addEventListener('click', () => fn(b)); return b;
     }
     const chips = (arr) => (arr && arr.length)
-      ? arr.map((x) => `<img class="am-chip" src="${sprite(x.id, x.shiny)}" title="${nombres[x.id] || x.id}${x.shiny ? ' ✨' : ''}" />`).join('')
+      ? arr.map((x) => `<img class="am-chip" src="${sprite(x.id, x.shiny)}" alt="${esc(nombres[x.id] || x.id)}${x.shiny ? ' ✨' : ''}" title="${esc(nombres[x.id] || x.id)}${x.shiny ? ' ✨' : ''}" />`).join('')
       : '<span class="tr-vacio">(nada)</span>';
 
     async function cargarResultados(lista) {
@@ -142,7 +143,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
       const cont = $('am-ofertas'); cont.innerHTML = '';
       lista.forEach((o) => {
         const div = document.createElement('div'); div.className = 'am-oferta';
-        const quien = o.soy_de ? ('Le ofreciste a @' + o.otro_handle) : ('@' + o.otro_handle + ' te ofrece');
+        const quien = o.soy_de ? ('Le ofreciste a @' + esc(o.otro_handle)) : ('@' + esc(o.otro_handle) + ' te ofrece');
         // desde TU lado: das = (soy_de ? doy : pido) ; recibís = (soy_de ? pido : doy)
         const das = o.soy_de ? o.doy : o.pido;
         const recibis = o.soy_de ? o.pido : o.doy;
@@ -177,7 +178,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
         const rank = pagU * PAGE + i + 1;
         const div = document.createElement('div'); div.className = 'am-fila';
         div.innerHTML = `<span class="am-rank">#${rank}</span><div class="am-av">${avSprite(p.avatar)}</div>`
-          + `<a class="am-info" href="${B}/u?h=${p.handle}"><b>${p.nombre || '@' + p.handle}</b><span>@${p.handle} · 📕 ${p.pokes}</span></a>`;
+          + `<a class="am-info" href="${B}/u?h=${esc(p.handle)}"><b>${esc(p.nombre) || '@' + esc(p.handle)}</b><span>@${esc(p.handle)} · 📕 ${p.pokes}</span></a>`;
         const acc = document.createElement('div'); acc.className = 'am-acc';
         acc.appendChild(nodoAgregar(p));
         div.appendChild(acc);
