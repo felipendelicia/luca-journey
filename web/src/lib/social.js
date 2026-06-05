@@ -99,6 +99,14 @@ export async function sonAmigos(otroUserId) {
   if (error) throw error;
   return !!data;
 }
+// Map(handle del otro -> estado) de todas tus relaciones (aceptada | pendiente).
+export async function misRelaciones() {
+  const { data, error } = await supa.rpc('mis_relaciones');
+  if (error) return new Map();
+  const m = new Map();
+  (data || []).forEach((r) => m.set(r.handle, r.estado));
+  return m;
+}
 
 // ---- intercambios asíncronos (ofertas) ----
 export async function crearOferta(aUserId, doy, pido) {

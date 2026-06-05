@@ -57,7 +57,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
 
   <script type="application/json" id="am-data" set:html={JSON.stringify({ nombres })}></script>
   <script>
-    import { buscar, solicitar, responder, quitar, amigos, solicitudes, ofertas, responderOferta, cancelarOferta, listarPerfiles, haySupabase } from '../lib/social.js';
+    import { buscar, solicitar, responder, quitar, amigos, solicitudes, ofertas, responderOferta, cancelarOferta, listarPerfiles, misRelaciones, haySupabase } from '../lib/social.js';
     import { usuario, init as initNube, refrescarDesdeNube } from '../lib/nube.js';
 
     const D = JSON.parse(document.getElementById('am-data').textContent);
@@ -67,6 +67,23 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     const sprite = (id, sh) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${sh ? 'shiny/' : ''}${id}.png`;
     const avSprite = (av) => av ? `<img src="${sprite(av)}" alt="" />` : '🎓';
     const msg = (t) => { $('am-msg').textContent = t; };
+    const miHandle = () => (localStorage.getItem('liga:nombre') || '').toLowerCase();
+    let relaciones = new Map();   // handle del otro -> estado (aceptada | pendiente)
+
+    // Devuelve el nodo de acción para una fila: botón Agregar, o una etiqueta si ya hay
+    // relación (o sos vos).
+    function nodoAgregar(p) {
+      const mio = miHandle();
+      if (mio && p.handle === mio) { const s = document.createElement('span'); s.className = 'am-rel'; s.textContent = 'vos'; return s; }
+      const est = relaciones.get(p.handle);
+      if (est === 'aceptada') { const s = document.createElement('span'); s.className = 'am-rel amigo'; s.textContent = '✓ amigo'; return s; }
+      if (est === 'pendiente') { const s = document.createElement('span'); s.className = 'am-rel'; s.textContent = '⏳ pendiente'; return s; }
+      return btn('＋ Agregar', 'tr-aceptar', async (b) => {
+        b.disabled = true;
+        try { await solicitar({ handle: p.handle }); b.textContent = '✓ enviada'; }
+        catch (e) { b.disabled = false; msg('⚠️ ' + (e.message || e)); }
+      });
+    }
 
     function fila(p, acciones) {
       const div = document.createElement('div');
@@ -89,16 +106,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     async function cargarResultados(lista) {
       const cont = $('am-resultados'); cont.innerHTML = '';
       if (!lista.length) { cont.innerHTML = '<p class="tr-colec-vacio">Sin resultados.</p>'; return; }
-      const yo = usuario();
-      lista.forEach((p) => {
-        const acc = [];
-        if (!yo || p.handle) acc.push(btn('＋ Agregar', 'tr-aceptar', async (b) => {
-          b.disabled = true;
-          try { await solicitar({ handle: p.handle }); b.textContent = '✓ enviada'; }
-          catch (e) { b.disabled = false; msg('⚠️ ' + (e.message || e)); }
-        }));
-        cont.appendChild(fila(p, acc));
-      });
+      lista.forEach((p) => cont.appendChild(fila(p, [nodoAgregar(p)])));
     }
 
     async function cargarSolicitudes() {
@@ -171,11 +179,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
         div.innerHTML = `<span class="am-rank">#${rank}</span><div class="am-av">${avSprite(p.avatar)}</div>`
           + `<a class="am-info" href="${B}/u?h=${p.handle}"><b>${p.nombre || '@' + p.handle}</b><span>@${p.handle} · 📕 ${p.pokes}</span></a>`;
         const acc = document.createElement('div'); acc.className = 'am-acc';
-        acc.appendChild(btn('＋ Agregar', 'tr-aceptar', async (b) => {
-          b.disabled = true;
-          try { await solicitar({ handle: p.handle }); b.textContent = '✓ enviada'; }
-          catch (e) { b.disabled = false; msg('⚠️ ' + (e.message || e)); }
-        }));
+        acc.appendChild(nodoAgregar(p));
         div.appendChild(acc);
         cont.appendChild(div);
       });
@@ -188,7 +192,10 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     $('am-prev').addEventListener('click', () => { if (pagU > 0) { pagU--; cargarTodos(); } });
     $('am-next').addEventListener('click', () => { pagU++; cargarTodos(); });
 
-    function refrescarTodo() { cargarSolicitudes(); cargarAmigos(); cargarOfertas(); cargarTodos(); }
+    async function refrescarTodo() {
+      relaciones = await misRelaciones().catch(() => new Map());
+      cargarSolicitudes(); cargarAmigos(); cargarOfertas(); cargarTodos();
+    }
 
     $('am-buscar').addEventListener('click', async () => {
       const q = $('am-q').value.trim();
