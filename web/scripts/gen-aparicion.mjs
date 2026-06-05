@@ -1,46 +1,49 @@
-// gen-aparicion.mjs — peso de APARICIÓN propio (criterio del juego, no el capture_rate).
-// Más peso = aparece más seguido en el Safari. Se basa en la etapa evolutiva + rareza:
-//   legendarios y pseudo-legendarios = rarísimos; bases = comunes; finales = raras.
-// Usa src/data/evoluciones.json (sin red). Salida: src/data/aparicion.json { id: peso }.
+// gen-aparicion.mjs — peso de APARICIÓN con datos REALES de la PokéAPI.
+// Criterio: rareza por VALOR del Pokémon → total de stats base (BST) + legendario/mítico.
+//   más fuerte = más raro (aparece menos); legendarios/míticos = rarísimos.
+// Trae /pokemon/{id} (stats → BST) y /pokemon-species/{id} (is_legendary, is_mythical).
+// Salida: src/data/aparicion.json { id: peso }. Más peso = aparece más seguido.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const evo = JSON.parse(fs.readFileSync(path.resolve(HERE, '..', 'src', 'data', 'evoluciones.json')));
+const OUT = path.resolve(HERE, '..', 'src', 'data', 'aparicion.json');
 
-// Legendarios + míticos (gen 1-6)
-const LEGENDARIOS = new Set([
-  144, 145, 146, 150, 151,
-  243, 244, 245, 249, 250, 251,
-  377, 378, 379, 380, 381, 382, 383, 384, 385, 386,
-  480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493,
-  494, 638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 648, 649,
-  716, 717, 718, 719, 720, 721,
-]);
-// Pseudo-legendarios (finales con stats altísimas)
-const PSEUDO = new Set([149, 248, 373, 376, 445, 635, 706]);
-// Starters (formas base de cada región)
-const STARTERS = new Set([1, 4, 7, 152, 155, 158, 252, 255, 258, 387, 390, 393, 495, 498, 501, 650, 653, 656]);
+const N = 721;
+const LOTE = 20;
+const MIN_BST = 200, MAX_BST = 720;   // rango aprox. de BST en gen 1-6
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 
-const evoluciona = new Set(Object.keys(evo).map(Number));        // tiene evolución (sale)
-const esEvolucion = new Set();                                   // es resultado de evolución
-for (const arr of Object.values(evo)) for (const t of arr) esEvolucion.add(t);
-
-const peso = {};
-for (let id = 1; id <= 721; id++) {
-  const sale = evoluciona.has(id);
-  const llega = esEvolucion.has(id);
-  let w;
-  if (LEGENDARIOS.has(id)) w = 4;          // legendario/mítico → rarísimo
-  else if (PSEUDO.has(id)) w = 12;         // pseudo-legendario → muy raro
-  else if (STARTERS.has(id)) w = 60;       // starter → especial
-  else if (!llega && sale) w = 220;        // base de una línea → común
-  else if (llega && sale) w = 75;          // intermedio
-  else if (llega && !sale) w = 28;         // evolución final → rara
-  else w = 110;                            // single-stage (no evoluciona ni es evolución)
-  peso[id] = w;
+async function jget(url) {
+  for (let i = 0; i < 3; i++) {
+    try { const r = await fetch(url); if (r.ok) return await r.json(); } catch {}
+  }
+  return null;
 }
 
-fs.writeFileSync(path.resolve(HERE, '..', 'src', 'data', 'aparicion.json'), JSON.stringify(peso));
-console.log(`✓ aparicion.json: ${Object.keys(peso).length} pesos`);
+function pesoDe(bst, legendario) {
+  const t = clamp((bst - MIN_BST) / (MAX_BST - MIN_BST), 0, 1);   // 0 débil … 1 fuerte
+  let w = Math.round(6 + (255 - 6) * Math.pow(1 - t, 1.9));        // débil→~255, fuerte→~6
+  if (legendario) w = Math.min(w, 5);                             // legendario/mítico: piso bajo
+  return Math.max(3, w);
+}
+
+const peso = {};
+const ids = Array.from({ length: N }, (_, i) => i + 1);
+for (let i = 0; i < ids.length; i += LOTE) {
+  await Promise.all(ids.slice(i, i + LOTE).map(async (id) => {
+    const [poke, spec] = await Promise.all([
+      jget(`https://pokeapi.co/api/v2/pokemon/${id}`),
+      jget(`https://pokeapi.co/api/v2/pokemon-species/${id}`),
+    ]);
+    const bst = poke && Array.isArray(poke.stats)
+      ? poke.stats.reduce((a, s) => a + (s.base_stat || 0), 0) : 450;
+    const leg = !!(spec && (spec.is_legendary || spec.is_mythical));
+    peso[id] = pesoDe(bst, leg);
+  }));
+  process.stdout.write('.');
+}
+
+fs.writeFileSync(OUT, JSON.stringify(peso));
+console.log(`\n✓ aparicion.json: ${Object.keys(peso).length} pesos (BST + legendario, PokéAPI)`);
