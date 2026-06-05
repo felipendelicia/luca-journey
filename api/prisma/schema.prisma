@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  googleSub String?  @unique @map("google_sub")
+  creado    DateTime @default(now())
+
+  @@map("users")
+}
+
+model Progreso {
+  userId      String   @id @map("user_id")
+  estado      Json     @default("{}")
+  actualizado DateTime @updatedAt
+
+  @@map("progreso")
+}
+
+model Perfil {
+  userId      String   @id @map("user_id")
+  handle      String   @unique
+  nombre      String   @default("")
+  avatar      Int      @default(0)
+  codigoAmigo String   @unique @map("codigo_amigo")
+  publico     Json     @default("{}")
+  descripcion String   @default("")
+  actualizado DateTime @updatedAt
+
+  @@map("perfiles")
+}
+
+model Amistad {
+  id     String   @id @default(uuid())
+  deId   String   @map("de_id")
+  aId    String   @map("a_id")
+  estado String   @default("pendiente")
+  creado DateTime @default(now())
+
+  @@unique([deId, aId])
+  @@map("amistades")
+}
+
+model Oferta {
+  id       String    @id @default(uuid())
+  deId     String    @map("de_id")
+  aId      String    @map("a_id")
+  doy      Json      @default("[]")
+  pido     Json      @default("[]")
+  estado   String    @default("pendiente")
+  creado   DateTime  @default(now())
+  resuelto DateTime?
+
+  @@map("ofertas")
+}
+
+model Intercambio {
+  id             String   @id @default(uuid())
+  codigo         String   @unique
+  creadorId      String   @map("creador_id")
+  invitadoId     String?  @map("invitado_id")
+  creadorNombre  String   @default("") @map("creador_nombre")
+  invitadoNombre String   @default("") @map("invitado_nombre")
+  creadorLote    Json     @default("[]") @map("creador_lote")
+  invitadoLote   Json     @default("[]") @map("invitado_lote")
+  creadorPedido  Json     @default("[]") @map("creador_pedido")
+  invitadoPedido Json     @default("[]") @map("invitado_pedido")
+  creadorOk      Boolean  @default(false) @map("creador_ok")
+  invitadoOk     Boolean  @default(false) @map("invitado_ok")
+  estado         String   @default("abierta")
+  creado         DateTime @default(now())
+  actualizado    DateTime @updatedAt
+
+  @@map("intercambios")
+}
+
+model Desafio {
+  id         String   @id @default(uuid())
+  autor      String
+  titulo     String
+  consigna   String   @default("")
+  func       String
+  starter    String   @default("")
+  casos      Json     @default("[]")
+  dificultad Int      @default(3)
+  region     String   @default("libre")
+  creado     DateTime @default(now())
+
+  @@map("desafios")
+}
+
+model Resolucion {
+  id        String   @id @default(uuid())
+  desafioId String   @map("desafio_id")
+  userId    String   @map("user_id")
+  codigo    String   @default("")
+  creado    DateTime @default(now())
+
+  @@unique([desafioId, userId])
+  @@map("resoluciones")
+}
+
+model Voto {
+  resolucionId String @map("resolucion_id")
+  userId       String @map("user_id")
+
+  @@id([resolucionId, userId])
+  @@map("votos")
+}
+
+model Reporte {
+  desafioId String   @map("desafio_id")
+  userId    String   @map("user_id")
+  motivo    String   @default("")
+  creado    DateTime @default(now())
+
+  @@id([desafioId, userId])
+  @@map("reportes")
+}
