@@ -553,6 +553,17 @@ body.shiny-flash{ animation:shinyFlash .7s ease; }
   .tr-vs{ transform:rotate(90deg); }
 }
 
+/* intercambio — amigos en línea + invitación */
+.tr-amigos{ margin-top:1.4rem; }
+.tr-amigos[hidden]{ display:none; }
+.tr-amigos h3{ margin:0 0 .2rem; font-size:1rem; }
+.tr-amigo-row{ display:flex; align-items:center; gap:8px; background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:8px 12px; margin-top:6px; }
+.tr-amigo-row b{ font-size:.95rem; }
+.tr-amigo-row .btn-sec{ margin-left:auto; }
+.tr-amigo-pt{ font-size:.7rem; }
+.tr-invite{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; background:var(--paper-2); border:1px solid var(--yellow-deep); border-radius:12px; padding:12px 14px; margin-bottom:1rem; }
+.tr-invite[hidden]{ display:none; }
+
 /* ===== social: perfil + amigos ===== */
 .nav-badge{ display:inline-block; min-width:16px; height:16px; line-height:16px; text-align:center; margin-left:5px;
   font-size:.62rem; font-weight:800; color:#fff; background:var(--red); border-radius:9px; padding:0 4px; vertical-align:top; }

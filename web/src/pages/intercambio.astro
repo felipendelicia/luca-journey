@@ -11,6 +11,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     <p class="tr-login" id="tr-login" hidden>Necesitás <b>iniciar sesión</b> (botón ☁️ arriba) para intercambiar.</p>
 
     <section class="tr-pane" id="tr-inicio" hidden>
+      <div class="tr-invite" id="tr-invite" hidden></div>
       <p>Creá una sala y pasale el código a la otra persona (por WhatsApp), o unite con un código. Los dos tienen que estar conectados al mismo tiempo.</p>
       <div class="tr-acciones">
         <button class="btn-grande" id="tr-crear">Crear sala</button>
@@ -18,6 +19,11 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
           <input id="tr-codigo" placeholder="CÓDIGO" maxlength="6" />
           <button class="btn-grande sec" type="submit">Unirme</button>
         </form>
+      </div>
+      <div class="tr-amigos" id="tr-amigos" hidden>
+        <h3>👥 Amigos en línea</h3>
+        <p class="auth-fine">Están en esta página ahora. Invitalos a intercambiar sin pasar código.</p>
+        <div id="tr-amigos-lista"></div>
       </div>
       <p class="auth-msg err" id="tr-err" hidden></p>
     </section>
@@ -85,8 +91,9 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
 
   <script type="application/json" id="tr-data" set:html={JSON.stringify({ nombres })}></script>
   <script>
-    import { crear, unirse, ponerLote, ponerPedido, coleccionOtro, confirmar, cancelar, leerSala, suscribir, haySupabase } from '../lib/trades.js';
+    import { crear, unirse, ponerLote, ponerPedido, coleccionOtro, confirmar, cancelar, leerSala, suscribir, entrarLobby, haySupabase } from '../lib/trades.js';
     import { usuario, init as initNube, refrescarDesdeNube } from '../lib/nube.js';
+    import { amigos } from '../lib/social.js';
 
     const D = JSON.parse(document.getElementById('tr-data').textContent);
     const nombres = D.nombres;
@@ -100,6 +107,8 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
 
     let sala = null, salaId = null, miLote = [], miPedido = [], desuscribir = null, entrando = false, poll = null;
     let otroColeccion = null;            // { atrapados, shiny } del otro (cache)
+    let lobby = null, misAmigos = [], presentes = new Set();   // amigos en línea + invitaciones
+    const miHandle = () => localStorage.getItem('liga:nombre') || '';
     const ocultos = new Set();           // pedidos "rechazados" localmente (key id+shiny)
     const claveItem = (x) => `${x.id}${x.shiny ? 's' : ''}`;
     const miColCount = (id) => atrapados()[id] || 0;
@@ -227,6 +236,8 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     }
 
     async function entrarSala(id) {
+      if (lobby) { lobby.salir(); lobby = null; }   // en una sala ya no figurás en el lobby
+      $('tr-invite').hidden = true;
       salaId = id;
       sala = await leerSala(id);
       miLote = (soyCreador() ? sala.creador_lote : sala.invitado_lote) || [];
@@ -274,6 +285,48 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
 
     const mostrarError = (e) => { const el = $('tr-err'); el.textContent = e.message || String(e); el.hidden = false; };
 
+    async function entrarLobbyUna() {
+      if (lobby || !usuario()) return;
+      lobby = entrarLobby(usuario().id, miHandle(), {
+        onPresencia: (ids) => { presentes = new Set(ids); pintarAmigos(); },
+        onInvitacion: (inv) => mostrarInvite(inv),
+      });
+      try { misAmigos = await amigos(); } catch { misAmigos = []; }
+      pintarAmigos();
+    }
+    function pintarAmigos() {
+      const yo = usuario();
+      const online = misAmigos.filter((a) => presentes.has(a.user_id) && (!yo || a.user_id !== yo.id));
+      $('tr-amigos').hidden = online.length === 0;
+      const cont = $('tr-amigos-lista'); cont.innerHTML = '';
+      online.forEach((a) => {
+        const row = document.createElement('div'); row.className = 'tr-amigo-row';
+        row.innerHTML = `<span class="tr-amigo-pt">🟢</span><b>${a.nombre || ('@' + a.handle)}</b> <span class="auth-fine">@${a.handle}</span>`;
+        const b = document.createElement('button'); b.className = 'btn-sec'; b.textContent = '🔄 Invitar';
+        b.addEventListener('click', () => invitarAmigo(a));
+        row.appendChild(b); cont.appendChild(row);
+      });
+    }
+    async function invitarAmigo(a) {
+      try {
+        const { id, codigo } = await crear();
+        if (lobby) lobby.invitar(a.user_id, codigo, miHandle());
+        await entrarSala(id);
+      } catch (e) { mostrarError(e); }
+    }
+    function mostrarInvite(inv) {
+      const el = $('tr-invite'); el.hidden = false;
+      el.innerHTML = `<span>🔔 <b>@${inv.de || 'Alguien'}</b> te invitó a intercambiar.</span>`;
+      const ok = document.createElement('button'); ok.className = 'btn-grande'; ok.textContent = 'Unirme';
+      ok.addEventListener('click', async () => {
+        try { entrando = true; const id = await unirse(inv.codigo); await entrarSala(id); }
+        catch (e) { entrando = false; mostrarError(e); }
+      });
+      const no = document.createElement('button'); no.className = 'btn-sec'; no.textContent = '✕';
+      no.addEventListener('click', () => { el.hidden = true; });
+      el.appendChild(ok); el.appendChild(no);
+    }
+
     function arrancar() {
       if (!haySupabase) { ver('tr-login'); return; }
       initNube();
@@ -282,7 +335,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
         if (!usuario()) { ver('tr-login'); return; }
         const codigoURL = new URLSearchParams(location.search).get('codigo');
         if (codigoURL) { entrando = true; unirse(codigoURL).then(entrarSala).catch((e) => { entrando = false; mostrarError(e); ver('tr-inicio'); }); }
-        else ver('tr-inicio');
+        else { ver('tr-inicio'); entrarLobbyUna(); }
       };
       window.addEventListener('nube:cambio', refrescarSesion);
       refrescarSesion();
