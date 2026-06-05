@@ -169,9 +169,43 @@ const grupos = agrupar(caps);
       pintar();
     }
 
+    // ── Libro activo: quiz de opción múltiple ─────────────────────────────────
+    // Sintaxis en el .md (bloque ```quiz):  P: pregunta / + correcta / - incorrecta / > explicación
+    function renderQuiz(pre, texto) {
+      let pregunta = '', expl = '';
+      const opciones = [];
+      for (const ln of texto.split('\n')) {
+        const t = ln.trim();
+        if (t.startsWith('P:')) pregunta = t.slice(2).trim();
+        else if (t.startsWith('+ ')) opciones.push({ txt: t.slice(2).trim(), ok: true });
+        else if (t.startsWith('- ')) opciones.push({ txt: t.slice(2).trim(), ok: false });
+        else if (t.startsWith('> ')) expl = t.slice(2).trim();
+      }
+      if (!pregunta || !opciones.length) return;
+      const box = document.createElement('div');
+      box.className = 'quiz';
+      const q = document.createElement('div'); q.className = 'quiz-q'; q.textContent = '🤔 ' + pregunta;
+      const opsEl = document.createElement('div'); opsEl.className = 'quiz-ops';
+      const explEl = document.createElement('div'); explEl.className = 'quiz-expl'; explEl.hidden = true; explEl.textContent = expl;
+      opciones.forEach((op) => {
+        const b = document.createElement('button'); b.className = 'quiz-op'; b.type = 'button'; b.textContent = op.txt;
+        b.addEventListener('click', () => {
+          if (box.classList.contains('resuelto')) return;
+          box.classList.add('resuelto');
+          Array.from(opsEl.children).forEach((x, idx) => { if (opciones[idx].ok) x.classList.add('correcta'); });
+          b.classList.add(op.ok ? 'elegida-ok' : 'elegida-mal');
+          if (expl) explEl.hidden = false;
+        });
+        opsEl.appendChild(b);
+      });
+      box.appendChild(q); box.appendChild(opsEl); box.appendChild(explEl);
+      pre.parentNode.replaceChild(box, pre);
+    }
+
     document.querySelectorAll('.book pre.astro-code').forEach((pre) => {
       const lang = (pre.getAttribute('data-language') || '').toLowerCase();
       const codigo = pre.innerText.replace(/\n+$/, '');
+      if (lang === 'quiz') { renderQuiz(pre, codigo); return; }
       const fig = document.createElement('figure');
       fig.className = 'cw';
       const bar = document.createElement('div');

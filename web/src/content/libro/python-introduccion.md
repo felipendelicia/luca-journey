@@ -106,6 +106,14 @@ print(type(nivel))    # <class 'int'>
 print(type(nombre))   # <class 'str'>
 ```
 
+```quiz
+P: ¿De qué tipo es el valor `6.0`?
+- int
++ float
+- str
+> Tiene decimales (el `.0`), así que es un **float**. Un `int` sería `6`, sin la coma.
+```
+
 ---
 
 ## ⌨️ input(): pedirle datos al usuario

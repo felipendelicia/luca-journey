@@ -995,6 +995,19 @@ body.claro .hero-home h1{ color:#eafff0; }
 .viz-salida{ margin:0; background:rgba(0,0,0,.28); border-radius:6px; padding:7px 9px; font-family:var(--font-mono); font-size:12px; white-space:pre-wrap; color:#cde; }
 .viz-errbox{ margin-top:10px; color:#ff9a9a; font-size:.82rem; }
 @media(max-width:640px){ .viz-cuerpo{ grid-template-columns:1fr; } .viz-lado{ border-left:none; border-top:1px solid rgba(255,255,255,.08); } }
+/* libro activo: quiz */
+.quiz{ background:var(--paper-2); border:1px solid var(--teal-deep); border-radius:14px; padding:16px 18px; margin:1.4rem 0; }
+.quiz-q{ font-weight:800; margin-bottom:.8rem; font-size:1rem; }
+.quiz-ops{ display:flex; flex-direction:column; gap:8px; }
+.quiz-op{ text-align:left; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px 14px; font:inherit; color:var(--ink); cursor:pointer; }
+.quiz-op:hover{ border-color:var(--teal-deep); }
+.quiz.resuelto .quiz-op{ cursor:default; }
+.quiz-op.correcta{ border-color:#1f8b4c; background:rgba(31,139,76,.12); }
+.quiz-op.elegida-ok{ border-color:#1f8b4c; background:rgba(31,139,76,.22); font-weight:700; }
+.quiz-op.elegida-mal{ border-color:var(--red-deep); background:rgba(200,40,40,.14); }
+.quiz-op.correcta::after{ content:' ✓'; color:#1f8b4c; font-weight:800; }
+.quiz-op.elegida-mal::after{ content:' ✗'; color:var(--red-deep); font-weight:800; }
+.quiz-expl{ margin-top:.9rem; padding:10px 14px; background:var(--card); border-left:3px solid var(--teal-deep); border-radius:0 8px 8px 0; font-size:.92rem; line-height:1.5; }
 /* listas de desafíos en el perfil */
 .u-df-grupo{ margin-bottom:.9rem; }
 .u-df-lista{ display:flex; flex-direction:column; gap:5px; margin-top:6px; }
