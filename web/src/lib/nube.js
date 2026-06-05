@@ -60,14 +60,12 @@ async function alLoguear(user) {
   const nube = await bajar(user.id);
   const tieneNube = nube && Object.keys(nube).length > 0;
   if (tieneNube) {
-    // cuenta existente: importar su progreso y descartar el local
+    // la nube manda: importar su progreso y descartar el local
     const cambia = serial(nube) !== serial(snapshot());
-    limpiarLocal();
-    aplicar(nube);
-    _ultima = serial(nube);
-    if (cambia) location.reload();           // reflejar el progreso importado (solo si cambió)
+    aplicarNube(nube);
+    if (cambia) location.reload();           // reflejar lo importado (termina: tras aplicar, local == nube)
   } else {
-    // cuenta nueva: el progreso local pasa a ser el de la cuenta
+    // cuenta nueva: el progreso local siembra la cuenta
     const local = snapshot();
     if (Object.keys(local).length) await subir(user.id, local);
     else _ultima = serial(local);
@@ -154,19 +152,15 @@ export async function logout() {
 
 export function init() {
   if (!haySupabase) return;
-  let fusionado = sessionStorage.getItem('nube:fusionado') === '1';
+  let cargado = false;   // Opción 2: la nube manda — baja y aplica una vez por carga de página
   supa.auth.onAuthStateChange((evento, sesion) => {
     _user = (sesion && sesion.user) || null;
     window.dispatchEvent(new CustomEvent('nube:cambio', { detail: { user: _user } }));
     if (_user) {
-      if (!fusionado) {
-        fusionado = true;
-        sessionStorage.setItem('nube:fusionado', '1');
-        alLoguear(_user);
-      }
+      if (!cargado) { cargado = true; alLoguear(_user); }
       suscribirProgreso(_user.id);     // escuchar cambios externos (intercambios)
     } else {
-      sessionStorage.removeItem('nube:fusionado');
+      cargado = false;
       if (_canalProg) { supa.removeChannel(_canalProg); _canalProg = null; }
     }
   });

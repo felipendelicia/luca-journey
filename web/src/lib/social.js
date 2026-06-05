@@ -51,7 +51,8 @@ export async function guardarPerfil({ handle, nombre, avatar, publico }) {
 // Actualiza solo el snapshot público (no-op si todavía no tenés perfil).
 export async function actualizarSnapshot(temas) {
   if (!haySupabase || !(await uid())) return;
-  try { await supa.rpc('actualizar_publico', { p_publico: snapshotPublico(temas) }); } catch {}
+  const avatar = Number(localStorage.getItem('col:avatar')) || 0;
+  try { await supa.rpc('actualizar_publico', { p_publico: snapshotPublico(temas), p_avatar: avatar }); } catch {}
 }
 export async function guardarDescripcion(desc) {
   const { error } = await supa.rpc('actualizar_descripcion', { p_desc: desc });

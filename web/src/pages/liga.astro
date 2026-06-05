@@ -150,6 +150,7 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
       } catch (e) { $('social-msg').textContent = '⚠️ ' + (e.message || e); }
     });
     window.addEventListener('nube:cambio', cargar);
+    window.addEventListener('avatar:cambio', () => actualizarSnapshot(temas));
     cargar();
   </script>
 
@@ -235,6 +236,7 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
             '<img loading="lazy" src="' + sprite(id) + '" alt="' + (nombres[id] || id) + '" /></button>').join('');
           grid.querySelectorAll('.av-poke').forEach((b) => b.addEventListener('click', () => {
             localStorage.setItem('col:avatar', b.dataset.id); pintar(); cerrar();
+            window.dispatchEvent(new Event('avatar:cambio'));
           }));
         }
         modal.hidden = false;
@@ -242,7 +244,7 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
 
       av.addEventListener('click', abrir);
       document.getElementById('av-cerrar').addEventListener('click', cerrar);
-      document.getElementById('av-reset').addEventListener('click', () => { localStorage.removeItem('col:avatar'); pintar(); cerrar(); });
+      document.getElementById('av-reset').addEventListener('click', () => { localStorage.removeItem('col:avatar'); pintar(); cerrar(); window.dispatchEvent(new Event('avatar:cambio')); });
       modal.addEventListener('click', (e) => { if (e.target === modal) cerrar(); });
       pintar();
     })();
