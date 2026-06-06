@@ -1,6 +1,7 @@
 import {
   efectividad, calcularDano, aplicarEstado, danoSuper, combatiente, hpMax,
   crearCombate, aplicarAccion, chequearFin, EstadoCombate, Combatiente, Mov,
+  acierta, puedeActuar, aplicarAilment, tickEstado,
 } from './motor';
 
 const rng0 = () => 0;          // determinista: rand = 0.85
@@ -140,5 +141,77 @@ describe('máquina de estado de la sala', () => {
     const e = combateBasico();
     aplicarAccion(e, 'B', { tipo: 'rendirse' }, rng0);
     expect(aplicarAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0).error).toBe('combate-terminado');
+  });
+});
+
+describe('estados alterados + fallar', () => {
+  const c = () => combatiente(inst('x', 4, 30));
+
+  it('acierta según la precisión', () => {
+    expect(acierta({ id: 1, nombre: 'm', tipo: 'Normal', precision: 0 }, () => 0.5)).toBe(false);
+    expect(acierta({ id: 1, nombre: 'm', tipo: 'Normal', precision: 100 }, () => 0.99)).toBe(true);
+    expect(acierta({ id: 1, nombre: 'm', tipo: 'Normal' }, () => 0.99)).toBe(true);   // sin precision = siempre
+  });
+
+  it('veneno y quemadura quitan ~1/8 del HP máximo', () => {
+    const v = c(); v.estado = 'veneno';
+    const tk = tickEstado(v);
+    expect(tk.dmg).toBe(Math.floor(v.hpMax / 8));
+    expect(v.hp).toBe(v.hpMax - tk.dmg);
+  });
+
+  it('quemadura reduce el daño físico a la mitad', () => {
+    const atk = c(); const def = combatiente(inst('y', 1, 30));
+    const mov: Mov = { id: 1, nombre: 'Golpe', tipo: 'Normal', poder: 80, categoria: 'Físico' };
+    const normal = calcularDano(atk, mov, def, rng0).dmg;
+    atk.estado = 'quemadura';
+    const quemado = calcularDano(atk, mov, def, rng0).dmg;
+    expect(quemado).toBeLessThan(normal);
+  });
+
+  it('dormido pierde el turno y se despierta al agotar el contador', () => {
+    const d = c(); d.estado = 'sueno'; d.estadoT = 2;
+    expect(puedeActuar(d, () => 0.9).actua).toBe(false);   // T:2->1
+    const r = puedeActuar(d, () => 0.9);                    // T:1->0 → despierta
+    expect(r.actua).toBe(true); expect(d.estado).toBeNull();
+  });
+
+  it('paralizado a veces no se mueve (rng < 0.25)', () => {
+    const p = c(); p.estado = 'paralisis';
+    expect(puedeActuar(p, () => 0.1).actua).toBe(false);
+    expect(puedeActuar(p, () => 0.9).actua).toBe(true);
+  });
+
+  it('congelado no actúa, pero un 20% se descongela', () => {
+    const f = c(); f.estado = 'congelado';
+    expect(puedeActuar(f, () => 0.9).actua).toBe(false);
+    const r = puedeActuar(f, () => 0.05); expect(r.actua).toBe(true); expect(f.estado).toBeNull();
+  });
+
+  it('confuso a veces se golpea a sí mismo', () => {
+    const cf = c(); cf.estado = 'confusion'; cf.estadoT = 3; const hp0 = cf.hp;
+    const r = puedeActuar(cf, () => 0.1);   // 0.1 < 0.33 → autogolpe
+    expect(r.actua).toBe(false); expect(r.autogolpe).toBeGreaterThan(0); expect(cf.hp).toBeLessThan(hp0);
+  });
+
+  it('aplicarAilment respeta la chance y un solo estado a la vez', () => {
+    const atk = c(); const def = combatiente(inst('y', 1, 30));
+    const tox: Mov = { id: 92, nombre: 'Tóxico', tipo: 'Veneno', categoria: 'Estado', ailment: 'veneno', ailmentChance: 0 };  // 0 = garantizado
+    expect(aplicarAilment(tox, atk, def, () => 0.5)).toContain('envenenado');
+    expect(def.estado).toBe('veneno');
+    // ya tiene estado → no se sobreescribe
+    const slp: Mov = { id: 1, nombre: 'x', tipo: 'Psíquico', ailment: 'sueno', ailmentChance: 100 };
+    expect(aplicarAilment(slp, atk, def, () => 0.1)).toBe('');
+    expect(def.estado).toBe('veneno');
+  });
+
+  it('un ataque que falla (precisión 0) no hace daño y pasa el turno', () => {
+    const e = combateBasico();
+    e.jugadores[0].equipo[0].movs = [{ id: 1, nombre: 'Falla', tipo: 'Normal', poder: 80, precision: 0 } as Mov];
+    const hp0 = e.jugadores[1].equipo[0].hp;
+    const r = aplicarAccion(e, 'A', { tipo: 'mover', i: 0 }, () => 0.99);
+    expect(r.error).toBeUndefined();
+    expect(e.jugadores[1].equipo[0].hp).toBe(hp0);   // no daño
+    expect(r.estado.turno).toBe('B');                // pasó el turno
   });
 });

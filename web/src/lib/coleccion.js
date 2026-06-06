@@ -196,7 +196,7 @@ export function opcionesEvo(iid) {
   const car = caramelos()[familiaDe(m.id)] || 0;
   return ((evoData[m.id] && evoData[m.id].evos) || []).map((ev) => {
     const req = ev.req || null;                             // item de tienda que hace falta (o null)
-    const costo = req ? 0 : costoEvo(ev.nivel);             // por piedra/disco: solo el item, sin caramelos
+    const costo = (req || ev.nivel > 0) ? 0 : costoEvo(ev.nivel);   // por piedra/disco o por NIVEL: solo el requisito (0 caramelos); amistad/otras: caramelos
     const ok = (ev.nivel > 0 ? m.nivel >= ev.nivel : true) && tieneReq(req) && car >= costo;
     return { a: ev.a, nivel: ev.nivel, costo, ok, req };
   });

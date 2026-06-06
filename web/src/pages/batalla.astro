@@ -501,8 +501,8 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       if (!me || !rival) return;
       const myAct = me.equipo[me.activo], rivAct = rival.equipo[rival.activo];
       $('bt-online').hidden = true; $('bt-sel').hidden = true; $('bt-modo').hidden = true; $('bt-combate').hidden = false;
-      $('r-nom').textContent = rivAct.nombre; $('r-lv').textContent = 'Nv.' + rivAct.nivel; $('r-tipos').textContent = rivAct.tipos.join(' · '); $('r-img').src = spriteUrl(rivAct.id, rivAct.shiny); hp('r-hp', rivAct); dots('r-dots', rival.equipo);
-      $('p-nom').textContent = myAct.nombre; $('p-lv').textContent = 'Nv.' + myAct.nivel; $('p-tipos').textContent = myAct.tipos.join(' · '); $('p-img').src = spriteUrl(myAct.id, myAct.shiny); hp('p-hp', myAct); dots('p-dots', me.equipo);
+      $('r-nom').textContent = rivAct.nombre; $('r-lv').textContent = 'Nv.' + rivAct.nivel; $('r-tipos').textContent = rivAct.tipos.join(' · '); $('r-estado').innerHTML = estadoChip(rivAct); $('r-img').src = spriteUrl(rivAct.id, rivAct.shiny); hp('r-hp', rivAct); dots('r-dots', rival.equipo);
+      $('p-nom').textContent = myAct.nombre; $('p-lv').textContent = 'Nv.' + myAct.nivel; $('p-tipos').textContent = myAct.tipos.join(' · '); $('p-estado').innerHTML = estadoChip(myAct); $('p-img').src = spriteUrl(myAct.id, myAct.shiny); hp('p-hp', myAct); dots('p-dots', me.equipo);
       $('bt-carga').style.width = me.super + '%'; $('bt-carga-txt').textContent = 'Súper: ' + me.super + '%';
       const miTurno = snap.fase === 'combate' && snap.turno === myUid;
       const ev = (snap.eventos || [])[snap.eventos.length - 1];

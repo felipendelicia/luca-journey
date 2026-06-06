@@ -53,11 +53,12 @@ export function etiquetaEfec(mult: number): string {
 
 // ───────────────────────── combatientes ─────────────────────────
 export type Rng = () => number;
-export interface Mov { id: number; nombre: string; tipo: string; poder?: number; categoria?: string; desc?: string; }
+export type EstadoAlt = null | 'veneno' | 'quemadura' | 'paralisis' | 'sueno' | 'congelado' | 'confusion';
+export interface Mov { id: number; nombre: string; tipo: string; poder?: number; categoria?: string; desc?: string; precision?: number | null; ailment?: EstadoAlt; ailmentChance?: number; }
 export interface Inst { iid: string; id: number; nivel: number; shiny?: boolean; mote?: string; movs?: number[]; }
 export interface Combatiente {
   iid: string; id: number; nombre: string; nivel: number; shiny: boolean; tipos: string[];
-  movs: Mov[]; hpMax: number; hp: number; atkMod: number; defMod: number;
+  movs: Mov[]; hpMax: number; hp: number; atkMod: number; defMod: number; estado: EstadoAlt; estadoT: number;
 }
 
 const FORCEJEO: Mov = { id: 0, nombre: 'Forcejeo', tipo: 'Normal', poder: 40 };
@@ -80,6 +81,7 @@ export function combatiente(inst: Inst): Combatiente {
     iid: inst.iid, id: inst.id, nombre: inst.mote || NOM[inst.id] || ('Nº ' + inst.id),
     nivel: inst.nivel, shiny: !!inst.shiny, tipos: tiposDe(inst.id),
     movs: movsDe(inst), hpMax: hpMax(inst.nivel), hp: hpMax(inst.nivel), atkMod: 1, defMod: 1,
+    estado: null, estadoT: 0,
   };
 }
 
@@ -90,8 +92,59 @@ export function calcularDano(atacante: Combatiente, mov: Mov, defensor: Combatie
   const stab = atacante.tipos.includes(mov.tipo) ? 1.5 : 1;
   const base = (mov.poder || 40) * 0.18 * (1 + atacante.nivel * 0.03);
   const mod = (atacante.atkMod || 1) / (defensor.defMod || 1);
+  const quema = (atacante.estado === 'quemadura' && mov.categoria === 'Físico') ? 0.5 : 1;   // quemado pega menos físico
   const rand = 0.85 + rng() * 0.15;
-  return { dmg: Math.max(1, Math.round(base * efec * stab * mod * rand)), efec, stab };
+  return { dmg: Math.max(1, Math.round(base * efec * stab * mod * quema * rand)), efec, stab };
+}
+
+// ───────────────────────── estados alterados (espeja batalla.js del cliente) ─────────────────────────
+const TXT_AIL: Record<string, string> = { veneno: 'fue envenenado', quemadura: 'sufrió una quemadura', paralisis: 'fue paralizado', sueno: 'se durmió', congelado: 'se congeló', confusion: 'se confundió' };
+export const acierta = (mov: Mov, rng: Rng = Math.random): boolean => (rng() * 100) < (mov.precision == null ? 100 : mov.precision);
+
+export function puedeActuar(c: Combatiente, rng: Rng = Math.random): { actua: boolean; texto: string; autogolpe?: number } {
+  if (c.estado === 'congelado') {
+    if (rng() < 0.2) { c.estado = null; return { actua: true, texto: '¡' + c.nombre + ' se descongeló!' }; }
+    return { actua: false, texto: c.nombre + ' está congelado y no puede moverse.' };
+  }
+  if (c.estado === 'sueno') {
+    c.estadoT = (c.estadoT || 1) - 1;
+    if (c.estadoT <= 0) { c.estado = null; return { actua: true, texto: '¡' + c.nombre + ' se despertó!' }; }
+    return { actua: false, texto: c.nombre + ' está profundamente dormido…' };
+  }
+  if (c.estado === 'paralisis' && rng() < 0.25) {
+    return { actua: false, texto: '¡' + c.nombre + ' está paralizado! No puede moverse.' };
+  }
+  if (c.estado === 'confusion') {
+    c.estadoT = (c.estadoT || 1) - 1;
+    if (c.estadoT <= 0) { c.estado = null; return { actua: true, texto: '¡' + c.nombre + ' salió de la confusión!' }; }
+    if (rng() < 0.33) {
+      const dmg = Math.max(1, Math.round(c.hpMax * 0.08));
+      c.hp = Math.max(0, c.hp - dmg);
+      return { actua: false, texto: c.nombre + ' está confuso… ¡se golpeó a sí mismo!', autogolpe: dmg };
+    }
+  }
+  return { actua: true, texto: '' };
+}
+
+export function aplicarAilment(mov: Mov, atacante: Combatiente, defensor: Combatiente, rng: Rng = Math.random): string {
+  if (mov.tipo === 'Fuego' && defensor.estado === 'congelado') defensor.estado = null;
+  if (!mov.ailment || defensor.estado || defensor.hp <= 0) return '';
+  const chance = mov.ailmentChance || 100;
+  if (rng() * 100 >= chance) return '';
+  defensor.estado = mov.ailment;
+  if (mov.ailment === 'sueno') defensor.estadoT = 1 + Math.floor(rng() * 3);
+  if (mov.ailment === 'confusion') defensor.estadoT = 1 + Math.floor(rng() * 4);
+  return '¡' + defensor.nombre + ' ' + TXT_AIL[mov.ailment] + '!';
+}
+
+export function tickEstado(c: Combatiente): { dmg: number; texto: string } {
+  if (c.hp <= 0) return { dmg: 0, texto: '' };
+  if (c.estado === 'veneno' || c.estado === 'quemadura') {
+    const dmg = Math.max(1, Math.floor(c.hpMax / 8));
+    c.hp = Math.max(0, c.hp - dmg);
+    return { dmg, texto: c.nombre + (c.estado === 'veneno' ? ' sufre por el veneno' : ' sufre por la quemadura') + ' (-' + dmg + ')' };
+  }
+  return { dmg: 0, texto: '' };
 }
 
 export function aplicarEstado(mov: Mov, atacante: Combatiente, defensor: Combatiente): string {
@@ -198,7 +251,9 @@ export function aplicarAccion(
     def.hp = Math.max(0, def.hp - r.dmg);
     yo.super = 0; e.fase = 'combate'; e.superDe = undefined;
     push('super', `⚡ ¡SÚPER de ${atk.nombre}! ${r.mov.nombre} causa ${r.dmg} de daño.`, { dmg: r.dmg });
-    const fin1 = postGolpe(e, rival, push); if (fin1) return { estado: e, eventos };
+    if (postGolpe(e, rival, push)) return { estado: e, eventos };
+    const tk = tickEstado(atk); if (tk.dmg) push('dot', tk.texto, { dmg: tk.dmg });
+    if (postGolpe(e, yo, push)) return { estado: e, eventos };
     pasarTurno(e, uid);
     return { estado: e, eventos };
   }
@@ -210,16 +265,26 @@ export function aplicarAccion(
   switch (accion.tipo) {
     case 'mover': {
       const mov = atk.movs[accion.i ?? 0]; if (!mov) return err('mov-invalido');
-      if (esEstado(mov)) {
-        push('estado', `${atk.nombre} usó ${mov.nombre}. ` + aplicarEstado(mov, atk, def), { mov: mov.id });
-      } else {
-        const r = calcularDano(atk, mov, def, rng);
-        def.hp = Math.max(0, def.hp - r.dmg);
-        const ef = etiquetaEfec(r.efec);
-        push('mover', `${atk.nombre} usó ${mov.nombre}: ${r.dmg} de daño.${ef ? ' ' + ef : ''}`, { dmg: r.dmg, efec: r.efec, mov: mov.id });
+      const pa = puedeActuar(atk, rng);                       // sueño/cong/para/confusión
+      if (pa.texto) push('estado', pa.texto, pa.autogolpe ? { autogolpe: pa.autogolpe } : {});
+      if (pa.actua) {
+        if (!acierta(mov, rng)) {
+          push('fallo', `${atk.nombre} usó ${mov.nombre}, ¡pero falló!`, { mov: mov.id });
+        } else if (esEstado(mov)) {
+          push('estado', `${atk.nombre} usó ${mov.nombre}. ` + aplicarEstado(mov, atk, def), { mov: mov.id });
+          const ta = aplicarAilment(mov, atk, def, rng); if (ta) push('ailment', ta);
+        } else {
+          const r = calcularDano(atk, mov, def, rng);
+          def.hp = Math.max(0, def.hp - r.dmg);
+          const ef = etiquetaEfec(r.efec);
+          push('mover', `${atk.nombre} usó ${mov.nombre}: ${r.dmg} de daño.${ef ? ' ' + ef : ''}`, { dmg: r.dmg, efec: r.efec, mov: mov.id });
+          if (def.hp > 0) { const ta = aplicarAilment(mov, atk, def, rng); if (ta) push('ailment', ta); }
+        }
+        yo.super = Math.min(SUPER_MAX, yo.super + SUPER_GANANCIA);
       }
-      yo.super = Math.min(SUPER_MAX, yo.super + SUPER_GANANCIA);
-      const fin = postGolpe(e, rival, push); if (fin) return { estado: e, eventos };
+      if (postGolpe(e, rival, push)) return { estado: e, eventos };   // ¿cayó el rival?
+      const tk = tickEstado(atk); if (tk.dmg) push('dot', tk.texto, { dmg: tk.dmg });   // veneno/quemadura del que actuó
+      if (postGolpe(e, yo, push)) return { estado: e, eventos };      // ¿cayó el actor (DOT/confusión)?
       pasarTurno(e, uid);
       return { estado: e, eventos };
     }
@@ -269,7 +334,7 @@ export function snapshot(e: EstadoCombate) {
     roomId: e.roomId, fase: e.fase, turno: e.turno, turnoN: e.turnoN, ganador: e.ganador, superDe: e.superDe,
     jugadores: e.jugadores.map((j) => ({
       uid: j.uid, nombre: j.nombre, activo: j.activo, super: j.super,
-      equipo: j.equipo.map((c) => ({ iid: c.iid, id: c.id, nombre: c.nombre, nivel: c.nivel, shiny: c.shiny, tipos: c.tipos, hp: c.hp, hpMax: c.hpMax, movs: c.movs })),
+      equipo: j.equipo.map((c) => ({ iid: c.iid, id: c.id, nombre: c.nombre, nivel: c.nivel, shiny: c.shiny, tipos: c.tipos, hp: c.hp, hpMax: c.hpMax, movs: c.movs, estado: c.estado })),
     })),
     eventos: e.eventos.slice(-12),
   };
