@@ -519,7 +519,7 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .poke-modal[hidden]{ display:none; }
 .poke-modal-card{ position:relative; width:min(560px,100%); max-height:88vh; overflow:auto; background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); padding:22px 20px 20px; text-align:center; }
 #poke-modal-cuerpo h2{ margin:.3rem 0 .2rem; color:var(--ink); }
-.pm-img{ width:120px; height:120px; image-rendering:pixelated; }
+.pm-img{ width:180px; height:180px; image-rendering:pixelated; }
 .pm-row{ display:flex; justify-content:center; align-items:center; gap:10px; margin:.2rem 0; }
 .pm-lvl{ font:700 .9rem var(--font-mono); color:var(--ink); }
 .pm-car{ font:700 .82rem var(--font-mono); color:var(--ink-soft); margin-bottom:.7rem; }
@@ -539,8 +539,8 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .pm-arbol{ border-top:1px dashed var(--line); margin-top:12px; padding-top:10px; }
 .pm-arbol>b{ display:block; margin-bottom:6px; color:var(--ink); font-size:.86rem; }
 .ev-fila{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
-.ev-nodo{ display:flex; flex-direction:column; align-items:center; gap:1px; width:64px; font:600 .62rem var(--font-mono); color:var(--ink-soft); }
-.ev-nodo img{ width:48px; height:48px; image-rendering:pixelated; opacity:.7; }
+.ev-nodo{ display:flex; flex-direction:column; align-items:center; gap:1px; width:80px; font:600 .66rem var(--font-mono); color:var(--ink-soft); }
+.ev-nodo img{ width:68px; height:68px; image-rendering:pixelated; opacity:.7; }
 .ev-nodo.ev-actual{ color:var(--ink); }
 .ev-nodo.ev-actual img{ opacity:1; filter:drop-shadow(0 0 4px var(--red)); }
 .ev-flecha{ color:var(--red); font-size:1rem; margin:2px 0; }
