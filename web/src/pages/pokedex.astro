@@ -48,6 +48,7 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
     import { sincronizar, spriteUrl, pc, caramelos, vistos, subirNivel, opcionesEvo, evolucionarInst, renombrar, liberar, learnsetDe, setMovs, costoSubir, NIVEL_MAX } from '../lib/coleccion.js';
     import { sonarExito } from '../lib/sonidos.js';
     import { tierDe } from '../lib/rareza.js';
+    import { tiposDe } from '../lib/tipos.js';
     import movimientos from '../data/movimientos.json';
 
     const D = JSON.parse(document.getElementById('dex-data').textContent);
@@ -144,42 +145,57 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       let html = fila([base]);
       if (n1.length) html += '<div class="ev-flecha">↓</div>' + fila(n1);
       if (n2.length) html += '<div class="ev-flecha">↓</div>' + fila(n2);
-      return '<div class="pm-arbol"><b>🌳 Línea evolutiva</b>' + html + '</div>';
+      return '<div class="pm-panel"><div class="pm-h">🧬 Línea evolutiva</div>' + html + '</div>';
     }
-    // bloque de ataques: learnset por nivel (desbloqueados elegibles, bloqueados grises) + 4 activos.
+    // bloque de ataques: learnset por nivel con STATS + descripción; desbloqueados elegibles (4 activos).
     function movsBloque(m) {
       const activos = new Set(m.movs || []);
+      const stats = (mv) => [
+        (mv.poder ? '⚔️ ' + mv.poder : (mv.categoria === 'Estado' ? 'Sin daño' : '⚔️ —')),
+        (mv.precision != null ? '🎯 ' + mv.precision : '🎯 —'),
+        (mv.pp != null ? 'PP ' + mv.pp : ''), (mv.categoria || ''),
+      ].filter(Boolean).join('   ');
       const filas = learnsetDe(m.id).map((x) => {
-        const mv = movimientos[x.m] || { nombre: 'Mov ' + x.m, tipo: '—', poder: null };
-        const pod = mv.poder ? ' · ⚔️' + mv.poder : '';
-        if (x.n > m.nivel) return '<div class="mv-fila mv-bloq"><span>🔒 ' + mv.nombre + '</span><span class="mv-meta">' + mv.tipo + ' · Nv.' + x.n + '</span></div>';
+        const mv = movimientos[x.m] || { nombre: 'Mov ' + x.m, tipo: '—' };
+        const tag = '<span class="mv-tag" data-t="' + mv.tipo + '">' + mv.tipo + '</span>';
+        if (x.n > m.nivel) {
+          return '<div class="mv-fila mv-bloq"><div class="mv-top"><span class="mv-nom">🔒 ' + mv.nombre + '</span>' + tag + '<span class="mv-meta">Nv.' + x.n + '</span></div><div class="mv-stats">' + stats(mv) + '</div></div>';
+        }
         const act = activos.has(x.m);
-        return '<button class="mv-fila mv-ok' + (act ? ' mv-act' : '') + '" data-mv="' + x.m + '"><span>' + (act ? '✓ ' : '') + mv.nombre + '</span><span class="mv-meta">' + mv.tipo + pod + '</span></button>';
+        return '<button class="mv-fila mv-ok' + (act ? ' mv-act' : '') + '" data-mv="' + x.m + '"><div class="mv-top"><span class="mv-nom">' + mv.nombre + '</span>' + tag + '</div><div class="mv-stats">' + stats(mv) + '</div>' + (mv.desc ? '<div class="mv-desc">' + mv.desc + '</div>' : '') + '</button>';
       }).join('');
-      return '<div class="pm-movs"><b>⚔️ Ataques <small>(' + (m.movs || []).length + '/4 activos)</small></b>' +
-        '<p class="pm-soon">Tocá para elegir hasta 4 (de los desbloqueados). Recambiás cuando quieras. Se usan en la batalla.</p>' +
+      return '<div class="pm-panel"><div class="pm-h">⚔️ Ataques <small>(' + (m.movs || []).length + '/4 activos)</small></div>' +
+        '<p class="pm-soon">Tocá para elegir hasta 4 (de los desbloqueados). Se usan en la batalla.</p>' +
         '<div class="mv-lista">' + filas + '</div></div>';
     }
     function abrirModal(iid) {
       const m = pc().find((x) => x.iid === iid); if (!m) return;
-      const car = caramelos()[familiaDe(m.id)] || 0, t = tierDe(m.id, apar);
+      const car = caramelos()[familiaDe(m.id)] || 0, t = tierDe(m.id, apar), tps = tiposDe(m.id);
       const costo = costoSubir(m.nivel), max = m.nivel >= NIVEL_MAX, ops = opcionesEvo(iid);
       const esp = nombreDe[m.id] || ('Nº ' + m.id);
       $('poke-modal-cuerpo').innerHTML =
-        '<img class="pm-img" src="' + spriteUrl(m.id, m.shiny) + '" alt="' + esp + '" />' +
-        '<h2>' + nomInst(m) + (m.shiny ? ' ✨' : '') + '</h2>' +
-        (m.mote ? '<div class="pm-esp">(' + esp + ')</div>' : '') +
-        '<div class="pm-row"><span class="cap-tier" style="--tier-color:' + t.color + '">' + (t.ico ? t.ico + ' ' : '') + t.nombre + '</span><span class="pm-lvl">Nv. ' + m.nivel + '</span></div>' +
-        '<div class="pm-car">🍬 ' + car + ' caramelos de la familia</div>' +
-        '<div class="pm-acciones">' +
-          (max ? '<span class="pc-max">Nivel MÁXIMO (50)</span>' : '<button class="pm-btn" id="pm-up"' + (car < costo ? ' disabled' : '') + '>⬆️ Power-Up <small>(' + costo + '🍬)</small></button>') +
-          evoBloque(m, ops) + '</div>' +
-        arbolEvo(m) +
-        movsBloque(m) +
+        '<div class="pm-screen"><div class="pm-scan"></div>' +
+          '<span class="pm-num">Nº ' + String(m.id).padStart(3, '0') + '</span>' +
+          (m.shiny ? '<span class="pm-shiny-led">✨</span>' : '') +
+          '<div class="pm-platform"><img class="pm-img" src="' + spriteUrl(m.id, m.shiny) + '" alt="' + esp + '" /></div></div>' +
+        '<div class="pm-id"><div class="pm-name">' + nomInst(m) + '</div>' +
+          (m.mote ? '<div class="pm-esp">(' + esp + ')</div>' : '') +
+          '<div class="pm-pills">' + tps.map((tp) => '<span class="pm-type" data-t="' + tp + '">' + tp + '</span>').join('') +
+            '<span class="pm-lvlchip">Nv. ' + m.nivel + '</span>' +
+            '<span class="cap-tier" style="--tier-color:' + t.color + '">' + (t.ico ? t.ico + ' ' : '') + t.nombre + '</span></div></div>' +
+        '<div class="pm-body">' +
+          '<div class="pm-candy">🍬 <b>' + car + '</b> caramelos de la familia</div>' +
+          '<div class="pm-acciones">' +
+            (max ? '<span class="pc-max">Nivel MÁXIMO (50)</span>' : '<button class="pm-btn" id="pm-up"' + (car < costo ? ' disabled' : '') + '>⬆️ Power-Up <small>(' + costo + '🍬)</small></button>') +
+            evoBloque(m, ops) + '</div>' +
+          arbolEvo(m) + movsBloque(m) +
+        '</div>' +
         '<div class="pm-extra">' +
           '<button class="pm-mini" id="pm-mote">✏️ ' + (m.mote ? 'Cambiar mote' : 'Poner mote') + '</button>' +
           '<button class="pm-mini pm-lib" id="pm-lib">🕊️ Liberar <small>(+1🍬)</small></button>' +
         '</div>';
+      const card = $('poke-modal').querySelector('.poke-modal-card');
+      if (card) { card.style.setProperty('--tier-color', t.color); card.scrollTop = 0; card.style.animation = 'none'; void card.offsetWidth; card.style.animation = ''; }
       const up = $('pm-up'); if (up) up.addEventListener('click', () => { if (subirNivel(iid)) { sonarExito(); abrirModal(iid); pintar(); } });
       $('poke-modal-cuerpo').querySelectorAll('[data-evopick]').forEach((b) => b.addEventListener('click', () => { if (evolucionarInst(iid, b.dataset.evopick)) { sonarExito(); cerrarModal(); pintar(); } }));
       $('poke-modal-cuerpo').querySelectorAll('.mv-ok').forEach((b) => b.addEventListener('click', () => {
