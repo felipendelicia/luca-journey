@@ -76,6 +76,7 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
   <script type="application/json" id="u-data" set:html={JSON.stringify({ nombres, regionDe })}></script>
   <script>
     import { perfilPublico, sonAmigos, solicitar, crearOferta, guardarDescripcion, haySupabase } from '../lib/social.js';
+    import { pc as pcCol } from '../lib/coleccion.js';
     import { statsDesafios, desafiosDeUsuario } from '../lib/desafios.js';
     import { usuario, init as initNube } from '../lib/nube.js';
 
@@ -92,6 +93,9 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
 
     const atrapados = () => { try { return JSON.parse(localStorage.getItem('col:atrapados')) || {}; } catch { return {}; } };
     const misShiny = () => { try { return new Set(JSON.parse(localStorage.getItem('col:shiny')) || []); } catch { return new Set(); } };
+    // intercambio por INSTANCIA: mis Pokémon y el helper de nombre
+    const misInst = () => pcCol().map((m) => ({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: !!m.shiny, mote: m.mote || '' }));
+    const nombreInst = (x) => (x.mote || nombres[x.id] || ('Nº ' + x.id)) + (x.shiny ? ' ✨' : '') + ' · Nv.' + (x.nivel ?? '?');
 
     let perfil = null, doy = [], pido = [];
 
@@ -217,37 +221,29 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
     }
 
     // ---- modal de oferta ----
-    function gridSeleccion(el, fuente, shinySet, seleccion, onChange) {
-      const ids = Object.keys(fuente).map(Number).filter((id) => fuente[id] > 0).sort((a, b) => a - b);
+    // grilla de selección por INSTANCIA (doy = mías; pido = del otro). seleccion guarda {iid,id,nivel,shiny,mote}.
+    function gridInst(el, instancias, seleccion) {
       el.innerHTML = '';
-      if (!ids.length) { el.innerHTML = '<div class="tr-colec-vacio">(sin Pokémon)</div>'; return; }
-      ids.forEach((id) => {
-        const cell = document.createElement('div'); cell.className = 'tr-cell';
-        cell.innerHTML = `<img src="${sprite(id, false)}" alt="${esc(nombres[id] || id)}" title="${nombres[id] || id} (x${fuente[id]})" /><span class="tr-cnt">x${fuente[id]}</span>`;
-        const mk = (sh) => {
-          const btn = document.createElement('button');
-          const on = () => seleccion.filter((x) => x.id === id && !!x.shiny === sh).length;
-          btn.className = 'tr-pedir' + (sh ? ' shiny' : '') + (on() ? ' on' : '');
-          btn.type = 'button'; btn.textContent = sh ? '✨' : '＋';
-          btn.addEventListener('click', () => {
-            const i = seleccion.findIndex((x) => x.id === id && !!x.shiny === sh);
-            if (i >= 0) seleccion.splice(i, 1);
-            else { if (seleccion.filter((x) => x.id === id).length >= fuente[id]) return; seleccion.push({ id, shiny: sh }); }
-            btn.classList.toggle('on', on() > 0);
-            onChange();
-          });
-          return btn;
-        };
-        cell.appendChild(mk(false));
-        if (shinySet.has(id)) cell.appendChild(mk(true));
-        el.appendChild(cell);
+      if (!instancias || !instancias.length) { el.innerHTML = '<div class="tr-colec-vacio">(sin Pokémon)</div>'; return; }
+      instancias.slice().sort((a, b) => (b.shiny - a.shiny) || (b.nivel - a.nivel) || (a.id - b.id)).forEach((m) => {
+        const on = () => seleccion.some((x) => x.iid === m.iid);
+        const cell = document.createElement('div'); cell.className = 'tr-cell' + (on() ? ' on' : '');
+        cell.innerHTML = `<img src="${sprite(m.id, m.shiny)}" alt="${esc(nombreInst(m))}" title="${esc(nombreInst(m))}" /><span class="tr-cnt">Nv.${m.nivel}${m.shiny ? ' ✨' : ''}</span>`;
+        const btn = document.createElement('button'); btn.type = 'button';
+        btn.className = 'tr-pedir' + (on() ? ' on' : ''); btn.textContent = on() ? '✓' : '＋';
+        btn.addEventListener('click', () => {
+          const i = seleccion.findIndex((x) => x.iid === m.iid);
+          if (i >= 0) seleccion.splice(i, 1); else seleccion.push({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: m.shiny, mote: m.mote });
+          cell.classList.toggle('on', on()); btn.classList.toggle('on', on()); btn.textContent = on() ? '✓' : '＋';
+        });
+        cell.appendChild(btn); el.appendChild(cell);
       });
     }
     function abrirOferta() {
       doy = []; pido = []; $('of-msg').textContent = '';
       const pub = perfil.publico || {};
-      gridSeleccion($('of-doy'), atrapados(), misShiny(), doy, () => {});
-      gridSeleccion($('of-pido'), pub.atrapados || {}, new Set(pub.shiny || []), pido, () => {});
+      gridInst($('of-doy'), misInst(), doy);
+      gridInst($('of-pido'), pub.pcPub || [], pido);
       $('of-modal').hidden = false;
     }
     $('of-x').addEventListener('click', () => { $('of-modal').hidden = true; });

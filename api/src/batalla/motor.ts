@@ -186,6 +186,8 @@ export interface AccionRes { estado: EstadoCombate; eventos: Evento[]; error?: s
 export const SUPER_MAX = 100;        // barra llena
 const SUPER_GANANCIA = 25;           // por acción de ataque
 const POCION_CURA: Record<string, number> = { pocion: 30, superpocion: 70, pocionmax: 9999 };
+const CURA_ESTADO: Record<string, EstadoAlt | 'todos'> = { antidoto: 'veneno', antiquemar: 'quemadura', antiparalisis: 'paralisis', despertar: 'sueno', antihielo: 'congelado', curatotal: 'todos' };
+const REVIVE: Record<string, number> = { revivir: 0.5 };
 
 const jugadorDe = (e: EstadoCombate, uid: string) => e.jugadores.find((j) => j.uid === uid);
 const rivalDe = (e: EstadoCombate, uid: string) => e.jugadores.find((j) => j.uid !== uid)!;
@@ -298,9 +300,23 @@ export function aplicarAccion(
       return { estado: e, eventos };
     }
     case 'pocion': {
-      const cura = POCION_CURA[accion.itemId || 'pocion'] ?? 30;
-      const antes = atk.hp; atk.hp = Math.min(atk.hpMax, atk.hp + cura);
-      push('pocion', `${yo.nombre} curó a ${atk.nombre} (+${atk.hp - antes} HP).`, { cura: atk.hp - antes });
+      const itemId = accion.itemId || 'pocion';
+      if (POCION_CURA[itemId] != null) {                       // poción de HP
+        if (atk.hp >= atk.hpMax) return err('hp-lleno');
+        const c = Math.min(atk.hpMax - atk.hp, POCION_CURA[itemId]); atk.hp += c;
+        push('pocion', `${yo.nombre} curó a ${atk.nombre} (+${c} HP).`, { cura: c });
+      } else if (CURA_ESTADO[itemId]) {                        // cura de estado
+        const cura = CURA_ESTADO[itemId];
+        const aplica = cura === 'todos' ? !!atk.estado : atk.estado === cura;
+        if (!aplica) return err('no-aplica');
+        atk.estado = null; atk.estadoT = 0;
+        push('pocion', `${yo.nombre} curó el estado de ${atk.nombre}.`);
+      } else if (REVIVE[itemId] != null) {                     // revivir un debilitado
+        const ko = yo.equipo.find((c) => c.hp <= 0);
+        if (!ko) return err('sin-debilitado');
+        ko.hp = Math.max(1, Math.round(ko.hpMax * REVIVE[itemId])); ko.estado = null; ko.estadoT = 0;
+        push('pocion', `¡${ko.nombre} revivió con ${ko.hp} HP!`);
+      } else return err('item-invalido');
       pasarTurno(e, uid);
       return { estado: e, eventos };
     }

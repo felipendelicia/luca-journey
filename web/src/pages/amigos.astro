@@ -100,8 +100,9 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
       const b = document.createElement('button'); b.className = cls; b.textContent = txt; b.type = 'button';
       b.addEventListener('click', () => fn(b)); return b;
     }
+    const nombreInst = (x) => (x.mote || nombres[x.id] || ('Nº ' + x.id)) + (x.shiny ? ' ✨' : '') + ' · Nv.' + (x.nivel ?? '?');
     const chips = (arr) => (arr && arr.length)
-      ? arr.map((x) => `<img class="am-chip" src="${sprite(x.id, x.shiny)}" alt="${esc(nombres[x.id] || x.id)}${x.shiny ? ' ✨' : ''}" title="${esc(nombres[x.id] || x.id)}${x.shiny ? ' ✨' : ''}" />`).join('')
+      ? arr.map((x) => `<span class="am-chip-i"><img class="am-chip" src="${sprite(x.id, x.shiny)}" alt="${esc(nombreInst(x))}" title="${esc(nombreInst(x))}" /><small>Nv.${x.nivel ?? '?'}${x.shiny ? ' ✨' : ''}</small></span>`).join('')
       : '<span class="tr-vacio">(nada)</span>';
 
     async function cargarResultados(lista) {

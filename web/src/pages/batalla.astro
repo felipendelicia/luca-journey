@@ -553,11 +553,23 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       online.resolverSuper(calidad);
     }
     function abrirMochilaOnline() {
-      const inv = items(); const curas = Object.entries(ITEMS).filter(([id, it]) => it.cat === 'cura' && inv[id] > 0);
-      if (!curas.length) { $('bt-msg').textContent = 'No tenés pociones. Comprá en la Tienda 🛒'; return; }
-      $('mochila-lista').innerHTML = curas.map(([id, it]) => '<button class="mo-item" data-pocion="' + id + '"><span class="mo-ico">' + itemSvg(id, 26) + '</span> <b>' + esc(it.nombre) + '</b><small>cura ' + (it.cura > 9000 ? 'TODO' : it.cura) + ' HP · ×' + inv[id] + '</small></button>').join('');
-      $('mochila-lista').querySelectorAll('[data-pocion]').forEach((b) => b.onclick = () => { const id = b.dataset.pocion; if (usarItem(id)) { online.usarPocion(id); $('mochila-modal').hidden = true; } });
+      const inv = items();
+      const usables = Object.entries(ITEMS).filter(([id, it]) => (it.cat === 'cura' || it.cat === 'estado') && inv[id] > 0);
+      if (!usables.length) { $('bt-msg').textContent = 'Mochila vacía. Comprá pociones/curas en la Tienda 🛒'; return; }
+      $('mochila-lista').innerHTML = usables.map(([id, it]) => '<button class="mo-item" data-item="' + id + '"><span class="mo-ico">' + itemSvg(id, 26) + '</span> <b>' + esc(it.nombre) + '</b><small>' + efectoTxt(it) + ' · ×' + inv[id] + '</small></button>').join('');
+      $('mochila-lista').querySelectorAll('[data-item]').forEach((b) => b.onclick = () => usarItemOnline(b.dataset.item));
       $('mochila-modal').hidden = false;
+    }
+    function usarItemOnline(itemId) {
+      const it = ITEMS[itemId]; if (!it || !OS || !OS.snap) return;
+      const me = OS.snap.jugadores.find((j) => j.uid === online.miUid()); if (!me) return;
+      const a = me.equipo[me.activo];
+      // validar aplicabilidad para no gastar el turno en vano (el server revalida)
+      if (it.cura) { if (a.hp >= a.hpMax) { $('bt-msg').textContent = a.nombre + ' ya tiene el HP al máximo.'; return; } }
+      else if (it.curaEstado) { const ok = it.curaEstado === 'todos' ? !!a.estado : a.estado === it.curaEstado; if (!ok) { $('bt-msg').textContent = a.nombre + ' no tiene ese estado.'; return; } }
+      else if (it.revive) { if (!me.equipo.some((c) => c.hp <= 0)) { $('bt-msg').textContent = 'No hay ningún Pokémon debilitado para revivir.'; return; } }
+      if (!usarItem(itemId)) return;
+      online.usarPocion(itemId); $('mochila-modal').hidden = true;
     }
     async function finOnline(data) {
       const gano = data.ganador === online.miUid(), pr = data.premios || {};

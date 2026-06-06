@@ -93,6 +93,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     import { crear, unirse, ponerLote, ponerPedido, coleccionOtro, confirmar, cancelar, leerSala, suscribir, haySupabase } from '../lib/trades.js';
     import { usuario, init as initNube, refrescarDesdeNube } from '../lib/nube.js';
     import { amigos } from '../lib/social.js';
+    import { pc } from '../lib/coleccion.js';
     import { onPresencia, invitar } from '../lib/presencia.js';
 
     const D = JSON.parse(document.getElementById('tr-data').textContent);
@@ -103,71 +104,67 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     const panes = ['tr-login', 'tr-inicio', 'tr-espera', 'tr-sala', 'tr-listo'];
     const ver = (cual) => panes.forEach((p) => $(p).hidden = (p !== cual));
 
-    const atrapados = () => { try { return JSON.parse(localStorage.getItem('col:atrapados')) || {}; } catch { return {}; } };
-    const shinySet = () => { try { return new Set(JSON.parse(localStorage.getItem('col:shiny')) || []); } catch { return new Set(); } };
+    // intercambio por INSTANCIA: mis Pokémon como {iid,id,nivel,shiny,mote}
+    const misInst = () => pc().map((m) => ({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: !!m.shiny, mote: m.mote || '' }));
+    const tengoIid = (iid) => misInst().some((m) => m.iid === iid);
 
     let sala = null, salaId = null, miLote = [], miPedido = [], desuscribir = null, entrando = false, poll = null;
-    let otroColeccion = null;            // { atrapados, shiny } del otro (cache)
+    let otroColeccion = null;            // { pc:[instancias] } del otro (cache)
     let amigosIniciado = false, misAmigos = [], presentes = new Set();   // amigos en línea (presencia global)
     const miHandle = () => localStorage.getItem('liga:nombre') || '';
-    const ocultos = new Set();           // pedidos "rechazados" localmente (key id+shiny)
-    const claveItem = (x) => `${x.id}${x.shiny ? 's' : ''}`;
-    const miColCount = (id) => atrapados()[id] || 0;
+    const ocultos = new Set();           // pedidos ocultados localmente (por iid)
     const soyCreador = () => sala && usuario() && sala.creador_id === usuario().id;
+    const nombreInst = (x) => (x.mote || nombres[x.id] || ('Nº ' + x.id)) + (x.shiny ? ' ✨' : '') + ' · Nv.' + (x.nivel ?? '?');
 
-    function chipQuitable(x, onQuitar) {
-      const img = `<img src="${sprite(x.id, x.shiny)}" alt="${esc(nombres[x.id] || x.id)}${x.shiny ? ' ✨' : ''}" title="${esc(nombres[x.id] || x.id)}${x.shiny ? ' ✨' : ''}" />`;
+    function chipInst(x, onQuitar) {
+      const img = `<img src="${sprite(x.id, x.shiny)}" alt="${esc(nombreInst(x))}" title="${esc(nombreInst(x))}" />`;
       const b = document.createElement('span');
       b.className = 'tr-chip';
-      b.innerHTML = `${img}<button class="tr-quitar" type="button">×</button>`;
-      b.querySelector('.tr-quitar').addEventListener('click', onQuitar);
+      b.innerHTML = `${img}<span class="tr-chip-nv">Nv.${x.nivel ?? '?'}${x.shiny ? ' ✨' : ''}</span>` + (onQuitar ? `<button class="tr-quitar" type="button">×</button>` : '');
+      if (onQuitar) b.querySelector('.tr-quitar').addEventListener('click', onQuitar);
       return b;
     }
     function pintarLoteYo() {
       const el = $('tr-lote-yo'); el.innerHTML = '';
       if (!miLote.length) { el.innerHTML = '<span class="tr-vacio">(vacío)</span>'; return; }
-      miLote.forEach((x, i) => el.appendChild(chipQuitable(x, async () => {
+      miLote.forEach((x, i) => el.appendChild(chipInst(x, async () => {
         miLote.splice(i, 1); pintarLoteYo();
         try { await ponerLote(salaId, miLote); } catch (e) { alert(e.message); }
       })));
     }
     function pintarLoteOtro(lote) {
-      const el = $('tr-lote-otro');
-      el.innerHTML = (lote && lote.length)
-        ? lote.map((x) => `<img src="${sprite(x.id, x.shiny)}" alt="${esc(nombres[x.id] || x.id)}${x.shiny ? ' ✨' : ''}" title="${esc(nombres[x.id] || x.id)}${x.shiny ? ' ✨' : ''}" />`).join('')
-        : '<span class="tr-vacio">(vacío)</span>';
+      const el = $('tr-lote-otro'); el.innerHTML = '';
+      if (!lote || !lote.length) { el.innerHTML = '<span class="tr-vacio">(vacío)</span>'; return; }
+      lote.forEach((x) => el.appendChild(chipInst(x, null)));
     }
-    function yaEnLote(x) { return miLote.some((y) => y.id === x.id && !!y.shiny === !!x.shiny); }
+    const yaEnLote = (x) => miLote.some((y) => y.iid === x.iid);
     function pintarPiden(pedidoOtro) {
-      const lista = pedidoOtro || [];
-      const visibles = lista.filter((x) => !ocultos.has(claveItem(x)));
+      // el otro pide INSTANCIAS mías (por iid). Mostramos cuáles y dejamos aceptarlas a tu lote.
+      const visibles = (pedidoOtro || []).filter((x) => !ocultos.has(x.iid));
       $('tr-piden').hidden = visibles.length === 0;
       $('tr-piden-nom').textContent = (soyCreador() ? sala.invitado_nombre : sala.creador_nombre) || 'El otro';
       const cont = $('tr-piden-lista'); cont.innerHTML = '';
       visibles.forEach((x) => {
-        const tengo = miColCount(x.id), enLote = yaEnLote(x);
-        const cuantos = tengo === 0 ? ' <small>(no lo tenés)</small>'
-          : tengo === 1 ? ' <small class="tr-tengo unico">tenés 1 · el único</small>'
-          : ` <small class="tr-tengo">tenés ${tengo}</small>`;
+        const tengo = tengoIid(x.iid), enLote = yaEnLote(x);
         const row = document.createElement('div');
         row.className = 'tr-piden-row' + (enLote ? ' hecho' : '');
-        row.innerHTML = `<img src="${sprite(x.id, x.shiny)}" alt="${esc(nombres[x.id] || x.id)}${x.shiny ? ' ✨' : ''}" />
-          <span class="nm">${nombres[x.id] || x.id}${x.shiny ? ' ✨' : ''}${cuantos}</span>`;
+        row.innerHTML = `<img src="${sprite(x.id, x.shiny)}" alt="${esc(nombreInst(x))}" />
+          <span class="nm">${esc(nombreInst(x))}${tengo ? '' : ' <small>(ya no lo tenés)</small>'}</span>`;
         const acc = document.createElement('button');
         if (enLote) { acc.className = 'tr-rechazar'; acc.textContent = '✓ en tu lote'; acc.disabled = true; }
         else if (!tengo) { acc.className = 'tr-rechazar'; acc.textContent = 'no lo tenés'; acc.disabled = true; }
         else {
           acc.className = 'tr-aceptar'; acc.textContent = 'Aceptar';
           acc.addEventListener('click', async () => {
-            if (miLote.filter((y) => y.id === x.id).length >= tengo) return;
-            miLote.push({ id: x.id, shiny: !!x.shiny }); pintarLoteYo();
+            if (yaEnLote(x)) return;
+            miLote.push({ iid: x.iid, id: x.id, nivel: x.nivel, shiny: !!x.shiny, mote: x.mote || '' }); pintarLoteYo();
             try { await ponerLote(salaId, miLote); } catch (e) { alert(e.message); }
             pintarPiden(pedidoOtro);
           });
         }
         const no = document.createElement('button');
         no.className = 'tr-rechazar'; no.textContent = '✕';
-        no.title = 'ocultar'; no.addEventListener('click', () => { ocultos.add(claveItem(x)); pintarPiden(pedidoOtro); });
+        no.title = 'ocultar'; no.addEventListener('click', () => { ocultos.add(x.iid); pintarPiden(pedidoOtro); });
         row.appendChild(acc); if (!enLote) row.appendChild(no);
         cont.appendChild(row);
       });
@@ -181,34 +178,27 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     }
     function pintarColeccion() {
       const grid = $('tr-colec-grid'); if (!otroColeccion) return;
-      const at = otroColeccion.atrapados || {}, shi = new Set(otroColeccion.shiny || []);
+      const inst = otroColeccion.pc || [];
       const q = ($('tr-colec-buscar').value || '').trim().toLowerCase();
-      const ids = Object.keys(at).map(Number).filter((id) => at[id] > 0)
-        .filter((id) => !q || (nombres[id] || '').toLowerCase().includes(q))
-        .sort((a, b) => a - b);
-      if (!ids.length) { grid.innerHTML = '<div class="tr-colec-vacio">Sin Pokémon para mostrar.</div>'; return; }
+      const lista = inst
+        .filter((m) => !q || (nombres[m.id] || '').toLowerCase().includes(q) || (m.mote || '').toLowerCase().includes(q))
+        .sort((a, b) => (b.shiny - a.shiny) || (b.nivel - a.nivel) || (a.id - b.id));
+      if (!lista.length) { grid.innerHTML = '<div class="tr-colec-vacio">Sin Pokémon para mostrar.</div>'; return; }
       grid.innerHTML = '';
-      const pedidoCount = (id, sh) => miPedido.filter((p) => p.id === id && !!p.shiny === sh).length;
-      ids.forEach((id) => {
-        const cell = document.createElement('div'); cell.className = 'tr-cell';
-        cell.innerHTML = `<img src="${sprite(id, false)}" alt="${esc(nombres[id] || id)}" title="${esc(nombres[id] || id)} (x${at[id]})" /><span class="tr-cnt">x${at[id]}</span>`;
-        const mk = (sh) => {
-          const on = pedidoCount(id, sh) > 0;
-          const btn = document.createElement('button');
-          btn.className = 'tr-pedir' + (sh ? ' shiny' : '') + (on ? ' on' : '');
-          btn.type = 'button'; btn.textContent = sh ? '✨' : '❤';
-          btn.title = on ? 'sacar de mi pedido' : (sh ? 'pedir el shiny' : 'pedir');
-          btn.addEventListener('click', async () => {
-            const i = miPedido.findIndex((p) => p.id === id && !!p.shiny === sh);
-            if (i >= 0) miPedido.splice(i, 1);
-            else { if (miPedido.filter((p) => p.id === id).length >= at[id]) return; miPedido.push({ id, shiny: sh }); }
-            pintarColeccion();
-            try { await ponerPedido(salaId, miPedido); } catch (e) { alert(e.message); }
-          });
-          return btn;
-        };
-        cell.appendChild(mk(false));
-        if (shi.has(id)) cell.appendChild(mk(true));
+      lista.forEach((m) => {
+        const on = miPedido.some((p) => p.iid === m.iid);
+        const cell = document.createElement('div'); cell.className = 'tr-cell' + (on ? ' on' : '');
+        cell.innerHTML = `<img src="${sprite(m.id, m.shiny)}" alt="${esc(nombreInst(m))}" title="${esc(nombreInst(m))}" /><span class="tr-cnt">Nv.${m.nivel}${m.shiny ? ' ✨' : ''}</span>`;
+        const btn = document.createElement('button');
+        btn.className = 'tr-pedir' + (on ? ' on' : ''); btn.type = 'button'; btn.textContent = on ? '✓ pedido' : 'Pedir';
+        btn.addEventListener('click', async () => {
+          const i = miPedido.findIndex((p) => p.iid === m.iid);
+          if (i >= 0) miPedido.splice(i, 1);
+          else miPedido.push({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: m.shiny, mote: m.mote });
+          pintarColeccion();
+          try { await ponerPedido(salaId, miPedido); } catch (e) { alert(e.message); }
+        });
+        cell.appendChild(btn);
         grid.appendChild(cell);
       });
     }
@@ -262,22 +252,20 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     }
 
     function abrirPicker() {
-      const at = atrapados(), shi = shinySet();
-      const ids = Object.keys(at).sort((a, b) => a - b);
-      $('tr-grid').innerHTML = ids.map((id) => {
-        const tieneShiny = shi.has(Number(id));
-        return `<div class="tr-pick">
-          <img src="${sprite(id, false)}" alt="${nombres[id] || id}" title="${nombres[id] || id} (x${at[id]})" />
-          <span class="tr-cnt">x${at[id]}</span>
-          <button class="tr-add" data-id="${id}" data-shiny="0" type="button">+</button>
-          ${tieneShiny ? `<button class="tr-add shiny" data-id="${id}" data-shiny="1" type="button">✨+</button>` : ''}
-        </div>`;
-      }).join('');
+      const inst = misInst().filter((m) => !yaEnLote(m))
+        .sort((a, b) => (b.shiny - a.shiny) || (b.nivel - a.nivel) || (a.id - b.id));
+      $('tr-grid').innerHTML = inst.length ? inst.map((m) =>
+        `<div class="tr-pick">
+          <img src="${sprite(m.id, m.shiny)}" alt="${esc(nombreInst(m))}" title="${esc(nombreInst(m))}" />
+          <span class="tr-cnt">Nv.${m.nivel}${m.shiny ? ' ✨' : ''}</span>
+          <button class="tr-add" data-iid="${m.iid}" type="button">+ ofrecer</button>
+        </div>`).join('') : '<div class="tr-colec-vacio">No tenés Pokémon para ofrecer.</div>';
       $('tr-grid').querySelectorAll('.tr-add').forEach((b) => b.addEventListener('click', () => {
-        const id = Number(b.dataset.id), shiny = b.dataset.shiny === '1';
-        if (miLote.filter((x) => x.id === id).length >= at[id]) return;
-        miLote.push({ id, shiny });
+        const m = misInst().find((x) => x.iid === b.dataset.iid);
+        if (!m || yaEnLote(m)) return;
+        miLote.push({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: m.shiny, mote: m.mote });
         pintarLoteYo();
+        b.disabled = true; b.textContent = '✓ agregado';
       }));
       $('tr-modal').hidden = false;
     }

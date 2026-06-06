@@ -166,7 +166,7 @@ export function sincronizar(temas) {
 }
 
 // ───────── niveles + evolución (v2) ─────────
-export const NIVEL_MAX = 50;
+export const NIVEL_MAX = 99;   // tope de Power-Up. (La captura salvaje sigue capada a 50, ver nivelWild)
 export const costoSubir = (nivel) => 1 + Math.floor(nivel / 8);   // caramelos para nivel→nivel+1
 const costoEvo = (nivelReq) => (nivelReq > 0 ? 25 : 50);          // por nivel: 25; piedra/etc (GO): 50
 const buscarInst = (arr, iid) => arr.find((m) => m.iid === iid);

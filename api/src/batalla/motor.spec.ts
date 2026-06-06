@@ -215,3 +215,27 @@ describe('estados alterados + fallar', () => {
     expect(r.estado.turno).toBe('B');                // pasó el turno
   });
 });
+
+describe('items en PvP (cura/estado/revivir)', () => {
+  it('antídoto cura el envenenamiento del activo', () => {
+    const e = combateBasico();
+    e.jugadores[0].equipo[0].estado = 'veneno';
+    const r = aplicarAccion(e, 'A', { tipo: 'pocion', itemId: 'antidoto' }, rng0);
+    expect(r.error).toBeUndefined();
+    expect(e.jugadores[0].equipo[0].estado).toBeNull();
+    expect(e.turno).toBe('B');
+  });
+  it('antídoto sin veneno se rechaza (no gasta turno)', () => {
+    const e = combateBasico();
+    expect(aplicarAccion(e, 'A', { tipo: 'pocion', itemId: 'antidoto' }, rng0).error).toBe('no-aplica');
+    expect(e.turno).toBe('A');
+  });
+  it('revivir trae de vuelta a un debilitado al 50% HP', () => {
+    const e = combateBasico();
+    e.jugadores[0].equipo[1].hp = 0;
+    const r = aplicarAccion(e, 'A', { tipo: 'pocion', itemId: 'revivir' }, rng0);
+    expect(r.error).toBeUndefined();
+    const revivido = e.jugadores[0].equipo[1];
+    expect(revivido.hp).toBe(Math.round(revivido.hpMax * 0.5));
+  });
+});
