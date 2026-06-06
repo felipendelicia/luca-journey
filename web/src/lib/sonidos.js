@@ -83,20 +83,33 @@ export function musicaEvolucion() {
   } catch {}
 }
 
-// Música de fondo de BATALLA: loop chiptune (bajo + melodía) que se reagenda solo. (F4)
-const BATALLA_BASE = [
-  // [freq, beat, dur] melodía; el bajo se deriva. Compás ~ 8s, vibe heroico 8-bit.
-  [440, 0, 0.5], [523, 0.5, 0.5], [659, 1.0, 0.5], [587, 1.5, 0.5],
-  [523, 2.0, 0.5], [440, 2.5, 0.5], [494, 3.0, 0.5], [523, 3.5, 0.5],
-  [587, 4.0, 0.5], [659, 4.5, 0.5], [698, 5.0, 0.5], [784, 5.5, 0.5],
-  [659, 6.0, 0.5], [587, 6.5, 0.5], [523, 7.0, 0.5], [494, 7.5, 0.5],
+// Música de fondo de BATALLA: tema de PERSECUCIÓN (8-bit), rápido y en menor, con bajo galopante
+// relentless + progresión descendente Am–G–F–E (tensión tipo chase). Loop que se reagenda solo. (F4)
+const PASO = 0.15;          // corchea (~150bpm de corcheas, urgente)
+const COMPASES = 4, PxC = 8; // 4 compases × 8 corcheas
+const PROG_RAIZ = [110.0, 98.0, 87.31, 82.41];   // A2  G2  F2  E2
+const PROG_OCT = [220.0, 196.0, 174.6, 164.8];   // A3  G3  F3  E3
+const PROG_QNT = [164.8, 146.8, 130.8, 123.5];   // E3  D3  C3  B2
+// galope de corcheas por compás: raíz raíz octava raíz quinta raíz octava raíz (motor de persecución)
+const GALOPE = (b) => [PROG_RAIZ[b], PROG_RAIZ[b], PROG_OCT[b], PROG_RAIZ[b], PROG_QNT[b], PROG_RAIZ[b], PROG_OCT[b], PROG_RAIZ[b]];
+// melodía tensa y sincopada por compás (0 = silencio), notas de la escala sobre cada acorde
+const MELODIA = [
+  [440, 659, 0, 587, 523, 0, 440, 392],   // Am
+  [392, 587, 0, 523, 494, 0, 392, 349],   // G
+  [349, 523, 0, 440, 392, 0, 349, 330],   // F
+  [330, 494, 0, 440, 415, 0, 330, 247],   // E (sensible: G#/Ab→ tensión)
 ];
-const BATALLA_BAJO = [220, 165, 196, 247];   // un grave por cada 2 beats
 function loopBatalla() {
   if (muteado()) { musLoop = null; return; }
-  const LARGO = 8;
-  BATALLA_BASE.forEach(([f, t, d]) => nota(f, t, d, 'square', 0.06));
-  for (let i = 0; i < LARGO; i++) nota(BATALLA_BAJO[(i / 2 | 0) % BATALLA_BAJO.length], i, 0.9, 'triangle', 0.05);
-  musLoop = setTimeout(loopBatalla, LARGO * 1000 - 60);
+  for (let b = 0; b < COMPASES; b++) {
+    const bajo = GALOPE(b);
+    for (let s = 0; s < PxC; s++) {
+      const t = (b * PxC + s) * PASO;
+      nota(bajo[s], t, PASO * 0.92, 'triangle', 0.07);                 // bajo galopante
+      const mf = MELODIA[b][s]; if (mf) nota(mf, t, PASO * 0.8, 'square', 0.055);   // melodía urgente
+    }
+  }
+  const LARGO = COMPASES * PxC * PASO;     // 4*8*0.15 = 4.8s
+  musLoop = setTimeout(loopBatalla, LARGO * 1000 - 40);
 }
 export function musicaBatalla() { if (muteado()) return; detenerMusica(); try { loopBatalla(); } catch {} }
