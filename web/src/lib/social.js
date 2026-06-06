@@ -1,6 +1,6 @@
 // social.js — perfiles públicos, amigos e intercambios asíncronos (sobre la API self-hosted).
 import { hayApi, auth, apiGet, apiPost, apiDelete } from './api.js';
-import { estado } from './coleccion.js';
+import { estado, pc } from './coleccion.js';
 import { evaluar, contexto } from './logros.js';
 const haySupabase = hayApi;
 
@@ -24,6 +24,8 @@ export function snapshotPublico(temas) {
   return {
     atrapados: st.atrapados,
     shiny: [...st.shiny],
+    // instancias del PC para el intercambio por INSTANCIA (id/nivel/shiny/mote por iid)
+    pcPub: pc().map((m) => ({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: !!m.shiny, mote: m.mote || '' })),
     conteos: { unicos: st.unicos, total: st.total, shinies: st.shiny.size, ejercicios: c.ejHechos },
     medallas, titulos, regiones, logros,
   };

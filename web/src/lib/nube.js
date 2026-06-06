@@ -109,11 +109,9 @@ function suscribirProgreso() {
     if (!estado) return;
     if (serial(estado) === _ultima) return;
     aplicarNube(estado);
-    // un trade (resuelto por el server sobre conteos) cambió mi colección → reconciliar el PC
-    // de instancias con los conteos nuevos, sin perder los niveles de lo que ya tenía.
-    try {
-      reconciliarPC(JSON.parse(estado['col:atrapados'] || '{}'), JSON.parse(estado['col:shiny'] || '[]'));
-    } catch {}
+    // (trade actual por conteo) reconciliar el PC con los conteos nuevos sin perder niveles.
+    // TODO: al deployar el intercambio por instancia (C), quitar esta reconciliación.
+    try { reconciliarPC(JSON.parse(estado['col:atrapados'] || '{}'), JSON.parse(estado['col:shiny'] || '[]')); } catch {}
     window.dispatchEvent(new CustomEvent('nube:cambio', { detail: { user: _user } }));
     window.dispatchEvent(new CustomEvent('nube:sincronizado'));
     toast('🔄 Tu colección se actualizó (intercambio)');

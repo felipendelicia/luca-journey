@@ -59,8 +59,9 @@ const cards = [
       }
       setTimeout(() => iniciarTutorial(), 900);   // tour de primer uso (una sola vez)
     }
-    // con nube: arrancar DESPUÉS de sincronizar (para que el bonus persista en la cuenta). Sin nube: al toque.
-    if (hayApi) window.addEventListener('nube:sincronizado', arranque, { once: true });
+    // con nube: arrancar cuando la sincronización inicial terminó ('nube:listo' SIEMPRE se dispara;
+    // 'nube:sincronizado' solo si hubo cambios). Fallback a 6s por si el evento ya pasó. Sin nube: al toque.
+    if (hayApi) { window.addEventListener('nube:listo', arranque, { once: true }); setTimeout(arranque, 6000); }
     else arranque();
   </script>
 </Base>
