@@ -2,66 +2,191 @@
 import Base from '../layouts/Base.astro';
 import { u } from '../lib/url.ts';
 
-const cards = [
-  ['🧭', '¿Cómo funciona?', 'Guía del proyecto: todas las features y cómo sacarles el jugo.', '/ayuda'],
-  ['📖', 'El libro', 'Toda la teoría del curso (Linux + Python), con ejemplos ejecutables.', '/libro'],
-  ['🏋️', 'Ejercicios en vivo', 'Resolvé y corregí tus ejercicios con tests reales en el navegador.', '/ejercicios'],
-  ['🏆', 'La Liga', 'Ganá EXP y medallas resolviendo ejercicios. Sé Campeón de Kanto.', '/liga'],
-  ['🎒', 'Safari', 'Tirá Pokéballs y atrapá Pokémon salvajes (con su nivel), con animación y suspenso.', '/safari'],
-  ['📕', 'Pokédex', 'Tu colección estilo GO: instancias con nivel, caramelos, evolución y un modal con todo.', '/pokedex'],
-  ['⚔️', 'Batalla', 'Armá un equipo y peleá por turnos: tipos, ataques y un Súper que se desata con código.', '/batalla'],
-  ['🛒', 'Tienda', 'Gastá Pokébolas en piedras de evolución, pociones y mejores Pokéballs.', '/tienda'],
-  ['🧩', 'Desafíos', 'Creá o resolvé retos de Python de la comunidad. Ganá Pokéballs y mirá otras soluciones.', '/desafios'],
-  ['📚', 'Bibliografía', 'Libros, cursos (¡CS50!) y recursos recomendados, todos gratis.', '/recursos'],
-  ['⭐', 'Repositorio', 'El código de toda la plataforma en GitHub.', 'https://github.com/felipendelicia/luca-journey'],
+const secciones = [
+  {
+    titulo: '🎓 Aprendé', sub: 'El curso, paso a paso',
+    cards: [
+      ['📖', 'El libro', 'Toda la teoría (Linux + Python) con ejemplos ejecutables y visualizador paso a paso.', '/libro'],
+      ['🏋️', 'Ejercicios en vivo', 'Resolvé y corregí con tests reales corriendo en tu navegador.', '/ejercicios'],
+      ['🏆', 'La Liga', 'Ganá EXP y medallas. Vencé a los líderes de gimnasio de cada región.', '/liga'],
+    ],
+  },
+  {
+    titulo: '🌍 Tu aventura', sub: 'Coleccioná, evolucioná, peleá',
+    cards: [
+      ['🎒', 'Safari', 'Tirá Pokéballs y atrapá Pokémon salvajes con animación y suspenso.', '/safari'],
+      ['📕', 'Pokédex', 'Tu colección estilo GO: instancias con nivel, caramelos y evolución.', '/pokedex'],
+      ['⚔️', 'Batalla', 'Armá tu equipo y peleá por turnos. El Súper se desata resolviendo código.', '/batalla'],
+      ['🛒', 'Tienda', 'Gastá Pokébolas en piedras de evolución, pociones y mejores Pokéballs.', '/tienda'],
+    ],
+  },
+  {
+    titulo: '👥 Comunidad y más', sub: 'Compartí y descubrí',
+    cards: [
+      ['🧩', 'Desafíos', 'Creá o resolvé retos de Python de la comunidad. Mirá otras soluciones.', '/desafios'],
+      ['📚', 'Bibliografía', 'Libros, cursos (¡CS50!) y recursos recomendados, todos gratis.', '/recursos'],
+      ['🧭', '¿Cómo funciona?', 'Guía del proyecto: todas las features y cómo sacarles el jugo.', '/ayuda'],
+      ['⭐', 'Repositorio', 'El código de toda la plataforma, abierto en GitHub.', 'https://github.com/felipendelicia/luca-journey'],
+    ],
+  },
 ];
+let n = 0;
 ---
 <Base title="Python con Pokémon — Plataforma" active="Inicio">
-  <main class="wrap">
-    <section class="hero-home">
-      <p class="kick">La plataforma del curso</p>
-      <h1>Python con Pokémon</h1>
-      <p>Aprendé a programar desde cero — Linux, Python y mucha aventura — directo en tu navegador. 🏆</p>
+  <main class="wrap home">
+    <section class="hero-home home-hero">
+      <div class="home-hero-glow" aria-hidden="true"></div>
+      <p class="kick">▸ Pokédex Codex · sistema en línea</p>
+      <h1 class="home-title">Python con Pokémon</h1>
+      <p class="home-tag">Aprendé a programar desde cero — Linux, Python y mucha aventura — directo en tu navegador. 🏆</p>
+
       <div class="racha-chip" id="racha-chip" hidden></div>
+
+      <!-- consola de progreso (se completa por JS si ya empezaste) -->
+      <div class="home-prog" id="home-prog" hidden>
+        <div class="hp-lvl"><span class="hp-lvl-n" id="hp-nivel">1</span><span class="hp-lvl-l">nivel</span></div>
+        <div class="hp-bar-wrap">
+          <div class="hp-bar"><i id="hp-exp-fill"></i></div>
+          <div class="hp-exp"><span id="hp-exp">0 EXP</span><span id="hp-next"></span></div>
+        </div>
+        <div class="hp-chips">
+          <span class="hp-chip" title="Gimnasios vencidos">🏅 <b id="hp-med">0</b></span>
+          <span class="hp-chip" title="Pokémon en tu PC">📕 <b id="hp-dex">0</b></span>
+          <span class="hp-chip racha" title="Días de racha">🔥 <b id="hp-racha">0</b></span>
+        </div>
+      </div>
+
       <div class="cta">
-        <a class="btn-grande" href={u('/libro')}>📖 Empezar a leer</a>
-        <a class="btn-grande sec" href={u('/ejercicios')}>🏋️ Resolver ejercicios</a>
-        <a class="btn-grande sec" href={u('/safari')}>🎒 Atrapar Pokémon</a>
+        <a class="btn-grande" id="cta-primary" href={u('/libro')}>📖 Empezar a leer</a>
+        <a class="btn-grande sec" href={u('/ejercicios')}>🏋️ Ejercicios</a>
+        <a class="btn-grande sec" href={u('/safari')}>🎒 Safari</a>
         <a class="btn-grande sec" href={u('/ayuda')}>🧭 ¿Cómo funciona?</a>
       </div>
     </section>
 
-    <div class="cards">
-      {cards.map(([ico, t, d, href]) => (
-        <a class="card" href={href.startsWith('/') ? u(href) : href}>
-          <div class="ico">{ico}</div>
-          <h3>{t}</h3>
-          <p>{d}</p>
-        </a>
-      ))}
-    </div>
+    {secciones.map((s) => (
+      <section class="home-sec">
+        <div class="home-sec-h"><h2>{s.titulo}</h2><span>{s.sub}</span></div>
+        <div class="cards home-cards">
+          {s.cards.map((c) => (
+            <a class="card home-card" href={c[3].startsWith('/') ? u(c[3]) : c[3]} style={`--d:${(n++) * 0.045}s`}>
+              <div class="ico">{c[0]}</div>
+              <h3>{c[1]}</h3>
+              <p>{c[2]}</p>
+              <span class="home-card-go" aria-hidden="true">→</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))}
   </main>
+
+  <style>
+    .home-hero { position: relative; overflow: hidden; }
+    .home-hero-glow { position:absolute; inset:0; pointer-events:none; z-index:0;
+      background: radial-gradient(80% 120% at 12% -10%, color-mix(in srgb, var(--red) 16%, transparent), transparent 60%); }
+    .home-hero > * { position: relative; z-index: 1; }
+    .home-hero::after { content:""; position:absolute; inset:0; pointer-events:none; z-index:0; opacity:.5;
+      background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(0,0,0,.03) 3px 4px); }
+    .home-title { line-height: 1.02; }
+    .home-tag { max-width: 60ch; color: var(--ink-soft); }
+    .kick { letter-spacing: .14em; }
+
+    /* consola de progreso */
+    .home-prog { display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin: 16px 0 6px; padding: 13px 17px;
+      border:1px solid var(--line); border-radius:15px; background: var(--paper-2);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--red) 8%, transparent); animation: pop-in .5s ease both; }
+    @keyframes pop-in { from { opacity:0; transform: translateY(6px); } }
+    .hp-lvl { display:flex; flex-direction:column; align-items:center; line-height:1; flex:0 0 auto; }
+    .hp-lvl-n { font:800 1.7rem var(--font-display); color: var(--red); }
+    .hp-lvl-l { font:700 .6rem var(--font-pixel, var(--font-mono)); letter-spacing:.1em; text-transform:uppercase; color: var(--ink-mute); margin-top:2px; }
+    .hp-bar-wrap { flex:1 1 160px; min-width:140px; }
+    .hp-bar { height:9px; border-radius:999px; background: var(--paper); border:1px solid var(--line); overflow:hidden; }
+    .hp-bar i { display:block; height:100%; width:0; background: linear-gradient(90deg, var(--yellow,#ffcf3f), var(--teal-deep,#1f8f5f)); transition: width .7s cubic-bezier(.2,.8,.2,1); }
+    .hp-exp { display:flex; justify-content:space-between; gap:10px; margin-top:5px; font:700 .68rem var(--font-mono); color: var(--ink-soft); }
+    .hp-chips { display:flex; gap:8px; flex:0 0 auto; }
+    .hp-chip { font:700 .82rem var(--font-mono); color: var(--ink); background: var(--paper); border:1px solid var(--line); border-radius:999px; padding:5px 11px; }
+    .hp-chip.racha b { color:#f0803a; }
+
+    /* secciones */
+    .home-sec { margin-top: 30px; }
+    .home-sec-h { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin: 0 0 14px; padding-left:11px;
+      border-left: 3px solid var(--red); }
+    .home-sec-h h2 { margin:0; font:800 1.15rem var(--font-display); }
+    .home-sec-h span { font:600 .8rem var(--font-mono); color: var(--ink-soft); }
+
+    .home-cards { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+    .home-card { position: relative; animation: card-in .5s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--d, 0s); }
+    @keyframes card-in { from { opacity:0; transform: translateY(10px); } }
+    .home-card .home-card-go { position:absolute; right:16px; bottom:14px; font:800 1.1rem var(--font-mono); color: var(--ink-mute);
+      opacity:0; transform: translateX(-4px); transition: opacity .15s, transform .15s, color .15s; }
+    .home-card:hover .home-card-go { opacity:1; transform: translateX(0); color: var(--red); }
+    @media (prefers-reduced-motion: reduce) { .home-card, .home-prog { animation: none; } }
+  </style>
 
   <script>
     import { rachaHoy } from '../lib/coleccion.js';
     import { hayApi } from '../lib/api.js';
     import { iniciarTutorial } from '../lib/tutorial.js';
+    import { u } from '../lib/url.ts';
+
+    const $ = (id) => document.getElementById(id);
+
+    // progreso 100% desde localStorage (sin esperar data del servidor)
+    function leerProgreso() {
+      let ejOk = 0, med = 0;
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k) continue;
+        if (k.startsWith('ej:') && k.endsWith(':ok') && localStorage.getItem(k) === '1') ejOk++;
+        else if (k.startsWith('proy:') && k.endsWith(':ok') && localStorage.getItem(k) === '1') med++;
+      }
+      let pc = 0, racha = 0;
+      try { pc = (JSON.parse(localStorage.getItem('col:pc')) || []).length; } catch {}
+      try { racha = (JSON.parse(localStorage.getItem('col:racha')) || {}).dias || 0; } catch {}
+      const exp = ejOk * 20;
+      return { ejOk, med, pc, racha, exp, nivel: 1 + Math.floor(exp / 100) };
+    }
+
+    function pintarProgreso() {
+      const p = leerProgreso();
+      // CTA inteligente según dónde estés
+      const cta = $('cta-primary');
+      if (cta) {
+        if (p.ejOk === 0) { cta.textContent = '📖 Empezar a leer'; cta.href = u('/libro'); }
+        else if (p.pc === 0) { cta.textContent = '🎒 Atrapá tu primer Pokémon'; cta.href = u('/safari'); }
+        else { cta.textContent = '🏋️ Seguí practicando'; cta.href = u('/ejercicios'); }
+      }
+      // consola: solo si ya arrancaste
+      if (p.exp === 0 && p.pc === 0 && p.racha === 0) return;
+      $('hp-nivel').textContent = p.nivel;
+      $('hp-exp').textContent = p.exp + ' EXP';
+      $('hp-next').textContent = (100 - (p.exp % 100)) + ' → nv.' + (p.nivel + 1);
+      $('hp-exp-fill').style.width = (p.exp % 100) + '%';
+      $('hp-med').textContent = p.med;
+      $('hp-dex').textContent = p.pc;
+      $('hp-racha').textContent = p.racha;
+      $('home-prog').hidden = false;
+    }
+
     let hecho = false;
     function arranque() {
       if (hecho) return; hecho = true;
       const r = rachaHoy();
-      const chip = document.getElementById('racha-chip');
+      const chip = $('racha-chip');
       if (chip) {
         const plural = r.dias === 1 ? 'día' : 'días';
         chip.innerHTML = '🔥 <b>' + r.dias + '</b> ' + plural + ' de racha' + (r.bonus ? ' · <b>+' + r.bonus + '</b> 🔴 ¡bonus diario!' : '');
         chip.hidden = false;
         if (r.nuevo && r.bonus) { chip.classList.add('racha-nuevo'); import('../lib/sonidos.js').then((s) => s.sonarExito && s.sonarExito()).catch(() => {}); }
       }
-      setTimeout(() => iniciarTutorial(), 900);   // tour de primer uso (una sola vez)
+      pintarProgreso();
+      setTimeout(() => iniciarTutorial(), 900);
     }
-    // con nube: arrancar cuando la sincronización inicial terminó ('nube:listo' SIEMPRE se dispara;
-    // 'nube:sincronizado' solo si hubo cambios). Fallback a 6s por si el evento ya pasó. Sin nube: al toque.
+    // pintamos el progreso ya (localStorage) para no esperar; y de nuevo tras la sync de la nube
+    pintarProgreso();
     if (hayApi) { window.addEventListener('nube:listo', arranque, { once: true }); setTimeout(arranque, 6000); }
     else arranque();
+    window.addEventListener('nube:sincronizado', pintarProgreso);
   </script>
 </Base>
