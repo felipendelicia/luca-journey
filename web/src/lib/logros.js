@@ -1,5 +1,12 @@
 // logros.js — logros desbloqueables, calculados desde el progreso (localStorage).
 import { estado, rachaEstado } from './coleccion.js';
+import { REGIONES } from './regiones.mjs';
+
+// un logro "Campeón de X" por cada región (generado desde la fuente única, así no se olvidan).
+const LOGROS_REGION = REGIONES.map((r) => ({
+  id: r.id, ico: r.emoji, nombre: 'Campeón de ' + r.nombre,
+  desc: 'Completá la región ' + r.nombre, check: (c) => c.reg[r.id],
+}));
 
 export const LOGROS = [
   { id: 'primer-ej', ico: '🌱', nombre: 'Primer paso', desc: 'Resolvé tu primer ejercicio', check: (c) => c.ejHechos >= 1 },
@@ -7,9 +14,7 @@ export const LOGROS = [
   { id: 'estudioso', ico: '🎓', nombre: 'Estudioso', desc: 'Resolvé 50 ejercicios', check: (c) => c.ejHechos >= 50 },
   { id: 'empollon', ico: '🧠', nombre: 'Empollón', desc: 'Resolvé 100 ejercicios', check: (c) => c.ejHechos >= 100 },
   { id: 'erudito', ico: '🏅', nombre: 'Erudito', desc: 'Resolvé TODOS los ejercicios', check: (c) => c.totalEj > 0 && c.ejHechos >= c.totalEj },
-  { id: 'kanto', ico: '🔴', nombre: 'Campeón de Kanto', desc: 'Completá la región Kanto', check: (c) => c.reg.kanto },
-  { id: 'johto', ico: '⚪', nombre: 'Campeón de Johto', desc: 'Completá la región Johto', check: (c) => c.reg.johto },
-  { id: 'hoenn', ico: '🟢', nombre: 'Campeón de Hoenn', desc: 'Completá la región Hoenn', check: (c) => c.reg.hoenn },
+  ...LOGROS_REGION,
   { id: 'maestro', ico: '👑', nombre: 'Maestro Pokémon', desc: 'Completá todas las regiones', check: (c) => c.regiones.length > 0 && c.regiones.every((r) => c.reg[r]) },
   { id: 'primer-poke', ico: '🔴', nombre: '¡Te elijo a ti!', desc: 'Atrapá tu primer Pokémon', check: (c) => c.unicos >= 1 },
   { id: 'coleccionista', ico: '📕', nombre: 'Coleccionista', desc: 'Atrapá 50 Pokémon distintos', check: (c) => c.unicos >= 50 },

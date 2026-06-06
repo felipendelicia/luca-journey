@@ -141,7 +141,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     function poolRival() {
       // especies “salvajes” simples por región desbloqueada (líderes/starters conocidos)
       const reg = regionesDesbloqueadas(D.temas);
-      const base = { kanto: [1, 4, 7, 25, 133, 143, 68, 65, 94, 130], johto: [152, 155, 158, 196, 197, 248], hoenn: [252, 255, 258, 282, 373], sinnoh: [387, 390, 393, 448, 445], unova: [495, 498, 501, 530], kalos: [650, 653, 656, 700] };
+      const base = { kanto: [1, 4, 7, 25, 133, 143, 68, 65, 94, 130], johto: [152, 155, 158, 196, 197, 248], hoenn: [252, 255, 258, 282, 373], sinnoh: [387, 390, 393, 448, 445], unova: [495, 498, 501, 530], kalos: [650, 653, 656, 700], alola: [722, 725, 728, 745, 778, 794], galar: [810, 813, 816, 823, 851, 884], paldea: [906, 909, 912, 925, 998, 1000] };
       let pool = [];
       for (const r of Object.keys(base)) if (reg.has(r)) pool = pool.concat(base[r]);
       return pool.length ? pool : base.kanto;

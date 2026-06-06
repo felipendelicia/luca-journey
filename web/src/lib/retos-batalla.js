@@ -39,6 +39,16 @@ export const RETOS = [
   { region: 'alola', q: '¿Con qué armás una ruta sin pelear con las barras?', op: ['pathlib.Path', 'string + "/"', 'os.system'], c: 0 },
   { region: 'alola', q: 'En subprocess, ¿qué returncode significa éxito?', op: ['1', '0', '-1'], c: 1 },
   { region: 'alola', q: '¿De dónde lee una automatización las contraseñas?', op: ['del código', 'del entorno / config', 'de un print'], c: 1 },
+  // ── Galar: asincronía y concurrencia ──
+  { region: 'galar', q: '¿Cómo se define una función asíncrona?', op: ['def f()', 'async def f()', 'await def f()'], c: 1 },
+  { region: 'galar', q: '¿Dónde se puede usar await?', op: ['en cualquier función', 'dentro de async def', 'solo al final del archivo'], c: 1 },
+  { region: 'galar', q: 'asyncio.gather(a, b) corre las tareas…', op: ['de a una', 'en paralelo', 'al revés'], c: 1 },
+  { region: 'galar', q: 'Una cola FIFO saca primero…', op: ['al último que entró', 'al que entró primero', 'al azar'], c: 1 },
+  // ── Paldea: algoritmos y estructuras de datos ──
+  { region: 'paldea', q: 'La búsqueda binaria necesita la lista…', op: ['vacía', 'ordenada', 'con repetidos'], c: 1 },
+  { region: 'paldea', q: 'Una pila (stack) es…', op: ['FIFO', 'LIFO', 'ordenada'], c: 1 },
+  { region: 'paldea', q: 'Buscar x in un set es…', op: ['lento, O(n)', 'casi instantáneo, O(1)', 'imposible'], c: 1 },
+  { region: 'paldea', q: 'factorial(0) debe devolver…', op: ['0', '1', 'error'], c: 1 },
 ];
 
 // reto al azar de las regiones desbloqueadas (Set de strings). Fallback: kanto.

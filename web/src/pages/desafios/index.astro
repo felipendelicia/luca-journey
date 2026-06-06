@@ -24,9 +24,10 @@ const REGIONES = [['todas', 'Todas'], ['libre', '🎲 Libre'], ...REGS.map((r) =
   <script>
     import { listarDesafios, rankingDesafios } from '../../lib/desafios.js';
     import { usuario } from '../../lib/nube.js';
+    import { REGIONES as REGS } from '../../lib/regiones.mjs';
     const $ = (id) => document.getElementById(id);
     const B = (window.__BASE || '/').replace(/\/$/, '');
-    const REGN = { kanto:'🔴', johto:'⚪', hoenn:'🟢', sinnoh:'🔵', unova:'⚫', kalos:'🟠', libre:'🎲' };
+    const REGN = Object.fromEntries(REGS.map((r) => [r.id, r.emoji])); REGN.libre = '🎲';   // desde la fuente única
     const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
     let region = 'todas';
     async function cargar() {
