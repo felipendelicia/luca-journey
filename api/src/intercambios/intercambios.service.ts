@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeService } from '../realtime/realtime.service';
-import { swapColeccion, Item } from '../coleccion/coleccion';
+import { swapInstancias, ItemInst } from '../coleccion/coleccion';
 import { salaDTO } from '../common/dto';
 
 const ALF = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -37,7 +37,7 @@ export class IntercambiosService {
     return s;
   }
 
-  async ponerLote(uid: string, id: string, lote: Item[]) {
+  async ponerLote(uid: string, id: string, lote: ItemInst[]) {
     const s = await this.leer(uid, id);
     if (s.estado !== 'abierta') throw new BadRequestException('la sala no está abierta');
     const data = uid === s.creadorId
@@ -47,7 +47,7 @@ export class IntercambiosService {
     this.rt.sala(id, salaDTO(await this.prisma.intercambio.findUnique({ where: { id } })));
   }
 
-  async ponerPedido(uid: string, id: string, pedido: Item[]) {
+  async ponerPedido(uid: string, id: string, pedido: ItemInst[]) {
     const s = await this.leer(uid, id);
     if (s.estado !== 'abierta') throw new BadRequestException('la sala no está abierta');
     const data = uid === s.creadorId ? { creadorPedido: pedido as any } : { invitadoPedido: pedido as any };
@@ -59,13 +59,12 @@ export class IntercambiosService {
     const s = await this.leer(uid, id);
     if (s.estado !== 'abierta') throw new BadRequestException('la sala no está abierta');
     const otro = uid === s.creadorId ? s.invitadoId : s.creadorId;
-    if (!otro) return { atrapados: {}, shiny: [] };
+    if (!otro) return { pc: [] };
     const p = await this.prisma.progreso.findUnique({ where: { userId: otro } });
     const est = (p?.estado as any) || {};
-    return {
-      atrapados: JSON.parse(est['col:atrapados'] || '{}'),
-      shiny: JSON.parse(est['col:shiny'] || '[]'),
-    };
+    let pc: any[] = []; try { pc = JSON.parse(est['col:pc'] || '[]'); } catch {}
+    // instancias del otro para elegir qué pedir (id/nivel/shiny/mote por iid)
+    return { pc: pc.map((m) => ({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: !!m.shiny, mote: m.mote || '' })) };
   }
 
   async cancelar(uid: string, id: string) {
@@ -103,8 +102,9 @@ export class IntercambiosService {
       const iP = await tx.progreso.findUnique({ where: { userId: s.invitadoId } });
       const cEst = (cP?.estado as any) || {};
       const iEst = (iP?.estado as any) || {};
-      const { estadoA, estadoB } = swapColeccion(
-        cEst, s.creadorLote, 'creador', iEst, s.invitadoLote, 'invitado',
+      const { estadoA, estadoB } = swapInstancias(
+        cEst, ((s.creadorLote as any[]) || []).map((x) => x.iid), 'creador',
+        iEst, ((s.invitadoLote as any[]) || []).map((x) => x.iid), 'invitado',
       );
       await tx.progreso.upsert({ where: { userId: s.creadorId }, create: { userId: s.creadorId, estado: estadoA }, update: { estado: estadoA } });
       await tx.progreso.upsert({ where: { userId: s.invitadoId }, create: { userId: s.invitadoId, estado: estadoB }, update: { estado: estadoB } });

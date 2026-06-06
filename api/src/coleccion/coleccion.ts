@@ -65,3 +65,48 @@ export function swapColeccion(
   }
   return { estadoA: escribirCol(estadoA, aAt, aSh), estadoB: escribirCol(estadoB, bAt, bSh) };
 }
+
+// ───────────────────────── intercambio por INSTANCIA (v2) ─────────────────────────
+export type Instancia = { iid: string; id: number; nivel?: number; exp?: number; shiny?: boolean; movs?: number[]; mote?: string; creado?: number };
+export type ItemInst = { iid: string; id?: number; nivel?: number; shiny?: boolean; mote?: string };
+const nuevoIid = () => 'i' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+function leerPC(estado: Estado): Instancia[] { try { return JSON.parse((estado['col:pc'] as string) || '[]'); } catch { return []; } }
+// reescribe col:pc + recomputa los derivados (atrapados/shiny/vistos-acumulado) desde el PC.
+function escribirPC(estado: Estado, pc: Instancia[]): Estado {
+  const atra: MapaAtrapados = {}; const shiny = new Set<number>(); const vistos = new Set<number>();
+  for (const m of pc) { const id = Number(m.id); atra[id] = (atra[id] || 0) + 1; vistos.add(id); if (m.shiny) shiny.add(id); }
+  let vistosPrev: number[] = []; try { vistosPrev = JSON.parse((estado['col:vistos'] as string) || '[]'); } catch {}
+  for (const v of vistosPrev) vistos.add(Number(v));   // no perder especies ya vistas
+  return {
+    ...estado,
+    'col:pc': JSON.stringify(pc),
+    'col:atrapados': JSON.stringify(atra),
+    'col:shiny': JSON.stringify([...shiny]),
+    'col:vistos': JSON.stringify([...vistos]),
+  };
+}
+
+// A entrega las instancias `iidsA` a B; B entrega `iidsB` a A. Mueve el OBJETO instancia exacto
+// (conserva nivel/exp/shiny/movs/mote), reasigna iid al recibir. Valida propiedad. Pura.
+export function swapInstancias(
+  estadoA: Estado, iidsA: string[], labelA: string,
+  estadoB: Estado, iidsB: string[], labelB: string,
+): { estadoA: Estado; estadoB: Estado } {
+  const pcA = leerPC(estadoA); const pcB = leerPC(estadoB);
+  const tomar = (pc: Instancia[], iids: string[], label: string): Instancia[] => {
+    const out: Instancia[] = [];
+    for (const iid of iids) {
+      const i = pc.findIndex((m) => String(m.iid) === String(iid));
+      if (i < 0) throw new Error(`${label} ya no tiene esa instancia (${iid})`);
+      out.push(pc.splice(i, 1)[0]);
+    }
+    return out;
+  };
+  const daA = tomar(pcA, iidsA, labelA);   // lo que A entrega
+  const daB = tomar(pcB, iidsB, labelB);   // lo que B entrega
+  const recibir = (m: Instancia): Instancia => ({ ...m, iid: nuevoIid(), creado: Date.now() });
+  for (const m of daA) pcB.push(recibir(m));
+  for (const m of daB) pcA.push(recibir(m));
+  return { estadoA: escribirPC(estadoA, pcA), estadoB: escribirPC(estadoB, pcB) };
+}

@@ -2,14 +2,20 @@ import { BadRequestException, ForbiddenException, Injectable, NotFoundException 
 import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeService } from '../realtime/realtime.service';
 import { AmigosService } from './amigos.service';
-import { swapColeccion, Item } from '../coleccion/coleccion';
+import { swapInstancias, ItemInst } from '../coleccion/coleccion';
 
 @Injectable()
 export class OfertasService {
   constructor(private prisma: PrismaService, private amigos: AmigosService, private rt: RealtimeService) {}
 
-  async crear(uid: string, aId: string, doy: Item[], pido: Item[]) {
+  async crear(uid: string, aId: string, doy: ItemInst[], pido: ItemInst[]) {
     if (!(await this.amigos.sonAmigos(uid, aId))) throw new ForbiddenException('solo podés ofertar a un amigo');
+    if (!Array.isArray(doy) || !Array.isArray(pido) || (!doy.length && !pido.length)) throw new BadRequestException('oferta vacía');
+    // anti-trampa: el que oferta tiene que ser dueño de las instancias que entrega (doy)
+    const p = await this.prisma.progreso.findUnique({ where: { userId: uid } });
+    let pc: any[] = []; try { pc = JSON.parse(((p?.estado as any) || {})['col:pc'] || '[]'); } catch {}
+    const tengo = new Set(pc.map((m) => String(m.iid)));
+    for (const d of doy) if (!d?.iid || !tengo.has(String(d.iid))) throw new BadRequestException('no tenés esa instancia para ofrecer');
     const o = await this.prisma.oferta.create({ data: { deId: uid, aId, doy: doy as any, pido: pido as any } });
     return o.id;
   }
@@ -33,9 +39,9 @@ export class OfertasService {
       await tx.$queryRawUnsafe(`SELECT user_id FROM progreso WHERE user_id IN ($1,$2) ORDER BY user_id FOR UPDATE`, de, a);
       const dP = await tx.progreso.findUnique({ where: { userId: de } });
       const aP = await tx.progreso.findUnique({ where: { userId: a } });
-      const { estadoA: dEst, estadoB: aEst } = swapColeccion(
-        (dP?.estado as any) || {}, o0.doy as any, 'el que ofrece',
-        (aP?.estado as any) || {}, o0.pido as any, 'vos',
+      const { estadoA: dEst, estadoB: aEst } = swapInstancias(
+        (dP?.estado as any) || {}, (o0.doy as any[]).map((d) => d.iid), 'el que ofrece',
+        (aP?.estado as any) || {}, (o0.pido as any[]).map((p) => p.iid), 'vos',
       );
       await tx.progreso.upsert({ where: { userId: de }, create: { userId: de, estado: dEst }, update: { estado: dEst } });
       await tx.progreso.upsert({ where: { userId: a }, create: { userId: a, estado: aEst }, update: { estado: aEst } });

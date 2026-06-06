@@ -1,4 +1,4 @@
-import { mapaInc, mapaDec, arrTiene, arrAdd, arrDel, swapColeccion, leerCol, escribirCol } from './coleccion';
+import { mapaInc, mapaDec, arrTiene, arrAdd, arrDel, swapColeccion, leerCol, escribirCol, swapInstancias } from './coleccion';
 
 describe('helpers coleccion', () => {
   it('mapaInc suma 1', () => {
@@ -43,5 +43,27 @@ describe('swapColeccion', () => {
   });
   it('falla si pide shiny que no tiene', () => {
     expect(() => swapColeccion(blob({ '25': 1 }, []), [{ id: 25, shiny: true }], 'A', blob({}), [], 'B')).toThrow(/shiny/);
+  });
+});
+
+const pcBlob = (pc: any[]) => ({ 'col:pc': JSON.stringify(pc) });
+describe('swapInstancias (intercambio por instancia)', () => {
+  it('mueve la INSTANCIA exacta conservando nivel/shiny/mote y reasigna iid', () => {
+    const a = pcBlob([{ iid: 'a1', id: 6, nivel: 50, shiny: true, movs: [7], mote: 'Drako' }]);
+    const b = pcBlob([{ iid: 'b1', id: 25, nivel: 12, shiny: false, movs: [] }]);
+    const { estadoA, estadoB } = swapInstancias(a, ['a1'], 'A', b, ['b1'], 'B');
+    const pcA = JSON.parse(estadoA['col:pc']); const pcB = JSON.parse(estadoB['col:pc']);
+    // A ahora tiene el Pikachu de B; B tiene el Charizard Nv50 shiny con su mote y movs
+    expect(pcA).toHaveLength(1); expect(pcA[0].id).toBe(25);
+    expect(pcB).toHaveLength(1);
+    expect(pcB[0]).toMatchObject({ id: 6, nivel: 50, shiny: true, mote: 'Drako', movs: [7] });
+    expect(pcB[0].iid).not.toBe('a1');   // iid nuevo al recibir
+    // derivados recomputados
+    expect(JSON.parse(estadoB['col:atrapados'])).toEqual({ '6': 1 });
+    expect(JSON.parse(estadoB['col:shiny'])).toEqual([6]);
+    expect(JSON.parse(estadoA['col:vistos'])).toContain(25);
+  });
+  it('falla si el oferente ya no tiene esa instancia', () => {
+    expect(() => swapInstancias(pcBlob([]), ['x'], 'A', pcBlob([]), [], 'B')).toThrow(/A ya no tiene/);
   });
 });
