@@ -105,12 +105,56 @@ function discoSvg(size) {
     '<circle cx="13" cy="11" r="1.4" fill="rgba(255,255,255,.7)"/>');
 }
 
+// ── consumibles (fieles a la saga, familias congruentes) ──
+const STK = 'stroke="rgba(0,0,0,.42)" stroke-width="1" stroke-linejoin="round"';
+const gloss = (cx, cy, rx, ry) => `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="rgba(255,255,255,.5)"/>`;
+// Línea de Pociones: botella SPRAY (cuerpo + líquido + etiqueta blanca + cabezal/boquilla gris).
+function sprayBottle(c, size) {
+  const g = uid();
+  return svg(size, `<defs>${linGrad(g, c[0], c[1])}</defs>` +
+    `<path d="M11 9 L6.5 7.4 L6.5 10.3 L11 11.6 Z" fill="#e3e7ee" ${STK}/>` +       // boquilla
+    `<rect x="10.8" y="7.4" width="9.4" height="5" rx="1.3" fill="#e3e7ee" ${STK}/>` + // cabezal
+    `<rect x="9" y="12.2" width="14" height="15.6" rx="3.4" fill="url(#${g})" ${STK}/>` + // cuerpo+líquido
+    `<rect x="9" y="17.6" width="14" height="4.3" fill="rgba(255,255,255,.88)"/>` +    // etiqueta
+    gloss(12, 15, 1.7, 2.6));
+}
+// Curas de estado: VIAL pequeño (tapa + cuello + cuerpo + etiqueta), color por estado.
+function vialBottle(c, size) {
+  const g = uid();
+  return svg(size, `<defs>${linGrad(g, c[0], c[1])}</defs>` +
+    `<rect x="12" y="6.5" width="8" height="3.8" rx="1.2" fill="#b9bfca" ${STK}/>` +  // tapa
+    `<rect x="13.4" y="10" width="5.2" height="2.4" fill="#c7ccd5" ${STK}/>` +         // cuello
+    `<rect x="9.8" y="12" width="12.4" height="15.8" rx="5.2" fill="url(#${g})" ${STK}/>` + // cuerpo
+    `<rect x="9.8" y="18" width="12.4" height="4.2" fill="rgba(255,255,255,.85)"/>` + // etiqueta
+    gloss(13, 16, 1.6, 2.6));
+}
+// Revivir: cruz amarilla con borde teal (paleta canónica del Revive).
+function reviveSvg(size) {
+  const g = uid();
+  return svg(size, `<defs>${linGrad(g, '#ffe45a', '#e0a000')}</defs>` +
+    `<path d="M13.2 6 H18.8 V13.2 H26 V18.8 H18.8 V26 H13.2 V18.8 H6 V13.2 H13.2 Z" fill="url(#${g})" stroke="#1f7a86" stroke-width="1.4" stroke-linejoin="round"/>` +
+    gloss(13, 12, 1.3, 2));
+}
+const CONSUM = {
+  pocion:      { kind: 'spray', c: ['#ff9e5a', '#e0561f'] },   // naranja
+  superpocion: { kind: 'spray', c: ['#ff7a8a', '#d62246'] },   // rojo/rosa
+  pocionmax:   { kind: 'spray', c: ['#ffd24a', '#e0a400'] },   // dorado
+  antidoto:      { kind: 'vial', c: ['#c79be6', '#7b34c0'] },  // veneno (morado)
+  antiquemar:    { kind: 'vial', c: ['#ffb07a', '#e0561f'] },  // quemadura (naranja)
+  antiparalisis: { kind: 'vial', c: ['#ffe066', '#e0a400'] },  // parálisis (amarillo)
+  despertar:     { kind: 'vial', c: ['#9fc4f2', '#2a6fb0'] },  // sueño (azul)
+  antihielo:     { kind: 'vial', c: ['#a8e8f0', '#3fb0d8'] },  // congelado (celeste)
+  curatotal:     { kind: 'vial', c: ['#ffd0e0', '#e0709a'] },  // cura total (rosa)
+};
+
 export function itemSvg(id, size = 22) {
   if (id === 'discoenlace') return discoSvg(size);
   if (id === 'superball' || id === 'ball1') return ballSvg(1, size);
   if (id === 'ultraball' || id === 'ball2') return ballSvg(2, size);
-  const s = STONES[id] || STONES.piedra;
-  return gemSvg(s.c, s.em, size);
+  if (id === 'revivir') return reviveSvg(size);
+  if (CONSUM[id]) return CONSUM[id].kind === 'spray' ? sprayBottle(CONSUM[id].c, size) : vialBottle(CONSUM[id].c, size);
+  if (STONES[id]) return gemSvg(STONES[id].c, STONES[id].em, size);
+  return gemSvg(STONES.piedra.c, STONES.piedra.em, size);   // comodín
 }
 
 // ───────────────────────── pokeballs ─────────────────────────

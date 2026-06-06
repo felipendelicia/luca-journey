@@ -114,3 +114,11 @@ alcance hace falta exponerla (túnel/port-forward/dominio) y ajustar `GOOGLE_CAL
   componentes, modales, layouts, estilos) se hace con el skill **`/frontend-design`**. Apuntá a
   interfaces distintivas y pulidas, cohesivas con la estética retro-Pokédex/CRT del proyecto
   (no genéricas), y tema-aware (modo oscuro y claro).
+- **Sprites, NO emojis para items característicos de Pokémon:** los items propios del universo
+  Pokémon (pociones, antídoto/antiquemar/etc., revivir, piedras evolutivas, pokeballs, medallas…)
+  se dibujan como **sprites SVG** en `src/lib/sprites.js` (`itemSvg`/`ballSvg`/`badgeSvg`), nunca
+  con emoji. El emoji queda solo para acentos de UI genéricos (🍬 caramelos, 🔴 contador, etc.).
+  Los sprites deben ser **MUY fieles a la saga y congruentes entre sí**: cada familia comparte
+  silueta y estilo (p.ej. la línea de Pociones = misma botella spray, color-coded; las curas de
+  estado = misma botella/vial, color por estado), con el mismo grosor de contorno, brillo y
+  acabado. Verificá el set junto (screenshot) para que se vea coherente.

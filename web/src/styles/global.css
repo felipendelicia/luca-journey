@@ -797,6 +797,10 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .bt-nom{ font-weight:800; color:var(--ink); }
 .bt-lv{ font:700 .76rem var(--font-mono); color:var(--ink-soft); }
 .bt-tipos{ font:600 .7rem var(--font-mono); color:var(--ink-mute); margin-left:auto; }
+/* chip de estado alterado (☠️/🔥/⚡/💤/❄️/💫) */
+.bt-estado:empty{ display:none; }
+.bt-est{ display:inline-flex; align-items:center; gap:3px; padding:2px 7px; border-radius:999px; font:800 .62rem var(--font-mono); letter-spacing:.04em;
+  color:#fff; background:var(--e,#888); box-shadow:0 1px 4px -1px var(--e,#888); }
 .bt-hpbar{ height:11px; background:var(--line); border-radius:999px; overflow:hidden; margin:5px 0; }
 .bt-hp{ height:100%; width:100%; background:#33c659; border-radius:999px; transition:width .5s ease; }
 .bt-hp.medio{ background:#e8b923; } .bt-hp.bajo{ background:#e0492f; }
@@ -862,6 +866,7 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .mochila-lista{ display:flex; flex-direction:column; gap:8px; }
 .mo-item{ display:flex; align-items:center; gap:8px; padding:12px 14px; border:1px solid var(--line); border-radius:11px; background:var(--paper-2); cursor:pointer; font:700 .92rem var(--font-mono); color:var(--ink); text-align:left; }
 .mo-item small{ margin-left:auto; font-weight:600; color:var(--ink-soft); }
+.mo-ico{ display:inline-flex; align-items:center; }
 .mo-item:hover{ border-color:var(--red); }
 /* banca: tu equipo (cambio manual) */
 .bt-banca-wrap{ margin-top:12px; }

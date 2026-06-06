@@ -22,7 +22,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     <div id="bt-sel" hidden></div>
     <div id="bt-combate" hidden>
       <div class="bt-rival">
-        <div class="bt-info"><span class="bt-nom" id="r-nom"></span><span class="bt-lv" id="r-lv"></span><span class="bt-tipos" id="r-tipos"></span></div>
+        <div class="bt-info"><span class="bt-nom" id="r-nom"></span><span class="bt-lv" id="r-lv"></span><span class="bt-tipos" id="r-tipos"></span><span class="bt-estado" id="r-estado"></span></div>
         <div class="bt-hpbar"><div class="bt-hp" id="r-hp"></div></div>
         <div class="bt-equipo" id="r-dots"></div>
       </div>
@@ -31,7 +31,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
         <img class="bt-sprite bt-sprite-p" id="p-img" src="" alt="vos" />
       </div>
       <div class="bt-yo">
-        <div class="bt-info"><span class="bt-nom" id="p-nom"></span><span class="bt-lv" id="p-lv"></span><span class="bt-tipos" id="p-tipos"></span></div>
+        <div class="bt-info"><span class="bt-nom" id="p-nom"></span><span class="bt-lv" id="p-lv"></span><span class="bt-tipos" id="p-tipos"></span><span class="bt-estado" id="p-estado"></span></div>
         <div class="bt-hpbar"><div class="bt-hp" id="p-hp"></div></div>
         <div class="bt-equipo" id="p-dots"></div>
       </div>
@@ -73,7 +73,8 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
   <script>
     import { pc, sincronizar, spriteUrl, regionesDesbloqueadas, darCaramelos, darBalls, items, usarItem } from '../lib/coleccion.js';
     import { ITEMS } from '../lib/items.js';
-    import { combatiente, calcularDano, danoSuper, elegirCPU, equipoCPU, esEstado, aplicarEstado } from '../lib/batalla.js';
+    import { itemSvg } from '../lib/sprites.js';
+    import { combatiente, calcularDano, danoSuper, elegirCPU, equipoCPU, esEstado, aplicarEstado, puedeActuar, aplicarAilment, tickEstado, acierta, ESTADOS } from '../lib/batalla.js';
     import { etiquetaEfec } from '../lib/tipos.js';
     import { retoAlAzar } from '../lib/retos-batalla.js';
     import { sonarExito, sonarEpico } from '../lib/sonidos.js';
@@ -175,6 +176,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       if (!p || !r) return;   // un equipo quedó eliminado → terminar() maneja la UI
       $('r-nom').textContent = r.nombre; $('r-lv').textContent = 'Nv.' + r.nivel; $('r-tipos').textContent = r.tipos.join('/');
       $('p-nom').textContent = p.nombre; $('p-lv').textContent = 'Nv.' + p.nivel; $('p-tipos').textContent = p.tipos.join('/');
+      $('r-estado').innerHTML = estadoChip(r); $('p-estado').innerHTML = estadoChip(p);
       $('r-img').src = spriteUrl(r.id, r.shiny); $('p-img').src = spriteUrl(p.id, p.shiny);
       hp('r-hp', r); hp('p-hp', p);
       dots('r-dots', G.rival); dots('p-dots', G.equipo);
@@ -204,6 +206,8 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       G.pa = i; msg('¡Adelante, ' + miAct().nombre + '!'); render(); cry(miAct().id, 0.4);
       await esperar(750);
       await turnoRival();
+      if (fin()) return;
+      await tick('r');
       if (fin()) return;
       G.lock = false; render(); armarTimer();
     }
@@ -257,17 +261,58 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       if (lado === 'p') G.pa = idx; else G.ra = idx;
     }
 
+    // chip de estado alterado junto al nombre
+    const estadoChip = (c) => c.estado && ESTADOS[c.estado]
+      ? '<span class="bt-est" style="--e:' + ESTADOS[c.estado].color + '">' + ESTADOS[c.estado].ico + ' ' + ESTADOS[c.estado].sigla + '</span>' : '';
+
+    // una acción de un lado: resuelve estado (sueño/cong/para/confusión), fallo (precisión),
+    // el movimiento, y aplica el estado del move al rival.
+    async function accion(lado, mov) {
+      const at = lado === 'p' ? miAct() : rivAct();
+      const defLado = lado === 'p' ? 'r' : 'p';
+      const def = lado === 'p' ? rivAct() : miAct();
+      const img = lado === 'p' ? $('p-img') : $('r-img');
+      const pa = puedeActuar(at);
+      if (pa.texto) {
+        msg(pa.texto);
+        if (pa.autogolpe) { img.classList.add('bt-hit'); }
+        render(); await esperar(1000);
+        if (pa.autogolpe) { img.classList.remove('bt-hit'); }
+      }
+      if (!pa.actua) return;                                   // perdió el turno
+      if (!acierta(mov)) { msg('¡' + at.nombre + ' usó ' + mov.nombre + '… pero falló!'); render(); await esperar(950); return; }
+      await usarMov(at, mov, defLado);
+      if (def.hp > 0) { const t = aplicarAilment(mov, at, def); if (t) { msg(t); render(); await esperar(1000); } }
+    }
+
+    // daño por turno (veneno/quemadura) del activo del lado, con su posible debilitamiento.
+    async function tick(lado) {
+      const c = lado === 'p' ? miAct() : rivAct();
+      const tk = tickEstado(c);
+      if (!tk.dmg) return;
+      const img = lado === 'p' ? $('p-img') : $('r-img');
+      msg(tk.texto); img.classList.add('bt-hit'); render(); await esperar(230); img.classList.remove('bt-hit'); await esperar(620);
+      if (c.hp <= 0) {
+        cry(c.id, 0.3); msg(c.nombre + ' se debilitó.'); img.classList.add('bt-faint'); await esperar(650); img.classList.remove('bt-faint');
+        avanzar(lado); render(); await esperar(300);
+      }
+    }
+
     async function turno(mov) {
       if (G.lock) return; cancelarTimer(); G.lock = true; render();
-      await usarMov(miAct(), mov, 'r');
+      await accion('p', mov);
+      if (fin()) return;
+      await tick('p');
       if (fin()) return;
       await turnoRival();
+      if (fin()) return;
+      await tick('r');
       if (fin()) return;
       G.carga = Math.min(100, G.carga + 34);
       G.lock = false; render(); armarTimer();
     }
     async function turnoRival() {
-      await usarMov(rivAct(), elegirCPU(rivAct(), miAct()), 'p');
+      await accion('r', elegirCPU(rivAct(), miAct()));
     }
 
     function fin() {
@@ -292,26 +337,37 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       $('bt-fin').hidden = false;
     }
 
-    // ── Mochila: usar pociones (cura el activo, cuesta el turno) ──
+    // ── Mochila: pociones (HP), curas de estado y Revivir (cuesta el turno) ──
+    const efectoTxt = (it) => it.cura ? ('cura ' + (it.cura > 9000 ? 'TODO el' : it.cura) + ' HP')
+      : it.curaEstado ? ('cura ' + (it.curaEstado === 'todos' ? 'cualquier estado' : (ESTADOS[it.curaEstado] || {}).nombre)) : 'revive (50% HP)';
     function abrirMochila() {
       if (G.lock || G.itemsUsados >= 2) return;
       const inv = items();
-      const curas = Object.entries(ITEMS).filter(([id, it]) => it.cat === 'cura' && inv[id] > 0);
-      if (!curas.length) { msg('No tenés pociones. Comprá en la Tienda 🛒'); return; }
+      const usables = Object.entries(ITEMS).filter(([id, it]) => (it.cat === 'cura' || it.cat === 'estado') && inv[id] > 0);
+      if (!usables.length) { msg('Tu Mochila está vacía. Comprá pociones/curas en la Tienda 🛒'); return; }
       cancelarTimer();
-      $('mochila-lista').innerHTML = curas.map(([id, it]) => '<button class="mo-item" data-pocion="' + id + '">' + it.ico + ' <b>' + it.nombre + '</b><small>cura ' + (it.cura > 9000 ? 'TODO' : it.cura) + ' HP · ×' + inv[id] + '</small></button>').join('');
-      $('mochila-lista').querySelectorAll('[data-pocion]').forEach((b) => b.addEventListener('click', () => usarPocion(b.dataset.pocion)));
+      $('mochila-lista').innerHTML = usables.map(([id, it]) => '<button class="mo-item" data-item="' + id + '"><span class="mo-ico">' + itemSvg(id, 26) + '</span> <b>' + it.nombre + '</b><small>' + efectoTxt(it) + ' · ×' + inv[id] + '</small></button>').join('');
+      $('mochila-lista').querySelectorAll('[data-item]').forEach((b) => b.addEventListener('click', () => usarItemBatalla(b.dataset.item)));
       $('mochila-modal').hidden = false;
     }
     function cerrarMochila() { $('mochila-modal').hidden = true; if (G && !G.lock) armarTimer(); }
-    async function usarPocion(itemId) {
-      const it = ITEMS[itemId]; if (G.lock || G.itemsUsados >= 2 || !it) return;
+    async function usarItemBatalla(itemId) {
+      const it = ITEMS[itemId]; if (!it || G.lock || G.itemsUsados >= 2) return;
+      const a = miAct();
+      // validar aplicabilidad ANTES de gastar el item / el turno
+      if (it.cura) { if (a.hp >= a.hpMax) { msg(a.nombre + ' ya tiene el HP al máximo.'); return; } }
+      else if (it.curaEstado) { const aplica = it.curaEstado === 'todos' ? !!a.estado : a.estado === it.curaEstado; if (!aplica) { msg(a.nombre + ' no tiene ese estado.'); return; } }
+      else if (it.revive) { if (!G.equipo.some((c) => c.hp <= 0)) { msg('No hay ningún Pokémon debilitado para revivir.'); return; } }
       if (!usarItem(itemId)) return;
-      $('mochila-modal').hidden = true; cancelarTimer(); G.lock = true;
-      const a = miAct(); const cura = Math.min(a.hpMax - a.hp, it.cura); a.hp += cura; G.itemsUsados++;
-      msg('¡Usaste ' + it.nombre + '! ' + a.nombre + ' recuperó ' + cura + ' HP.'); render();
-      await esperar(850);
+      $('mochila-modal').hidden = true; cancelarTimer(); G.lock = true; G.itemsUsados++;
+      if (it.cura) { const c = Math.min(a.hpMax - a.hp, it.cura); a.hp += c; msg('¡Usaste ' + it.nombre + '! ' + a.nombre + ' recuperó ' + c + ' HP.'); }
+      else if (it.curaEstado) { a.estado = null; a.estadoT = 0; msg('¡Usaste ' + it.nombre + '! ' + a.nombre + ' se recuperó.'); }
+      else if (it.revive) { const ko = G.equipo.find((c) => c.hp <= 0); ko.hp = Math.max(1, Math.round(ko.hpMax * it.revive)); ko.estado = null; ko.estadoT = 0; sonarExito(); msg('¡' + ko.nombre + ' revivió con ' + ko.hp + ' HP!'); }
+      render();
+      await esperar(900);
       await turnoRival();
+      if (fin()) return;
+      await tick('r');
       if (fin()) return;
       G.lock = false; render(); armarTimer();
     }
@@ -483,7 +539,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     function abrirMochilaOnline() {
       const inv = items(); const curas = Object.entries(ITEMS).filter(([id, it]) => it.cat === 'cura' && inv[id] > 0);
       if (!curas.length) { $('bt-msg').textContent = 'No tenés pociones. Comprá en la Tienda 🛒'; return; }
-      $('mochila-lista').innerHTML = curas.map(([id, it]) => '<button class="mo-item" data-pocion="' + id + '">' + it.ico + ' <b>' + esc(it.nombre) + '</b><small>cura ' + (it.cura > 9000 ? 'TODO' : it.cura) + ' HP · ×' + inv[id] + '</small></button>').join('');
+      $('mochila-lista').innerHTML = curas.map(([id, it]) => '<button class="mo-item" data-pocion="' + id + '"><span class="mo-ico">' + itemSvg(id, 26) + '</span> <b>' + esc(it.nombre) + '</b><small>cura ' + (it.cura > 9000 ? 'TODO' : it.cura) + ' HP · ×' + inv[id] + '</small></button>').join('');
       $('mochila-lista').querySelectorAll('[data-pocion]').forEach((b) => b.onclick = () => { const id = b.dataset.pocion; if (usarItem(id)) { online.usarPocion(id); $('mochila-modal').hidden = true; } });
       $('mochila-modal').hidden = false;
     }
