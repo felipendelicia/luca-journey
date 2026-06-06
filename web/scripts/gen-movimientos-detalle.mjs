@@ -16,6 +16,8 @@ const TIPO_ES = {
   dark: 'Siniestro', fairy: 'Hada',
 };
 const CAT_ES = { physical: 'Físico', special: 'Especial', status: 'Estado' };
+// estados alterados que soporta la batalla (PokeAPI meta.ailment → id ES). El resto se ignora.
+const AILMENT_ES = { poison: 'veneno', burn: 'quemadura', paralysis: 'paralisis', sleep: 'sueno', freeze: 'congelado', confusion: 'confusion' };
 async function jget(url) { for (let i = 0; i < 4; i++) { try { const r = await fetch(url); if (r.ok) return await r.json(); } catch {} } return null; }
 const limpiar = (s) => (s || '').replace(/[\n\f\r]+/g, ' ').replace(/\s+/g, ' ').trim();
 
@@ -42,6 +44,8 @@ for (let i = 0; i < ids.length; i += 20) {
       categoria: CAT_ES[mv.damage_class?.name] || '—',
       desc,
     };
+    const ail = AILMENT_ES[mv.meta?.ailment?.name];
+    if (ail) { movimientos[mid].ailment = ail; movimientos[mid].ailmentChance = mv.meta?.ailment_chance || 0; }
   }));
   process.stdout.write('.');
 }
