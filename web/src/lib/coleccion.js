@@ -4,6 +4,11 @@
 
 import { tierDe } from './rareza.js';
 import evoData from '../data/evoluciones.json' with { type: 'json' };
+import { migrarPC } from './migracion-pc.js';
+
+// corre la migración a v2 (conteos→instancias) una vez, antes de tocar el PC.
+let _migrado = false;
+function asegurarMigrado() { if (!_migrado) { _migrado = true; try { migrarPC(); } catch {} } }
 
 const get = (k, def) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? def; } catch { return def; } };
 const set = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -14,9 +19,9 @@ const set = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 const familiaDe = (id) => (evoData[id] && evoData[id].familia) || Number(id);
 const _uid = () => Math.random().toString(36).slice(2, 10);
 
-export const pc = () => get('col:pc', []);              // instancias
-export const caramelos = () => get('col:caramelos', {}); // {familiaId: cantidad}
-export const vistos = () => new Set(get('col:vistos', []));
+export const pc = () => { asegurarMigrado(); return get('col:pc', []); };              // instancias
+export const caramelos = () => { asegurarMigrado(); return get('col:caramelos', {}); }; // {familiaId: cantidad}
+export const vistos = () => { asegurarMigrado(); return new Set(get('col:vistos', [])); };
 
 // deriva col:atrapados (conteos) y col:shiny (especies) desde el PC → compat.
 export function derivarCompat(arr = pc()) {
