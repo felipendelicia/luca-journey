@@ -4,7 +4,7 @@ import { ProgresoService } from '../progreso/progreso.service';
 import {
   EstadoCombate, Inst, crearCombate, aplicarAccion, snapshot,
 } from './motor';
-import { premiar, Premios } from './insignias';
+import { premiar, Premios, ratingDe } from './insignias';
 
 // Una sala pasa por: seleccion (cada uno elige 3) → combate (motor) → fin.
 interface JugadorSala {
@@ -15,7 +15,7 @@ interface Sala {
   jugadores: JugadorSala[]; estado?: EstadoCombate;
   graciaTimer?: ReturnType<typeof setTimeout>; graciaDe?: string;
 }
-interface EnCola { uid: string; nombre: string; socketId: string; }
+interface EnCola { uid: string; nombre: string; socketId: string; rating: number; }
 
 const ROOM = (id: string) => `bsala:${id}`;
 const USER = (uid: string) => `bu:${uid}`;
@@ -40,15 +40,18 @@ export class SalasService {
   salaDeUid(uid: string): Sala | undefined { const id = this.porUid.get(uid); return id ? this.salas.get(id) : undefined; }
 
   // ── matchmaking ───────────────────────────────────────────────
-  // cola pública: si hay alguien esperando, empareja; si no, encola.
-  buscar(client: Socket, uid: string, nombre: string) {
+  // cola pública: empareja con el rating ELO más cercano; si no hay nadie, encola.
+  async buscar(client: Socket, uid: string, nombre: string) {
     if (this.salaDeUid(uid)) return this.emitSock(client.id, 'error', { msg: 'ya-estas-en-sala' });
     this.cola = this.cola.filter((c) => c.uid !== uid);
-    const otro = this.cola.shift();
-    if (otro && otro.uid !== uid) {
+    let rating = 1000; try { rating = ratingDe(await this.progreso.bajar(uid)); } catch {}
+    if (this.cola.length) {
+      let best = 0, bestD = Infinity;
+      this.cola.forEach((c, i) => { const d = Math.abs((c.rating || 1000) - rating); if (d < bestD) { bestD = d; best = i; } });
+      const otro = this.cola.splice(best, 1)[0];
       this.crearSeleccion([{ uid: otro.uid, nombre: otro.nombre, socketId: otro.socketId }, { uid, nombre, socketId: client.id }]);
     } else {
-      this.cola.push({ uid, nombre, socketId: client.id });
+      this.cola.push({ uid, nombre, socketId: client.id, rating });
       this.emitSock(client.id, 'enCola', { ok: true });
     }
   }

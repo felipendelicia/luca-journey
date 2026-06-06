@@ -17,9 +17,19 @@ const LEGENDARIOS = new Set([
 const CARAMELOS_GANADOR = 3;          // por familia que peleó
 const BALLS_GANADOR = 5;              // el ganador también se lleva Pokébolas (premiar ganar)
 const BALLS_PERDEDOR = 10;            // consuelo para el que pierde
+const RATING_DEF = 1000, K = 32;      // ELO: rating inicial y factor K
+
+export const ratingDe = (est: any): number => { try { return Number(JSON.parse(est['col:pvp'] || '{}').rating) || RATING_DEF; } catch { return RATING_DEF; } };
+// ELO zero-sum: el ganador suma dG, el perdedor resta dG (según la diferencia de rating).
+function elo(rG: number, rP: number) {
+  const esperadoG = 1 / (1 + Math.pow(10, (rP - rG) / 400));
+  const dG = Math.max(1, Math.round(K * (1 - esperadoG)));
+  return { ng: rG + dG, np: Math.max(100, rP - dG), dG };
+}
 
 export interface Premios {
   gano: boolean; caramelos?: Record<number, number>; balls?: number; insignias?: string[];
+  rating?: number; delta?: number;    // ELO nuevo y cuánto cambió
   estado?: Record<string, any>;       // blob actualizado para emitir al cliente (refresca su nube)
 }
 
@@ -40,13 +50,19 @@ export async function premiar(
   const ganador = estado.jugadores.find((j) => j.uid === ganadorUid)!;
   const perdedor = estado.jugadores.find((j) => j.uid !== ganadorUid)!;
 
-  out[ganador.uid] = await aplicarUno(progreso, ganador, perdedor, true, false);
-  out[perdedor.uid] = await aplicarUno(progreso, perdedor, ganador, false, abandonoUid === perdedor.uid);
+  // ELO: leer ratings actuales de ambos y calcular el nuevo
+  const rG = ratingDe(await progreso.bajar(ganador.uid));
+  const rP = ratingDe(await progreso.bajar(perdedor.uid));
+  const { ng, np, dG } = elo(rG, rP);
+
+  out[ganador.uid] = await aplicarUno(progreso, ganador, perdedor, true, false, ng, dG);
+  out[perdedor.uid] = await aplicarUno(progreso, perdedor, ganador, false, abandonoUid === perdedor.uid, np, -dG);
   return out;
 }
 
 async function aplicarUno(
   progreso: ProgresoService, yo: JugadorEstado, rival: JugadorEstado, gano: boolean, abandono: boolean,
+  nuevoRating: number, deltaRating: number,
 ): Promise<Premios> {
   const estado = await progreso.bajar(yo.uid) as Record<string, any>;
   const premios: Premios = { gano };
@@ -70,6 +86,12 @@ async function aplicarUno(
   st.jugados += 1;
   if (gano) { st.victorias += 1; st.racha += 1; } else { st.racha = 0; }
   if (abandono) st.abandonos += 1;
+  st.rating = nuevoRating;   // ELO
+  // historial (últimos 10 duelos)
+  const hist = pObj(estado, 'col:pvp_hist', []);
+  hist.unshift({ t: Date.now(), rival: rival.nombre, gano, rating: nuevoRating, delta: deltaRating });
+  setObj(estado, 'col:pvp_hist', hist.slice(0, 10));
+  premios.rating = nuevoRating; premios.delta = deltaRating;
 
   const tengo: string[] = pObj(estado, 'col:insignias', []);
   const set = new Set(tengo);

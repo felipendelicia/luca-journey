@@ -80,7 +80,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     import { retoAlAzar } from '../lib/retos-batalla.js';
     import { sonarExito, sonarEpico, musicaBatalla, detenerMusica, toggleSonido, sonidoActivo } from '../lib/sonidos.js';
     import * as online from '../lib/batalla-online.js';
-    import { amigos } from '../lib/social.js';
+    import { amigos, rankingPvp } from '../lib/social.js';
     import { refrescarDesdeNube } from '../lib/nube.js';
 
     const D = JSON.parse(document.getElementById('bt-data').textContent);
@@ -456,6 +456,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
           '<div class="bt-codejoin"><input id="lo-code" placeholder="CÓDIGO" maxlength="8" /><button class="bt-modo-b" id="lo-join">Unirme</button></div>' +
           '<div class="bt-amigos" id="lo-amigos"><small>Cargando amigos…</small></div>' +
         '</div>' +
+        '<div class="bt-rank" id="bt-rank"></div>' +
         '<p class="bt-msg" id="lo-msg"></p><button class="bt-volver" id="lo-volver">← Volver</button>';
       $('bt-online').hidden = false;
       wireOnline();
@@ -464,6 +465,21 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       $('lo-join').onclick = () => { const c = $('lo-code').value.trim(); if (c) online.unirseCodigo(c); };
       $('lo-volver').onclick = () => { online.cancelarCola(); volverInicio(); };
       cargarAmigos();
+      cargarRanking();
+    }
+    function cargarRanking() {
+      const cont = $('bt-rank'); if (!cont) return;
+      let pvp = {}, hist = [];
+      try { pvp = JSON.parse(localStorage.getItem('col:pvp') || '{}'); } catch {}
+      try { hist = JSON.parse(localStorage.getItem('col:pvp_hist') || '[]'); } catch {}
+      const tu = '<div class="bt-rank-yo">🏅 Tu rating: <b>' + (pvp.rating || 1000) + '</b> · ' + (pvp.victorias || 0) + 'V / ' + (pvp.jugados || 0) + ' duelos · racha ' + (pvp.racha || 0) + '</div>';
+      const histH = hist.length ? '<div class="bt-rank-hist">' + hist.slice(0, 5).map((h) => '<span class="bt-duelo ' + (h.gano ? 'g' : 'p') + '">' + (h.gano ? '✓' : '✗') + ' ' + esc(h.rival || '?') + ' <b>' + (h.delta >= 0 ? '+' : '') + h.delta + '</b></span>').join('') + '</div>' : '';
+      cont.innerHTML = tu + histH + '<div id="bt-rank-top"><small>Cargando ranking…</small></div>';
+      rankingPvp().then((top) => {
+        const t = $('bt-rank-top'); if (!t) return;
+        if (!top || !top.length) { t.innerHTML = '<small>Todavía no hay duelos jugados. ¡Sé el primero! 🏆</small>'; return; }
+        t.innerHTML = '<small>🏆 Ranking de la clase</small><ol class="bt-rank-ol">' + top.map((r) => '<li><span class="r-rt">' + r.rating + '</span> ' + esc(r.nombre || ('@' + r.handle) || '—') + ' <span class="r-v">' + r.victorias + 'V</span></li>').join('') + '</ol>';
+      }).catch(() => { const t = $('bt-rank-top'); if (t) t.innerHTML = ''; });
     }
     async function cargarAmigos() {
       try {
@@ -578,6 +594,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       if (pr.balls) m += ' 🔴 +' + pr.balls + ' Pokéballs.';
       if (pr.caramelos) { const t = Object.values(pr.caramelos).reduce((a, b) => a + b, 0); if (t) m += ' 🍬 +' + t + ' caramelos.'; }
       if (pr.insignias && pr.insignias.length) m += ' 🏅 ¡Insignia nueva: ' + pr.insignias.join(', ') + '!';
+      if (pr.rating != null) m += ' 📊 Rating: ' + pr.rating + ' (' + (pr.delta >= 0 ? '+' : '') + pr.delta + ').';
       detenerMusica(); musOn = false;
       $('fin-msg').textContent = m; if (gano) sonarEpico(); $('bt-fin').hidden = false;
       try { await refrescarDesdeNube(); } catch {}

@@ -47,6 +47,7 @@ export async function guardarDescripcion(desc) { await apiPost('/perfil/descripc
 export async function perfilPublico(handle) { return apiGet(`/perfil/${encodeURIComponent(handle)}`); }
 // instancias del PC de un amigo, EN VIVO (no del snapshot público, que puede estar viejo) — para ofertas
 export async function pcDeUsuario(userId) { return apiGet(`/usuarios/${encodeURIComponent(userId)}/pc`); }
+export async function rankingPvp() { return apiGet('/pvp/ranking'); }   // leaderboard ELO
 export async function buscar(q) { return apiGet(`/perfiles?q=${encodeURIComponent(q || '')}`); }
 
 export async function solicitar({ handle, codigo }) { await apiPost('/amigos/solicitar', { handle: handle || null, codigo: codigo || null }); }

@@ -840,6 +840,20 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .bt-amigo{ padding:7px 12px; border:1px solid var(--line); border-radius:999px; background:var(--paper-2); color:var(--ink); cursor:pointer; font:600 .85rem var(--font-mono); }
 .bt-amigo:hover{ border-color:var(--red); }
 .bt-volver{ display:block; margin:1rem auto 0; background:none; border:none; color:var(--ink-soft); cursor:pointer; font:600 .9rem var(--font-mono); }
+/* ranking PvP (ELO) en el lobby */
+.bt-rank{ max-width:460px; margin:14px auto 0; display:flex; flex-direction:column; gap:8px; }
+.bt-rank-yo{ text-align:center; font:700 .92rem var(--font-mono); color:var(--ink); background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:9px 12px; }
+.bt-rank-yo b{ color:var(--yellow-deep,#e0a400); font-size:1.05em; }
+.bt-rank-hist{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; }
+.bt-duelo{ font:600 .72rem var(--font-mono); padding:3px 8px; border-radius:999px; border:1px solid var(--line); }
+.bt-duelo.g{ color:var(--teal-deep,#1f8f5f); border-color:var(--teal-deep,#1f8f5f); } .bt-duelo.p{ color:var(--red); border-color:var(--red); }
+.bt-duelo b{ font-weight:800; }
+#bt-rank-top small{ color:var(--ink-soft); font:700 .8rem var(--font-mono); }
+.bt-rank-ol{ list-style:none; margin:6px 0 0; padding:0; counter-reset:r; }
+.bt-rank-ol li{ display:flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--line); border-radius:10px; margin:4px 0; background:var(--paper-2); font:600 .86rem var(--font-mono); color:var(--ink); }
+.bt-rank-ol li::before{ counter-increment:r; content:counter(r); font-weight:800; color:var(--ink-mute); width:18px; }
+.bt-rank-ol .r-rt{ font-weight:800; color:var(--yellow-deep,#e0a400); }
+.bt-rank-ol .r-v{ margin-left:auto; color:var(--ink-soft); }
 .bt-rendir{ border-color:var(--red) !important; color:var(--red); }
 /* paneles */
 .bt-rival,.bt-yo{ background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:9px 12px; }
