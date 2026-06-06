@@ -66,7 +66,19 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     sincronizar(D.temas);
     const $ = (id) => document.getElementById(id);
     const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
-    const REGION_POOL = { kanto: [], johto: [], hoenn: [], sinnoh: [], unova: [], kalos: [] };
+
+    // grito (cry) de un Pokémon (PokeAPI, ogg)
+    const CRY_BASE = 'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/';
+    function cry(idp, vol = 0.4) { try { const a = new Audio(CRY_BASE + idp + '.ogg'); a.volume = vol; a.play().catch(() => {}); } catch {} }
+    // color por tipo (para el destello del ataque)
+    const TCOLOR = { Normal: '#9099a1', Fuego: '#ff6b2c', Agua: '#4d90d5', Planta: '#56ad4e', 'Eléctrico': '#e0bd2b', Hielo: '#62c4b6', Lucha: '#ce4069', Veneno: '#a85fc4', Tierra: '#d3793f', Volador: '#8aa6df', 'Psíquico': '#f56a72', Bicho: '#88bb26', Roca: '#b3a576', Fantasma: '#5269ac', 'Dragón': '#0a6dc4', Siniestro: '#585761', Acero: '#5a8ea1', Hada: '#e487dd' };
+    function destello(esRival, tipo) {
+      const arena = document.querySelector('.bt-arena'); if (!arena) return;
+      const fx = document.createElement('div'); fx.className = 'bt-fx';
+      fx.style.setProperty('--c', TCOLOR[tipo] || '#fff');
+      fx.style.left = esRival ? '70%' : '30%'; fx.style.top = esRival ? '24%' : '68%';
+      arena.appendChild(fx); setTimeout(() => fx.remove(), 480);
+    }
 
     let G = null; // estado del combate
 
@@ -102,6 +114,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       G = { equipo, rival, pa: 0, ra: 0, carga: 0, lock: false };
       $('bt-sel').hidden = true; $('bt-combate').hidden = false; $('bt-fin').hidden = true;
       render(); msg('¡Aparece el rival! Elegí tu ataque.'); armarTimer();
+      cry(rivAct().id, 0.45); setTimeout(() => cry(miAct().id, 0.4), 550);
     }
     function poolRival() {
       // especies “salvajes” simples por región desbloqueada (líderes/starters conocidos)
@@ -167,7 +180,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     async function cambiar(i) {
       if (G.lock || i === G.pa || G.equipo[i].hp <= 0) return;
       cancelarTimer(); G.lock = true; render();
-      G.pa = i; msg('¡Adelante, ' + miAct().nombre + '!'); render();
+      G.pa = i; msg('¡Adelante, ' + miAct().nombre + '!'); render(); cry(miAct().id, 0.4);
       await esperar(750);
       await turnoRival();
       if (fin()) return;
@@ -194,18 +207,27 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     }
     async function aplicarGolpe(at, mov, defLado, dmgInfo) {
       const def = defLado === 'p' ? miAct() : rivAct();
-      def.hp = Math.max(0, def.hp - dmgInfo.dmg);
+      const atImg = defLado === 'p' ? $('r-img') : $('p-img');   // el atacante es el otro lado
+      const defImg = defLado === 'p' ? $('p-img') : $('r-img');
       const ef = etiquetaEfec(dmgInfo.efec);
       msg('¡' + at.nombre + ' usó ' + (mov.nombre || 'su ataque') + '!' + (ef ? '  ' + ef : ''));
-      (defLado === 'p' ? $('p-img') : $('r-img')).classList.add('bt-hit');
-      render(); await esperar(150);
-      (defLado === 'p' ? $('p-img') : $('r-img')).classList.remove('bt-hit');
-      await esperar(650);
+      // 1) el atacante embiste
+      atImg.classList.add('bt-lunge'); await esperar(190); atImg.classList.remove('bt-lunge');
+      // 2) impacto: destello del tipo + flash + shake si pega fuerte
+      destello(defLado === 'r', mov.tipo);
+      def.hp = Math.max(0, def.hp - dmgInfo.dmg);
+      defImg.classList.add('bt-hit');
+      const fuerte = dmgInfo.efec >= 2 || dmgInfo.dmg > def.hpMax * 0.38;
+      if (fuerte) document.querySelector('.bt-arena').classList.add('bt-sacude');
+      render(); await esperar(200);
+      defImg.classList.remove('bt-hit'); document.querySelector('.bt-arena').classList.remove('bt-sacude');
+      await esperar(560);
       if (def.hp <= 0) {
-        msg(def.nombre + ' se debilitó.'); await esperar(500);
+        cry(def.id, 0.3); msg(def.nombre + ' se debilitó.');
+        defImg.classList.add('bt-faint'); await esperar(650); defImg.classList.remove('bt-faint');
         avanzar(defLado);
         if ((defLado === 'p' ? G.pa : G.ra) < 0) return;   // equipo eliminado → el caller corre fin()
-        render(); await esperar(400);
+        render(); cry((defLado === 'p' ? miAct() : rivAct()).id, 0.35); await esperar(400);
       }
     }
     function avanzar(lado) {

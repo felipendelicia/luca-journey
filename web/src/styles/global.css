@@ -709,8 +709,29 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .bt-sprite{ position:absolute; image-rendering:pixelated; }
 .bt-sprite-r{ width:96px; height:96px; top:14px; right:34px; }
 .bt-sprite-p{ width:128px; height:128px; bottom:4px; left:26px; transform:scaleX(-1); }
-.bt-hit{ animation:btHit .15s linear; }
-@keyframes btHit{ 0%,100%{ filter:none; opacity:1 } 50%{ filter:brightness(3); opacity:.4 } }
+.bt-hit{ animation:btHit .26s linear; }
+@keyframes btHit{ 0%,100%{ filter:none; opacity:1; transform:translate(0,0) } 20%{ filter:brightness(3); opacity:.4 } 35%{ transform:translate(5px,0) } 55%{ transform:translate(-5px,0) } 75%{ transform:translate(3px,0) } }
+.bt-sprite-r.bt-hit,.bt-sprite-p.bt-hit{ animation:btHit .26s linear; }
+.bt-sprite-p.bt-hit{ animation:btHitP .26s linear; }
+@keyframes btHitP{ 0%,100%{ filter:none; opacity:1; transform:scaleX(-1) translate(0,0) } 20%{ filter:brightness(3); opacity:.4 } 35%{ transform:scaleX(-1) translate(5px,0) } 55%{ transform:scaleX(-1) translate(-5px,0) } 75%{ transform:scaleX(-1) translate(3px,0) } }
+/* embiste del atacante */
+.bt-sprite-r.bt-lunge{ animation:lungeR .19s ease; }
+@keyframes lungeR{ 50%{ transform:translateY(13px) scale(1.07) } }
+.bt-sprite-p.bt-lunge{ animation:lungeP .19s ease; }
+@keyframes lungeP{ 50%{ transform:scaleX(-1) translateY(-15px) scale(1.07) } }
+/* debilitado: cae y se desvanece */
+.bt-sprite-r.bt-faint{ animation:faintR .6s ease forwards; }
+@keyframes faintR{ to{ transform:translateY(40px) scale(.7); opacity:0 } }
+.bt-sprite-p.bt-faint{ animation:faintP .6s ease forwards; }
+@keyframes faintP{ to{ transform:scaleX(-1) translateY(40px) scale(.7); opacity:0 } }
+/* destello del tipo en el impacto */
+.bt-fx{ position:absolute; width:90px; height:90px; transform:translate(-50%,-50%); border-radius:50%; pointer-events:none;
+  background:radial-gradient(circle, var(--c) 0%, color-mix(in srgb,var(--c) 60%, transparent) 35%, transparent 70%);
+  box-shadow:0 0 24px 6px var(--c); animation:btFx .45s ease-out forwards; }
+@keyframes btFx{ 0%{ transform:translate(-50%,-50%) scale(.2); opacity:1 } 100%{ transform:translate(-50%,-50%) scale(1.7); opacity:0 } }
+/* sacudida de la arena en golpes fuertes */
+.bt-arena.bt-sacude{ animation:btSacude .3s ease; }
+@keyframes btSacude{ 0%,100%{ transform:translate(0,0) } 20%{ transform:translate(-5px,3px) } 40%{ transform:translate(5px,-3px) } 60%{ transform:translate(-4px,-2px) } 80%{ transform:translate(4px,2px) } }
 /* cuadro de texto estilo Pokémon (FireRed): caja clara con borde doble + flecha parpadeante */
 .bt-msg{ position:relative; display:flex; align-items:center; text-align:left; min-height:3.1em; margin:8px 0;
   padding:13px 30px 13px 16px; border:3px solid #34467e; border-radius:11px; line-height:1.35;
