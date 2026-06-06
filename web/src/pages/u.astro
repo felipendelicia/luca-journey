@@ -230,7 +230,7 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
         const on = () => seleccion.some((x) => x.iid === m.iid);
         const cell = document.createElement('div'); cell.className = 'tr-cell' + (on() ? ' on' : '') + (esHueco(m) ? ' tr-gap' : '');
         cell.innerHTML = `<img src="${sprite(m.id, m.shiny)}" alt="${esc(nombreInst(m))}" title="${esc(nombreInst(m))}" /><span class="tr-cnt">Nv.${m.nivel}${m.shiny ? ' ✨' : ''}</span>`
-          + (esHueco(m) ? `<span class="tr-falta">${marcaTxt}</span>` : '');
+          + (esHueco(m) ? `<span class="tr-falta" title="${marcaTxt}">⭐</span>` : '');
         const btn = document.createElement('button'); btn.type = 'button';
         btn.className = 'tr-pedir' + (on() ? ' on' : ''); btn.textContent = on() ? '✓' : '＋';
         btn.addEventListener('click', () => {
@@ -253,8 +253,8 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
       const especiesDeEl = new Set(otras.map((m) => m.id));   // lo que ÉL tiene
       const especiesMias = new Set(mias.map((m) => m.id));    // lo que YO tengo
       // en MIS Pokémon marco los que ÉL no tiene; en los de ÉL, los que YO no tengo
-      gridInst($('of-doy'), mias, doy, (m) => !especiesDeEl.has(m.id), '⭐ le falta');
-      gridInst($('of-pido'), otras, pido, (m) => !especiesMias.has(m.id), '⭐ te falta');
+      gridInst($('of-doy'), mias, doy, (m) => !especiesDeEl.has(m.id), 'Le falta a él');
+      gridInst($('of-pido'), otras, pido, (m) => !especiesMias.has(m.id), 'Te falta a vos');
     }
     $('of-x').addEventListener('click', () => { $('of-modal').hidden = true; });
     $('of-modal').addEventListener('click', (e) => { if (e.target === $('of-modal')) $('of-modal').hidden = true; });

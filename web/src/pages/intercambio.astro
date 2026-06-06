@@ -190,7 +190,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
       lista.forEach((m) => {
         const on = miPedido.some((p) => p.iid === m.iid);
         const cell = document.createElement('div'); cell.className = 'tr-cell' + (on ? ' on' : '') + (esHueco(m) ? ' tr-gap' : '');
-        cell.innerHTML = `<img src="${sprite(m.id, m.shiny)}" alt="${esc(nombreInst(m))}" title="${esc(nombreInst(m))}" /><span class="tr-cnt">Nv.${m.nivel}${m.shiny ? ' ✨' : ''}</span>` + (esHueco(m) ? '<span class="tr-falta">⭐ te falta</span>' : '');
+        cell.innerHTML = `<img src="${sprite(m.id, m.shiny)}" alt="${esc(nombreInst(m))}" title="${esc(nombreInst(m))}" /><span class="tr-cnt">Nv.${m.nivel}${m.shiny ? ' ✨' : ''}</span>` + (esHueco(m) ? '<span class="tr-falta" title="Te falta a vos">⭐</span>' : '');
         const btn = document.createElement('button');
         btn.className = 'tr-pedir' + (on ? ' on' : ''); btn.type = 'button'; btn.textContent = on ? '✓ pedido' : 'Pedir';
         btn.addEventListener('click', async () => {
@@ -262,7 +262,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
         `<div class="tr-pick${esHueco(m) ? ' tr-gap' : ''}">
           <img src="${sprite(m.id, m.shiny)}" alt="${esc(nombreInst(m))}" title="${esc(nombreInst(m))}" />
           <span class="tr-cnt">Nv.${m.nivel}${m.shiny ? ' ✨' : ''}</span>
-          ${esHueco(m) ? '<span class="tr-falta">⭐ le falta</span>' : ''}
+          ${esHueco(m) ? '<span class="tr-falta" title="Le falta a él">⭐</span>' : ''}
           <button class="tr-add" data-iid="${m.iid}" type="button">+ ofrecer</button>
         </div>`).join('') : '<div class="tr-colec-vacio">No tenés Pokémon para ofrecer.</div>';
       $('tr-grid').querySelectorAll('.tr-add').forEach((b) => b.addEventListener('click', () => {
