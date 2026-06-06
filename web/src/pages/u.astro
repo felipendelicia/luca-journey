@@ -9,7 +9,11 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
 ---
 <Base title="Perfil — Python con Pokémon" active="">
   <main class="wrap u-wrap">
-    <p class="u-cargando" id="u-cargando">Cargando perfil…</p>
+    <div class="u-cargando" id="u-cargando" aria-busy="true" aria-label="Cargando perfil">
+      <div class="skeleton" style="height:120px; border-radius:18px;"></div>
+      <div class="skeleton sk-line" style="width:38%; height:24px; margin-top:16px;"></div>
+      <div class="skeleton sk-line" style="width:62%;"></div>
+    </div>
     <p class="u-error" id="u-error" hidden>Perfil no encontrado. 🔍</p>
 
     <article class="u-perfil" id="u-perfil" hidden>

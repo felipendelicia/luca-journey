@@ -15,29 +15,62 @@ const TIPOS = {
   ModuleNotFoundError: { ico: '📦', titulo: 'Módulo no encontrado', causa: 'Importaste un módulo que no está disponible.', fix: 'Revisá el nombre del `import`.' },
   ImportError:       { ico: '📦', titulo: 'Error al importar', causa: 'No se pudo importar lo que pediste.', fix: 'Revisá el nombre del módulo o de lo que importás de él.' },
   RecursionError:    { ico: '🌀', titulo: 'Demasiada recursión', causa: 'Una función se llama a sí misma sin frenar nunca.', fix: 'Agregá un caso base que corte la recursión (un `return` sin volver a llamarse).' },
-
+  FileNotFoundError: { ico: '📄', titulo: 'Archivo no encontrado', causa: 'Intentaste abrir un archivo que no existe en esa ruta.', fix: 'Revisá el nombre y la ruta del archivo (¿está bien escrito? ¿existe?).' },
+  AssertionError:    { ico: '❗', titulo: 'Afirmación fallida', causa: 'Un `assert` comprobó algo que resultó falso.', fix: 'El valor no era el que esperaba esa comprobación.' },
 };
 const cap = (s, n = 60) => { s = String(s); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
 
-// refina el `fix` según el detalle del error (mensajes típicos de CPython).
+// refina la causa/fix según el detalle del error (mensajes típicos de CPython).
 function refinar(tipo, detalle, base) {
   const d = (detalle || '').toLowerCase();
+  const ent = (re) => (detalle.match(re) || [])[1];
+
   if (tipo === 'NameError') {
-    const n = (detalle.match(/name '([^']+)'/) || [])[1];
-    if (n) return { ...base, causa: `Usaste «${n}» pero Python no sabe qué es.`, fix: `¿«${n}» está bien escrito? ¿Lo definiste (con \`=\` o \`def\`) antes de esta línea?` };
+    const n = ent(/name '([^']+)'/);
+    if (n) return { ...base, causa: `Usaste «${n}» pero Python no sabe qué es.`, fix: `¿«${n}» está bien escrito (mayúsculas/typo)? ¿Lo definiste (con \`=\` o \`def\`) ANTES de esta línea? ¿Falta un \`import\`?` };
   }
   if (tipo === 'SyntaxError') {
-    if (d.includes('expected \':\'')) return { ...base, fix: 'Falta el `:` al final de la línea (después del `if`, `for`, `while`, `def`, etc.).' };
-    if (d.includes('unterminated string')) return { ...base, fix: 'Quedó una comilla sin cerrar. Cada `"` o `\'` que abre tiene que cerrar.' };
-    if (d.includes('unexpected eof') || d.includes('was never closed')) return { ...base, fix: 'Quedó un paréntesis/corchete/llave sin cerrar.' };
-    if (d.includes('invalid syntax') && d.includes('=')) return { ...base, fix: 'Para comparar se usa `==` (doble). Un solo `=` es asignar.' };
+    if (d.includes("expected ':'")) return { ...base, fix: 'Falta el `:` al final de la línea (después del `if`, `for`, `while`, `def`, etc.).' };
+    if (d.includes('print')) return { ...base, causa: 'En Python 3, `print` es una función.', fix: 'Va con paréntesis: `print("hola")` (no `print "hola"`).' };
+    if (d.includes('unterminated string') || d.includes('eol while scanning')) return { ...base, fix: 'Quedó una comilla sin cerrar. Cada `"` o `\'` que abre tiene que cerrar.' };
+    if (d.includes('unexpected eof') || d.includes('was never closed')) return { ...base, fix: 'Quedó un paréntesis `(`, corchete `[` o llave `{` sin cerrar.' };
+    if (d.includes('cannot assign')) return { ...base, fix: 'Para comparar se usa `==` (doble); un solo `=` asigna, y no se puede asignar a eso.' };
+    if (d.includes('invalid syntax')) return { ...base, fix: 'Revisá la línea: ¿falta un `:`, una coma, un paréntesis, o usaste `=` donde va `==`?' };
   }
-  if (tipo === 'IndentationError' && d.includes('expected an indented block')) {
-    return { ...base, fix: 'Después de un `:` (de `if`/`for`/`def`…) la línea siguiente tiene que ir con 4 espacios de sangría.' };
+  if (tipo === 'IndentationError') {
+    if (d.includes('unexpected indent')) return { ...base, fix: 'Hay espacios de más al principio de esa línea. Alineala con las de su mismo bloque.' };
+    if (d.includes('expected an indented block')) return { ...base, fix: 'Después de un `:` (de `if`/`for`/`def`…) la línea siguiente va con 4 espacios de sangría.' };
   }
   if (tipo === 'TypeError') {
-    if (d.includes('positional argument')) return { ...base, causa: 'Llamaste a una función con más/menos argumentos de los que espera.', fix: 'Fijate cuántos parámetros tiene la función y pasale exactamente esos.' };
-    if (d.includes('not subscriptable')) return { ...base, causa: 'Usaste `[...]` sobre algo que no es lista/dict/texto.', fix: 'Revisá la variable: quizás es un número o None y no se puede indexar.' };
+    if (d.includes('not callable')) return { ...base, causa: 'Usaste `()` sobre algo que no es una función.', fix: '¿Le pusiste el mismo nombre a una variable y a una función? Revisá los nombres.' };
+    if (d.includes('not iterable')) return { ...base, causa: 'Intentaste recorrer (`for`) o desempaquetar algo que no es una colección.', fix: 'Eso no es una lista/tupla/texto. Revisá qué le pasás al `for`.' };
+    if (d.includes('not subscriptable')) return { ...base, causa: 'Usaste `[...]` sobre algo que no es lista/dict/texto.', fix: 'Quizás esa variable es un número o `None` y no se puede indexar.' };
+    if (d.includes('concatenate') || (d.includes('unsupported operand') && (d.includes('str') || d.includes('int') || d.includes('float')))) {
+      return { ...base, causa: 'Mezclaste texto y número en una misma operación.', fix: 'Convertí: `str(numero)` para unir con texto, o `int(texto)` para sumar como número.' };
+    }
+    if (d.includes('argument')) return { ...base, causa: 'Llamaste a una función con más/menos argumentos de los que espera.', fix: 'Fijate cuántos parámetros tiene la función y pasale exactamente esos.' };
+  }
+  if (tipo === 'ValueError') {
+    const n = ent(/int\(\) with base 10: '([^']*)'/);
+    if (n != null) return { ...base, causa: `Intentaste convertir a número algo que no lo es ("${n}").`, fix: '`int(...)` solo convierte textos que sean números (ej. `"42"`). Revisá el valor.' };
+  }
+  if (tipo === 'KeyError') {
+    const k = ent(/'([^']+)'/) || (detalle || '').trim();
+    if (k) return { ...base, causa: `No existe la clave «${k}» en el diccionario.`, fix: `Revisá el nombre de la clave, o usá \`mi_dict.get("${k}")\` para no romper.` };
+  }
+  if (tipo === 'AttributeError') {
+    const attr = ent(/attribute '([^']+)'/);
+    const obj = ent(/'([A-Za-z_.]+)' object/);
+    if (obj === 'NoneType') return { ...base, causa: 'La variable vale `None`.', fix: 'Quizás una función no devolvió nada (le falta `return`). Revisá de dónde sale ese valor.' };
+    if (attr) return { ...base, causa: `Ese ${obj ? '`' + obj + '`' : 'objeto'} no tiene «${attr}».`, fix: `Revisá cómo se escribe «${attr}» y el tipo del objeto (¿lista, texto, dict?).` };
+  }
+  if (tipo === 'ModuleNotFoundError' || tipo === 'ImportError') {
+    const m = ent(/named '([^']+)'/) || ent(/'([^']+)'/);
+    if (m) return { ...base, causa: `No se encontró el módulo «${m}».`, fix: `Revisá que «${m}» esté bien escrito.` };
+  }
+  if (tipo === 'FileNotFoundError') {
+    const f = ent(/'([^']+)'/);
+    if (f) return { ...base, causa: `No se encontró el archivo «${f}».`, fix: 'Revisá el nombre y la ruta (¿existe? ¿está bien escrito?).' };
   }
   return base;
 }
@@ -46,7 +79,7 @@ function refinar(tipo, detalle, base) {
 export function traducirError(raw) {
   if (!raw) return null;
   const txt = String(raw);
-  const matches = [...txt.matchAll(/([A-Za-z_]*(?:Error|Exception|Warning))\s*:\s*([^\n]*)/g)];
+  const matches = [...txt.matchAll(/([A-Za-z_]*(?:Error|Exception|Warning))(?:\s*:\s*([^\n]*))?/g)];
   if (!matches.length) return null;
   const last = matches[matches.length - 1];
   const tipo = last[1];
