@@ -44,7 +44,7 @@ const total = pokemon.length;
 
   <script type="application/json" id="safari-data" set:html={JSON.stringify({ pokemon, temas, pesos })}></script>
   <script>
-    import { sincronizar, tirar as lanzar, estado, reclamarRegalo, regaloDisponible, regionesDesbloqueadas, spriteUrl } from '../lib/coleccion.js';
+    import { sincronizar, tirar as lanzar, estado, vistos, reclamarRegalo, regaloDisponible, regionesDesbloqueadas, spriteUrl } from '../lib/coleccion.js';
     import { sonarCaptura, sonarShiny, sonarEpico } from '../lib/sonidos.js';
     import { TIERS } from '../lib/rareza.js';
 
@@ -72,7 +72,9 @@ const total = pokemon.length;
     function refrescar() {
       const e = estado();
       $('balls').textContent = e.balls;
-      $('colN').textContent = e.unicos;
+      // “de 721” = especies VISTAS (igual que la Pokédex), no solo las que tenés ahora
+      const v = vistos();
+      $('colN').textContent = D.pokemon.filter((p) => v.has(p.id)).length;
       $('tirar').disabled = e.balls <= 0;
       $('regalo').style.display = regaloDisponible() ? '' : 'none';
       const d = regionesDesbloqueadas(D.temas);
