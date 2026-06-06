@@ -3,9 +3,41 @@
 // una región te da capturas garantizadas. Se pueden tener REPETIDOS (conteo por id).
 
 import { tierDe } from './rareza.js';
+import evoData from '../data/evoluciones.json' with { type: 'json' };
 
 const get = (k, def) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? def; } catch { return def; } };
 const set = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+// ───────── Colección v2 (instancias estilo GO) ─────────
+// col:pc = [{iid,id,nivel,exp,shiny,movs,creado}] (fuente de verdad). Se derivan
+// col:atrapados/col:shiny para compatibilidad con el código viejo (intercambios, perfil, logros).
+const familiaDe = (id) => (evoData[id] && evoData[id].familia) || Number(id);
+const _uid = () => Math.random().toString(36).slice(2, 10);
+
+export const pc = () => get('col:pc', []);              // instancias
+export const caramelos = () => get('col:caramelos', {}); // {familiaId: cantidad}
+export const vistos = () => new Set(get('col:vistos', []));
+
+// deriva col:atrapados (conteos) y col:shiny (especies) desde el PC → compat.
+export function derivarCompat(arr = pc()) {
+  const at = {}, shi = new Set();
+  for (const m of arr) { at[m.id] = (at[m.id] || 0) + 1; if (m.shiny) shi.add(m.id); }
+  set('col:atrapados', at);
+  set('col:shiny', [...shi]);
+}
+function setPC(arr) { set('col:pc', arr); derivarCompat(arr); }
+function addVisto(id) { const v = get('col:vistos', []); if (!v.includes(Number(id))) { v.push(Number(id)); set('col:vistos', v); } }
+function addCaramelos(id, n) { const c = get('col:caramelos', {}); const f = familiaDe(id); c[f] = (c[f] || 0) + n; set('col:caramelos', c); }
+
+export const CARAMELOS_POR_CAPTURA = 3;
+// crea una instancia nueva (al atrapar) + suma a vistos + caramelos a la familia. Devuelve la instancia.
+export function atrapar(id, { shiny = false } = {}) {
+  id = Number(id);
+  const inst = { iid: _uid(), id, nivel: 1, exp: 0, shiny, movs: [], creado: Date.now() };
+  const arr = pc(); arr.push(inst); setPC(arr);
+  addVisto(id); addCaramelos(id, CARAMELOS_POR_CAPTURA);
+  return inst;
+}
 
 export const BALLS_POR_EJERCICIO = 2;
 export const REGALO_BALLS = 5;                     // Pokéballs por regalo
