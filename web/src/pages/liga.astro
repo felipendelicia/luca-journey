@@ -76,13 +76,24 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
     </section>
     {regiones.map((r) => (
       <section class="liga-panel region" data-region={r.id} data-tab={r.id} role="tabpanel" hidden>
-        <h2 class="liga-h">{r.emoji} Región {r.nombre} <small>— {r.sub}</small> <span class="reg-estado" data-reg={r.id}></span></h2>
+        <h2 class="liga-h">{r.emoji} Región {r.nombre} <small>— {r.sub}</small> <span class="reg-estado" data-reg={r.id}></span> <button class="diploma-btn" type="button" data-diploma={r.id} hidden>📜 Diploma</button></h2>
         <div class="medallas" data-medallas={r.id}></div>
         <div class="progreso-temas" data-progreso={r.id}></div>
       </section>
     ))}
 
     <p class="liga-nota">Tu progreso se guarda en este navegador. Completá los 8 temas de una región para ser su Campeón. 🏆</p>
+
+    <div class="av-modal" id="dip-modal" hidden>
+      <div class="av-card dip-card" role="dialog" aria-modal="true" aria-label="Diploma de Campeón">
+        <div class="av-head"><b>📜 Diploma de Campeón</b><button class="av-x" id="dip-x" type="button">✕</button></div>
+        <canvas id="dip-canvas" width="1200" height="630"></canvas>
+        <div class="dip-actions">
+          <button class="btn-grande" id="dip-download" type="button">⬇️ Descargar</button>
+          <button class="btn-sec" id="dip-share" type="button" hidden>📤 Compartir</button>
+        </div>
+      </div>
+    </div>
 
     <div class="av-modal" id="avatar-modal" hidden>
       <div class="av-card">
@@ -114,6 +125,11 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
     .reg-tab.completa .rt-name::after { content:" ✓"; color: var(--teal-deep,#1f8f5f); }
     .liga-panel[hidden] { display:none; }
     .liga-panel .liga-h { margin-top: 4px; }
+    .diploma-btn { font:800 .72rem var(--font-mono); color:#3a2a00; background:linear-gradient(180deg,#ffe066,#e0a400); border:none; border-radius:8px; padding:4px 11px; cursor:pointer; vertical-align:middle; box-shadow:0 2px 6px -2px rgba(224,164,0,.6); }
+    .diploma-btn:hover { filter:brightness(1.06); transform:translateY(-1px); }
+    .dip-card { max-width: 760px; }
+    #dip-canvas { width:100%; height:auto; border-radius:12px; border:1px solid var(--line); display:block; margin:4px 0 14px; }
+    .dip-actions { display:flex; gap:10px; flex-wrap:wrap; }
     @media (max-width: 600px) {
       .reg-tab .rt-name { display:none; }
       .reg-tab { padding: 8px 11px 10px; }
@@ -231,7 +247,10 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
         const _bar = document.querySelector('[data-bar="' + r.id + '"]');
         if (_chip) _chip.textContent = medReg + '/' + r.temas.length;
         if (_bar) _bar.style.width = (r.temas.length ? Math.round(medReg / r.temas.length * 100) : 0) + '%';
-        if (completaReg) { const _t = document.querySelector('.reg-tab[data-region="' + r.id + '"]'); if (_t) _t.classList.add('completa'); }
+        if (completaReg) {
+          const _t = document.querySelector('.reg-tab[data-region="' + r.id + '"]'); if (_t) _t.classList.add('completa');
+          const _d = document.querySelector('[data-diploma="' + r.id + '"]'); if (_d) _d.hidden = false;
+        }
       }
 
       // ── pestañas: mostrar una sección a la vez (Logros + regiones) ──
@@ -264,6 +283,63 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
       const _guardada = (() => { try { return localStorage.getItem('liga:tab'); } catch (e) { return null; } })();
       mostrarTab(location.hash.slice(1) || _guardada || primeraIncompleta || 'logros');
       window.addEventListener('hashchange', () => mostrarTab(location.hash.slice(1)));
+
+      // ── diploma de Campeón (canvas → PNG descargable / compartible) ──
+      const canvas = document.getElementById('dip-canvas');
+      function dibujarDiploma(reg) {
+        const r = data.regiones.find((x) => x.id === reg); if (!r) return;
+        const handle = (localStorage.getItem('liga:nombre') || '').trim() || 'Entrenador/a';
+        const fecha = new Date().toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' });
+        const ctx = canvas.getContext('2d'); const W = 1200, H = 630;
+        // fondo
+        const g = ctx.createLinearGradient(0, 0, W, H); g.addColorStop(0, '#0e1a12'); g.addColorStop(1, '#16241a');
+        ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+        ctx.strokeStyle = 'rgba(255,255,255,.035)'; ctx.lineWidth = 1;
+        for (let x = 0; x < W; x += 30) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+        for (let y = 0; y < H; y += 30) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+        // marco dorado
+        ctx.strokeStyle = '#ffcf3f'; ctx.lineWidth = 6; ctx.strokeRect(26, 26, W - 52, H - 52);
+        ctx.strokeStyle = 'rgba(255,207,63,.4)'; ctx.lineWidth = 2; ctx.strokeRect(40, 40, W - 80, H - 80);
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#e3350d'; ctx.font = '700 24px "JetBrains Mono", monospace'; ctx.fillText('▸ POKÉDEX CODEX', W / 2, 102);
+        ctx.fillStyle = '#bfe9cf'; ctx.font = '700 22px "JetBrains Mono", monospace'; ctx.fillText('D I P L O M A   D E   C A M P E Ó N', W / 2, 148);
+        ctx.font = '92px serif'; ctx.fillText(r.emoji, W / 2, 280);
+        ctx.fillStyle = '#ffcf3f'; ctx.font = '800 60px "Silkscreen", "JetBrains Mono", monospace'; ctx.fillText('Campeón de ' + r.nombre, W / 2, 372);
+        ctx.fillStyle = '#9fd9b4'; ctx.font = '400 26px "JetBrains Mono", monospace'; ctx.fillText(r.sub, W / 2, 414);
+        ctx.fillStyle = '#eef'; ctx.font = '600 30px "JetBrains Mono", monospace'; ctx.fillText('Otorgado a  @' + handle, W / 2, 492);
+        ctx.fillStyle = '#8fb6a0'; ctx.font = '500 22px "JetBrains Mono", monospace'; ctx.fillText('🏅 8 gimnasios vencidos   ·   ' + fecha, W / 2, 536);
+        ctx.fillStyle = '#5e8a72'; ctx.font = '600 20px "JetBrains Mono", monospace'; ctx.fillText('felipendelicia.github.io/luca-journey', W / 2, 586);
+        return r;
+      }
+      let dipReg = null;
+      async function abrirDiploma(reg) {
+        dipReg = reg;
+        try { await document.fonts.ready; } catch (e) {}
+        const r = dibujarDiploma(reg); if (!r) return;
+        document.getElementById('dip-modal').hidden = false;
+        document.getElementById('dip-x').focus();
+      }
+      document.querySelectorAll('[data-diploma]').forEach((b) => b.addEventListener('click', () => abrirDiploma(b.dataset.diploma)));
+      document.getElementById('dip-x').addEventListener('click', () => { document.getElementById('dip-modal').hidden = true; });
+      document.getElementById('dip-modal').addEventListener('click', (e) => { if (e.target.id === 'dip-modal') document.getElementById('dip-modal').hidden = true; });
+      document.getElementById('dip-download').addEventListener('click', () => {
+        canvas.toBlob((b) => {
+          const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'diploma-' + (dipReg || 'campeon') + '.png';
+          a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        });
+      });
+      const shareBtn = document.getElementById('dip-share');
+      if (navigator.share) {
+        shareBtn.hidden = false;
+        shareBtn.addEventListener('click', () => {
+          const r = data.regiones.find((x) => x.id === dipReg);
+          canvas.toBlob(async (b) => {
+            const f = new File([b], 'diploma.png', { type: 'image/png' });
+            const datos = { title: '¡Campeón de ' + (r ? r.nombre : '') + '!', text: 'Me convertí en Campeón de ' + (r ? r.nombre : '') + ' en Python con Pokémon 🏆' };
+            try { if (navigator.canShare && navigator.canShare({ files: [f] })) await navigator.share({ ...datos, files: [f] }); else await navigator.share(datos); } catch (e) {}
+          });
+        });
+      }
 
       const exp = doneTotal * 20;
       const nivel = 1 + Math.floor(exp / 100);
