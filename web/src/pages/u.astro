@@ -75,7 +75,7 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
 
   <script type="application/json" id="u-data" set:html={JSON.stringify({ nombres, regionDe })}></script>
   <script>
-    import { perfilPublico, sonAmigos, solicitar, crearOferta, guardarDescripcion, haySupabase } from '../lib/social.js';
+    import { perfilPublico, sonAmigos, solicitar, crearOferta, guardarDescripcion, pcDeUsuario, haySupabase } from '../lib/social.js';
     import { pc as pcCol } from '../lib/coleccion.js';
     import { statsDesafios, desafiosDeUsuario } from '../lib/desafios.js';
     import { usuario, init as initNube } from '../lib/nube.js';
@@ -239,12 +239,15 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
         cell.appendChild(btn); el.appendChild(cell);
       });
     }
-    function abrirOferta() {
+    async function abrirOferta() {
       doy = []; pido = []; $('of-msg').textContent = '';
-      const pub = perfil.publico || {};
       gridInst($('of-doy'), misInst(), doy);
-      gridInst($('of-pido'), pub.pcPub || [], pido);
+      $('of-pido').innerHTML = '<div class="tr-colec-vacio">Cargando…</div>';
       $('of-modal').hidden = false;
+      // las instancias del otro, EN VIVO (el snapshot público puede estar desactualizado)
+      let otras = (perfil.publico && perfil.publico.pcPub) || [];
+      try { const r = await pcDeUsuario(perfil.user_id); if (r && Array.isArray(r.pc)) otras = r.pc; } catch {}
+      gridInst($('of-pido'), otras, pido);
     }
     $('of-x').addEventListener('click', () => { $('of-modal').hidden = true; });
     $('of-modal').addEventListener('click', (e) => { if (e.target === $('of-modal')) $('of-modal').hidden = true; });

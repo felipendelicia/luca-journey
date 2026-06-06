@@ -1,5 +1,6 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { AmigosService } from './amigos.service';
 
 const ALF = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const code6 = () => Array.from({ length: 6 }, () => ALF[Math.floor(Math.random() * ALF.length)]).join('');
@@ -7,7 +8,15 @@ const HANDLE_RE = /^[a-z0-9_]{3,20}$/;
 
 @Injectable()
 export class PerfilesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private amigos: AmigosService) {}
+
+  // instancias del PC de un usuario EN VIVO (para ofertas async por instancia). Solo entre amigos.
+  async pcDeUsuario(uid: string, otroId: string) {
+    if (uid !== otroId && !(await this.amigos.sonAmigos(uid, otroId))) throw new ForbiddenException('solo entre amigos');
+    const p = await this.prisma.progreso.findUnique({ where: { userId: otroId } });
+    let pc: any[] = []; try { pc = JSON.parse(((p?.estado as any) || {})['col:pc'] || '[]'); } catch {}
+    return { pc: pc.map((m) => ({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: !!m.shiny, mote: m.mote || '' })) };
+  }
 
   async mio(uid: string) {
     return this.prisma.perfil.findUnique({ where: { userId: uid } });

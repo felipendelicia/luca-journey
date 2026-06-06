@@ -21,4 +21,5 @@ export class PerfilesController {
     return this.svc.listar(uid, Number(l), Number(o));
   }
   @Get('perfil/:handle') async porHandle(@Param('handle') h: string) { return perfilDTO(await this.svc.porHandle(h)); }
+  @Get('usuarios/:id/pc') pcDe(@CurrentUser() uid: string, @Param('id') id: string) { return this.svc.pcDeUsuario(uid, id); }
 }
