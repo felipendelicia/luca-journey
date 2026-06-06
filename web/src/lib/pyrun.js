@@ -14,9 +14,10 @@ function getWorker() {
     const url = base.replace(/\/$/, '') + '/py-worker.js';
     worker = new Worker(url);
     worker.onmessage = (evt) => {
-      const { id, ok, result, error } = evt.data;
+      const { id, ok, result, error, chunk, err } = evt.data;
       const pending = pendingMap.get(id);
       if (!pending) return;
+      if (chunk !== undefined) { if (pending.onChunk) pending.onChunk(chunk, err); return; }  // streaming: no resuelve aún
       clearTimeout(pending.timer);
       pendingMap.delete(id);
       if (ok) {
@@ -48,25 +49,37 @@ function getWorker() {
  * @param {number} timeoutMs  - Timeout en ms (default 10 s).
  * @returns {Promise<string>} - El JSON string devuelto por la función Python.
  */
+// Timeout: termina el worker (única forma de cortar un bucle infinito) y rechaza los pendientes.
+function makeTimer(timeoutMs) {
+  return setTimeout(() => {
+    if (worker) { worker.terminate(); worker = null; }
+    for (const [, pending] of pendingMap) {
+      pending.reject(new Error('⏱️ Tu código tardó demasiado (¿bucle infinito? ej. un while sin fin).'));
+    }
+    pendingMap.clear();
+  }, timeoutMs);
+}
+
 export function run(helperSrc, packages, fn, args, timeoutMs = 10000) {
   return new Promise((resolve, reject) => {
     const id = nextId++;
     const w = getWorker();
-
-    const timer = setTimeout(() => {
-      // Timeout: terminar el worker para que no quede congelado.
-      if (worker) {
-        worker.terminate();
-        worker = null;
-      }
-      // Rechazar todos los pendientes (incluyendo éste).
-      for (const [, pending] of pendingMap) {
-        pending.reject(new Error('⏱️ Tu código tardó demasiado (¿bucle infinito? ej. un while sin fin).'));
-      }
-      pendingMap.clear();
-    }, timeoutMs);
-
+    const timer = makeTimer(timeoutMs);
     pendingMap.set(id, { resolve, reject, timer });
     w.postMessage({ id, helperSrc, packages, fn, args });
+  });
+}
+
+/**
+ * Corre `code` con stdout/stderr en vivo (modo streaming). onChunk(texto, esError) recibe cada
+ * fragmento impreso. Resuelve con el resultado final (ej. imagen matplotlib base64 o '').
+ */
+export function runStream(helperSrc, packages, code, onChunk, timeoutMs = 10000) {
+  return new Promise((resolve, reject) => {
+    const id = nextId++;
+    const w = getWorker();
+    const timer = makeTimer(timeoutMs);
+    pendingMap.set(id, { resolve, reject, timer, onChunk });
+    w.postMessage({ id, helperSrc, packages, code, stream: true });
   });
 }

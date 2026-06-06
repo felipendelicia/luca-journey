@@ -57,6 +57,7 @@ const grupos = agrupar(caps);
     import { editorPython } from '../../lib/editor.js';
     import { traducirError } from '../../lib/errores.js';
     import trazadorPy from '../../lib/trazador.py?raw';
+    import { run, runStream } from '../../lib/pyrun.js';   // worker con timeout (corta bucles infinitos)
 
     const esc = (s) => String(s == null ? '' : s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
     let pyReady = null;
@@ -67,52 +68,90 @@ const grupos = agrupar(caps);
       }
       return pyReady;
     }
+    const TIMEOUT_LIBRO = 10000;   // 10s para el código (con el worker ya cargado)
+    let listoW = null;
+    function asegurarW() {   // worker cargado (Pyodide) en segundo plano; se resetea si muere por timeout
+      if (!listoW) listoW = runStream('', [], '', () => {}, 60000).catch((e) => { listoW = null; throw e; });
+      return listoW;
+    }
+    function paquetesDe(codigo) {
+      const pkgs = [];
+      if (/\bnumpy\b|\bnp\./.test(codigo)) pkgs.push('numpy');
+      if (/\bpandas\b|\bpd\./.test(codigo)) pkgs.push('pandas');
+      if (/\bmatplotlib\b|\bplt\./.test(codigo)) pkgs.push('matplotlib');
+      if (/\bimport sqlite3\b|\bsqlite3\./.test(codigo)) pkgs.push('sqlite3');
+      if (/\bfrom sklearn\b|\bimport sklearn\b|\bsklearn\./.test(codigo)) pkgs.push('scikit-learn');
+      if (/\bflask\b|\bFlask\(/.test(codigo)) pkgs.push('micropip');
+      return pkgs;
+    }
+    function mostrarError(raw, out) {
+      const t = traducirError(raw);
+      if (t) {
+        const f = document.createElement('div'); f.className = 'cw-errfix';
+        f.innerHTML = t.ico + ' <b>' + esc(t.titulo) + '</b>' + (t.linea ? ' (línea ' + t.linea + ')' : '') + ' — ' + esc(t.causa) + '<br>💡 ' + esc(t.fix);
+        out.appendChild(f);
+      }
+      const e = document.createElement('span'); e.className = 'err';
+      e.textContent = '\n' + raw;
+      out.appendChild(e);
+    }
+
     async function correr(codigo, out, btn) {
       out.classList.add('show');
       out.innerHTML = '<span class="lbl">SALIDA</span>';
       btn.disabled = true;
       try {
-        const py = await getPy(out);
-        // cargar librerías si el código las usa
-        const pkgs = [];
-        if (/\bnumpy\b|\bnp\./.test(codigo)) pkgs.push('numpy');
-        if (/\bpandas\b|\bpd\./.test(codigo)) pkgs.push('pandas');
-        const usaPlot = /\bmatplotlib\b|\bplt\./.test(codigo);
-        if (usaPlot) pkgs.push('matplotlib');
-        if (/\bimport sqlite3\b|\bsqlite3\./.test(codigo)) pkgs.push('sqlite3');
-        if (/\bfrom sklearn\b|\bimport sklearn\b|\bsklearn\./.test(codigo)) pkgs.push('scikit-learn');
-        const usaFlask = /\bflask\b|\bFlask\(/.test(codigo);
-        if (usaFlask) pkgs.push('micropip');
-        if (pkgs.length) { out.innerHTML = '<span class="lbl">SALIDA</span>⏳ cargando librerías…'; await py.loadPackage(pkgs); }
-        if (usaFlask) await py.runPythonAsync("import micropip\nawait micropip.install('flask')");
-        out.innerHTML = '<span class="lbl">SALIDA</span>';
-        py.setStdout({ batched: (s) => out.appendChild(document.createTextNode(s + '\n')) });
-        py.setStderr({ batched: (s) => { const e = document.createElement('span'); e.className = 'err'; e.textContent = s + '\n'; out.appendChild(e); } });
-        py.setStdin({ stdin: () => { const v = window.prompt('input():'); return v === null ? '' : v; } });
-        if (usaPlot) await py.runPythonAsync("import matplotlib; matplotlib.use('AGG')");
-        await py.runPythonAsync(codigo);
-        if (usaPlot) {
-          const b64 = await py.runPythonAsync("import io,base64,matplotlib.pyplot as _p\n_b=''\nif _p.get_fignums():\n    _f=io.BytesIO(); _p.gcf().savefig(_f,format='png',bbox_inches='tight',dpi=110); _p.close('all'); _b=base64.b64encode(_f.getvalue()).decode()\n_b");
-          if (b64) { const img = document.createElement('img'); img.className = 'cw-img'; img.src = 'data:image/png;base64,' + b64; out.appendChild(img); }
-        }
+        if (/\binput\s*\(/.test(codigo)) await correrMain(codigo, out);   // input() necesita prompt sincrónico → main thread
+        else await correrWorker(codigo, out);                            // resto: worker con timeout (un bucle infinito no congela)
       } catch (err) {
-        const raw = (err && err.message) ? err.message : String(err);
-        const t = traducirError(raw);
-        if (t) {
-          const f = document.createElement('div'); f.className = 'cw-errfix';
-          f.innerHTML = t.ico + ' <b>' + esc(t.titulo) + '</b>' + (t.linea ? ' (línea ' + t.linea + ')' : '') + ' — ' + esc(t.causa) + '<br>💡 ' + esc(t.fix);
-          out.appendChild(f);
-        }
-        const e = document.createElement('span'); e.className = 'err';
-        e.textContent = '\n' + raw;
-        out.appendChild(e);
+        mostrarError((err && err.message) ? err.message : String(err), out);
       } finally {
         btn.disabled = false;
       }
     }
 
+    // ▶ en worker: stdout/stderr en vivo (streaming) + timeout. Devuelve imagen matplotlib si la hay.
+    async function correrWorker(codigo, out) {
+      const pkgs = paquetesDe(codigo);
+      const usaFlask = /\bflask\b|\bFlask\(/.test(codigo);
+      const helper = usaFlask ? "import micropip\nawait micropip.install('flask')" : '';
+      out.innerHTML = '<span class="lbl">SALIDA</span><span class="py-load"><span class="py-ball"></span>Preparando Python… la primera vez tarda ~15s; después es <b>instantáneo</b> ⚡</span>';
+      await asegurarW();
+      out.innerHTML = '<span class="lbl">SALIDA</span>';
+      const img = await runStream(helper, pkgs, codigo, (s, isErr) => {
+        if (isErr) { const e = document.createElement('span'); e.className = 'err'; e.textContent = s; out.appendChild(e); }
+        else out.appendChild(document.createTextNode(s));
+      }, TIMEOUT_LIBRO);
+      if (img) { const im = document.createElement('img'); im.className = 'cw-img'; im.src = 'data:image/png;base64,' + img; out.appendChild(im); }
+    }
+
+    // ▶ en main thread: necesario para input() (prompt sincrónico). Mantiene librerías y matplotlib.
+    async function correrMain(codigo, out) {
+      const py = await getPy(out);
+      const pkgs = [];
+      if (/\bnumpy\b|\bnp\./.test(codigo)) pkgs.push('numpy');
+      if (/\bpandas\b|\bpd\./.test(codigo)) pkgs.push('pandas');
+      const usaPlot = /\bmatplotlib\b|\bplt\./.test(codigo);
+      if (usaPlot) pkgs.push('matplotlib');
+      if (/\bimport sqlite3\b|\bsqlite3\./.test(codigo)) pkgs.push('sqlite3');
+      if (/\bfrom sklearn\b|\bimport sklearn\b|\bsklearn\./.test(codigo)) pkgs.push('scikit-learn');
+      const usaFlask = /\bflask\b|\bFlask\(/.test(codigo);
+      if (usaFlask) pkgs.push('micropip');
+      if (pkgs.length) { out.innerHTML = '<span class="lbl">SALIDA</span>⏳ cargando librerías…'; await py.loadPackage(pkgs); }
+      if (usaFlask) await py.runPythonAsync("import micropip\nawait micropip.install('flask')");
+      out.innerHTML = '<span class="lbl">SALIDA</span>';
+      py.setStdout({ batched: (s) => out.appendChild(document.createTextNode(s + '\n')) });
+      py.setStderr({ batched: (s) => { const e = document.createElement('span'); e.className = 'err'; e.textContent = s + '\n'; out.appendChild(e); } });
+      py.setStdin({ stdin: () => { const v = window.prompt('input():'); return v === null ? '' : v; } });
+      if (usaPlot) await py.runPythonAsync("import matplotlib; matplotlib.use('AGG')");
+      await py.runPythonAsync(codigo);
+      if (usaPlot) {
+        const b64 = await py.runPythonAsync("import io,base64,matplotlib.pyplot as _p\n_b=''\nif _p.get_fignums():\n    _f=io.BytesIO(); _p.gcf().savefig(_f,format='png',bbox_inches='tight',dpi=110); _p.close('all'); _b=base64.b64encode(_f.getvalue()).decode()\n_b");
+        if (b64) { const img = document.createElement('img'); img.className = 'cw-img'; img.src = 'data:image/png;base64,' + b64; out.appendChild(img); }
+      }
+    }
+
     // ── Visualizador paso a paso ──────────────────────────────────────────────
-    let trazadorCargado = false;
     async function visualizar(codigo, fig, btn) {
       btn.disabled = true;
       const previo = fig.querySelector('.cw-viz');
@@ -122,10 +161,8 @@ const grupos = agrupar(caps);
       cont.innerHTML = '<span class="lbl">VISUALIZADOR</span> ⏳ Cargando Python (~15s la primera vez)…';
       fig.appendChild(cont);
       try {
-        const py = await getPy(cont);
-        if (!trazadorCargado) { await py.runPythonAsync(trazadorPy); trazadorCargado = true; }
-        py.globals.set('_cod', codigo);
-        const data = JSON.parse(await py.runPythonAsync('trazar(_cod)'));
+        await asegurarW();
+        const data = JSON.parse(await run(trazadorPy, [], 'trazar', [codigo], 15000));   // worker con timeout
         renderViz(cont, codigo, data);
       } catch (e) {
         cont.innerHTML = '<span class="lbl">VISUALIZADOR</span><span class="err"> ' + esc((e && e.message) || e) + '</span>';
@@ -256,6 +293,6 @@ const grupos = agrupar(caps);
     });
 
     // precalentar Python en segundo plano para que el primer ▶ sea instantáneo (sin tocar la SALIDA)
-    (window.requestIdleCallback || ((f) => setTimeout(f, 1800)))(() => { if (!pyReady && window.loadPyodide) pyReady = window.loadPyodide(); });
+    (window.requestIdleCallback || ((f) => setTimeout(f, 1800)))(() => { asegurarW().catch(() => {}); });
   </script>
 </Base>

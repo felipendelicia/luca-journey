@@ -36,8 +36,11 @@ async function ensurePackages(packages) {
   }
 }
 
+// Extrae la imagen de matplotlib (si hay figura) como PNG base64.
+const PLOT_B64 = "import io,base64,matplotlib.pyplot as _p\n_b=''\nif _p.get_fignums():\n    _f=io.BytesIO(); _p.gcf().savefig(_f,format='png',bbox_inches='tight',dpi=110); _p.close('all'); _b=base64.b64encode(_f.getvalue()).decode()\n_b";
+
 self.onmessage = async (evt) => {
-  const { id, helperSrc, packages, fn, args } = evt.data;
+  const { id, helperSrc, packages, fn, args, code, stream } = evt.data;
   try {
     await ensurePyodide();
     await ensurePackages(packages);
@@ -49,6 +52,24 @@ self.onmessage = async (evt) => {
         await pyodide.runPythonAsync(helperSrc);
         executedHelpers.add(key);
       }
+    }
+
+    // Modo streaming (▶ del libro): corre `code` con stdout/stderr en vivo (postMessage por chunk),
+    // sin input interactivo (eso queda en main thread). Devuelve la imagen matplotlib si la hay.
+    if (stream) {
+      pyodide.setStdout({ batched: (s) => self.postMessage({ id, chunk: s + '\n' }) });
+      pyodide.setStderr({ batched: (s) => self.postMessage({ id, chunk: s + '\n', err: true }) });
+      pyodide.setStdin({ stdin: () => '' });
+      const usaPlot = /\bmatplotlib\b|\bplt\./.test(code);
+      try {
+        if (usaPlot) await pyodide.runPythonAsync("import matplotlib; matplotlib.use('AGG')");
+        await pyodide.runPythonAsync(code);
+        const img = usaPlot ? await pyodide.runPythonAsync(PLOT_B64) : '';
+        self.postMessage({ id, ok: true, result: img });
+      } finally {
+        pyodide.setStdout({}); pyodide.setStderr({});
+      }
+      return;
     }
 
     // Setear argumentos como globals _a0, _a1, ...
