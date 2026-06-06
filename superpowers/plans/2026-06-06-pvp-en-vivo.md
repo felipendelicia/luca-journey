@@ -7,6 +7,11 @@
 
 **Goal:** Duelos 2 jugadores en vivo por turnos, server-autoritativo, reusando el motor de la práctica.
 
+> **ESTADO (2026-06-06):** Tasks 1–4 IMPLEMENTADAS y commiteadas a main (motor+tests jest 14/14,
+> gateway+salas+matchmaking+reconexión, premios+insignias, cliente lobby/combate/súper-en-pausa).
+> `nest build` y `npm test` verdes; `npm run build` del front verde. **Falta solo Task 5 (OWNER):**
+> redeploy de la imagen `api` a la Pi + test e2e de 2 sesiones con login Google real.
+
 **Architecture:** NestJS gateway socket.io (`/batalla` o el `EventsGateway` existente extendido) con
 estado autoritativo por sala; motor de combate portado a TS; matchmaking (cola + código + invitar
 amigo). Cliente: lobby + sala de selección + combate sincronizado (reusa arena/animaciones/cries).
