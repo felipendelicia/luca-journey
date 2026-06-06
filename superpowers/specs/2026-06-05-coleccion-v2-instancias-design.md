@@ -57,12 +57,14 @@ menos una instancia shiny. Se recalculan al mutar el PC, para no romper consumid
 
 - **`evoluciones.json` enriquecido** (regenerar con `gen-evoluciones.mjs`):
   ```
-  { "<id>": { evos: [ { a:<evoId>, nivel:<min_level|null> } ], familia:<baseId> } }
+  { "<id>": { evos: [ { a:<evoId>, nivel:<min_level|0> } ], familia:<baseId> } }
   ```
   `familia` = id base de la cadena (para agrupar caramelos). `nivel` = `min_level` del trigger
-  `level-up` (si la evo no es por nivel —piedra, intercambio, amistad— se mapea a un **nivel
-  equivalente** configurable, ej. 30, para mantener todo "por nivel" en esta app). Documentar el
-  fallback en el script.
+  `level-up`. **Las evos que NO son por nivel** (piedra, intercambio, amistad) tienen `nivel: 0` →
+  en esta app, **estilo GO puro: se evolucionan solo con caramelos** (sin requisito de nivel). La
+  **tienda de piedras** (evos por item de verdad) queda para más adelante.
+  `evos` es una **lista**: las **evoluciones ramificadas** (Eevee, Gloom, Poliwhirl, Slowpoke…)
+  tienen varias opciones y **el usuario elige** cuál.
 - Tipos / learnsets / stats: **NO** en esta etapa (son de la batalla, Etapa 2).
 
 ## Componentes / archivos
@@ -113,9 +115,11 @@ Constantes (configurables en `coleccion.js`):
   Shiny por el roll actual (1%).
 - **Power-Up** (L → L+1): cuesta **`1 + Math.floor(L/8)`** caramelos de la familia (1 hasta nivel
   8, 2 hasta 16, …). Sube `nivel` de la instancia. Cap nivel **50**.
-- **Evolucionar** una instancia: requiere `nivel ≥ nivel_evo` (de PokeAPI) **+ 25 caramelos** de
-  la familia. Cambia `id` al evo, **conserva el nivel**, agrega el pre-evo a **vistos**. No deja
-  copia del pre-evo en el PC (fix del comportamiento actual).
+- **Evolucionar** una instancia: si la especie tiene **varias evos** (ramificada: Eevee, etc.),
+  **elegís** cuál. Cada opción: si `nivel_evo > 0` requiere `nivel ≥ nivel_evo`; si
+  `nivel_evo === 0` (piedra/trade/amistad → **GO puro**) **no pide nivel**. Cuesta caramelos de la
+  familia: **25** (evos por nivel) o **50** (sin nivel). Cambia `id` al evo elegido, **conserva el
+  nivel**, agrega el pre-evo a **vistos**. No deja copia del pre-evo en el PC (fix actual).
 
 ## Testing
 
