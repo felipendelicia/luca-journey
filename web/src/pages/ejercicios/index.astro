@@ -3,15 +3,9 @@ import Base from '../../layouts/Base.astro';
 import datos from '../../data/ejercicios.json';
 import proyectos from '../../data/proyectos.json';
 import { u } from '../../lib/url.ts';
+import { REGIONES as REGS, etiquetaTema } from '../../lib/regiones.mjs';
 
-const REGIONES = [
-  ['kanto', '🔴 Kanto · Fundamentos de Python'],
-  ['johto', '⚪ Johto · Análisis de datos'],
-  ['hoenn', '🟢 Hoenn · APIs con Flask'],
-  ['sinnoh', '🔵 Sinnoh · Bases de datos'],
-  ['unova', '⚫ Unova · Inteligencia Artificial'],
-  ['kalos', '🟠 Kalos · Testing y calidad'],
-];
+const REGIONES = REGS.map((r) => [r.id, etiquetaTema(r)]);
 let n = 0;
 const grupos = REGIONES.map(([id, label]) => ({
   id, label,

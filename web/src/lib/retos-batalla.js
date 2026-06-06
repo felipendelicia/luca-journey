@@ -34,6 +34,11 @@ export const RETOS = [
   { region: 'kalos', q: '¿Qué pasa con assert 1 == 1?', op: ['falla', 'pasa (no hace nada)', 'imprime 1'], c: 1 },
   { region: 'kalos', q: 'En pytest, las funciones de test empiezan con…', op: ['def_', 'test_', 'check_'], c: 1 },
   { region: 'kalos', q: '¿Qué hace assert x == 5 si x vale 3?', op: ['pasa', 'lanza AssertionError', 'pone x en 5'], c: 1 },
+  // ── Alola: automatizaciones ──
+  { region: 'alola', q: 'En un script, ¿qué es sys.argv[0]?', op: ['el primer argumento', 'el nombre del script', 'la cantidad de argumentos'], c: 1 },
+  { region: 'alola', q: '¿Con qué armás una ruta sin pelear con las barras?', op: ['pathlib.Path', 'string + "/"', 'os.system'], c: 0 },
+  { region: 'alola', q: 'En subprocess, ¿qué returncode significa éxito?', op: ['1', '0', '-1'], c: 1 },
+  { region: 'alola', q: '¿De dónde lee una automatización las contraseñas?', op: ['del código', 'del entorno / config', 'de un print'], c: 1 },
 ];
 
 // reto al azar de las regiones desbloqueadas (Set de strings). Fallback: kanto.

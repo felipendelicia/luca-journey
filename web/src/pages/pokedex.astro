@@ -6,9 +6,10 @@ import evoluciones from '../data/evoluciones.json';
 import aparicion from '../data/aparicion.json';
 import estadisticas from '../data/estadisticas.json';
 import { u } from '../lib/url.ts';
+import { REGIONES as REGS, etiqueta } from '../lib/regiones.mjs';
 
 const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.ejercicios.map((e) => ({ id: e.id })) }));
-const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '🟢 Hoenn'], ['sinnoh', '🔵 Sinnoh'], ['unova', '⚫ Unova'], ['kalos', '🟠 Kalos']];
+const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
 ---
 <Base title="Pokédex — Python con Pokémon" active="Pokédex">
   <div class="wrap coleccion">

@@ -2,16 +2,17 @@
 import { hayApi, auth, apiGet, apiPost, apiDelete } from './api.js';
 import { estado, pc } from './coleccion.js';
 import { evaluar, contexto } from './logros.js';
+import { REGION_IDS, nombreDe } from './regiones.mjs';
 const haySupabase = hayApi;
 
-const REGN = { kanto: 'Kanto', johto: 'Johto', hoenn: 'Hoenn', sinnoh: 'Sinnoh', unova: 'Unova', kalos: 'Kalos' };
+const REGN = Object.fromEntries(REGION_IDS.map((id) => [id, nombreDe(id)]));
 const done = (slug, id) => localStorage.getItem(`ej:${slug}:${id}:ok`) === '1';
 
 export function snapshotPublico(temas) {
   const st = estado();
   const c = contexto(temas);
   const logros = evaluar(temas).filter((l) => l.cumplido).map((l) => ({ ico: l.ico, nombre: l.nombre, desc: l.desc }));
-  const REGORD = ['kanto', 'johto', 'hoenn', 'sinnoh', 'unova', 'kalos'];
+  const REGORD = REGION_IDS;
   const porReg = {};
   for (const t of temas) (porReg[t.region] ||= []).push(t);
   const regiones = REGORD.filter((r) => porReg[r]).map((r) => {

@@ -50,10 +50,10 @@ const total = pokemon.length;
     import { sonarCaptura, sonarShiny, sonarEpico } from '../lib/sonidos.js';
     import { TIERS } from '../lib/rareza.js';
     import { ballSvg } from '../lib/sprites.js';
+    import { REGIONES as REGS, etiqueta } from '../lib/regiones.mjs';
 
     const D = JSON.parse(document.getElementById('safari-data').textContent);
     const $ = (id) => document.getElementById(id);
-    const REGN = { kanto: '🔴 Kanto', johto: '⚪ Johto', hoenn: '🟢 Hoenn', sinnoh: '🔵 Sinnoh', unova: '⚫ Unova', kalos: '🟠 Kalos' };
 
     // modal explicativo de rarezas (poblado desde TIERS)
     (function rarezas() {
@@ -82,7 +82,7 @@ const total = pokemon.length;
       $('regalo').style.display = regaloDisponible() ? '' : 'none';
       const d = regionesDesbloqueadas(D.temas);
       $('regiones').innerHTML = 'Aparecen: ' +
-        ['kanto', 'johto', 'hoenn', 'sinnoh', 'unova', 'kalos'].map((r) => d.has(r) ? '<b>' + REGN[r] + '</b>' : '<span class="bloq">' + REGN[r] + ' 🔒</span>').join(' · ') +
+        REGS.map((r) => d.has(r.id) ? '<b>' + etiqueta(r) + '</b>' : '<span class="bloq">' + etiqueta(r) + ' 🔒</span>').join(' · ') +
         ' &nbsp;<small>(hacé ejercicios de una región para desbloquearla)</small>';
     }
 

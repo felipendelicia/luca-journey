@@ -1,7 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { u } from '../../lib/url.ts';
-const REGIONES = [['todas','Todas'],['libre','🎲 Libre'],['kanto','🔴 Kanto'],['johto','⚪ Johto'],['hoenn','🟢 Hoenn'],['sinnoh','🔵 Sinnoh'],['unova','⚫ Unova'],['kalos','🟠 Kalos']];
+import { REGIONES as REGS, etiqueta } from '../../lib/regiones.mjs';
+const REGIONES = [['todas', 'Todas'], ['libre', '🎲 Libre'], ...REGS.map((r) => [r.id, etiqueta(r)])];
 ---
 <Base title="Desafíos de la comunidad — Python con Pokémon" active="Desafíos">
   <main class="wrap">

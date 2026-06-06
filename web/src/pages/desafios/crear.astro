@@ -1,7 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { u } from '../../lib/url.ts';
-const REGIONES = [['libre','Libre'],['kanto','Kanto · fundamentos'],['johto','Johto · datos'],['hoenn','Hoenn · Flask'],['sinnoh','Sinnoh · SQL'],['unova','Unova · IA'],['kalos','Kalos · testing']];
+import { REGIONES as REGS } from '../../lib/regiones.mjs';
+const REGIONES = [['libre', 'Libre'], ...REGS.map((r) => [r.id, `${r.nombre} · ${r.tema}`])];
 ---
 <Base title="Crear desafío — Python con Pokémon" active="Desafíos">
   <main class="wrap">

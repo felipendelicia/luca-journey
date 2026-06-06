@@ -79,13 +79,14 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
     import { pc as pcCol } from '../lib/coleccion.js';
     import { statsDesafios, desafiosDeUsuario } from '../lib/desafios.js';
     import { usuario, init as initNube } from '../lib/nube.js';
+    import { REGION_IDS, REGION_POR_ID } from '../lib/regiones.mjs';
 
     const D = JSON.parse(document.getElementById('u-data').textContent);
     const nombres = D.nombres;
     const regionDe = D.regionDe;
-    const REGEMOJI = { kanto: '🔴', johto: '⚪', hoenn: '🟢', sinnoh: '🔵', unova: '⚫', kalos: '🟠', otros: '📦' };
-    const REGNOM = { kanto: 'Kanto', johto: 'Johto', hoenn: 'Hoenn', sinnoh: 'Sinnoh', unova: 'Unova', kalos: 'Kalos', otros: 'Otros' };
-    const REGORD = ['kanto', 'johto', 'hoenn', 'sinnoh', 'unova', 'kalos'];
+    const REGEMOJI = { ...Object.fromEntries(REGION_IDS.map((id) => [id, REGION_POR_ID[id].emoji])), otros: '📦' };
+    const REGNOM = { ...Object.fromEntries(REGION_IDS.map((id) => [id, REGION_POR_ID[id].nombre])), otros: 'Otros' };
+    const REGORD = REGION_IDS;
     const $ = (id) => document.getElementById(id);
     const B = (window.__BASE || '/').replace(/\/$/, '');
     const sprite = (id, sh) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${sh ? 'shiny/' : ''}${id}.png`;
