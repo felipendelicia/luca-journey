@@ -213,6 +213,8 @@ body.claro .navlinks{background:rgba(238,241,232,.98);}
 .cw-out.show{ display:block; }
 .cw-out .lbl{ font-family:var(--font-pixel); font-size:8px; color:#7aa; letter-spacing:.1em; display:block; margin-bottom:4px; }
 .cw-out .err{ color:#ff9b9b; }
+.cw-errfix{ background:#241a10; border:1px solid #6a4f1f; border-left:4px solid #ffc234; border-radius:9px; padding:9px 12px; margin:8px 0; color:#ffe9c2; font-family:var(--font-sans,system-ui); font-size:13px; line-height:1.55; }
+.cw-errfix b{ color:#fff; }
 
 /* tablas del libro */
 .book table{ border-collapse:collapse; width:100%; margin:1em 0; background:var(--paper-2); font-size:.92rem; box-shadow:var(--shadow-sm); border-radius:10px; overflow:hidden; }
@@ -291,6 +293,16 @@ pre code, pre.astro-code code, .cw code{
 .ejer-lista li .m{ grid-column:2; color:var(--red-deep); font-size:.86rem; font-family:var(--font-mono); margin-top:2px; }
 .ejer-err{ background:#fdecea; border:1px solid #f3c4bb; color:var(--red-deep); padding:12px 16px; border-radius:12px; }
 .ejer-err code{ background:none; border:none; color:var(--red-deep); }
+/* error amigable: título + causa + cómo arreglarlo + traceback técnico colapsable */
+.err-amigable{ text-align:left; }
+.err-tit{ font:800 1rem var(--font-display); color:var(--red-deep); display:flex; align-items:center; gap:8px; }
+.err-linea{ font:700 .7rem var(--font-mono); background:var(--red); color:#fff; border-radius:6px; padding:1px 7px; }
+.err-causa{ margin-top:5px; color:var(--ink); font-size:.92rem; }
+.err-fix{ margin-top:7px; padding:8px 11px; background:var(--paper-2); border:1px solid var(--yellow-deep,#e0a400); border-radius:9px; color:var(--ink); font-size:.9rem; }
+.err-raw{ margin-top:8px; } .err-raw summary{ cursor:pointer; font:600 .78rem var(--font-mono); color:var(--ink-soft); }
+.err-raw code{ display:block; margin-top:6px; white-space:pre-wrap; word-break:break-word; font-size:11px; color:var(--ink-soft); max-height:180px; overflow:auto; }
+.ejer-lista li .m-raw{ grid-column:2; } .ejer-lista li .m-raw summary{ cursor:pointer; font:600 .74rem var(--font-mono); color:var(--ink-mute); }
+.ejer-lista li .m-raw code{ display:block; margin-top:4px; white-space:pre-wrap; font-size:11px; color:var(--ink-soft); }
 /* salida de ▶ Ejecutar + prints en Corregir */
 .ejer-run{ background:#0b0d14; color:#cdf5d6; border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:11px 14px; font-family:var(--font-mono); font-size:12.5px; line-height:1.5; }
 .ejer-run .lbl{ font-family:var(--font-pixel); font-size:8px; color:#7aa; letter-spacing:.1em; display:block; margin-bottom:6px; }

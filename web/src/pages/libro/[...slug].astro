@@ -55,6 +55,7 @@ const grupos = agrupar(caps);
     // Los bloques python del libro se vuelven editores (CodeMirror) que podés
     // tocar y ejecutar; los bash quedan como ventana de solo lectura.
     import { editorPython } from '../../lib/editor.js';
+    import { traducirError } from '../../lib/errores.js';
     import trazadorPy from '../../lib/trazador.py?raw';
 
     const esc = (s) => String(s == null ? '' : s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
@@ -95,8 +96,15 @@ const grupos = agrupar(caps);
           if (b64) { const img = document.createElement('img'); img.className = 'cw-img'; img.src = 'data:image/png;base64,' + b64; out.appendChild(img); }
         }
       } catch (err) {
+        const raw = (err && err.message) ? err.message : String(err);
+        const t = traducirError(raw);
+        if (t) {
+          const f = document.createElement('div'); f.className = 'cw-errfix';
+          f.innerHTML = t.ico + ' <b>' + esc(t.titulo) + '</b>' + (t.linea ? ' (línea ' + t.linea + ')' : '') + ' — ' + esc(t.causa) + '<br>💡 ' + esc(t.fix);
+          out.appendChild(f);
+        }
         const e = document.createElement('span'); e.className = 'err';
-        e.textContent = '\n' + (err && err.message ? err.message : err);
+        e.textContent = '\n' + raw;
         out.appendChild(e);
       } finally {
         btn.disabled = false;

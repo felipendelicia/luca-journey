@@ -70,6 +70,7 @@ const payload = {
     import { editorPython } from '../../../lib/editor.js';
     import runnerPy from '../../../lib/runner.py?raw';
     import { sonarExito, sonarError } from '../../../lib/sonidos.js';
+    import { traducirError, pistaTest, pareceError } from '../../../lib/errores.js';
 
     const data = JSON.parse(document.getElementById('ej-data').textContent);
     const KEY = (id) => 'ej:' + data.slug + ':' + id;
@@ -112,16 +113,31 @@ const payload = {
       return py;
     }
 
+    // bloque de error amigable: título + causa + cómo arreglarlo + traceback técnico colapsable
+    function bloqueError(raw) {
+      const e = traducirError(raw);
+      if (!e) return '<div class="ejer-err">⚠️ El código no se pudo ejecutar:<br><code>' + esc(raw) + '</code></div>';
+      return '<div class="ejer-err err-amigable">'
+        + '<div class="err-tit">' + e.ico + ' ' + esc(e.titulo) + (e.linea ? ' <span class="err-linea">línea ' + e.linea + '</span>' : '') + '</div>'
+        + '<div class="err-causa">' + esc(e.causa) + '</div>'
+        + '<div class="err-fix">💡 ' + esc(e.fix) + '</div>'
+        + '<details class="err-raw"><summary>Ver el error técnico</summary><code>' + esc(raw) + '</code></details>'
+        + '</div>';
+    }
     function render(tests, carga) {
       const box = document.getElementById('result');
-      if (carga) { box.innerHTML = '<div class="ejer-err">⚠️ El código no se pudo ejecutar:<br><code>' + esc(carga) + '</code></div>'; sonarError(); return; }
+      if (carga) { box.innerHTML = bloqueError(carga); sonarError(); return; }
       const tot = tests.length, ok = tests.filter((t) => t.ok).length, todo = tot > 0 && ok === tot;
       if (todo) sonarExito(); else sonarError();
       localStorage.setItem(KEY(data.exId) + ':ok', todo ? '1' : '0');
       let h = '<div class="ejer-resumen ' + (todo ? 'win' : '') + '">' + ok + ' / ' + tot + ' tests' + (todo ? ' · +' + (ok * 10) + ' EXP · ¡COMPLETO! 🏅' : '') + '</div><ul class="ejer-lista">';
       for (const t of tests) {
         h += '<li class="' + (t.ok ? 'ok' : 'no') + '"><span class="ic">' + (t.ok ? '✅' : '❌') + '</span><code>' + esc(t.name) + '</code>';
-        if (t.msg) h += '<div class="m">' + esc(t.msg) + '</div>';
+        if (t.msg) {
+          const pista = pistaTest(t.msg);
+          h += '<div class="m">💡 ' + esc(pista) + '</div>';
+          if (pista !== t.msg) h += '<details class="m-raw"><summary>detalle del test</summary><code>' + esc(t.msg) + '</code></details>';
+        }
         if (t.out) h += '<div class="ej-out"><span class="lbl">🖨️ tus prints</span>' + esc(t.out) + '</div>';
         h += '</li>';
       }
@@ -156,7 +172,8 @@ const payload = {
         py.globals.set('_code', data.preamble + '\n\n' + editor.state.doc.toString());
         const res = JSON.parse(await py.runPythonAsync('ejecutar(_code)'));
         let h = '<div class="ejer-run"><span class="lbl">▶ Ejecutar</span>';
-        if (res.out) h += '<pre class="ej-stdout">' + esc(res.out) + '</pre>';
+        if (res.out && pareceError(res.out)) h += bloqueError(res.out);
+        else if (res.out) h += '<pre class="ej-stdout">' + esc(res.out) + '</pre>';
         if (res.ret !== null) h += '<div class="ej-ret">↩ devuelve <code>' + esc(res.ret) + '</code></div>';
         if (!res.out && res.ret === null) h += '<div class="ej-vacio">Sin salida. Agregá <code>print(...)</code> o poné una llamada como última línea (ej. <code>mi_funcion(2, 3)</code>) para ver qué devuelve.</div>';
         box.innerHTML = h + '</div>';
