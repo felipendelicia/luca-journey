@@ -129,8 +129,13 @@ Constantes (configurables en `coleccion.js`):
 
 - Batalla PvP en vivo, equipos de 3, combate por turnos, recompensas (ganador: caramelos de los
   que pelearon; perdedor: Pokébolas).
-- Tipos, stats de combate (HP/CP por nivel), el **súper por código** (formatos fáciles a/b/c/d
-  escalados al nivel del jugador).
+- Tipos, stats de combate (HP/CP por nivel), el **súper por código** (formatos fáciles a/b/c/d).
+- **Pool de preguntas filtrado por progreso** (confirmado con el owner): el reto del súper SOLO
+  puede salir de **temas que el jugador ya vio/completó**. Nunca pregunta de un tema no alcanzado
+  (ej. ciencia de datos / numpy si todavía no llegó). Usa el progreso que la app ya trackea
+  (`regionesDesbloqueadas`, ejercicios `ej:<slug>:<id>:ok`, quizzes vistos) para armar el pool por
+  jugador. Si los dos jugadores tienen niveles distintos, **cada uno** recibe preguntas de SU
+  nivel (el reto es individual; el combate es compartido).
 - **Modelo de movimientos** (confirmado con el owner): cada instancia tiene un **pool de
   desbloqueados** = ataques del learnset (PokeAPI) con `nivel_aprende ≤ instancia.nivel`; el
   usuario elige **4 activos** de ese pool y **puede recambiarlos cuando quiera** (no se "olvidan",
