@@ -411,16 +411,23 @@ body.dark .ej-mini{ background:#3a1c1a; } body.dark .ej-mini.win{ background:#13
 .cc-bar>div{ height:100%; background:var(--rc,var(--red)); border-radius:999px; transition:width .9s ease; }
 
 /* controles tipo escáner */
-.dex-controles{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:.2rem 0 1.1rem; }
-.dex-buscar{ width:100%; max-width:420px; padding:11px 18px; border:1px solid var(--line); border-radius:12px; background:var(--paper-2); color:var(--ink); font:600 .9rem var(--font-mono); margin:0; outline:none; transition:border-color .15s, box-shadow .15s; }
+.dex-buscar{ display:block; width:100%; padding:12px 18px; border:1px solid var(--line); border-radius:12px; background:var(--paper-2); color:var(--ink); font:600 .92rem var(--font-mono); margin:.1rem 0 .9rem; outline:none; transition:border-color .15s, box-shadow .15s; }
 .dex-buscar::placeholder{ color:var(--ink-mute); }
 .dex-buscar:focus{ border-color:var(--red); box-shadow:0 0 0 3px color-mix(in srgb,var(--red) 18%, transparent); }
-.dex-controles .dex-buscar{ flex:1; min-width:220px; }
-.dex-filtros{ display:flex; gap:7px; flex-wrap:wrap; }
+.dex-filtros{ display:flex; gap:7px; flex-wrap:wrap; margin-bottom:.9rem; }
 .dex-f{ font:700 .76rem var(--font-mono); padding:8px 14px; border:1px solid var(--line); border-radius:11px; background:var(--paper-2); color:var(--ink-soft); cursor:pointer; transition:.12s; }
 .dex-f:hover{ border-color:var(--ink-soft); color:var(--ink); }
-.dex-f.activo{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+.dex-f.activo{ background:var(--red); color:#fff; border-color:var(--red); }
 .dex-sinresultados{ color:var(--ink-mute); font-family:var(--font-mono); }
+
+/* tabs Pokédex / Mi PC */
+.dex-tabs{ display:flex; gap:6px; margin:0 0 1.1rem; padding:5px; background:var(--paper-2); border:1px solid var(--line); border-radius:15px; }
+.dex-tab{ flex:1; display:flex; align-items:center; justify-content:center; gap:9px; padding:11px 12px; border:none; border-radius:11px; background:transparent; cursor:pointer; color:var(--ink-soft); font:800 .98rem var(--font-display); letter-spacing:-.01em; transition:.14s; }
+.dex-tab:hover{ color:var(--ink); }
+.dex-tab.activo{ background:var(--ink); color:var(--paper); box-shadow:var(--shadow-sm); }
+.tab-n{ font:700 .68rem var(--font-mono); opacity:.78; }
+.dex-vacio{ text-align:center; color:var(--ink-soft); padding:2.6rem 1rem; font-family:var(--font-mono); }
+.dex-panel{ animation:dexRise .35s both; }
 
 /* grilla de especies */
 .poke-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(84px,1fr)); gap:9px; margin:.5rem 0 1.6rem; }

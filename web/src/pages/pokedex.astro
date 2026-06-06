@@ -28,19 +28,26 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
     </header>
 
     <div class="col-contadores" id="contadores"></div>
-    <div class="dex-controles">
-      <input class="dex-buscar" id="buscar" type="search" placeholder="🔍 Buscar por nombre o número…" autocomplete="off" />
+    <input class="dex-buscar" id="buscar" type="search" placeholder="🔍 Buscar por nombre o número…" autocomplete="off" />
+
+    <div class="dex-tabs" id="dex-tabs" role="tablist">
+      <button class="dex-tab activo" data-tab="dex" id="tab-dex" type="button" role="tab">📕 Pokédex</button>
+      <button class="dex-tab" data-tab="pc" id="tab-pc" type="button" role="tab">🎒 Mi PC</button>
+    </div>
+    <p class="dex-sinresultados" id="sinres" hidden>Ningún Pokémon coincide.</p>
+
+    <section class="dex-panel" id="panel-dex">
       <div class="dex-filtros" id="filtros">
         <button class="dex-f activo" data-f="todos" type="button">Todos</button>
         <button class="dex-f" data-f="tengo" type="button">✅ Los que tengo</button>
         <button class="dex-f" data-f="falta" type="button">⬜ Me faltan</button>
         <button class="dex-f" data-f="shiny" type="button">✨ Shiny</button>
       </div>
-    </div>
-    <p class="dex-sinresultados" id="sinres" hidden>Ningún Pokémon coincide.</p>
-    <div id="evoluciones-sec"></div>
-    <h2 class="liga-h dex-titulo">📕 Pokédex</h2>
-    <div id="secciones"></div>
+      <div id="secciones"></div>
+    </section>
+    <section class="dex-panel" id="panel-pc" hidden>
+      <div id="evoluciones-sec"></div>
+    </section>
   </div>
 
   <div class="poke-modal" id="poke-modal" hidden>
@@ -124,17 +131,12 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
         '<div class="pc-meta"><span>Nv. ' + m.nivel + '</span><span>🍬 ' + tengo + '</span></div></button>';
     }
 
-    let pcAbierto = false;   // Mi PC colapsado por defecto (la página no queda larga)
+    // tab "Mi PC": grilla de tus instancias (tap → modal). Vacío = mensaje.
     function miPC(pcArr, car) {
       const sec = $('evoluciones-sec');
-      if (!pcArr.length) { sec.innerHTML = ''; return; }
+      if (!pcArr.length) { sec.innerHTML = '<p class="dex-vacio">Todavía no tenés Pokémon. Andá al <b>Safari</b> a atrapar. 🎒</p>'; return; }
       const cards = [...pcArr].sort((a, b) => (a.id - b.id) || (b.nivel - a.nivel)).map((m) => instCard(m, car)).join('');
-      sec.innerHTML = '<button class="pc-toggle" id="pc-toggle"><span class="pc-arrow">' + (pcAbierto ? '▾' : '▸') + '</span> 🎒 Mi PC <small>(' + pcArr.length + ')</small></button>' +
-        '<div class="pc-grid" id="pc-cont"' + (pcAbierto ? '' : ' hidden') + '>' + cards + '</div>';
-      $('pc-toggle').addEventListener('click', () => {
-        pcAbierto = !pcAbierto; $('pc-cont').hidden = !pcAbierto;
-        sec.querySelector('.pc-arrow').textContent = pcAbierto ? '▾' : '▸';
-      });
+      sec.innerHTML = '<div class="pc-grid">' + cards + '</div>';
       sec.querySelectorAll('.pc-card').forEach((b) => b.addEventListener('click', () => abrirModal(b.dataset.iid)));
     }
 
@@ -234,29 +236,25 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
 
     function aplicar() {
       const q = buscar.value.trim().toLowerCase();
-      let visibles = 0;
+      let visDex = 0;
       document.querySelectorAll('.poke').forEach((c) => {
         const txt = !q || c.dataset.num === q || c.dataset.num.startsWith(q) || c.dataset.nombre.includes(q);
         let pasa = true;
         if (filtro === 'tengo') pasa = c.classList.contains('tengo');
         else if (filtro === 'falta') pasa = c.classList.contains('falta');
         else if (filtro === 'shiny') pasa = c.classList.contains('es-shiny');
-        const ok = txt && pasa; c.style.display = ok ? '' : 'none'; if (ok) visibles++;
+        const ok = txt && pasa; c.style.display = ok ? '' : 'none'; if (ok) visDex++;
       });
       document.querySelectorAll('.dex-seccion').forEach((s) => {
         const algo = [...s.querySelectorAll('.poke')].some((c) => c.style.display !== 'none'); s.style.display = algo ? '' : 'none';
       });
-      // el buscador también filtra Mi PC; al buscar, se abre para ver coincidencias
-      const cont = $('pc-cont');
-      if (cont) {
-        cont.hidden = q ? false : !pcAbierto;
-        const ar = document.querySelector('.pc-arrow'); if (ar) ar.textContent = cont.hidden ? '▸' : '▾';
-        document.querySelectorAll('.pc-card').forEach((c) => {
-          const ok = !q || c.dataset.num === q || c.dataset.num.startsWith(q) || (c.dataset.nombre || '').includes(q);
-          c.style.display = ok ? '' : 'none';
-        });
-      }
-      sinres.hidden = visibles > 0;
+      let visPc = 0;
+      document.querySelectorAll('.pc-card').forEach((c) => {
+        const ok = !q || c.dataset.num === q || c.dataset.num.startsWith(q) || (c.dataset.nombre || '').includes(q);
+        c.style.display = ok ? '' : 'none'; if (ok) visPc++;
+      });
+      const enDex = !$('panel-dex').hidden;
+      sinres.hidden = !q || (enDex ? visDex : visPc) > 0;
     }
 
     function pintar() {
@@ -264,8 +262,20 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       contadores(vis, pcArr);
       grilla(vis, pcArr);
       miPC(pcArr, car);
+      const seen = D.pokemon.filter((p) => vis.has(p.id)).length;
+      $('tab-dex').innerHTML = '📕 Pokédex <span class="tab-n">' + seen + ' / ' + D.pokemon.length + '</span>';
+      $('tab-pc').innerHTML = '🎒 Mi PC <span class="tab-n">' + pcArr.length + '</span>';
       aplicar();
     }
+
+    // tabs Pokédex / Mi PC
+    document.querySelectorAll('.dex-tab').forEach((t) => t.addEventListener('click', () => {
+      document.querySelectorAll('.dex-tab').forEach((x) => x.classList.remove('activo'));
+      t.classList.add('activo');
+      const dex = t.dataset.tab === 'dex';
+      $('panel-dex').hidden = !dex; $('panel-pc').hidden = dex;
+      aplicar();
+    }));
 
     buscar.addEventListener('input', aplicar);
     document.querySelectorAll('.dex-f').forEach((b) => b.addEventListener('click', () => {

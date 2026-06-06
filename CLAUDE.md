@@ -110,3 +110,7 @@ alcance hace falta exponerla (túnel/port-forward/dominio) y ajustar `GOOGLE_CAL
 - **Correr Python en el navegador** es siempre vía Pyodide (CDN). Los ejercicios usan
   `loadPackage('pytest')`; el código del libro usa CodeMirror + Pyodide.
 - Tras tocar la UI, verificá con un screenshot del dev server antes de dar por hecho un cambio.
+- **Frontend / diseño visual:** todo lo que requiera trabajo de UI o diseño visual (páginas,
+  componentes, modales, layouts, estilos) se hace con el skill **`/frontend-design`**. Apuntá a
+  interfaces distintivas y pulidas, cohesivas con la estética retro-Pokédex/CRT del proyecto
+  (no genéricas), y tema-aware (modo oscuro y claro).

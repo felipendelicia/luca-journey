@@ -4,7 +4,7 @@
 // - Assets de Astro (/_astro/, con hash en el nombre): cache-first (el nombre cambia
 //   en cada build, así que cachear es seguro y da carga offline/rápida).
 // - Pyodide y fuentes (CDN, otro origen): no se tocan, van directo a la red.
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE = 'pokedex-codex-' + VERSION;
 const SCOPE = new URL(self.registration.scope).pathname; // '/' o '/luca-journey/'
 
@@ -43,7 +43,9 @@ self.addEventListener('fetch', (e) => {
   if (req.mode === 'navigate') {
     e.respondWith((async () => {
       try {
-        const res = await fetch(req);
+        // no-store: nunca tomar el HTML del caché HTTP del browser (evita HTML viejo que
+        // apunta a assets hasheados que ya no existen tras un deploy).
+        const res = await fetch(req, { cache: 'no-store' });
         (await caches.open(CACHE)).put(req, res.clone());
         return res;
       } catch {
