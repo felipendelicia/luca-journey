@@ -22,13 +22,28 @@ export function snapshotPublico(temas) {
   });
   const medallas = regiones.reduce((a, x) => a + x.hechas, 0);
   const titulos = regiones.filter((x) => x.campeon).map((x) => x.nombre);
+
+  // ── campos sociales nuevos (todos viven en localStorage; van en el blob público) ──
+  const ls = (k, def) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? def : v; } catch { return def; } };
+  const pcArr = pc();
+  const porIid = Object.fromEntries(pcArr.map((m) => [m.iid, m]));
+  const equipo = (ls('col:equipo', [])).map((iid) => porIid[iid]).filter(Boolean)
+    .map((m) => ({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: !!m.shiny, mote: m.mote || '' }));
+  const pvpRaw = ls('col:pvp', {});
+  const rachaRaw = ls('col:racha', { dias: 0 });
+
   return {
     atrapados: st.atrapados,
     shiny: [...st.shiny],
     // instancias del PC para el intercambio por INSTANCIA (id/nivel/shiny/mote por iid)
-    pcPub: pc().map((m) => ({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: !!m.shiny, mote: m.mote || '' })),
+    pcPub: pcArr.map((m) => ({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: !!m.shiny, mote: m.mote || '' })),
     conteos: { unicos: st.unicos, total: st.total, shinies: st.shiny.size, ejercicios: c.ejHechos },
     medallas, titulos, regiones, logros,
+    equipo,
+    pvp: { rating: Number(pvpRaw.rating) || 1000, victorias: pvpRaw.victorias || 0, jugados: pvpRaw.jugados || 0 },
+    racha: rachaRaw.dias || 0,
+    buscando: ls('col:buscando', []),
+    ofrezco: ls('col:ofrezco', []),
   };
 }
 

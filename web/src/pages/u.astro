@@ -1,8 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
 import pokemon from '../data/pokemon.json';
+import datos from '../data/ejercicios.json';
 const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
 const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
+// temas (para reconstruir y publicar el snapshot al editar desde el perfil)
+const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.ejercicios.map((e) => ({ id: e.id })) }));
+// lista para los datalist de Buscando/Ofrezco
+const lista = pokemon.map((p) => ({ id: p.id, nombre: p.nombre }));
 ---
 <Base title="Perfil — Python con Pokémon" active="">
   <main class="wrap u-wrap">
@@ -10,20 +15,33 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
     <p class="u-error" id="u-error" hidden>Perfil no encontrado. 🔍</p>
 
     <article class="u-perfil" id="u-perfil" hidden>
-      <header class="u-hero">
-        <div class="u-av" id="u-av">🎓</div>
-        <div>
-          <div class="u-nombre" id="u-nombre"></div>
-          <div class="u-handle"><span id="u-handle"></span> · 🎴 <b id="u-codigo"></b></div>
+      <!-- ── Tarjeta de Entrenador ── -->
+      <section class="tcard" id="tcard">
+        <div class="tcard-sheen" aria-hidden="true"></div>
+        <div class="tcard-top">
+          <div class="tcard-av" id="u-av">🎓</div>
+          <div class="tcard-id">
+            <div class="tcard-rango" id="u-rango">Novato</div>
+            <h1 class="tcard-nombre" id="u-nombre"></h1>
+            <div class="tcard-handle"><span id="u-handle"></span> · 🎴 <b id="u-codigo"></b></div>
+            <p class="tcard-lema" id="u-desc" hidden></p>
+          </div>
         </div>
-      </header>
 
-      <p class="u-desc" id="u-desc" hidden></p>
+        <div class="tcard-chips" id="u-chips"></div>
+
+        <div class="tcard-equipo" id="u-equipo-wrap">
+          <div class="tcard-equipo-h"><span>⚡ Equipo destacado</span><button class="tcard-edit" id="u-equipo-edit" type="button" hidden>✏️ Editar</button></div>
+          <div class="tcard-equipo-row" id="u-equipo"></div>
+        </div>
+      </section>
+
       <div class="social-desc-card u-desc-edit" id="u-desc-edit" hidden>
-        <label class="t-nombre-l">Tu descripción</label>
+        <label class="t-nombre-l">Tu lema / descripción</label>
         <textarea id="u-desc-input" maxlength="200" rows="2" placeholder="Escribí algo sobre vos como entrenador/a…"></textarea>
-        <div class="social-desc-foot"><span id="u-desc-cnt">0/200</span><button class="btn-sec" id="u-desc-guardar" type="button">Guardar descripción</button></div>
+        <div class="social-desc-foot"><span id="u-desc-cnt">0/200</span><button class="btn-sec" id="u-desc-guardar" type="button">Guardar</button></div>
       </div>
+
       <div class="u-acciones" id="u-acciones"></div>
       <p class="social-msg" id="u-msg"></p>
 
@@ -35,6 +53,12 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
       <section class="u-sec" id="u-regiones-sec" hidden>
         <h3 class="u-h">🗺️ Regiones</h3>
         <div class="u-regiones" id="u-regiones"></div>
+      </section>
+
+      <!-- Buscando / Ofrezco -->
+      <section class="u-sec" id="u-bo-sec" hidden>
+        <h3 class="u-h">🔁 Intercambios <button class="tcard-edit" id="u-bo-edit" type="button" hidden>✏️ Editar</button></h3>
+        <div class="u-bo" id="u-bo"></div>
       </section>
 
       <section class="u-sec">
@@ -71,19 +95,108 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
         <button class="btn-grande" id="of-enviar" type="button">Enviar oferta</button>
       </div>
     </div>
+
+    <!-- modal editar equipo destacado -->
+    <div class="av-modal" id="eq-modal" hidden>
+      <div class="av-card">
+        <div class="av-head"><b>⚡ Equipo destacado</b><button class="av-x" id="eq-x" type="button">✕</button></div>
+        <p class="av-sub">Elegí hasta <b>6</b> Pokémon de tu PC para mostrar en tu tarjeta. <span id="eq-n">0/6</span></p>
+        <div class="tr-grid of-grid" id="eq-grid"></div>
+        <button class="btn-grande" id="eq-guardar" type="button">Guardar equipo</button>
+      </div>
+    </div>
+
+    <!-- modal editar buscando/ofrezco -->
+    <div class="av-modal" id="bo-modal" hidden>
+      <div class="av-card">
+        <div class="av-head"><b>🔁 Buscando / Ofrezco</b><button class="av-x" id="bo-x" type="button">✕</button></div>
+        <p class="av-sub">Agregá Pokémon a cada lista (escribí el nombre y Enter). Hasta 12 por lista.</p>
+        <div class="bo-edit">
+          <label class="t-nombre-l">🔎 Busco</label>
+          <input class="bo-input" id="bo-busco-in" list="poke-list" placeholder="Nombre de Pokémon…" autocomplete="off" />
+          <div class="bo-chips" id="bo-busco-chips"></div>
+        </div>
+        <div class="bo-edit">
+          <label class="t-nombre-l">🎁 Ofrezco</label>
+          <input class="bo-input" id="bo-ofrezco-in" list="poke-list" placeholder="Nombre de Pokémon…" autocomplete="off" />
+          <div class="bo-chips" id="bo-ofrezco-chips"></div>
+        </div>
+        <button class="btn-grande" id="bo-guardar" type="button">Guardar listas</button>
+      </div>
+    </div>
+    <datalist id="poke-list">{lista.map((p) => (<option value={p.nombre}></option>))}</datalist>
   </main>
 
-  <script type="application/json" id="u-data" set:html={JSON.stringify({ nombres, regionDe })}></script>
+  <style>
+    .u-wrap { max-width: 920px; }
+    /* ── Tarjeta de Entrenador (holográfica, retro-Pokédex) ── */
+    .tcard { position: relative; overflow: hidden; border-radius: 20px; padding: 22px; margin-bottom: 18px;
+      background:
+        radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--red) 18%, var(--card)) 0%, var(--card) 42%),
+        linear-gradient(135deg, var(--card), var(--paper-2));
+      border: 1px solid var(--line); box-shadow: 0 18px 40px -22px rgba(0,0,0,.6);
+      animation: tcard-in .5s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes tcard-in { from { opacity:0; transform: translateY(10px) scale(.99); } }
+    .tcard::after { content:""; position:absolute; inset:0; pointer-events:none; border-radius:20px;
+      background: repeating-linear-gradient(115deg, transparent 0 14px, rgba(255,255,255,.025) 14px 15px); }
+    .tcard-sheen { position:absolute; top:-60%; left:-30%; width:55%; height:220%; pointer-events:none; transform: rotate(18deg);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.10), transparent); animation: sheen 5.5s ease-in-out infinite; }
+    @keyframes sheen { 0%,70% { left:-40%; } 100% { left:130%; } }
+    .tcard-top { display:flex; gap:18px; align-items:center; position:relative; z-index:1; }
+    .tcard-av { flex:0 0 84px; width:84px; height:84px; border-radius:18px; display:flex; align-items:center; justify-content:center;
+      font-size:2.6rem; background: var(--paper); border:2px solid color-mix(in srgb, var(--red) 40%, var(--line)); overflow:hidden; }
+    .tcard-av img { width:100%; height:100%; object-fit:contain; image-rendering:pixelated; }
+    .tcard-id { min-width:0; }
+    .tcard-rango { display:inline-block; font:800 .64rem var(--font-pixel, var(--font-mono)); letter-spacing:.12em; text-transform:uppercase;
+      color:#3a2a00; background: linear-gradient(180deg,#ffe066,#e0a400); border-radius:999px; padding:3px 10px; margin-bottom:5px; }
+    .tcard-nombre { margin:0; font-size:1.6rem; line-height:1.05; }
+    .tcard-handle { color: var(--ink-soft); font:600 .85rem var(--font-mono); margin-top:2px; }
+    .tcard-lema { margin:8px 0 0; color: var(--ink); font-style:italic; opacity:.9; max-width:56ch; }
+    .tcard-chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; position:relative; z-index:1; }
+    .u-chip { display:flex; align-items:center; gap:7px; background: var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:7px 11px; }
+    .u-chip .uc-ico { font-size:1.05rem; }
+    .u-chip b { font:800 1rem var(--font-display); line-height:1; }
+    .u-chip small { color: var(--ink-soft); font:600 .68rem var(--font-mono); display:block; }
+    .u-chip.pvp { border-color: color-mix(in srgb, var(--red) 45%, var(--line)); }
+    .u-chip.racha b { color:#f0803a; }
+    .tcard-equipo { margin-top:16px; position:relative; z-index:1; }
+    .tcard-equipo-h { display:flex; align-items:center; justify-content:space-between; font:800 .72rem var(--font-mono); letter-spacing:.06em; color: var(--ink-soft); text-transform:uppercase; margin-bottom:8px; }
+    .tcard-equipo-row { display:flex; gap:8px; flex-wrap:wrap; }
+    .tcard-slot { position:relative; width:64px; height:64px; border-radius:14px; background: var(--paper); border:1px solid var(--line);
+      display:flex; align-items:center; justify-content:center; }
+    .tcard-slot img { width:88%; height:88%; object-fit:contain; image-rendering:pixelated; }
+    .tcard-slot .tcard-nv { position:absolute; bottom:2px; right:3px; font:800 .6rem var(--font-mono); background: var(--paper-2); border-radius:5px; padding:0 3px; color: var(--ink-soft); }
+    .tcard-slot.shiny { border-color:#ffcf3f; box-shadow:0 0 0 2px rgba(255,207,63,.35) inset; }
+    .tcard-slot.empty { color: var(--ink-mute); font-size:1.2rem; border-style:dashed; }
+    .tcard-edit { font:700 .72rem var(--font-mono); color: var(--ink-soft); background: var(--paper-2); border:1px solid var(--line); border-radius:8px; padding:3px 9px; cursor:pointer; }
+    .tcard-edit:hover { color: var(--ink); }
+
+    /* Buscando / Ofrezco */
+    .u-bo { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    @media (max-width:560px){ .u-bo { grid-template-columns:1fr; } }
+    .u-bo-col h4 { margin:0 0 8px; font:800 .8rem var(--font-mono); }
+    .u-bo-list { display:flex; flex-wrap:wrap; gap:6px; }
+    .u-bo-poke { display:flex; align-items:center; gap:5px; background: var(--paper-2); border:1px solid var(--line); border-radius:999px; padding:3px 9px 3px 3px; font:600 .8rem var(--font-mono); }
+    .u-bo-poke img { width:26px; height:26px; image-rendering:pixelated; }
+    .bo-edit { margin:10px 0; }
+    .bo-input { width:100%; padding:9px 12px; border:1px solid var(--line); border-radius:10px; background: var(--paper-2); color: var(--ink); font:600 .9rem var(--font-mono); }
+    .bo-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .bo-chip { display:flex; align-items:center; gap:5px; background: var(--paper); border:1px solid var(--line); border-radius:999px; padding:3px 6px 3px 3px; font:600 .8rem var(--font-mono); cursor:pointer; }
+    .bo-chip img { width:24px; height:24px; image-rendering:pixelated; }
+    .bo-chip .x { color: var(--red); font-weight:800; }
+  </style>
+
+  <script type="application/json" id="u-data" set:html={JSON.stringify({ nombres, regionDe, temas })}></script>
   <script>
-    import { perfilPublico, sonAmigos, solicitar, crearOferta, guardarDescripcion, pcDeUsuario, haySupabase } from '../lib/social.js';
+    import { perfilPublico, sonAmigos, solicitar, crearOferta, guardarDescripcion, pcDeUsuario, rankingPvp, actualizarSnapshot, haySupabase } from '../lib/social.js';
     import { pc as pcCol } from '../lib/coleccion.js';
     import { statsDesafios, desafiosDeUsuario } from '../lib/desafios.js';
     import { usuario, init as initNube } from '../lib/nube.js';
     import { REGION_IDS, REGION_POR_ID } from '../lib/regiones.mjs';
 
     const D = JSON.parse(document.getElementById('u-data').textContent);
-    const nombres = D.nombres;
-    const regionDe = D.regionDe;
+    const nombres = D.nombres, regionDe = D.regionDe, temas = D.temas;
+    const idPorNombre = Object.fromEntries(Object.entries(nombres).map(([id, n]) => [n.toLowerCase(), Number(id)]));
     const REGEMOJI = { ...Object.fromEntries(REGION_IDS.map((id) => [id, REGION_POR_ID[id].emoji])), otros: '📦' };
     const REGNOM = { ...Object.fromEntries(REGION_IDS.map((id) => [id, REGION_POR_ID[id].nombre])), otros: 'Otros' };
     const REGORD = REGION_IDS;
@@ -91,20 +204,49 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
     const B = (window.__BASE || '/').replace(/\/$/, '');
     const sprite = (id, sh) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${sh ? 'shiny/' : ''}${id}.png`;
     const handle = new URLSearchParams(location.search).get('h');
+    const esc = (s) => (s || '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const ls = (k, def) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? def : v; } catch { return def; } };
+    const RANGOS = [[0, 'Novato'], [4, 'Aprendiz'], [8, 'Entrenador'], [12, 'Veterano'], [16, 'As'], [24, 'Líder'], [32, 'Maestro']];
 
-    const atrapados = () => { try { return JSON.parse(localStorage.getItem('col:atrapados')) || {}; } catch { return {}; } };
-    const misShiny = () => { try { return new Set(JSON.parse(localStorage.getItem('col:shiny')) || []); } catch { return new Set(); } };
-    // intercambio por INSTANCIA: mis Pokémon y el helper de nombre
     const misInst = () => pcCol().map((m) => ({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: !!m.shiny, mote: m.mote || '' }));
     const nombreInst = (x) => (x.mote || nombres[x.id] || ('Nº ' + x.id)) + (x.shiny ? ' ✨' : '') + ' · Nv.' + (x.nivel ?? '?');
 
-    let perfil = null, doy = [], pido = [];
+    let perfil = null, esMio = false, doy = [], pido = [];
 
-    const esc = (s) => (s || '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
     function celda(id, at, shi) {
       return `<div class="tr-cell"><img src="${sprite(id, false)}" alt="${esc(nombres[id] || id)}" title="${nombres[id] || id} (x${at[id]})" />`
         + `<span class="tr-cnt">x${at[id]}</span>${shi.has(id) ? '<span class="u-shi">✨</span>' : ''}</div>`;
     }
+
+    // datos sociales: del propio localStorage si es mi perfil (en vivo), si no del snapshot público
+    const equipoData = () => esMio ? misInst().filter((m) => (ls('col:equipo', [])).includes(m.iid))
+      .sort((a, b) => (ls('col:equipo', [])).indexOf(a.iid) - (ls('col:equipo', [])).indexOf(b.iid)) : ((perfil.publico || {}).equipo || []);
+    const buscandoData = () => esMio ? ls('col:buscando', []) : ((perfil.publico || {}).buscando || []);
+    const ofrezcoData = () => esMio ? ls('col:ofrezco', []) : ((perfil.publico || {}).ofrezco || []);
+
+    async function pushSnapshot() { try { await actualizarSnapshot(temas); } catch {} }
+
+    function pintarEquipo() {
+      const eq = equipoData();
+      const row = $('u-equipo');
+      let slots = eq.slice(0, 6).map((m) =>
+        `<div class="tcard-slot ${m.shiny ? 'shiny' : ''}" title="${esc(nombreInst(m))}"><img src="${sprite(m.id, m.shiny)}" alt="${esc(nombres[m.id] || m.id)}" /><span class="tcard-nv">Nv${m.nivel}</span></div>`).join('');
+      if (esMio) for (let i = eq.length; i < 6; i++) slots += '<div class="tcard-slot empty">＋</div>';
+      row.innerHTML = slots || '<div class="tcard-slot empty" style="width:auto;padding:0 14px;border-style:solid">Sin equipo elegido</div>';
+      $('u-equipo-wrap').hidden = !esMio && eq.length === 0;
+    }
+
+    function pintarBO() {
+      const bus = buscandoData(), ofr = ofrezcoData();
+      if (!esMio && !bus.length && !ofr.length) { $('u-bo-sec').hidden = true; return; }
+      $('u-bo-sec').hidden = false;
+      const lista = (arr, vacio) => arr.length
+        ? `<div class="u-bo-list">${arr.map((id) => `<span class="u-bo-poke"><img src="${sprite(id)}" alt="" />${esc(nombres[id] || ('Nº ' + id))}</span>`).join('')}</div>`
+        : `<div class="tr-colec-vacio">${vacio}</div>`;
+      $('u-bo').innerHTML = `<div class="u-bo-col"><h4>🔎 Busca</h4>${lista(bus, '—')}</div>`
+        + `<div class="u-bo-col"><h4>🎁 Ofrece</h4>${lista(ofr, '—')}</div>`;
+    }
+
     function pintarPerfil(p) {
       const pub = p.publico || {};
       $('u-nombre').textContent = p.nombre || 'Entrenador/a';
@@ -112,6 +254,34 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
       $('u-codigo').textContent = p.codigo_amigo;
       $('u-av').innerHTML = p.avatar ? `<img src="${sprite(p.avatar)}" alt="avatar" />` : '🎓';
       if (p.descripcion) { $('u-desc').textContent = p.descripcion; $('u-desc').hidden = false; }
+
+      // rango por medallas
+      let rango = 'Novato';
+      for (const [n, x] of RANGOS) if ((pub.medallas || 0) >= n) rango = x;
+      if (pub.titulos && pub.titulos.length === (pub.regiones || []).length && pub.regiones && pub.regiones.length) rango = 'Maestro Pokémon';
+      $('u-rango').textContent = rango;
+
+      // stat chips
+      const c = pub.conteos || {}, pvp = pub.pvp || {}, racha = pub.racha || 0;
+      const chips = [
+        ['📕', c.unicos || 0, 'Pokédex'],
+        ['✨', c.shinies || 0, 'shiny'],
+        ['🏅', pub.medallas || 0, 'medallas'],
+        ['🎯', c.ejercicios || 0, 'ejercicios'],
+      ];
+      let html = chips.map(([i, v, l]) => `<div class="u-chip"><span class="uc-ico">${i}</span><span><b>${v}</b><small>${l}</small></span></div>`).join('');
+      if (pvp.jugados > 0) html += `<div class="u-chip pvp" id="u-chip-pvp"><span class="uc-ico">📊</span><span><b>${pvp.rating}</b><small id="u-pvp-sub">${pvp.victorias} victorias</small></span></div>`;
+      if (racha > 0) html += `<div class="u-chip racha"><span class="uc-ico">🔥</span><span><b>${racha}</b><small>días de racha</small></span></div>`;
+      $('u-chips').innerHTML = html;
+
+      // puesto en el ranking PvP (en vivo)
+      if (pvp.jugados > 0) rankingPvp().then((top) => {
+        const pos = (top || []).findIndex((r) => r.handle === p.handle);
+        if (pos >= 0 && $('u-pvp-sub')) $('u-pvp-sub').textContent = '#' + (pos + 1) + ' · ' + pvp.victorias + 'V';
+      }).catch(() => {});
+
+      pintarEquipo();
+      pintarBO();
 
       const titulos = pub.titulos || [];
       if (titulos.length) {
@@ -129,7 +299,6 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
         }).join('');
       }
 
-      const c = pub.conteos || {};
       $('u-counts').innerHTML = [
         ['Pokédex', c.unicos || 0], ['total', c.total || 0],
         ['✨ shiny', c.shinies || 0], ['ejercicios', c.ejercicios || 0],
@@ -138,14 +307,13 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
 
       statsDesafios(p.user_id).then((s) => {
         if (!s) return;
-        const extra = '<div><b>' + (s.resueltos || 0) + '</b><small>desafíos</small></div>'
-          + '<div><b>' + (s.creados || 0) + '</b><small>creados</small></div>';
-        $('u-counts').insertAdjacentHTML('beforeend', extra);
+        $('u-counts').insertAdjacentHTML('beforeend',
+          '<div><b>' + (s.resueltos || 0) + '</b><small>desafíos</small></div><div><b>' + (s.creados || 0) + '</b><small>creados</small></div>');
       }).catch(() => {});
 
       desafiosDeUsuario(p.user_id).then((ds) => {
         if (!ds || !ds.length) return;
-        const REG = { kanto: '🔴', johto: '⚪', hoenn: '🟢', sinnoh: '🔵', unova: '⚫', kalos: '🟠', libre: '🎲' };
+        const REG = { kanto: '🔴', johto: '⚪', hoenn: '🟢', sinnoh: '🔵', unova: '⚫', kalos: '🟠', alola: '🌺', galar: '🛡️', paldea: '🔶', libre: '🎲' };
         const item = (d) => `<a class="u-df-item" href="${B}/desafios/ver?id=${d.id}">${REG[d.region] || '🎲'} ${esc(d.titulo)} <small>★${d.dificultad}</small></a>`;
         const grupo = (titulo, arr) => arr.length ? `<div class="u-df-grupo"><b>${titulo} (${arr.length})</b><div class="u-df-lista">${arr.map(item).join('')}</div></div>` : '';
         const h = grupo('🛠️ Creados', ds.filter((d) => d.rol === 'creado')) + grupo('✅ Resueltos', ds.filter((d) => d.rol === 'resuelto'));
@@ -162,9 +330,9 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
         ids.forEach((id) => { const r = regionDe[id] || 'otros'; (grupos[r] ||= []).push(id); });
         const orden = REGORD.filter((r) => grupos[r]).concat(grupos.otros ? ['otros'] : []);
         $('u-dex').innerHTML = orden.map((r) => {
-          const lista = grupos[r].sort((a, b) => a - b);
-          return `<div class="u-dex-reg"><div class="u-dex-reg-h">${REGEMOJI[r] || '📦'} ${REGNOM[r] || r} <small>(${lista.length})</small></div>`
-            + `<div class="tr-grid">${lista.map((id) => celda(id, at, shi)).join('')}</div></div>`;
+          const l = grupos[r].sort((a, b) => a - b);
+          return `<div class="u-dex-reg"><div class="u-dex-reg-h">${REGEMOJI[r] || '📦'} ${REGNOM[r] || r} <small>(${l.length})</small></div>`
+            + `<div class="tr-grid">${l.map((id) => celda(id, at, shi)).join('')}</div></div>`;
         }).join('');
       }
 
@@ -177,52 +345,105 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
       }
     }
 
-    async function pintarAcciones() {
+    function pintarAcciones() {
       const cont = $('u-acciones'); cont.innerHTML = '';
       const yo = usuario();
-      const esMio = yo && perfil.user_id === yo.id;
-      // descripción: editable solo en tu propio perfil
+      esMio = yo && perfil.user_id === yo.id;
       if (esMio) {
         $('u-desc').hidden = true;
         $('u-desc-edit').hidden = false;
+        $('u-equipo-edit').hidden = false;
+        $('u-bo-edit').hidden = false;
         const input = $('u-desc-input');
         input.value = perfil.descripcion || '';
         const cnt = () => { $('u-desc-cnt').textContent = input.value.length + '/200'; };
         cnt(); input.oninput = cnt;
         $('u-desc-guardar').onclick = async () => {
-          try { await guardarDescripcion(input.value); perfil.descripcion = input.value; $('u-msg').textContent = '✅ Descripción guardada.'; }
+          try { await guardarDescripcion(input.value); perfil.descripcion = input.value; $('u-msg').textContent = '✅ Guardado.'; }
           catch (e) { $('u-msg').textContent = '⚠️ ' + (e.message || e); }
         };
+        pintarEquipo(); pintarBO();   // re-render con datos en vivo
       }
       const linkBtn = document.createElement('button');
       linkBtn.className = 'btn-sec'; linkBtn.textContent = '🔗 Copiar link';
-      linkBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(location.origin + B + '/u?h=' + perfil.handle);
-        linkBtn.textContent = '✓ copiado';
-      });
+      linkBtn.addEventListener('click', () => { navigator.clipboard.writeText(location.origin + B + '/u?h=' + perfil.handle); linkBtn.textContent = '✓ copiado'; });
       if (yo && !esMio) {
-        const amigos = await sonAmigos(perfil.user_id).catch(() => false);
-        if (amigos) {
-          const b = document.createElement('button');
-          b.className = 'btn-grande'; b.textContent = '🔄 Proponer intercambio';
-          b.addEventListener('click', abrirOferta);
-          cont.appendChild(b);
-        } else {
-          const b = document.createElement('button');
-          b.className = 'btn-grande'; b.textContent = '＋ Agregar amigo';
-          b.addEventListener('click', async () => {
-            b.disabled = true;
-            try { await solicitar({ handle: perfil.handle }); $('u-msg').textContent = '✅ Solicitud enviada a @' + perfil.handle; }
-            catch (e) { b.disabled = false; $('u-msg').textContent = '⚠️ ' + (e.message || e); }
-          });
-          cont.appendChild(b);
-        }
+        sonAmigos(perfil.user_id).then((amigos) => {
+          const b = document.createElement('button'); b.className = 'btn-grande';
+          if (amigos) { b.textContent = '🔄 Proponer intercambio'; b.addEventListener('click', abrirOferta); }
+          else {
+            b.textContent = '＋ Agregar amigo';
+            b.addEventListener('click', async () => {
+              b.disabled = true;
+              try { await solicitar({ handle: perfil.handle }); $('u-msg').textContent = '✅ Solicitud enviada a @' + perfil.handle; }
+              catch (e) { b.disabled = false; $('u-msg').textContent = '⚠️ ' + (e.message || e); }
+            });
+          }
+          cont.insertBefore(b, cont.firstChild);
+        }).catch(() => {});
       }
       cont.appendChild(linkBtn);
     }
 
-    // ---- modal de oferta ----
-    // grilla de selección por INSTANCIA (doy = mías; pido = del otro). seleccion guarda {iid,id,nivel,shiny,mote}.
+    // ── editor de equipo destacado ──
+    $('u-equipo-edit').addEventListener('click', () => {
+      const sel = ls('col:equipo', []).slice();
+      const refresh = () => { $('eq-n').textContent = sel.length + '/6'; };
+      const grid = $('eq-grid'); grid.innerHTML = '';
+      const mias = misInst();
+      if (!mias.length) { grid.innerHTML = '<div class="tr-colec-vacio">Tu PC está vacío.</div>'; }
+      mias.sort((a, b) => (b.shiny - a.shiny) || (b.nivel - a.nivel) || (a.id - b.id)).forEach((m) => {
+        const on = () => sel.includes(m.iid);
+        const cell = document.createElement('div'); cell.className = 'tr-cell' + (on() ? ' on' : '');
+        cell.innerHTML = `<img src="${sprite(m.id, m.shiny)}" alt="${esc(nombreInst(m))}" title="${esc(nombreInst(m))}" /><span class="tr-cnt">Nv.${m.nivel}${m.shiny ? ' ✨' : ''}</span>`;
+        const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'tr-pedir' + (on() ? ' on' : ''); btn.textContent = on() ? '✓' : '＋';
+        btn.addEventListener('click', () => {
+          const i = sel.indexOf(m.iid);
+          if (i >= 0) sel.splice(i, 1);
+          else { if (sel.length >= 6) return; sel.push(m.iid); }
+          cell.classList.toggle('on', on()); btn.classList.toggle('on', on()); btn.textContent = on() ? '✓' : '＋'; refresh();
+        });
+        cell.appendChild(btn); grid.appendChild(cell);
+      });
+      refresh();
+      $('eq-guardar').onclick = async () => {
+        localStorage.setItem('col:equipo', JSON.stringify(sel));
+        $('eq-modal').hidden = true; pintarEquipo(); await pushSnapshot();
+      };
+      $('eq-modal').hidden = false;
+    });
+    $('eq-x').addEventListener('click', () => { $('eq-modal').hidden = true; });
+    $('eq-modal').addEventListener('click', (e) => { if (e.target === $('eq-modal')) $('eq-modal').hidden = true; });
+
+    // ── editor de buscando / ofrezco ──
+    function chipsEditor(contId, arr) {
+      $(contId).innerHTML = arr.map((id, i) =>
+        `<span class="bo-chip" data-i="${i}"><img src="${sprite(id)}" alt="" />${esc(nombres[id] || id)} <span class="x">✕</span></span>`).join('');
+      $(contId).querySelectorAll('.bo-chip').forEach((ch) => ch.addEventListener('click', () => { arr.splice(+ch.dataset.i, 1); chipsEditor(contId, arr); }));
+    }
+    $('u-bo-edit').addEventListener('click', () => {
+      const bus = ls('col:buscando', []).slice(), ofr = ls('col:ofrezco', []).slice();
+      chipsEditor('bo-busco-chips', bus); chipsEditor('bo-ofrezco-chips', ofr);
+      const add = (inputId, arr, contId) => {
+        const inp = $(inputId);
+        inp.onchange = () => {
+          const id = idPorNombre[(inp.value || '').trim().toLowerCase()];
+          if (id && !arr.includes(id) && arr.length < 12) { arr.push(id); chipsEditor(contId, arr); }
+          inp.value = '';
+        };
+      };
+      add('bo-busco-in', bus, 'bo-busco-chips'); add('bo-ofrezco-in', ofr, 'bo-ofrezco-chips');
+      $('bo-guardar').onclick = async () => {
+        localStorage.setItem('col:buscando', JSON.stringify(bus));
+        localStorage.setItem('col:ofrezco', JSON.stringify(ofr));
+        $('bo-modal').hidden = true; pintarBO(); await pushSnapshot();
+      };
+      $('bo-modal').hidden = false;
+    });
+    $('bo-x').addEventListener('click', () => { $('bo-modal').hidden = true; });
+    $('bo-modal').addEventListener('click', (e) => { if (e.target === $('bo-modal')) $('bo-modal').hidden = true; });
+
+    // ── modal de oferta (intercambio por instancia) ──
     function gridInst(el, instancias, seleccion, marca, marcaTxt) {
       el.innerHTML = '';
       if (!instancias || !instancias.length) { el.innerHTML = '<div class="tr-colec-vacio">(sin Pokémon)</div>'; return; }
@@ -247,13 +468,11 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
       $('of-doy').innerHTML = '<div class="tr-colec-vacio">Cargando…</div>';
       $('of-pido').innerHTML = '<div class="tr-colec-vacio">Cargando…</div>';
       $('of-modal').hidden = false;
-      // instancias del otro EN VIVO (el snapshot público puede estar viejo)
       let otras = (perfil.publico && perfil.publico.pcPub) || [];
       try { const r = await pcDeUsuario(perfil.user_id); if (r && Array.isArray(r.pc)) otras = r.pc; } catch {}
       const mias = misInst();
-      const especiesDeEl = new Set(otras.map((m) => m.id));   // lo que ÉL tiene
-      const especiesMias = new Set(mias.map((m) => m.id));    // lo que YO tengo
-      // en MIS Pokémon marco los que ÉL no tiene; en los de ÉL, los que YO no tengo
+      const especiesDeEl = new Set(otras.map((m) => m.id));
+      const especiesMias = new Set(mias.map((m) => m.id));
       gridInst($('of-doy'), mias, doy, (m) => !especiesDeEl.has(m.id), 'Le falta a él');
       gridInst($('of-pido'), otras, pido, (m) => !especiesMias.has(m.id), 'Te falta a vos');
     }
@@ -272,15 +491,15 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
     async function arrancar() {
       if (haySupabase) initNube();
       if (!handle) { $('u-cargando').hidden = true; $('u-error').hidden = false; return; }
-      try {
-        perfil = await perfilPublico(handle);
-      } catch { perfil = null; }
+      try { perfil = await perfilPublico(handle); } catch { perfil = null; }
       $('u-cargando').hidden = true;
       if (!perfil) { $('u-error').hidden = false; return; }
+      const yo = usuario();
+      esMio = yo && perfil.user_id === yo.id;
       $('u-perfil').hidden = false;
       pintarPerfil(perfil);
       pintarAcciones();
-      window.addEventListener('nube:cambio', pintarAcciones);
+      window.addEventListener('nube:cambio', () => { esMio = (usuario() && perfil.user_id === usuario().id); pintarAcciones(); });
     }
     arrancar();
   </script>
