@@ -59,13 +59,16 @@ const nav = [
   <header class="topbar">
     <a class="brand-link" href={u('/')}><span class="pb"></span><span class="brand">Pokédex <b>Codex</b></span></a>
     <div class="tools">
+      <nav class="navlinks" id="navlinks">
       {nav.map(([t, h]) => (
         <a class={'navlink' + (t === active ? ' activo' : '')} href={u(h)} data-nav={t}>{t}</a>
       ))}
+      </nav>
       <button class="theme-toggle" id="pwa-install" type="button" title="Instalar como app" style="display:none">📲</button>
       <button class="theme-toggle" id="nube-btn" type="button" title="Guardar progreso en la nube" style="display:none">☁️</button>
       <button class="theme-toggle" id="sonido-toggle" type="button" title="Sonido on/off">🔊</button>
       <button class="theme-toggle" id="theme-toggle" type="button" title="Tema claro/oscuro">🌙</button>
+      <button class="theme-toggle nav-burger" id="nav-burger" type="button" title="Menú" aria-label="Abrir menú" aria-expanded="false">☰</button>
     </div>
   </header>
 
@@ -273,6 +276,19 @@ const nav = [
         localStorage.setItem('sonido:off', localStorage.getItem('sonido:off') === '1' ? '0' : '1');
         rs();
       });
+      // menú mobile (hamburguesa): abre/cierra el panel de navegación
+      var burger = document.getElementById('nav-burger'), nlinks = document.getElementById('navlinks');
+      if (burger && nlinks) {
+        var cerrar = function () { nlinks.classList.remove('abierto'); burger.setAttribute('aria-expanded', 'false'); burger.textContent = '☰'; };
+        burger.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var abierto = nlinks.classList.toggle('abierto');
+          burger.setAttribute('aria-expanded', String(abierto));
+          burger.textContent = abierto ? '✕' : '☰';
+        });
+        nlinks.addEventListener('click', function (e) { if (e.target.closest('.navlink')) cerrar(); });
+        document.addEventListener('click', function (e) { if (!nlinks.contains(e.target) && e.target !== burger) cerrar(); });
+      }
     })();
   </script>
 </body>

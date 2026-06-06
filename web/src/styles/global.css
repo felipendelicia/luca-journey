@@ -50,6 +50,8 @@ code{font-family:var(--font-mono); font-size:.85em; background:#fbe7e1; color:va
 .brand{font-family:var(--font-pixel); font-size:11px; letter-spacing:.14em; color:var(--ink); text-transform:uppercase;}
 .brand b{color:var(--red);}
 .tools{margin-left:auto; display:flex; align-items:center; gap:10px;}
+.navlinks{display:flex; align-items:center; gap:10px;}
+.nav-burger{display:none; font-size:18px;}
 .navlink{font-family:var(--font-body); font-weight:600; font-size:.85rem; color:var(--ink);
   text-decoration:none; padding:6px 13px; border:1px solid var(--line); border-radius:999px;
   background:var(--paper-2); white-space:nowrap;}
@@ -127,7 +129,19 @@ body.dark .bg-grid{
     radial-gradient(rgba(255,255,255,.05) 1px, transparent 1.4px);
   background-size:auto,auto,22px 22px;}
 
-@media (max-width:760px){ .tools .navlink{display:none;} }
+@media (max-width:760px){
+  .nav-burger{display:inline-flex; align-items:center; justify-content:center;}
+  .navlinks{
+    display:none; position:fixed; top:56px; left:0; right:0; z-index:49;
+    flex-direction:column; align-items:stretch; gap:6px;
+    padding:10px; max-height:calc(100vh - 56px); overflow:auto;
+    background:rgba(7,11,10,.97); backdrop-filter:saturate(1.3) blur(10px);
+    border-bottom:1px solid var(--line); box-shadow:0 16px 34px -14px rgba(0,0,0,.6);
+  }
+  .navlinks.abierto{display:flex;}
+  .navlinks .navlink{width:100%; padding:13px 16px; border-radius:10px; font-size:1rem; text-align:left;}
+}
+body.claro .navlinks{background:rgba(238,241,232,.98);}
 
 /* ===================== LIBRO ===================== */
 .book-layout{ max-width:1120px; margin:0 auto; display:grid; grid-template-columns:248px minmax(0,1fr); gap:44px; }
