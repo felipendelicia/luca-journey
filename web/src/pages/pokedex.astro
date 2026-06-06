@@ -32,7 +32,15 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
     </div>
     <p class="dex-sinresultados" id="sinres" hidden>Ningún Pokémon coincide.</p>
     <div id="evoluciones-sec"></div>
+    <h2 class="liga-h dex-titulo">📕 Pokédex</h2>
     <div id="secciones"></div>
+  </div>
+
+  <div class="poke-modal" id="poke-modal" hidden>
+    <div class="poke-modal-card">
+      <button class="rar-x" id="poke-modal-x" type="button" aria-label="Cerrar">✕</button>
+      <div id="poke-modal-cuerpo"></div>
+    </div>
   </div>
 
   <script type="application/json" id="dex-data" set:html={JSON.stringify({ pokemon, temas, regiones: REGIONES, evoluciones, aparicion })}></script>
@@ -88,42 +96,58 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       }).join('');
     }
 
-    // tarjeta de una instancia del PC: nivel + Power-Up (caramelos) + Evolucionar (ramificado)
+    // card SIMPLE de una instancia (foto, nombre, nivel, caramelos). Tap → modal con todo.
     function instCard(m, car) {
       const tengo = car[familiaDe(m.id)] || 0;
-      const costo = costoSubir(m.nivel), max = m.nivel >= NIVEL_MAX;
-      const ops = opcionesEvo(m.iid), puedeEvo = ops.some((o) => o.ok);
-      const evoHint = (ops.length && !puedeEvo) ? (ops[0].nivel > 0 ? 'Nv.' + ops[0].nivel : ops[0].costo + '🍬') : '';
-      return '<div class="pc-card' + (m.shiny ? ' es-shiny' : '') + '">' +
+      return '<button class="pc-card' + (m.shiny ? ' es-shiny' : '') + '" data-iid="' + m.iid + '">' +
         '<img src="' + spriteUrl(m.id, m.shiny) + '" alt="' + (nombreDe[m.id] || m.id) + '" />' +
         '<div class="pc-nom">' + (nombreDe[m.id] || ('Nº ' + m.id)) + (m.shiny ? ' ✨' : '') + '</div>' +
-        '<div class="pc-lvl">Nv. ' + m.nivel + '</div>' +
-        '<div class="pc-btns">' +
-          (max ? '<span class="pc-max">MAX</span>' : '<button class="pc-up" data-up="' + m.iid + '"' + (tengo < costo ? ' disabled' : '') + '>⬆️ ' + costo + '🍬</button>') +
-          (puedeEvo ? '<button class="pc-evo" data-evo="' + m.iid + '">🧬 Evolucionar</button>' : (evoHint ? '<span class="pc-evohint">🔒 ' + evoHint + '</span>' : '')) +
-        '</div>' +
-        '<div class="pc-car">🍬 ' + tengo + '</div></div>';
+        '<div class="pc-meta"><span>Nv. ' + m.nivel + '</span><span>🍬 ' + tengo + '</span></div></button>';
     }
 
+    let pcAbierto = false;   // Mi PC colapsado por defecto (la página no queda larga)
     function miPC(pcArr, car) {
       const sec = $('evoluciones-sec');
       if (!pcArr.length) { sec.innerHTML = ''; return; }
-      const porEsp = {}; for (const m of pcArr) (porEsp[m.id] ||= []).push(m);
-      const cards = Object.keys(porEsp).map(Number).sort((a, b) => a - b)
-        .flatMap((id) => porEsp[id].sort((a, b) => b.nivel - a.nivel).map((m) => instCard(m, car))).join('');
-      sec.innerHTML = '<h2 class="liga-h">🎒 Mi PC <small>— subí de nivel con 🍬 caramelos y evolucioná</small></h2><div class="pc-grid">' + cards + '</div>';
-      sec.querySelectorAll('.pc-up').forEach((b) => b.addEventListener('click', () => { if (subirNivel(b.dataset.up)) { sonarExito(); pintar(); } }));
-      sec.querySelectorAll('.pc-evo').forEach((b) => b.addEventListener('click', () => {
-        const iid = b.dataset.evo, ops = opcionesEvo(iid).filter((o) => o.ok);
-        if (ops.length === 1) { if (evolucionarInst(iid, ops[0].a)) { sonarExito(); pintar(); } }
-        else if (ops.length > 1) {
-          const cont = document.createElement('div'); cont.className = 'pc-chooser';
-          cont.innerHTML = ops.map((o) => '<button data-pick="' + o.a + '"><img src="' + spriteUrl(o.a) + '" alt="' + (nombreDe[o.a] || o.a) + '" /><span>' + (nombreDe[o.a] || ('Nº ' + o.a)) + '</span></button>').join('');
-          b.replaceWith(cont);
-          cont.querySelectorAll('[data-pick]').forEach((x) => x.addEventListener('click', () => { if (evolucionarInst(iid, x.dataset.pick)) { sonarExito(); pintar(); } }));
-        }
-      }));
+      const cards = [...pcArr].sort((a, b) => (a.id - b.id) || (b.nivel - a.nivel)).map((m) => instCard(m, car)).join('');
+      sec.innerHTML = '<button class="pc-toggle" id="pc-toggle"><span class="pc-arrow">' + (pcAbierto ? '▾' : '▸') + '</span> 🎒 Mi PC <small>(' + pcArr.length + ')</small></button>' +
+        '<div class="pc-grid" id="pc-cont"' + (pcAbierto ? '' : ' hidden') + '>' + cards + '</div>';
+      $('pc-toggle').addEventListener('click', () => {
+        pcAbierto = !pcAbierto; $('pc-cont').hidden = !pcAbierto;
+        sec.querySelector('.pc-arrow').textContent = pcAbierto ? '▾' : '▸';
+      });
+      sec.querySelectorAll('.pc-card').forEach((b) => b.addEventListener('click', () => abrirModal(b.dataset.iid)));
     }
+
+    // modal detallado de UNA instancia: rareza, nivel, caramelos, Power-Up y Evolucionar.
+    function evoBloque(m, ops) {
+      if (!ops.length) return '';
+      const oks = ops.filter((o) => o.ok);
+      if (oks.length) {
+        return '<div class="pm-evo"><b>🧬 Evolucionar a:</b><div class="pm-evos">' +
+          oks.map((o) => '<button data-evopick="' + o.a + '"><img src="' + spriteUrl(o.a) + '" alt="' + (nombreDe[o.a] || o.a) + '" /><span>' + (nombreDe[o.a] || ('Nº ' + o.a)) + '<br>' + o.costo + '🍬</span></button>').join('') + '</div></div>';
+      }
+      const o = ops[0];
+      const falta = (o.nivel > 0 && m.nivel < o.nivel) ? ('Nv.' + o.nivel) : (o.costo + '🍬 caramelos');
+      return '<div class="pm-evo pm-evo-bloq">🔒 Evoluciona con <b>' + falta + '</b></div>';
+    }
+    function abrirModal(iid) {
+      const m = pc().find((x) => x.iid === iid); if (!m) return;
+      const car = caramelos()[familiaDe(m.id)] || 0, t = tierDe(m.id, apar);
+      const costo = costoSubir(m.nivel), max = m.nivel >= NIVEL_MAX, ops = opcionesEvo(iid);
+      $('poke-modal-cuerpo').innerHTML =
+        '<img class="pm-img" src="' + spriteUrl(m.id, m.shiny) + '" alt="' + (nombreDe[m.id] || m.id) + '" />' +
+        '<h2>' + (nombreDe[m.id] || ('Nº ' + m.id)) + (m.shiny ? ' ✨' : '') + '</h2>' +
+        '<div class="pm-row"><span class="cap-tier" style="--tier-color:' + t.color + '">' + (t.ico ? t.ico + ' ' : '') + t.nombre + '</span><span class="pm-lvl">Nv. ' + m.nivel + '</span></div>' +
+        '<div class="pm-car">🍬 ' + car + ' caramelos de la familia</div>' +
+        '<div class="pm-acciones">' +
+          (max ? '<span class="pc-max">Nivel MÁXIMO (50)</span>' : '<button class="pm-btn" id="pm-up"' + (car < costo ? ' disabled' : '') + '>⬆️ Power-Up <small>(' + costo + '🍬)</small></button>') +
+          evoBloque(m, ops) + '</div>';
+      const up = $('pm-up'); if (up) up.addEventListener('click', () => { if (subirNivel(iid)) { sonarExito(); abrirModal(iid); pintar(); } });
+      $('poke-modal-cuerpo').querySelectorAll('[data-evopick]').forEach((b) => b.addEventListener('click', () => { if (evolucionarInst(iid, b.dataset.evopick)) { sonarExito(); cerrarModal(); pintar(); } }));
+      $('poke-modal').hidden = false;
+    }
+    function cerrarModal() { $('poke-modal').hidden = true; }
 
     function aplicar() {
       const q = buscar.value.trim().toLowerCase();
@@ -155,6 +179,11 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       document.querySelectorAll('.dex-f').forEach((x) => x.classList.remove('activo'));
       b.classList.add('activo'); filtro = b.dataset.f; aplicar();
     }));
+
+    // cerrar el modal: X, click en el fondo, Escape
+    $('poke-modal-x').addEventListener('click', cerrarModal);
+    $('poke-modal').addEventListener('click', (e) => { if (e.target === $('poke-modal')) cerrarModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrarModal(); });
 
     pintar();
     // si la nube cambió por fuera (ej. un intercambio), re-render para no quedar desfasado
