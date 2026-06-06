@@ -60,11 +60,22 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
       </div>
     </section>
 
-    <h2 class="liga-h">🏆 Logros <span class="reg-estado" id="logros-n"></span></h2>
-    <div class="logros-grid" id="logros"></div>
+    <nav class="reg-tabs liga-tabs" id="liga-tabs" aria-label="Secciones de la Liga">
+      <button class="reg-tab" type="button" data-tab="logros"><span class="rt-emoji">🏅</span><span class="rt-name">Logros</span><span class="rt-chip" id="tab-logros-n"></span></button>
+      {regiones.map((r) => (
+        <button class="reg-tab" type="button" data-tab={r.id} data-region={r.id} title={r.sub}>
+          <span class="rt-emoji">{r.emoji}</span><span class="rt-name">{r.nombre}</span>
+          <span class="rt-chip" data-prog={r.id}></span><span class="rt-bar"><i data-bar={r.id}></i></span>
+        </button>
+      ))}
+    </nav>
 
+    <section class="liga-panel" data-tab="logros" hidden>
+      <h2 class="liga-h">🏆 Logros <span class="reg-estado" id="logros-n"></span></h2>
+      <div class="logros-grid" id="logros"></div>
+    </section>
     {regiones.map((r) => (
-      <section class="region" data-region={r.id}>
+      <section class="liga-panel region" data-region={r.id} data-tab={r.id} hidden>
         <h2 class="liga-h">{r.emoji} Región {r.nombre} <small>— {r.sub}</small> <span class="reg-estado" data-reg={r.id}></span></h2>
         <div class="medallas" data-medallas={r.id}></div>
         <div class="progreso-temas" data-progreso={r.id}></div>
@@ -83,6 +94,33 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
     </div>
   </div>
 
+  <style>
+    /* barra de pestañas de la Liga (Logros + regiones), una sección a la vez */
+    .reg-tabs { position: sticky; top: 56px; z-index: 40; display:flex; gap:4px; overflow-x:auto; scrollbar-width:none;
+      padding: 8px 4px; margin: 18px -4px 22px; background: color-mix(in srgb, var(--paper) 88%, transparent);
+      backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+    .reg-tabs::-webkit-scrollbar { display:none; }
+    .reg-tab { position:relative; flex: 0 0 auto; display:flex; align-items:center; gap:7px; cursor:pointer;
+      padding: 8px 14px 10px; border: 1px solid transparent; border-radius: 12px; background: transparent;
+      color: var(--ink-soft); font: 700 .86rem var(--font-display); transition: background .15s, color .15s; white-space:nowrap; }
+    .reg-tab:hover { background: var(--paper-2); color: var(--ink); }
+    .reg-tab .rt-emoji { font-size: 1.05rem; filter: saturate(.5) opacity(.7); transition: filter .15s; }
+    .reg-tab .rt-chip { font: 800 .64rem var(--font-mono); color: var(--ink-mute); background: var(--paper); border-radius: 6px; padding: 1px 5px; }
+    .reg-tab .rt-bar { position:absolute; left: 12px; right: 12px; bottom: 3px; height: 3px; border-radius: 3px; background: var(--line); overflow:hidden; }
+    .reg-tab .rt-bar i { display:block; height:100%; width:0; background: linear-gradient(90deg, var(--teal,#3fae7a), var(--teal-deep,#1f8f5f)); transition: width .4s ease; }
+    .reg-tab.activo { background: var(--card); color: var(--ink); border-color: var(--line); box-shadow: 0 4px 14px -8px rgba(0,0,0,.5); }
+    .reg-tab.activo .rt-emoji { filter:none; }
+    .reg-tab.activo .rt-chip { background: var(--red); color:#fff; }
+    .reg-tab.completa .rt-name::after { content:" ✓"; color: var(--teal-deep,#1f8f5f); }
+    .liga-panel[hidden] { display:none; }
+    .liga-panel .liga-h { margin-top: 4px; }
+    @media (max-width: 600px) {
+      .reg-tab .rt-name { display:none; }
+      .reg-tab { padding: 8px 11px 10px; }
+      .reg-tab .rt-bar { left:8px; right:8px; }
+    }
+  </style>
+
   <script>
     import { evaluar } from '../lib/logros.js';
     const D = JSON.parse(document.getElementById('liga-data').textContent);
@@ -90,6 +128,7 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
     const logros = evaluar(temas);
     const hechos = logros.filter((l) => l.cumplido).length;
     document.getElementById('logros-n').textContent = hechos + ' / ' + logros.length;
+    const tln = document.getElementById('tab-logros-n'); if (tln) tln.textContent = hechos + '/' + logros.length;
     document.getElementById('logros').innerHTML = logros.map((l) =>
       '<div class="logro ' + (l.cumplido ? 'hecho' : '') + '" title="' + l.desc + '">' +
       '<span class="logro-ico">' + l.ico + '</span>' +
@@ -164,7 +203,7 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
       const proyOk = (k) => localStorage.getItem('proy:' + k + ':ok') === '1';
       const hitos = (() => { try { return new Set(JSON.parse(localStorage.getItem('col:hitos')) || []); } catch { return new Set(); } })();
 
-      let doneTotal = 0, medallas = 0, regionesCompletas = 0;
+      let doneTotal = 0, medallas = 0, regionesCompletas = 0, primeraIncompleta = '';
       for (const r of data.regiones) {
         let medReg = 0;
         const meds = [], filas = [];
@@ -185,8 +224,32 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
         $('[data-progreso="' + r.id + '"]').innerHTML = filas.join('');
         const completaReg = medReg === r.temas.length && r.temas.length;
         if (completaReg) regionesCompletas++;
+        if (!primeraIncompleta && r.temas.length && !completaReg) primeraIncompleta = r.id;
         $('[data-reg="' + r.id + '"]').textContent = completaReg ? '🏆 ¡' + r.titulo + '!' : medReg + '/' + r.temas.length + ' medallas';
+        // chip + barra de la pestaña de la región
+        const _chip = document.querySelector('[data-prog="' + r.id + '"]');
+        const _bar = document.querySelector('[data-bar="' + r.id + '"]');
+        if (_chip) _chip.textContent = medReg + '/' + r.temas.length;
+        if (_bar) _bar.style.width = (r.temas.length ? Math.round(medReg / r.temas.length * 100) : 0) + '%';
+        if (completaReg) { const _t = document.querySelector('.reg-tab[data-region="' + r.id + '"]'); if (_t) _t.classList.add('completa'); }
       }
+
+      // ── pestañas: mostrar una sección a la vez (Logros + regiones) ──
+      const PANELS = Array.from(document.querySelectorAll('.liga-panel'));
+      const TABS = Array.from(document.querySelectorAll('#liga-tabs .reg-tab'));
+      function mostrarTab(tab) {
+        if (!PANELS.some((p) => p.dataset.tab === tab)) tab = 'logros';
+        PANELS.forEach((p) => { p.hidden = p.dataset.tab !== tab; });
+        TABS.forEach((t) => t.classList.toggle('activo', t.dataset.tab === tab));
+        try { localStorage.setItem('liga:tab', tab); } catch (e) {}
+        if (location.hash.slice(1) !== tab) history.replaceState(null, '', '#' + tab);
+        const el = TABS.find((t) => t.dataset.tab === tab);
+        if (el) el.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+      }
+      TABS.forEach((t) => t.addEventListener('click', () => mostrarTab(t.dataset.tab)));
+      const _guardada = (() => { try { return localStorage.getItem('liga:tab'); } catch (e) { return null; } })();
+      mostrarTab(location.hash.slice(1) || _guardada || primeraIncompleta || 'logros');
+      window.addEventListener('hashchange', () => mostrarTab(location.hash.slice(1)));
 
       const exp = doneTotal * 20;
       const nivel = 1 + Math.floor(exp / 100);
