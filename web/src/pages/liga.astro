@@ -15,6 +15,8 @@ const BADGES = {
   unova: [['Trío', '🔺'], ['Básica', '🔰'], ['Insecto', '🐛'], ['Rayo', '🔌'], ['Temblor', '🌐'], ['Jet', '🛩️'], ['Hielo', '🥶'], ['Leyenda', '🦾']],
   kalos: [['Insecto', '🐞'], ['Acantilado', '🧗'], ['Lucha', '🤜'], ['Planta', '🍃'], ['Voltaje', '🔋'], ['Hada', '🧚'], ['Psíquica', '🔮'], ['Iceberg', '🏔️']],
   alola: [['Script', '⚙️'], ['Archivo', '📁'], ['Lote', '🔁'], ['Consola', '🖥️'], ['Entorno', '🔑'], ['Reloj', '⏰'], ['Red', '🕸️'], ['Campeón', '🤖']],
+  galar: [['Corrutina', '🌀'], ['Await', '⏳'], ['Tareas', '🧵'], ['Gather', '🪢'], ['Cola', '🎟️'], ['Hilos', '🕸️'], ['Límite', '🚦'], ['Campeón', '⚡']],
+  paldea: [['Búsqueda', '🔎'], ['Orden', '🔢'], ['Pila', '🥞'], ['Cola', '🚶'], ['Recursión', '🔁'], ['Grafo', '🕸️'], ['Hash', '🗂️'], ['Campeón', '🏆']],
 };
 function temasDe(region) {
   return datos.filter((w) => (w.region || 'kanto') === region).map((w, i) => ({

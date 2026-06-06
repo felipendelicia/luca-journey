@@ -1,0 +1,40 @@
+{
+  "tipo": "integrador",
+  "region": "galar",
+  "titulo": "Campeón Leon: el descargador concurrente",
+  "lider": "Campeón Leon",
+  "premio": 140,
+  "intro": "Leon, el Campeón invicto de Galar, te corona si juntás todo lo de asincronía: preparar descargas, planificarlas en lotes para respetar el límite, ejecutarlas y reportar. ¡Ganale a Leon y quedate con Galar!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "preparar",
+      "titulo": "1 · Preparar descargas",
+      "consigna": "Escribí preparar(urls) que devuelva una lista de dicts {\"url\": u, \"ok\": False}.\n\nEjemplo:  preparar([\"a\", \"b\"])  →  [{\"url\": \"a\", \"ok\": False}, {\"url\": \"b\", \"ok\": False}]",
+      "starter": "def preparar(urls):\n    ",
+      "tests": ["test_preparar"]
+    },
+    {
+      "id": "planificar",
+      "titulo": "2 · Planificar en lotes",
+      "consigna": "Escribí planificar(items, tam) que parta los items en lotes de hasta `tam` (para no pasar el límite de concurrencia).\n\nEjemplo:  planificar([1, 2, 3, 4, 5], 2)  →  [[1, 2], [3, 4], [5]]",
+      "starter": "def planificar(items, tam):\n    ",
+      "tests": ["test_planificar"]
+    },
+    {
+      "id": "ejecutar_lote",
+      "titulo": "3 · Ejecutar un lote",
+      "consigna": "Escribí ejecutar_lote(lote) que marque \"ok\" en True en cada descarga del lote y lo devuelva.\n\nEjemplo:  ejecutar_lote([{\"url\": \"a\", \"ok\": False}])  →  [{\"url\": \"a\", \"ok\": True}]",
+      "starter": "def ejecutar_lote(lote):\n    ",
+      "tests": ["test_ejecutar_lote"]
+    },
+    {
+      "id": "correr",
+      "titulo": "4 · Correr todo (final)",
+      "consigna": "Escribí correr(urls, tam): preparalas, planificá en lotes de `tam`, ejecutá CADA lote, y devolvé el texto EXACTO:\n  \"<total> descargas en <cantidad_lotes> lotes.\"\n\nEjemplo:  correr([\"a\", \"b\", \"c\"], 2)  →  \"3 descargas en 2 lotes.\"",
+      "starter": "def correr(urls, tam):\n    ",
+      "tests": ["test_correr"]
+    }
+  ]
+}

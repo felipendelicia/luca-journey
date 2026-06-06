@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "algo-proyecto",
+  "region": "paldea",
+  "titulo": "Líder Grusha: análisis del equipo",
+  "lider": "Grusha",
+  "premio": 96,
+  "intro": "Grusha, líder de hielo y exdeportista, analiza a su equipo con frialdad de datos. Construí un analizador de Pokémon que agrupe, ordene y reporte. ¡Bajá la montaña con Grusha!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "por_tipo",
+      "titulo": "1 · Agrupar por tipo",
+      "consigna": "Escribí por_tipo(pokes) (lista de dicts con \"nombre\" y \"tipo\") que devuelva un dict tipo → lista de nombres.\n\nEjemplo:  por_tipo([{\"nombre\": \"Squirtle\", \"tipo\": \"agua\"}, {\"nombre\": \"Psyduck\", \"tipo\": \"agua\"}])\n     →  {\"agua\": [\"Squirtle\", \"Psyduck\"]}",
+      "starter": "def por_tipo(pokes):\n    ",
+      "tests": ["test_por_tipo"]
+    },
+    {
+      "id": "ordenar",
+      "titulo": "2 · Ordenar por nivel",
+      "consigna": "Escribí ordenar(pokes) (dicts con \"nivel\") que devuelva la lista ordenada por nivel de MAYOR a menor.\n\nEjemplo:  ordenar([{\"nombre\": \"a\", \"nivel\": 5}, {\"nombre\": \"b\", \"nivel\": 20}])\n     →  [{\"nombre\": \"b\", \"nivel\": 20}, {\"nombre\": \"a\", \"nivel\": 5}]",
+      "starter": "def ordenar(pokes):\n    ",
+      "tests": ["test_ordenar"]
+    },
+    {
+      "id": "mas_fuerte",
+      "titulo": "3 · El más fuerte",
+      "consigna": "Escribí mas_fuerte(pokes) que devuelva el NOMBRE del de mayor nivel, o \"\" si la lista está vacía.\n\nEjemplo:  mas_fuerte([{\"nombre\": \"a\", \"nivel\": 5}, {\"nombre\": \"b\", \"nivel\": 20}])  →  \"b\"",
+      "starter": "def mas_fuerte(pokes):\n    ",
+      "tests": ["test_mas_fuerte"]
+    },
+    {
+      "id": "reporte",
+      "titulo": "4 · Reporte (final)",
+      "consigna": "Escribí reporte(pokes) con formato EXACTO: \"<cantidad> Pokémon, el más fuerte es <nombre>.\"\n\nEjemplo:  reporte([{\"nombre\": \"Pikachu\", \"nivel\": 30}, {\"nombre\": \"Onix\", \"nivel\": 10}])\n     →  \"2 Pokémon, el más fuerte es Pikachu.\"",
+      "starter": "def reporte(pokes):\n    ",
+      "tests": ["test_reporte"]
+    }
+  ]
+}

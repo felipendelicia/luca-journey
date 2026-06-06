@@ -59,6 +59,22 @@ export const GRUPOS = [
       'auto-entorno', 'auto-tiempo', 'auto-scraping', 'auto-bot',
     ],
   },
+  {
+    nombre: 'Asincronía y concurrencia',
+    icono: '🛡️',
+    slugs: [
+      'async-corrutinas', 'async-await', 'async-tareas', 'async-gather',
+      'async-cola', 'async-hilos', 'async-limite', 'async-bot',
+    ],
+  },
+  {
+    nombre: 'Algoritmos y estructuras',
+    icono: '🔶',
+    slugs: [
+      'algo-busqueda', 'algo-orden', 'algo-pila', 'algo-cola',
+      'algo-recursion', 'algo-grafo', 'algo-hash', 'algo-proyecto',
+    ],
+  },
   { nombre: 'Git', icono: '🔀', slugs: ['git'] },
   { nombre: 'Ayuda', icono: '❓', slugs: ['ayuda'] },
 ];

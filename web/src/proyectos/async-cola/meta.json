@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "async-cola",
+  "region": "galar",
+  "titulo": "Líder Allister: la cola fantasma",
+  "lider": "Allister",
+  "premio": 88,
+  "intro": "Allister, líder fantasma, atiende a sus espíritus en orden de llegada. Construí una cola FIFO para su productor/consumidor. ¡No te asustes ante Allister!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "agregar",
+      "titulo": "1 · Agregar a la cola",
+      "consigna": "Escribí agregar(cola, x) que ponga x al final y devuelva la cola.\n\nEjemplo:  agregar([1, 2], 3)  →  [1, 2, 3]",
+      "starter": "def agregar(cola, x):\n    ",
+      "tests": ["test_agregar"]
+    },
+    {
+      "id": "sacar",
+      "titulo": "2 · Sacar (FIFO)",
+      "consigna": "Escribí sacar(cola) que saque y devuelva el PRIMERO. Si está vacía, devolvé None.\n\nEjemplo:  sacar([1, 2])  →  1",
+      "starter": "def sacar(cola):\n    ",
+      "tests": ["test_sacar"]
+    },
+    {
+      "id": "vacia",
+      "titulo": "3 · ¿Está vacía?",
+      "consigna": "Escribí vacia(cola) que devuelva True si la cola no tiene elementos.\n\nEjemplo:  vacia([])  →  True   ·   vacia([1])  →  False",
+      "starter": "def vacia(cola):\n    ",
+      "tests": ["test_vacia"]
+    },
+    {
+      "id": "procesar",
+      "titulo": "4 · Procesar todo (final)",
+      "consigna": "Escribí procesar(cola) que consuma TODA la cola en orden FIFO y devuelva la lista de items procesados. La cola debe quedar vacía.\n\nEjemplo:  procesar([1, 2, 3])  →  [1, 2, 3]",
+      "starter": "def procesar(cola):\n    ",
+      "tests": ["test_procesar"]
+    }
+  ]
+}

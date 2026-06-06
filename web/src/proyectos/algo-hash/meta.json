@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "algo-hash",
+  "region": "paldea",
+  "titulo": "Líder Tulip: contadora de patrones",
+  "lider": "Tulip",
+  "premio": 92,
+  "intro": "Tulip, líder psíquica, lee patrones donde nadie los ve. Construí herramientas con diccionarios y sets para contar y comparar. ¡Descifrá la mente de Tulip!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "contar",
+      "titulo": "1 · Contar frecuencias",
+      "consigna": "Escribí contar(items) que devuelva un dict elemento → cantidad.\n\nEjemplo:  contar([\"a\", \"b\", \"a\"])  →  {\"a\": 2, \"b\": 1}",
+      "starter": "def contar(items):\n    ",
+      "tests": ["test_contar"]
+    },
+    {
+      "id": "unicos",
+      "titulo": "2 · Sin repetidos",
+      "consigna": "Escribí unicos(items) que devuelva los elementos sin repetir, en orden de aparición.\n\nEjemplo:  unicos([3, 1, 3, 2])  →  [3, 1, 2]",
+      "starter": "def unicos(items):\n    ",
+      "tests": ["test_unicos"]
+    },
+    {
+      "id": "repetidos",
+      "titulo": "3 · Los que se repiten",
+      "consigna": "Escribí repetidos(items) que devuelva los elementos que aparecen MÁS de una vez, sin repetir y en orden de aparición.\n\nEjemplo:  repetidos([1, 2, 2, 3, 3, 3])  →  [2, 3]",
+      "starter": "def repetidos(items):\n    ",
+      "tests": ["test_repetidos"]
+    },
+    {
+      "id": "comunes",
+      "titulo": "4 · Elementos comunes (final)",
+      "consigna": "Escribí comunes(a, b) que devuelva los elementos en AMBAS listas, sin repetir y ordenados.\n\nEjemplo:  comunes([1, 2, 3], [2, 3, 4])  →  [2, 3]",
+      "starter": "def comunes(a, b):\n    ",
+      "tests": ["test_comunes"]
+    }
+  ]
+}

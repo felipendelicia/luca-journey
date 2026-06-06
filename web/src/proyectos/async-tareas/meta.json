@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "async-tareas",
+  "region": "galar",
+  "titulo": "Líder Kabu: balanceador de tareas",
+  "lider": "Kabu",
+  "premio": 84,
+  "intro": "Kabu, líder de fuego, reparte el esfuerzo para no quemarse. Construí un balanceador que reparta tareas entre workers de forma pareja. ¡Resistí el calor de Kabu!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "asignar",
+      "titulo": "1 · ¿A qué worker?",
+      "consigna": "Escribí asignar(tarea_i, n) que devuelva a qué worker (0..n-1) le toca la tarea número `tarea_i`, repartiendo en round-robin.\n\nEjemplo:  asignar(0, 3)  →  0   ·   asignar(4, 3)  →  1",
+      "starter": "def asignar(tarea_i, n):\n    ",
+      "tests": ["test_asignar"]
+    },
+    {
+      "id": "cargas",
+      "titulo": "2 · Carga de cada worker",
+      "consigna": "Escribí cargas(total, n): si repartís `total` tareas en round-robin entre `n` workers, devolvé una lista con cuántas le tocan a cada uno.\n\nEjemplo:  cargas(5, 2)  →  [3, 2]   ·   cargas(6, 3)  →  [2, 2, 2]",
+      "starter": "def cargas(total, n):\n    ",
+      "tests": ["test_cargas"]
+    },
+    {
+      "id": "mas_cargado",
+      "titulo": "3 · El más cargado",
+      "consigna": "Escribí mas_cargado(cargas) que devuelva el índice del worker con MÁS carga (el primero si hay empate).\n\nEjemplo:  mas_cargado([2, 5, 3])  →  1",
+      "starter": "def mas_cargado(cargas):\n    ",
+      "tests": ["test_mas_cargado"]
+    },
+    {
+      "id": "balance",
+      "titulo": "4 · Diferencia de balance (final)",
+      "consigna": "Escribí balance(cargas) que devuelva la diferencia entre el worker más cargado y el menos cargado.\n\nEjemplo:  balance([2, 5, 3])  →  3   ·   balance([4, 4])  →  0",
+      "starter": "def balance(cargas):\n    ",
+      "tests": ["test_balance"]
+    }
+  ]
+}

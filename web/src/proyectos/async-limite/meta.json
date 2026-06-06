@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "async-limite",
+  "region": "galar",
+  "titulo": "Líder Melony: control de concurrencia",
+  "lider": "Melony",
+  "premio": 92,
+  "intro": "Melony, líder de hielo, mantiene todo bajo control y a buen ritmo. Construí un controlador que limite cuántas tareas corren juntas. ¡Enfriá los nervios contra Melony!",
+  "preamble": "import math",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "lotes",
+      "titulo": "1 · Partir en lotes",
+      "consigna": "Escribí lotes(items, tam) que parta `items` en lotes de hasta `tam` elementos.\n\nEjemplo:  lotes([1, 2, 3, 4, 5], 2)  →  [[1, 2], [3, 4], [5]]",
+      "starter": "def lotes(items, tam):\n    ",
+      "tests": ["test_lotes"]
+    },
+    {
+      "id": "nro",
+      "titulo": "2 · Cuántos lotes",
+      "consigna": "Escribí nro_lotes(total, tam) que devuelva cuántos lotes de tamaño `tam` hacen falta para `total` (techo).\n\nEjemplo:  nro_lotes(5, 2)  →  3",
+      "starter": "import math\n\ndef nro_lotes(total, tam):\n    ",
+      "tests": ["test_nro"]
+    },
+    {
+      "id": "disponible",
+      "titulo": "3 · Cupos disponibles",
+      "consigna": "Escribí disponible(activos, maximo) que devuelva cuántas tareas más se pueden lanzar sin pasar el máximo.\n\nEjemplo:  disponible(2, 5)  →  3   ·   disponible(5, 5)  →  0",
+      "starter": "def disponible(activos, maximo):\n    ",
+      "tests": ["test_disponible"]
+    },
+    {
+      "id": "recortar",
+      "titulo": "4 · Recortar la tanda (final)",
+      "consigna": "Escribí recortar(items, maximo) que devuelva como mucho los primeros `maximo` items.\n\nEjemplo:  recortar([1, 2, 3, 4], 2)  →  [1, 2]",
+      "starter": "def recortar(items, maximo):\n    ",
+      "tests": ["test_recortar"]
+    }
+  ]
+}

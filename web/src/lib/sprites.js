@@ -224,6 +224,18 @@ const BADGES = {
     ['diamond', '#ffd23f', '#e0a400'], ['circle', '#5cb3ec', '#1f6dbf', 'sun'],
     ['octagon', '#5cc08f', '#2f8f5f'], ['star8', '#ffd86b', '#e08a00', 'sparkle'],
   ],
+  galar: [
+    ['spiral', '#a07be8', '#6a32c0'], ['circle', '#6ea8f0', '#2a5fc0', 'crescent'],
+    ['hexagon', '#7b6fe0', '#3a2fa8'], ['diamond', '#4fc0c8', '#1f8088'],
+    ['square', '#5cc8e0', '#2080a8'], ['octagon', '#9a6fe0', '#5a2fa0'],
+    ['triangle', '#f0b44c', '#c07a10'], ['star8', '#ffd86b', '#d8a020', 'sparkle'],
+  ],
+  paldea: [
+    ['circle', '#f0934c', '#c05a10'], ['hexagon', '#e85a4d', '#a82820'],
+    ['square', '#f0b84c', '#c08810'], ['triangle', '#f08060', '#c04830'],
+    ['spiral', '#e06bb0', '#a02870'], ['octagon', '#4fc0a0', '#1f8068'],
+    ['diamond', '#6ea8f0', '#2a5fc0'], ['star8', '#ffd86b', '#e0a000', 'sun'],
+  ],
 };
 
 export function badgeSvg(region, i, won = true, size = 28) {

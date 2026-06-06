@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "algo-recursion",
+  "region": "paldea",
+  "titulo": "Líder Larry: lo simple, recursivo",
+  "lider": "Larry",
+  "premio": 88,
+  "intro": "Larry, el líder normal que ama lo simple, resuelve todo dividiéndolo en lo mismo más chico. Construí funciones recursivas. ¡Lo simple gana, pero ganale a Larry!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "suma",
+      "titulo": "1 · Sumar una lista (recursivo)",
+      "consigna": "Escribí suma_lista(nums) que sume todos los números de forma RECURSIVA. Caso base: lista vacía suma 0.\n\nEjemplo:  suma_lista([1, 2, 3])  →  6   ·   suma_lista([])  →  0",
+      "starter": "def suma_lista(nums):\n    ",
+      "tests": ["test_suma"]
+    },
+    {
+      "id": "cuenta",
+      "titulo": "2 · Cuenta atrás",
+      "consigna": "Escribí cuenta_atras(n) que devuelva [n, n-1, …, 1] de forma recursiva. Caso base: cuenta_atras(0) es [].\n\nEjemplo:  cuenta_atras(3)  →  [3, 2, 1]",
+      "starter": "def cuenta_atras(n):\n    ",
+      "tests": ["test_cuenta"]
+    },
+    {
+      "id": "longitud",
+      "titulo": "3 · Longitud recursiva",
+      "consigna": "Escribí longitud(seq) que devuelva cuántos elementos tiene, de forma recursiva (sin len()).\n\nEjemplo:  longitud([1, 2, 3])  →  3   ·   longitud([])  →  0",
+      "starter": "def longitud(seq):\n    ",
+      "tests": ["test_longitud"]
+    },
+    {
+      "id": "invertir",
+      "titulo": "4 · Invertir texto (final)",
+      "consigna": "Escribí invertir_texto(texto) que devuelva el texto al revés, de forma recursiva. Caso base: \"\" → \"\".\n\nEjemplo:  invertir_texto(\"pika\")  →  \"akip\"",
+      "starter": "def invertir_texto(texto):\n    ",
+      "tests": ["test_invertir"]
+    }
+  ]
+}

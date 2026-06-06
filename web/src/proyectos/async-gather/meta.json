@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "async-gather",
+  "region": "galar",
+  "titulo": "Líder Bea: recolector de resultados",
+  "lider": "Bea",
+  "premio": 86,
+  "intro": "Bea, líder de lucha, no deja ningún golpe sin contar. Construí un recolector que junte y evalúe los resultados de muchas tareas. ¡Pasá la prueba de Bea!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "juntar",
+      "titulo": "1 · Juntar pares",
+      "consigna": "Escribí juntar(pares): lista de tuplas (clave, valor) → dict.\n\nEjemplo:  juntar([(\"a\", 1), (\"b\", 2)])  →  {\"a\": 1, \"b\": 2}",
+      "starter": "def juntar(pares):\n    ",
+      "tests": ["test_juntar"]
+    },
+    {
+      "id": "ok",
+      "titulo": "2 · Solo los que salieron bien",
+      "consigna": "Escribí valores_ok(resultados) que devuelva la lista de resultados que NO son None (manteniendo el orden).\n\nEjemplo:  valores_ok([1, None, 3])  →  [1, 3]",
+      "starter": "def valores_ok(resultados):\n    ",
+      "tests": ["test_ok"]
+    },
+    {
+      "id": "fallaron",
+      "titulo": "3 · Cuántos fallaron",
+      "consigna": "Escribí cuantos_fallaron(resultados) que devuelva cuántos son None.\n\nEjemplo:  cuantos_fallaron([1, None, None])  →  2",
+      "starter": "def cuantos_fallaron(resultados):\n    ",
+      "tests": ["test_fallaron"]
+    },
+    {
+      "id": "tasa",
+      "titulo": "4 · Tasa de éxito (final)",
+      "consigna": "Escribí tasa(resultados) que devuelva el PORCENTAJE de éxito (los que no son None) como entero redondeado. Si la lista está vacía, devolvé 0.\n\nEjemplo:  tasa([1, None, 3, 4])  →  75   ·   tasa([])  →  0",
+      "starter": "def tasa(resultados):\n    ",
+      "tests": ["test_tasa"]
+    }
+  ]
+}

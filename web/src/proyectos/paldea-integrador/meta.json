@@ -1,0 +1,40 @@
+{
+  "tipo": "integrador",
+  "region": "paldea",
+  "titulo": "Campeona Geeta: el analizador de la Pokédex",
+  "lider": "Campeona Geeta",
+  "premio": 140,
+  "intro": "Geeta, la Campeona de Paldea, te corona si juntás todo: cargar datos, filtrarlos por tipo, ordenarlos y reportar el mejor. Construí el analizador completo y conquistá Paldea.",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "cargar",
+      "titulo": "1 · Cargar la Pokédex",
+      "consigna": "Escribí cargar(lineas), donde cada línea es \"nombre,tipo,nivel\". Devolvé una lista de dicts {\"nombre\", \"tipo\", \"nivel\"} con el nivel como ENTERO.\n\nEjemplo:  cargar([\"Pikachu,electrico,30\"])  →  [{\"nombre\": \"Pikachu\", \"tipo\": \"electrico\", \"nivel\": 30}]",
+      "starter": "def cargar(lineas):\n    ",
+      "tests": ["test_cargar"]
+    },
+    {
+      "id": "de_tipo",
+      "titulo": "2 · Filtrar por tipo",
+      "consigna": "Escribí de_tipo(pokes, tipo) que devuelva solo los Pokémon de ese tipo.\n\nEjemplo:  de_tipo([{\"nombre\": \"a\", \"tipo\": \"agua\"}, {\"nombre\": \"b\", \"tipo\": \"fuego\"}], \"agua\")\n     →  [{\"nombre\": \"a\", \"tipo\": \"agua\"}]",
+      "starter": "def de_tipo(pokes, tipo):\n    ",
+      "tests": ["test_de_tipo"]
+    },
+    {
+      "id": "ordenar",
+      "titulo": "3 · Ordenar por nivel",
+      "consigna": "Escribí ordenar(pokes) que devuelva la lista ordenada por nivel de mayor a menor.\n\nEjemplo:  ordenar([{\"nombre\": \"a\", \"nivel\": 5}, {\"nombre\": \"b\", \"nivel\": 20}])\n     →  [{\"nombre\": \"b\", \"nivel\": 20}, {\"nombre\": \"a\", \"nivel\": 5}]",
+      "starter": "def ordenar(pokes):\n    ",
+      "tests": ["test_ordenar"]
+    },
+    {
+      "id": "ejecutar",
+      "titulo": "4 · El analizador completo (final)",
+      "consigna": "Escribí ejecutar(lineas, tipo): cargá los Pokémon, quedate con los del `tipo`, ordenalos por nivel (desc) y devolvé el texto EXACTO:\n  \"<cantidad> Pokémon de tipo <tipo>, el mejor: <nombre>.\"\nSi no hay ninguno de ese tipo, el mejor es \"-\".\n\nEjemplo:\n  ejecutar([\"Squirtle,agua,16\", \"Charmander,fuego,9\", \"Gyarados,agua,30\"], \"agua\")\n     →  \"2 Pokémon de tipo agua, el mejor: Gyarados.\"",
+      "starter": "def ejecutar(lineas, tipo):\n    ",
+      "tests": ["test_ejecutar"]
+    }
+  ]
+}

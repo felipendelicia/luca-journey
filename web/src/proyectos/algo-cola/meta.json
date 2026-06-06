@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "algo-cola",
+  "region": "paldea",
+  "titulo": "Líder Kofu: la fila del restaurante",
+  "lider": "Kofu",
+  "premio": 86,
+  "intro": "Kofu, líder de agua y chef, atiende su fila en orden estricto de llegada. Construí una cola (FIFO) para sus comensales. ¡Cociná tu triunfo contra Kofu!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "encolar",
+      "titulo": "1 · Sumar a la fila",
+      "consigna": "Escribí encolar(cola, x) que agregue x al final y devuelva la cola.\n\nEjemplo:  encolar([1, 2], 3)  →  [1, 2, 3]",
+      "starter": "def encolar(cola, x):\n    ",
+      "tests": ["test_encolar"]
+    },
+    {
+      "id": "atender",
+      "titulo": "2 · Atender (FIFO)",
+      "consigna": "Escribí atender(cola) que saque y devuelva el PRIMERO, o None si está vacía.\n\nEjemplo:  atender([1, 2, 3])  →  1",
+      "starter": "def atender(cola):\n    ",
+      "tests": ["test_atender"]
+    },
+    {
+      "id": "largo",
+      "titulo": "3 · Cuántos esperan",
+      "consigna": "Escribí largo(cola) que devuelva cuántos hay en la fila.\n\nEjemplo:  largo([1, 2, 3])  →  3",
+      "starter": "def largo(cola):\n    ",
+      "tests": ["test_largo"]
+    },
+    {
+      "id": "turnos",
+      "titulo": "4 · Orden de atención (final)",
+      "consigna": "Escribí turnos(cola) que devuelva una lista NUEVA con el orden en que se atenderán (sin modificar la cola).\n\nEjemplo:  turnos([1, 2, 3])  →  [1, 2, 3]",
+      "starter": "def turnos(cola):\n    ",
+      "tests": ["test_turnos"]
+    }
+  ]
+}

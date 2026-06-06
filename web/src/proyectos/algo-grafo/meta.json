@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "algo-grafo",
+  "region": "paldea",
+  "titulo": "Líder Ryme: la red de conexiones",
+  "lider": "Ryme",
+  "premio": 90,
+  "intro": "Ryme, líder fantasma y rapera, conecta a toda Paldea en su red. Construí un grafo y consultá sus conexiones. ¡Seguí el ritmo de Ryme!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "agregar",
+      "titulo": "1 · Agregar una arista",
+      "consigna": "Escribí agregar_arista(grafo, a, b) que agregue b a la lista de vecinos de a (creándola si no existe) y devuelva el grafo.\n\nEjemplo:  agregar_arista({}, \"a\", \"b\")  →  {\"a\": [\"b\"]}",
+      "starter": "def agregar_arista(grafo, a, b):\n    ",
+      "tests": ["test_agregar"]
+    },
+    {
+      "id": "vecinos",
+      "titulo": "2 · Vecinos",
+      "consigna": "Escribí vecinos(grafo, nodo) que devuelva la lista de vecinos, o [] si el nodo no está.\n\nEjemplo:  vecinos({\"a\": [\"b\"]}, \"a\")  →  [\"b\"]",
+      "starter": "def vecinos(grafo, nodo):\n    ",
+      "tests": ["test_vecinos"]
+    },
+    {
+      "id": "es_vecino",
+      "titulo": "3 · ¿Conectados?",
+      "consigna": "Escribí es_vecino(grafo, a, b) que devuelva True si b está entre los vecinos de a.\n\nEjemplo:  es_vecino({\"a\": [\"b\"]}, \"a\", \"b\")  →  True",
+      "starter": "def es_vecino(grafo, a, b):\n    ",
+      "tests": ["test_es_vecino"]
+    },
+    {
+      "id": "total",
+      "titulo": "4 · Total de aristas (final)",
+      "consigna": "Escribí total_aristas(grafo) que devuelva la suma de las cantidades de vecinos de todos los nodos.\n\nEjemplo:  total_aristas({\"a\": [\"b\", \"c\"], \"b\": [\"a\"]})  →  3",
+      "starter": "def total_aristas(grafo):\n    ",
+      "tests": ["test_total"]
+    }
+  ]
+}

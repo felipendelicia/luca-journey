@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "algo-busqueda",
+  "region": "paldea",
+  "titulo": "Líder Katy: el buscador veloz",
+  "lider": "Katy",
+  "premio": 80,
+  "intro": "Katy, líder bicho, encuentra cualquier cosa en su telaraña al instante. Construí buscadores lineales y binarios. ¡Atrapá la victoria contra Katy!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "indice",
+      "titulo": "1 · Índice lineal",
+      "consigna": "Escribí indice_de(lista, x) que devuelva el índice de x recorriendo uno por uno, o -1 si no está. (Sin .index().)\n\nEjemplo:  indice_de([10, 20, 30], 30)  →  2",
+      "starter": "def indice_de(lista, x):\n    ",
+      "tests": ["test_indice"]
+    },
+    {
+      "id": "esta",
+      "titulo": "2 · ¿Está?",
+      "consigna": "Escribí esta(lista, x) que devuelva True si x aparece.\n\nEjemplo:  esta([1, 2], 2)  →  True",
+      "starter": "def esta(lista, x):\n    ",
+      "tests": ["test_esta"]
+    },
+    {
+      "id": "binaria",
+      "titulo": "3 · Búsqueda binaria",
+      "consigna": "Escribí binaria(ordenada, x): sobre una lista ordenada, buscá x partiendo al medio y devolvé su índice, o -1.\n\nEjemplo:  binaria([1, 3, 5, 7], 5)  →  2   ·   binaria([1, 3, 5], 4)  →  -1",
+      "starter": "def binaria(ordenada, x):\n    ",
+      "tests": ["test_binaria"]
+    },
+    {
+      "id": "menores",
+      "titulo": "4 · Cuántos menores (final)",
+      "consigna": "Escribí cuantos_menores(ordenada, x) que devuelva cuántos elementos son ESTRICTAMENTE menores que x.\n\nEjemplo:  cuantos_menores([1, 3, 5, 7], 5)  →  2",
+      "starter": "def cuantos_menores(ordenada, x):\n    ",
+      "tests": ["test_menores"]
+    }
+  ]
+}

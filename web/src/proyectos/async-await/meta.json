@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "async-await",
+  "region": "galar",
+  "titulo": "Líder Nessa: marcar las esperas",
+  "lider": "Nessa",
+  "premio": 82,
+  "intro": "Nessa, líder de agua, sabe cuándo fluir y cuándo esperar la ola. Construí un marcador de awaits que sepa qué operaciones esperan. ¡Vencé a Nessa!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "con_await",
+      "titulo": "1 · Poner await donde toca",
+      "consigna": "Escribí con_await(lineas, esperas): `lineas` son textos y `esperas` una lista de booleanos alineada. Devolvé las líneas, agregando \"await \" adelante donde esperas[i] sea True.\n\nEjemplo:\n  con_await([\"bajar()\", \"sumar()\"], [True, False])  →  [\"await bajar()\", \"sumar()\"]",
+      "starter": "def con_await(lineas, esperas):\n    ",
+      "tests": ["test_con_await"]
+    },
+    {
+      "id": "cuantas",
+      "titulo": "2 · Cuántas esperan",
+      "consigna": "Escribí cuantas_esperan(esperas) (lista de booleanos) que devuelva cuántas son True.\n\nEjemplo:  cuantas_esperan([True, False, True])  →  2",
+      "starter": "def cuantas_esperan(esperas):\n    ",
+      "tests": ["test_cuantas"]
+    },
+    {
+      "id": "todas",
+      "titulo": "3 · ¿Todas esperan?",
+      "consigna": "Escribí todas_esperan(esperas) que devuelva True si TODAS son True (y False si la lista está vacía o hay alguna False).\n\nEjemplo:  todas_esperan([True, True])  →  True   ·   todas_esperan([])  →  False",
+      "starter": "def todas_esperan(esperas):\n    ",
+      "tests": ["test_todas"]
+    },
+    {
+      "id": "primera",
+      "titulo": "4 · Primera espera (final)",
+      "consigna": "Escribí primera_espera(esperas) que devuelva el índice de la primera True, o -1 si no hay ninguna.\n\nEjemplo:  primera_espera([False, True, True])  →  1   ·   primera_espera([False])  →  -1",
+      "starter": "def primera_espera(esperas):\n    ",
+      "tests": ["test_primera"]
+    }
+  ]
+}

@@ -76,6 +76,24 @@ const SEMANAS = [
   ['auto-tiempo', 'Fechas, esperas y agendado', 'alola'],
   ['auto-scraping', 'Scraping: extraer datos', 'alola'],
   ['auto-bot', 'Proyecto: automatizador', 'alola'],
+  // Galar — asincronía y concurrencia
+  ['async-corrutinas', 'Corrutinas (async def)', 'galar'],
+  ['async-await', 'await: dónde esperar', 'galar'],
+  ['async-tareas', 'Repartir tareas', 'galar'],
+  ['async-gather', 'Juntar resultados (gather)', 'galar'],
+  ['async-cola', 'Cola productor/consumidor', 'galar'],
+  ['async-hilos', 'Dividir trabajo (hilos)', 'galar'],
+  ['async-limite', 'Límite de concurrencia', 'galar'],
+  ['async-bot', 'Proyecto: descargador async', 'galar'],
+  // Paldea — algoritmos y estructuras de datos
+  ['algo-busqueda', 'Búsqueda lineal y binaria', 'paldea'],
+  ['algo-orden', 'Ordenar listas', 'paldea'],
+  ['algo-pila', 'Pila (stack)', 'paldea'],
+  ['algo-cola', 'Cola (queue)', 'paldea'],
+  ['algo-recursion', 'Recursión', 'paldea'],
+  ['algo-grafo', 'Grafos', 'paldea'],
+  ['algo-hash', 'Diccionarios y sets', 'paldea'],
+  ['algo-proyecto', 'Proyecto: algoritmos', 'paldea'],
 ];
 const IGNORAR = new Set(['ejercicios.py', 'soluciones.py', 'test_ejercicios.py']);
 const leer = (p) => (fs.existsSync(p) ? fs.readFileSync(p, 'utf-8') : null);

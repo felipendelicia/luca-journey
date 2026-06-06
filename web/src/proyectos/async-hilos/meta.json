@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "async-hilos",
+  "region": "galar",
+  "titulo": "Líder Opal: dividir en bloques",
+  "lider": "Opal",
+  "premio": 90,
+  "intro": "Opal, líder hada, reparte su trabajo en bloques perfectos. Construí un divisor que parta el trabajo entre hilos. ¡Brillá ante Opal!",
+  "preamble": "import math",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "bloques",
+      "titulo": "1 · Partir en n bloques",
+      "consigna": "Escribí bloques(items, n) que parta `items` en `n` bloques CONTIGUOS lo más parejos posible (los primeros se quedan con uno de más si no divide justo).\n\nEjemplo:  bloques([1, 2, 3, 4, 5], 2)  →  [[1, 2, 3], [4, 5]]",
+      "starter": "def bloques(items, n):\n    ",
+      "tests": ["test_bloques"]
+    },
+    {
+      "id": "tam_max",
+      "titulo": "2 · Tamaño máximo",
+      "consigna": "Escribí tam_max(total, n) que devuelva cuántos items entran como máximo por bloque (techo de total/n).\n\nEjemplo:  tam_max(10, 3)  →  4",
+      "starter": "import math\n\ndef tam_max(total, n):\n    ",
+      "tests": ["test_tam_max"]
+    },
+    {
+      "id": "unir",
+      "titulo": "3 · Volver a unir",
+      "consigna": "Escribí unir(bloques) que devuelva todos los items de los bloques en una sola lista, en orden.\n\nEjemplo:  unir([[1, 2], [3]])  →  [1, 2, 3]",
+      "starter": "def unir(bloques):\n    ",
+      "tests": ["test_unir"]
+    },
+    {
+      "id": "cabe",
+      "titulo": "4 · ¿Entra todo? (final)",
+      "consigna": "Escribí cabe_todo(total, n, por_hilo) que devuelva True si `n` hilos, procesando `por_hilo` cada uno, alcanzan para `total` items.\n\nEjemplo:  cabe_todo(10, 3, 4)  →  True   ·   cabe_todo(10, 2, 4)  →  False",
+      "starter": "def cabe_todo(total, n, por_hilo):\n    ",
+      "tests": ["test_cabe"]
+    }
+  ]
+}

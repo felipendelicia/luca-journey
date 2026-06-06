@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "algo-pila",
+  "region": "paldea",
+  "titulo": "Líder Iono: la pila viral",
+  "lider": "Iono",
+  "premio": 84,
+  "intro": "Iono, líder eléctrica y streamer, apila novedades a lo loco. Construí una pila (LIFO) y usala para invertir. ¡Subí de nivel contra Iono!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "push",
+      "titulo": "1 · Apilar",
+      "consigna": "Escribí push(pila, x) que agregue x al tope y devuelva la pila.\n\nEjemplo:  push([1, 2], 3)  →  [1, 2, 3]",
+      "starter": "def push(pila, x):\n    ",
+      "tests": ["test_push"]
+    },
+    {
+      "id": "pop",
+      "titulo": "2 · Desapilar",
+      "consigna": "Escribí pop_(pila) que saque y devuelva el tope (último). Si está vacía, devolvé None.\n\nEjemplo:  pop_([1, 2, 3])  →  3",
+      "starter": "def pop_(pila):\n    ",
+      "tests": ["test_pop"]
+    },
+    {
+      "id": "ver",
+      "titulo": "3 · Ver el tope",
+      "consigna": "Escribí ver(pila) que devuelva el tope SIN sacarlo, o None si está vacía.\n\nEjemplo:  ver([1, 2, 3])  →  3",
+      "starter": "def ver(pila):\n    ",
+      "tests": ["test_ver"]
+    },
+    {
+      "id": "invertir",
+      "titulo": "4 · Invertir con una pila (final)",
+      "consigna": "Escribí invertir(items): metelos en una pila y sacalos para devolver la lista al REVÉS.\n\nEjemplo:  invertir([1, 2, 3])  →  [3, 2, 1]",
+      "starter": "def invertir(items):\n    ",
+      "tests": ["test_invertir"]
+    }
+  ]
+}

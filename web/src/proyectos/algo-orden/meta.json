@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "algo-orden",
+  "region": "paldea",
+  "titulo": "Líder Brassius: el ordenador artístico",
+  "lider": "Brassius",
+  "premio": 82,
+  "intro": "Brassius, líder de planta y artista, todo lo deja en perfecto orden. Construí un ordenador paso a paso. ¡Componé tu obra y vencé a Brassius!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "min_indice",
+      "titulo": "1 · Índice del mínimo",
+      "consigna": "Escribí min_indice(lista) que devuelva el índice del menor (el primero si hay empate). Sin min().\n\nEjemplo:  min_indice([30, 10, 20])  →  1",
+      "starter": "def min_indice(lista):\n    ",
+      "tests": ["test_min_indice"]
+    },
+    {
+      "id": "intercambiar",
+      "titulo": "2 · Intercambiar",
+      "consigna": "Escribí intercambiar(lista, i, j) que intercambie los elementos en las posiciones i y j, y devuelva la lista.\n\nEjemplo:  intercambiar([1, 2, 3], 0, 2)  →  [3, 2, 1]",
+      "starter": "def intercambiar(lista, i, j):\n    ",
+      "tests": ["test_intercambiar"]
+    },
+    {
+      "id": "burbuja",
+      "titulo": "3 · Ordenar con burbuja",
+      "consigna": "Escribí burbuja(lista) que devuelva una lista NUEVA ordenada de menor a mayor (método burbuja, sin sorted()).\n\nEjemplo:  burbuja([3, 1, 2])  →  [1, 2, 3]",
+      "starter": "def burbuja(lista):\n    ",
+      "tests": ["test_burbuja"]
+    },
+    {
+      "id": "ordenada",
+      "titulo": "4 · ¿Quedó ordenada? (final)",
+      "consigna": "Escribí ordenada(lista) que devuelva True si está de menor a mayor.\n\nEjemplo:  ordenada([1, 2, 3])  →  True   ·   ordenada([2, 1])  →  False",
+      "starter": "def ordenada(lista):\n    ",
+      "tests": ["test_ordenada"]
+    }
+  ]
+}

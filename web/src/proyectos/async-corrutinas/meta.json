@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "async-corrutinas",
+  "region": "galar",
+  "titulo": "Líder Milo: registro de corrutinas",
+  "lider": "Milo",
+  "premio": 80,
+  "intro": "Milo, líder de planta, organiza su granja con tareas que corren solas. Construí un registro que distinga corrutinas de funciones normales. ¡Superá a Milo!",
+  "preamble": "import asyncio",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "tipo",
+      "titulo": "1 · ¿async o sync?",
+      "consigna": "Escribí tipo(fn) que devuelva \"async\" si la función fue declarada con async def, o \"sync\" si es normal. (asyncio.iscoroutinefunction te ayuda.)\n\nEjemplo:  con  async def f(): ...   →  tipo(f)  →  \"async\"",
+      "starter": "import asyncio\n\ndef tipo(fn):\n    ",
+      "tests": ["test_tipo"]
+    },
+    {
+      "id": "separar",
+      "titulo": "2 · Separar por tipo",
+      "consigna": "Escribí separar(funcs) que devuelva un dict {\"async\": [...], \"sync\": [...]} con los __name__ de las funciones en cada grupo.\n\nEjemplo (af async, sf normal):  separar([af, sf])  →  {\"async\": [\"af\"], \"sync\": [\"sf\"]}",
+      "starter": "import asyncio\n\ndef separar(funcs):\n    ",
+      "tests": ["test_separar"]
+    },
+    {
+      "id": "contar",
+      "titulo": "3 · Contar corrutinas",
+      "consigna": "Escribí contar_async(funcs) que devuelva cuántas funciones de la lista son corrutinas.\n\nEjemplo:  contar_async([af, sf, ag])  →  2  (si af y ag son async)",
+      "starter": "import asyncio\n\ndef contar_async(funcs):\n    ",
+      "tests": ["test_contar"]
+    },
+    {
+      "id": "resumen",
+      "titulo": "4 · Resumen (final)",
+      "consigna": "Escribí resumen(funcs) que devuelva el texto EXACTO:\n  \"<n_async> async, <n_sync> sync.\"\n\nEjemplo (1 async, 2 sync):  resumen([af, sf, sg])  →  \"1 async, 2 sync.\"",
+      "starter": "import asyncio\n\ndef resumen(funcs):\n    ",
+      "tests": ["test_resumen"]
+    }
+  ]
+}

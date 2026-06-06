@@ -11,6 +11,8 @@ export const REGIONES = [
   { id: 'unova',  nombre: 'Unova',  emoji: '⚫', tema: 'Inteligencia Artificial' },
   { id: 'kalos',  nombre: 'Kalos',  emoji: '🟠', tema: 'Testing y calidad' },
   { id: 'alola',  nombre: 'Alola',  emoji: '🌺', tema: 'Automatizaciones' },
+  { id: 'galar',  nombre: 'Galar',  emoji: '🛡️', tema: 'Asincronía y concurrencia' },
+  { id: 'paldea', nombre: 'Paldea', emoji: '🔶', tema: 'Algoritmos y estructuras' },
 ];
 
 export const REGION_IDS = REGIONES.map((r) => r.id);

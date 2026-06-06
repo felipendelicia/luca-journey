@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "async-bot",
+  "region": "galar",
+  "titulo": "Líder Raihan: el descargador masivo",
+  "lider": "Raihan",
+  "premio": 96,
+  "intro": "Raihan, líder dragón, descarga datos de medio mundo sin despeinarse. Construí un descargador que prepare, procese por lotes e informe. ¡Desafiá a Raihan!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "crear",
+      "titulo": "1 · Crear la cola de descargas",
+      "consigna": "Escribí crear(urls) que devuelva una lista de dicts {\"url\": u, \"ok\": False}.\n\nEjemplo:  crear([\"a\"])  →  [{\"url\": \"a\", \"ok\": False}]",
+      "starter": "def crear(urls):\n    ",
+      "tests": ["test_crear"]
+    },
+    {
+      "id": "lotes",
+      "titulo": "2 · Procesar por lotes",
+      "consigna": "Escribí en_lotes(items, tam) que parta items en lotes de hasta `tam`.\n\nEjemplo:  en_lotes([1, 2, 3], 2)  →  [[1, 2], [3]]",
+      "starter": "def en_lotes(items, tam):\n    ",
+      "tests": ["test_lotes"]
+    },
+    {
+      "id": "completar",
+      "titulo": "3 · Marcar como descargadas",
+      "consigna": "Escribí completar(items) que ponga \"ok\" en True en todas las descargas y devuelva la lista.\n\nEjemplo:  completar([{\"url\": \"a\", \"ok\": False}])  →  [{\"url\": \"a\", \"ok\": True}]",
+      "starter": "def completar(items):\n    ",
+      "tests": ["test_completar"]
+    },
+    {
+      "id": "informe",
+      "titulo": "4 · Informe (final)",
+      "consigna": "Escribí informe(items) que devuelva el texto EXACTO: \"<ok>/<total> descargadas.\" (ok = cuántas tienen ok=True).\n\nEjemplo:  informe([{\"ok\": True}, {\"ok\": False}])  →  \"1/2 descargadas.\"",
+      "starter": "def informe(items):\n    ",
+      "tests": ["test_informe"]
+    }
+  ]
+}
