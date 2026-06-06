@@ -7,10 +7,10 @@
 
 **Goal:** Duelos 2 jugadores en vivo por turnos, server-autoritativo, reusando el motor de la práctica.
 
-> **ESTADO (2026-06-06):** Tasks 1–4 IMPLEMENTADAS y commiteadas a main (motor+tests jest 14/14,
-> gateway+salas+matchmaking+reconexión, premios+insignias, cliente lobby/combate/súper-en-pausa).
-> `nest build` y `npm test` verdes; `npm run build` del front verde. **Falta solo Task 5 (OWNER):**
-> redeploy de la imagen `api` a la Pi + test e2e de 2 sesiones con login Google real.
+> **ESTADO (2026-06-06):** Tasks 1–5 DEPLOYADAS. Tasks 1–4 commiteadas+pusheadas a main; Task 5 deploy
+> hecho: imagen arm64 a la Pi + `compose up` (Nest started, `/auth/me`→401, gateway `/batalla` live por
+> `wss://poke.servegame.com`), front en GitHub Pages. **Único pendiente: el e2e MANUAL de 2 sesiones**
+> con login Google real (2 cuentas) — no autónomo.
 
 **Architecture:** NestJS gateway socket.io (`/batalla` o el `EventsGateway` existente extendido) con
 estado autoritativo por sala; motor de combate portado a TS; matchmaking (cola + código + invitar
@@ -87,10 +87,11 @@ memoria: `Map<roomId, EstadoCombate>` + la **cola** (uids esperando) + **código
 
 ## Task 5: Deploy + e2e (OWNER)
 
-- [ ] Cross-build arm64 de la imagen `api` + transferir a la Pi + `docker compose up` (ver CLAUDE.md).
-- [ ] Build del front (`npm run build`) + commitear `docs/` + push.
-- [ ] **Test de 2 sesiones** (2 navegadores/cuentas Google): cola, invitar, código, combate completo,
-  súper, cambio, poción, abandono+reconexión, premios+insignias.
+- [x] Cross-build arm64 + `docker save|ssh load` a la Pi + `docker compose up -d` (2026-06-06).
+  Verificado: Nest started, `poke.servegame.com/auth/me`→401, gateway `/batalla` montado (handshake wss OK).
+- [x] Front pusheado a `main` → GitHub Pages live (tienda piedras tipadas + modo En vivo).
+- [ ] **Test de 2 sesiones** (2 navegadores/cuentas Google) — MANUAL, pendiente: cola, invitar, código,
+  combate completo, súper, cambio, poción, abandono+reconexión, premios+insignias.
 
 ---
 
