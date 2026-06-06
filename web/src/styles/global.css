@@ -428,6 +428,12 @@ body.dark .ej-mini{ background:#3a1c1a; } body.dark .ej-mini.win{ background:#13
 .tab-n{ font:700 .68rem var(--font-mono); opacity:.78; }
 .dex-vacio{ text-align:center; color:var(--ink-soft); padding:2.6rem 1rem; font-family:var(--font-mono); }
 .dex-panel{ animation:dexRise .35s both; }
+/* ordenar Mi PC */
+.pc-orden{ display:flex; align-items:center; gap:10px; margin:.1rem 0 1rem; flex-wrap:wrap; }
+.pc-orden-lbl{ font:800 .66rem var(--font-pixel); letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft); }
+.pc-select{ padding:9px 14px; border:1px solid var(--line); border-radius:11px; background:var(--paper-2); color:var(--ink); font:700 .82rem var(--font-mono); cursor:pointer; outline:none; transition:border-color .12s, box-shadow .12s; }
+.pc-select:hover{ border-color:var(--ink-soft); }
+.pc-select:focus{ border-color:var(--red); box-shadow:0 0 0 3px color-mix(in srgb,var(--red) 18%, transparent); }
 
 /* grilla de especies */
 .poke-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(84px,1fr)); gap:9px; margin:.5rem 0 1.6rem; }

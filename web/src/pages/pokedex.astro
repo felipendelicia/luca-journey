@@ -46,6 +46,18 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       <div id="secciones"></div>
     </section>
     <section class="dex-panel" id="panel-pc" hidden>
+      <div class="pc-orden">
+        <span class="pc-orden-lbl">⇅ Ordenar</span>
+        <select id="pc-orden" class="pc-select">
+          <option value="pokedex">📕 Nº Pokédex</option>
+          <option value="nivel">⬆️ Nivel (mayor primero)</option>
+          <option value="caramelos">🍬 Caramelos (más primero)</option>
+          <option value="recientes">🆕 Recientes</option>
+          <option value="nombre">🔤 Nombre / mote (A–Z)</option>
+          <option value="shiny">✨ Shiny primero</option>
+          <option value="rareza">★ Rareza (más raro primero)</option>
+        </select>
+      </div>
       <div id="evoluciones-sec"></div>
     </section>
   </div>
@@ -131,11 +143,25 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
         '<div class="pc-meta"><span>Nv. ' + m.nivel + '</span><span>🍬 ' + tengo + '</span></div></button>';
     }
 
+    // ordenamientos disponibles para Mi PC
+    let ordenPC = 'pokedex';
+    function ordenarPC(arr, car) {
+      const cmp = {
+        pokedex: (a, b) => (a.id - b.id) || (b.nivel - a.nivel),
+        nivel: (a, b) => (b.nivel - a.nivel) || (a.id - b.id),
+        caramelos: (a, b) => ((car[familiaDe(b.id)] || 0) - (car[familiaDe(a.id)] || 0)) || (a.id - b.id),
+        recientes: (a, b) => ((b.creado || 0) - (a.creado || 0)) || (a.id - b.id),
+        nombre: (a, b) => nomInst(a).localeCompare(nomInst(b), 'es') || (a.id - b.id),
+        shiny: (a, b) => ((b.shiny ? 1 : 0) - (a.shiny ? 1 : 0)) || (a.id - b.id) || (b.nivel - a.nivel),
+        rareza: (a, b) => (tierDe(b.id, apar).nivel - tierDe(a.id, apar).nivel) || (a.id - b.id),
+      }[ordenPC] || ((a, b) => a.id - b.id);
+      return [...arr].sort(cmp);
+    }
     // tab "Mi PC": grilla de tus instancias (tap → modal). Vacío = mensaje.
     function miPC(pcArr, car) {
       const sec = $('evoluciones-sec');
       if (!pcArr.length) { sec.innerHTML = '<p class="dex-vacio">Todavía no tenés Pokémon. Andá al <b>Safari</b> a atrapar. 🎒</p>'; return; }
-      const cards = [...pcArr].sort((a, b) => (a.id - b.id) || (b.nivel - a.nivel)).map((m) => instCard(m, car)).join('');
+      const cards = ordenarPC(pcArr, car).map((m) => instCard(m, car)).join('');
       sec.innerHTML = '<div class="pc-grid">' + cards + '</div>';
       sec.querySelectorAll('.pc-card').forEach((b) => b.addEventListener('click', () => abrirModal(b.dataset.iid)));
     }
@@ -277,6 +303,7 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       aplicar();
     }));
 
+    $('pc-orden').addEventListener('change', (e) => { ordenPC = e.target.value; miPC(pc(), caramelos()); aplicar(); });
     buscar.addEventListener('input', aplicar);
     document.querySelectorAll('.dex-f').forEach((b) => b.addEventListener('click', () => {
       document.querySelectorAll('.dex-f').forEach((x) => x.classList.remove('activo'));
