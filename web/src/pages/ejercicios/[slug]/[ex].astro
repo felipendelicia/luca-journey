@@ -190,5 +190,8 @@ const payload = {
       localStorage.removeItem(KEY(data.exId)); localStorage.removeItem(KEY(data.exId) + ':ok');
       document.getElementById('result').innerHTML = '';
     });
+
+    // precalentar Python en segundo plano: cuando aprietes Corregir/▶ ya está listo (sin esperar ~15s)
+    (window.requestIdleCallback || ((f) => setTimeout(f, 1800)))(() => { getPy().catch(() => {}); });
   </script>
 </Base>

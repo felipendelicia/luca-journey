@@ -24,6 +24,7 @@
     "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
+    "@astrojs/sitemap": "^3.2.1",
     "@playwright/test": "^1.60.0"
   }
 }

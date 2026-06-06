@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 import rehypeCallouts from './src/lib/rehype-callouts.mjs';
 import rehypeBaseLinks from './src/lib/rehype-base-links.mjs';
 
@@ -11,6 +12,7 @@ export default defineConfig({
   site: 'https://felipendelicia.github.io',
   base,
   outDir: '../docs',
+  integrations: [sitemap()],
   markdown: {
     shikiConfig: {
       theme: 'one-dark-pro',

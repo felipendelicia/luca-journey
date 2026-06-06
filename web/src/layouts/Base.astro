@@ -1,7 +1,10 @@
 ---
 import '../styles/global.css';
 import { u } from '../lib/url.ts';
-const { title = 'Python con Pokémon', active = '' } = Astro.props;
+const { title = 'Python con Pokémon', active = '', description } = Astro.props;
+const desc = description || 'Aprendé a programar desde cero — Linux y Python — con una aventura Pokémon: ejercicios que se corrigen solos en tu navegador, libro interactivo, Pokédex, batallas y liga. Gratis.';
+const ogImg = new URL(u('/og.png'), Astro.site).href;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const nav = [
   ['Inicio', '/'],
   ['Libro', '/libro'],
@@ -18,6 +21,19 @@ const nav = [
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{title}</title>
+  <meta name="description" content={desc} />
+  <link rel="canonical" href={canonical} />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Pokédex Codex — Python con Pokémon" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={desc} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImg} />
+  <meta property="og:locale" content="es_AR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={desc} />
+  <meta name="twitter:image" content={ogImg} />
   <link rel="icon" type="image/svg+xml" href={u('/favicon.svg')} />
   <link rel="icon" type="image/png" sizes="32x32" href={u('/favicon-32.png')} />
   <link rel="manifest" href={u('/manifest.webmanifest')} />

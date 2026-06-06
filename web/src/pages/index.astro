@@ -56,6 +56,8 @@ let n = 0;
         </div>
       </div>
 
+      <p class="home-welcome" id="home-welcome" hidden>✨ Tu progreso —ejercicios, Pokémon y medallas— aparece acá. ¡Arrancá tu aventura! 👇</p>
+
       <div class="cta">
         <a class="btn-grande" id="cta-primary" href={u('/libro')}>📖 Empezar a leer</a>
         <a class="btn-grande sec" href={u('/ejercicios')}>🏋️ Ejercicios</a>
@@ -91,6 +93,7 @@ let n = 0;
     .home-title { line-height: 1.02; }
     .home-tag { max-width: 60ch; color: var(--ink-soft); }
     .kick { letter-spacing: .14em; }
+    .home-welcome { margin: 16px 0 6px; padding: 13px 17px; border:1px dashed color-mix(in srgb, var(--red) 30%, var(--line)); border-radius:14px; background: var(--paper-2); color: var(--ink); font:600 .9rem var(--font-mono); animation: pop-in .5s ease both; }
 
     /* consola de progreso */
     .home-prog { display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin: 16px 0 6px; padding: 13px 17px;
@@ -157,8 +160,11 @@ let n = 0;
         else if (p.pc === 0) { cta.textContent = '🎒 Atrapá tu primer Pokémon'; cta.href = u('/safari'); }
         else { cta.textContent = '🏋️ Seguí practicando'; cta.href = u('/ejercicios'); }
       }
-      // consola: solo si ya arrancaste
-      if (p.exp === 0 && p.pc === 0 && p.racha === 0) return;
+      // consola solo si ya hay progreso real; si sos nuevo, mensaje de bienvenida
+      const hayProgreso = p.exp > 0 || p.pc > 0 || p.med > 0;
+      const w = $('home-welcome');
+      if (!hayProgreso) { if (w) w.hidden = false; $('home-prog').hidden = true; return; }
+      if (w) w.hidden = true;
       $('hp-nivel').textContent = p.nivel;
       $('hp-exp').textContent = p.exp + ' EXP';
       $('hp-next').textContent = (100 - (p.exp % 100)) + ' → nv.' + (p.nivel + 1);

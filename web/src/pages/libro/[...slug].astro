@@ -254,5 +254,8 @@ const grupos = agrupar(caps);
         fig.appendChild(pre);
       }
     });
+
+    // precalentar Python en segundo plano para que el primer ▶ sea instantáneo (sin tocar la SALIDA)
+    (window.requestIdleCallback || ((f) => setTimeout(f, 1800)))(() => { if (!pyReady && window.loadPyodide) pyReady = window.loadPyodide(); });
   </script>
 </Base>
