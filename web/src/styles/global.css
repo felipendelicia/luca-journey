@@ -440,6 +440,19 @@ body.dark .poke.es-shiny{ background:linear-gradient(180deg,#2c2814,var(--paper-
 body.shiny-flash{ animation:shinyFlash .7s ease; }
 @keyframes shinyFlash{ 0%{ background:var(--paper) } 18%{ background:#fff3a8 } 34%{ background:#ffe06a } 100%{ background:var(--paper) } }
 
+/* Safari v2: rareza por tier — badge, glow del salvaje (sube con el nivel), ráfaga, temblor */
+.cap-tier{ display:inline-block; margin:5px 6px 0; padding:2px 11px; border-radius:999px;
+  font:700 .72rem var(--font-mono); letter-spacing:.04em; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.55);
+  background:var(--tier-color); box-shadow:0 0 16px -2px var(--tier-color); vertical-align:middle; }
+.escena.tier-4 .wild.revelado,.escena.tier-5 .wild.revelado,.escena.tier-6 .wild.revelado{ filter:drop-shadow(0 0 12px var(--tier-color)) drop-shadow(0 8px 12px rgba(0,0,0,.25)); }
+.escena.tier-7 .wild.revelado,.escena.tier-8 .wild.revelado{ filter:drop-shadow(0 0 20px var(--tier-color)) drop-shadow(0 0 9px var(--tier-color)); }
+.escena.tier-9 .wild.revelado,.escena.tier-10 .wild.revelado{ filter:drop-shadow(0 0 28px var(--tier-color)) drop-shadow(0 0 54px var(--tier-color)); }
+.escena.burst::after{ content:""; position:absolute; inset:-30%; border-radius:50%; pointer-events:none; z-index:1;
+  background:radial-gradient(circle, var(--tier-color) 0%, transparent 62%); opacity:0; animation:burst .85s ease-out; }
+@keyframes burst{ 0%{ opacity:0; transform:scale(.35) } 22%{ opacity:.55 } 100%{ opacity:0; transform:scale(1.5) } }
+body.tier-shake{ animation:tierShake .55s ease-in-out; }
+@keyframes tierShake{ 0%,100%{ transform:translate(0,0) } 20%{ transform:translate(-6px,4px) } 40%{ transform:translate(6px,-5px) } 60%{ transform:translate(-5px,-3px) } 80%{ transform:translate(5px,4px) } }
+
 /* logros */
 .logros-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; margin:.6rem 0 1.4rem; }
 .logro{ display:flex; align-items:center; gap:10px; background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:10px 12px; opacity:.5; filter:grayscale(.7); }

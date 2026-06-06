@@ -35,7 +35,7 @@ const total = pokemon.length;
   <script type="application/json" id="safari-data" set:html={JSON.stringify({ pokemon, temas, pesos })}></script>
   <script>
     import { sincronizar, tirar as lanzar, estado, reclamarRegalo, regaloDisponible, regionesDesbloqueadas, spriteUrl } from '../lib/coleccion.js';
-    import { sonarCaptura, sonarShiny } from '../lib/sonidos.js';
+    import { sonarCaptura, sonarShiny, sonarEpico } from '../lib/sonidos.js';
 
     const D = JSON.parse(document.getElementById('safari-data').textContent);
     const $ = (id) => document.getElementById(id);
@@ -72,16 +72,17 @@ const total = pokemon.length;
     setInterval(() => { if (regaloDisponible() && $('regalo').style.display === 'none') refrescar(); }, 20000);
 
     const esperar = (ms) => new Promise((res) => setTimeout(res, ms));
-    function estrellas(arena, dorado) {
-      for (let i = 0; i < 16; i++) {
+    function estrellas(escena, { n = 16, dorado = false, color = '#ffd23f' } = {}) {
+      for (let i = 0; i < n; i++) {
         const s = document.createElement('span');
         s.className = 'estrella' + (dorado ? ' oro' : '');
-        const ang = (Math.PI * 2 * i) / 16, dist = 80 + Math.random() * 70;
+        const ang = (Math.PI * 2 * i) / n, dist = 80 + Math.random() * 90;
         s.style.setProperty('--dx', Math.cos(ang) * dist + 'px');
         s.style.setProperty('--dy', Math.sin(ang) * dist + 'px');
+        if (!dorado) s.style.color = color;
         s.textContent = dorado ? '✨' : '⭐';
-        arena.appendChild(s);
-        setTimeout(() => s.remove(), 900);
+        escena.appendChild(s);
+        setTimeout(() => s.remove(), 1000);
       }
     }
 
@@ -100,6 +101,14 @@ const total = pokemon.length;
         '<img class="wild silueta" src="' + spriteUrl(p.id, r.shiny) + '" alt="?" />' +
         '<div class="pokeball lanza" id="pb"></div></div>';
       const wild = arena.querySelector('.wild'), pb = $('pb');
+      // rareza: el drama escala con el tier del Pokémon
+      const escena = arena.querySelector('.escena');
+      const t = r.tier || { nivel: 1, nombre: 'Común', color: '#7d8b79', ico: '' };
+      escena.style.setProperty('--tier-color', t.color);
+      escena.classList.add('tier-' + t.nivel);
+      const tambaleos = t.nivel >= 9 ? 5 : t.nivel >= 7 ? 4 : t.nivel >= 4 ? 3 : 2;
+      const nParticulas = t.nivel >= 9 ? 30 : t.nivel >= 7 ? 22 : t.nivel >= 4 ? 16 : 8;
+      const epico = t.nivel >= 7, legendario = t.nivel >= 9;
 
       await esperar(650);                 // el salvaje salta en el pasto
       pb.classList.remove('lanza'); pb.classList.add('vuela');  // tirás la ball (arco)
@@ -108,15 +117,21 @@ const total = pokemon.length;
       wild.classList.add('absorbido'); arena.classList.add('flash');  // lo absorbe
       await esperar(360); arena.classList.remove('flash');
       $('msg').textContent = '¿La atrapará?';
-      for (let i = 0; i < 3; i++) {       // 3 tambaleos de suspenso
+      for (let i = 0; i < tambaleos; i++) {   // tambaleos de suspenso (más en tiers altos)
         pb.classList.add('tambalea'); await esperar(560); pb.classList.remove('tambalea'); await esperar(150);
       }
       // ¡atrapado!
       pb.classList.add('abre');
       wild.classList.remove('silueta', 'absorbido');
       wild.classList.add('revelado'); if (r.shiny) wild.classList.add('shiny');
-      estrellas(arena.querySelector('.escena'), r.shiny);
+      if (epico) escena.classList.add('burst');                          // ráfaga (épico+)
+      estrellas(escena, { n: nParticulas, dorado: r.shiny || legendario, color: t.color });
+      if (legendario || r.shiny) {                                       // pantalla temblando
+        document.body.classList.add('tier-shake');
+        setTimeout(() => document.body.classList.remove('tier-shake'), 600);
+      }
       if (r.shiny) { document.body.classList.add('shiny-flash'); setTimeout(() => document.body.classList.remove('shiny-flash'), 700); sonarShiny(); }
+      else if (epico) sonarEpico();
       else sonarCaptura();
 
       const titulo = r.shiny
@@ -125,9 +140,12 @@ const total = pokemon.length;
       const txt = document.createElement('div');
       txt.className = 'captura-txt';
       txt.innerHTML = titulo + ' <span class="cap-n">Nº ' + p.id + '</span>' +
-        '<span class="cap-prob">🎲 aparece 1 de cada <b>' + r.cadaCuantos + '</b> intentos</span>';
-      arena.querySelector('.escena').appendChild(txt);
-      $('msg').textContent = r.shiny ? '🌟 ¡INCREÍBLE! Un shiny aparece 1 de cada 100 veces.' : '';
+        '<span class="cap-tier" style="--tier-color:' + t.color + '">' + (t.ico ? t.ico + ' ' : '') + t.nombre + '</span>' +
+        '<span class="cap-prob">🎲 1 de cada <b>' + r.cadaCuantos + '</b></span>';
+      escena.appendChild(txt);
+      $('msg').textContent = r.shiny
+        ? '🌟 ¡INCREÍBLE! Un shiny aparece 1 de cada 100 veces.'
+        : (legendario ? '👑 ¡Un ' + t.nombre + '! Rarísimo de ver.' : '');
       animando = false; refrescar();
     }
     $('tirar').addEventListener('click', lanzarBall);
