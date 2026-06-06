@@ -89,7 +89,7 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
     import { sincronizar, spriteUrl, pc, caramelos, vistos, subirNivel, opcionesEvo, evolucionarInst, renombrar, liberar, learnsetDe, setMovs, tieneItem, costoSubir, NIVEL_MAX } from '../lib/coleccion.js';
     import { ITEMS } from '../lib/items.js';
     import { itemSvg } from '../lib/sprites.js';
-    import { sonarExito, sonarEpico } from '../lib/sonidos.js';
+    import { sonarExito, sonarEpico, musicaEvolucion, detenerMusica } from '../lib/sonidos.js';
     import { tierDe } from '../lib/rareza.js';
     import { tiposDe } from '../lib/tipos.js';
     import movimientos from '../data/movimientos.json';
@@ -324,8 +324,8 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       txt.textContent = '¿Qué? ¡' + oldNom + ' está evolucionando!';
       scene.hidden = false; scene.classList.remove('reveal');
       cerrarModal();
+      musicaEvolucion();                  // tema épico durante toda la secuencia
       await dormir(1500);
-      sonarExito();
       // morfeo: alterna silueta vieja↔nueva, acelerando
       let t = 440; const fin = Date.now() + 3400; let verNuevo = false;
       while (Date.now() < fin) {
@@ -346,7 +346,7 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       txt.innerHTML = '¡Felicidades! Tu <b>' + oldNom + '</b><br>evolucionó a <b>' + newNom + '</b>! 🎉';
       done.hidden = false;
     }
-    function cerrarEvo() { $('evo-scene').hidden = true; $('evo-scene').classList.remove('reveal'); evoEnCurso = false; pintar(); }
+    function cerrarEvo() { detenerMusica(); $('evo-scene').hidden = true; $('evo-scene').classList.remove('reveal'); evoEnCurso = false; pintar(); }
     $('evo-done').addEventListener('click', cerrarEvo);
 
     function aplicar() {
