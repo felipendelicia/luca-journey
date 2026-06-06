@@ -1,7 +1,9 @@
 // gen-evoluciones.mjs — cadena evolutiva con datos REALES de PokeAPI.
-// Salida: { "<id>": { evos:[{a:<evoId>, nivel:<min_level|30>}], familia:<idBase> } }
+// Salida: { "<id>": { evos:[{a:<evoId>, nivel:<min_level|0>, req?:<itemId>, m?:<metodo>}], familia:<idBase> } }
 // 'nivel' = min_level del trigger level-up; si la evo NO es por nivel (piedra/trade/amistad),
-// 'nivel' = 0 → en la app se evoluciona SOLO con caramelos (estilo GO). 'familia' = id base.
+// 'nivel' = 0. 'req' = item de la tienda que hace falta (piedra tipada / disco de enlace).
+// 'm' = método ('piedra'|'trade'|'amistad'|'otro'); sin 'm' y nivel>0 = evo por nivel.
+// 'familia' = id base.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -9,6 +11,23 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.resolve(HERE, '..', 'src', 'data', 'evoluciones.json');
 const N = 721, NIVEL_NO_LEVEL = 0;
+
+// item.name de PokeAPI → id de la piedra tipada en la tienda (web/src/lib/items.js).
+const MAP_STONE = {
+  'fire-stone': 'piedrafuego', 'water-stone': 'piedraagua', 'thunder-stone': 'piedratrueno',
+  'leaf-stone': 'piedrahoja', 'moon-stone': 'piedraluna', 'sun-stone': 'piedrasol',
+  'shiny-stone': 'piedradia', 'dawn-stone': 'piedraalba', 'dusk-stone': 'piedranoche',
+};
+
+// deriva {req, m} del trigger de evolución de PokeAPI (evolution_details[0]).
+function metodo(det) {
+  const trig = det.trigger?.name;
+  if (trig === 'use-item') { const req = MAP_STONE[det.item?.name]; return req ? { req, m: 'piedra' } : { m: 'otro' }; }
+  if (trig === 'trade') return { req: 'discoenlace', m: 'trade' };
+  if (det.min_happiness) return { m: 'amistad' };
+  if (det.min_level) return {};                         // evo por nivel: lo cubre 'nivel'
+  return { m: 'otro' };                                  // location/move/beauty/etc → solo caramelos
+}
 
 async function jget(url) {
   for (let i = 0; i < 4; i++) { try { const r = await fetch(url); if (r.ok) return await r.json(); } catch {} }
@@ -23,7 +42,7 @@ function recorrer(nodo, baseId, out) {
     const to = idDe(sig.species.url);
     const det = sig.evolution_details?.[0] || {};
     const nivel = det.min_level || NIVEL_NO_LEVEL;
-    if (from <= N) (out[from] ||= { evos: [], familia: baseId }).evos.push({ a: to, nivel });
+    if (from <= N && to <= N) (out[from] ||= { evos: [], familia: baseId }).evos.push({ a: to, nivel, ...metodo(det) });
     recorrer(sig, baseId, out);
   }
   if (from <= N && !out[from]) out[from] = { evos: [], familia: baseId };

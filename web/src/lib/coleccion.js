@@ -181,16 +181,24 @@ export function subirNivel(iid) {
   return true;
 }
 
+// ¿el req es una piedra tipada? (las evos por piedra aceptan el comodín legacy 'piedra').
+const esPiedra = (req) => !!req && req.startsWith('piedra');
+// ¿tengo lo que pide esta evo? sin req → sí; piedra tipada → ella o el comodín legacy.
+const tieneReq = (req) => !req || tieneItem(req) || (esPiedra(req) && tieneItem('piedra'));
+// consume el req (la piedra tipada, o el comodín 'piedra' como respaldo). true si gastó algo.
+const usarReq = (req) => !req || usarItem(req) || (esPiedra(req) && usarItem('piedra'));
+
 // Opciones de evolución de una instancia (lista; las ramificadas tienen varias). Cada una con su
-// requisito: nivel>0 pide nivel; nivel===0 (piedra/trade/amistad → GO puro) solo caramelos.
+// requisito: nivel>0 pide nivel; nivel===0 puede pedir un item (`req`: piedra tipada / disco de
+// enlace) y/o solo caramelos (amistad/otros). El comodín legacy 'piedra' sirve para cualquier piedra.
 export function opcionesEvo(iid) {
   const m = buscarInst(pc(), iid); if (!m) return [];
   const car = caramelos()[familiaDe(m.id)] || 0;
   return ((evoData[m.id] && evoData[m.id].evos) || []).map((ev) => {
     const costo = costoEvo(ev.nivel);
-    const piedra = ev.nivel === 0;                          // evos por piedra (Eevee, Pikachu…)
-    const ok = (ev.nivel > 0 ? m.nivel >= ev.nivel : tieneItem('piedra')) && car >= costo;
-    return { a: ev.a, nivel: ev.nivel, costo, ok, piedra };
+    const req = ev.req || null;                             // item de tienda que hace falta (o null)
+    const ok = (ev.nivel > 0 ? m.nivel >= ev.nivel : true) && tieneReq(req) && car >= costo;
+    return { a: ev.a, nivel: ev.nivel, costo, ok, req };
   });
 }
 
@@ -199,7 +207,7 @@ export function opcionesEvo(iid) {
 export function evolucionarInst(iid, targetId) {
   const arr = pc(); const m = buscarInst(arr, iid); if (!m) return false;
   const op = opcionesEvo(iid).find((o) => o.a === Number(targetId) && o.ok); if (!op) return false;
-  if (op.piedra && !usarItem('piedra')) return false;       // las evos por piedra gastan 1 Piedra Evolutiva
+  if (!usarReq(op.req)) return false;                       // gasta la piedra/disco que pida (si pide)
   const c = get('col:caramelos', {}); c[familiaDe(m.id)] -= op.costo; set('col:caramelos', c);
   addVisto(m.id);
   m.id = op.a; m.movs = [];          // nueva especie; movs se recalculan en Etapa 2

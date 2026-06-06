@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import datos from '../data/ejercicios.json';
 import pokemon from '../data/pokemon.json';
 import pesos from '../data/aparicion.json';
+import { ballSvg } from '../lib/sprites.js';
 import { u } from '../lib/url.ts';
 
 const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.ejercicios.map((e) => ({ id: e.id })) }));
@@ -19,7 +20,7 @@ const total = pokemon.length;
     <p>Tirá Pokéballs para atrapar Pokémon salvajes. Ganás Pokéballs <strong>resolviendo ejercicios</strong> (+2 c/u) y con el <strong>regalo cada 20 min</strong> (+5). ⚡</p>
 
     <div class="safari-barra">
-      <div class="ss-item"><span class="ss-ico">🔴</span><b id="balls">0</b><span class="ss-lbl">Pokéballs</span></div>
+      <div class="ss-item"><span class="ss-ico" set:html={ballSvg(0, 22)}></span><b id="balls">0</b><span class="ss-lbl">Pokéballs</span></div>
       <div class="ss-item"><span class="ss-ico">📕</span><b id="colN">0</b><span class="ss-lbl">de {total}</span></div>
       <button class="btn-regalo" id="regalo">🎁 Regalo (+5)</button>
     </div>
@@ -29,7 +30,7 @@ const total = pokemon.length;
       <div class="arena-pasto" id="arena">
         <div class="arena-vacio" id="vacio">El pasto se mueve… 🌿<br /><small>Tirá una Pokéball para ver qué aparece.</small></div>
       </div>
-      <button class="btn-tirar" id="tirar">¡Tirá la Pokéball! 🔴</button>
+      <button class="btn-tirar" id="tirar">¡Tirá la Pokéball! <Fragment set:html={ballSvg(0, 18)} /></button>
       <p class="safari-msg" id="msg"></p>
     </div>
   </div>
@@ -48,6 +49,7 @@ const total = pokemon.length;
     import { sincronizar, tirar as lanzar, estado, vistos, reclamarRegalo, regaloDisponible, regionesDesbloqueadas, spriteUrl } from '../lib/coleccion.js';
     import { sonarCaptura, sonarShiny, sonarEpico } from '../lib/sonidos.js';
     import { TIERS } from '../lib/rareza.js';
+    import { ballSvg } from '../lib/sprites.js';
 
     const D = JSON.parse(document.getElementById('safari-data').textContent);
     const $ = (id) => document.getElementById(id);
@@ -168,7 +170,7 @@ const total = pokemon.length;
       const titulo = r.shiny
         ? '✨ ¡Un <b>' + p.nombre + '</b> SHINY! ✨'
         : (r.repetido ? '¡Otro <b>' + p.nombre + '</b>! Ya tenés <b>' + r.cantidad + '</b>' : '¡Atrapaste a <b>' + p.nombre + '</b>!');
-      const ballTxt = r.ball === 2 ? '🟡 <b>¡Ultra Ball!</b> ' : r.ball === 1 ? '🔵 <b>¡Super Ball!</b> ' : '';
+      const ballTxt = r.ball === 2 ? ballSvg(2, 18) + ' <b>¡Ultra Ball!</b> ' : r.ball === 1 ? ballSvg(1, 18) + ' <b>¡Super Ball!</b> ' : '';
       const carGan = [3, 5, 8][r.ball] || 3;
       const txt = document.createElement('div');
       txt.className = 'captura-txt';

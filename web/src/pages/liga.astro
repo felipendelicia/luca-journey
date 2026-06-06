@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import datos from '../data/ejercicios.json';
 import pokemon from '../data/pokemon.json';
+import { badgeSvg } from '../lib/sprites.js';
 
 const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
 
@@ -26,6 +27,7 @@ function temasDe(region) {
   return datos.filter((w) => (w.region || 'kanto') === region).map((w, i) => ({
     slug: w.slug, titulo: w.titulo, exIds: w.ejercicios.map((e) => e.id),
     gym: (BADGES[region][i] || ['?', '⭐'])[0], emoji: (BADGES[region][i] || ['?', '⭐'])[1],
+    med: badgeSvg(region, i, true, 42), medOff: badgeSvg(region, i, false, 42), medMini: badgeSvg(region, i, true, 20),
   }));
 }
 const regiones = ['kanto', 'johto', 'hoenn', 'sinnoh', 'unova', 'kalos'].map((id) => ({ id, ...META[id], temas: temasDe(id) }));
@@ -179,10 +181,10 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
           doneTotal += done;
           if (completo) { medallas++; medReg++; }
           const pct = total ? Math.round((done / total) * 100) : 0;
-          filas.push('<a class="pt-row" href="' + B + '/ejercicios/' + t.slug + '"><span class="pt-emoji">' + t.emoji + '</span>' +
+          filas.push('<a class="pt-row" href="' + B + '/ejercicios/' + t.slug + '"><span class="pt-emoji">' + t.medMini + '</span>' +
             '<span class="pt-nom">' + t.titulo + '</span><span class="pt-bar"><i style="width:' + pct + '%"></i></span>' +
             '<span class="pt-num">' + done + '/' + total + '</span></a>');
-          meds.push('<div class="medalla ' + (completo ? 'ganada' : '') + '" title="Gimnasio ' + t.gym + '"><div class="med-ico">' + t.emoji + '</div><div class="med-nom">' + t.gym + '</div></div>');
+          meds.push('<div class="medalla ' + (completo ? 'ganada' : '') + '" title="Gimnasio ' + t.gym + '"><div class="med-ico">' + (completo ? t.med : t.medOff) + '</div><div class="med-nom">' + t.gym + '</div></div>');
         }
         $('[data-medallas="' + r.id + '"]').innerHTML = meds.join('');
         $('[data-progreso="' + r.id + '"]').innerHTML = filas.join('');

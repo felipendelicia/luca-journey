@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { ITEMS } from '../lib/items.js';
+import { itemSvg, ballSvg } from '../lib/sprites.js';
 import { u } from '../lib/url.ts';
 
 const CATS = [['evo', '🧬 Evolución'], ['cura', '❤️ Curación · batalla'], ['ball', '🎯 Pokéballs']];
@@ -20,7 +21,7 @@ const porCat = (c) => Object.entries(ITEMS).filter(([, it]) => it.cat === c);
           <a class="navlink" href={u('/pokedex')}>📕 Pokédex</a>
         </div>
       </div>
-      <div class="ti-saldo"><span class="ti-saldo-lbl">Saldo</span><b id="ti-balls">0</b><span class="ti-saldo-u">🔴 Pokébolas</span></div>
+      <div class="ti-saldo"><span class="ti-saldo-lbl">Saldo</span><b id="ti-balls">0</b><span class="ti-saldo-u"><Fragment set:html={ballSvg(0, 16)} /> Pokébolas</span></div>
     </header>
 
     <p class="ti-msg" id="ti-msg" hidden></p>
@@ -31,18 +32,18 @@ const porCat = (c) => Object.entries(ITEMS).filter(([, it]) => it.cat === c);
         <div class="ti-grid">
           {porCat(c).map(([id, it]) => (
             <div class="ti-card" data-id={id} data-precio={it.precio}>
-              <div class="ti-ico">{it.ico}<span class="ti-tengo" id={'tengo-' + id}></span></div>
+              <div class="ti-ico">{it.sprite ? <Fragment set:html={itemSvg(it.sprite === 'ball1' ? 'superball' : it.sprite === 'ball2' ? 'ultraball' : id, 36)} /> : it.ico}<span class="ti-tengo" id={'tengo-' + id}></span></div>
               <div class="ti-info">
                 <div class="ti-nom">{it.nombre}</div>
                 <div class="ti-desc">{it.desc}</div>
               </div>
-              <button class="ti-buy" data-buy={id}><b>{it.precio}</b> 🔴</button>
+              <button class="ti-buy" data-buy={id}><b>{it.precio}</b> <Fragment set:html={ballSvg(0, 13)} /></button>
             </div>
           ))}
         </div>
       </section>
     ))}
-    <p class="ti-pie">Las <b>mejores Pokéballs</b> se usan solas en el <a href={u('/safari')}>Safari</a> (la mejor que tengas). Las <b>pociones</b> van en la <b>Mochila</b> de la <a href={u('/batalla')}>Batalla</a>. La <b>Piedra Evolutiva</b> se usa al evolucionar desde la <a href={u('/pokedex')}>Pokédex</a>.</p>
+    <p class="ti-pie">Las <b>mejores Pokéballs</b> se usan solas en el <a href={u('/safari')}>Safari</a> (la mejor que tengas). Las <b>pociones</b> van en la <b>Mochila</b> de la <a href={u('/batalla')}>Batalla</a>. Cada <b>piedra</b> (Fuego, Agua, Trueno, Hoja…) y el <b>Disco de Enlace</b> evolucionan a los Pokémon que los piden, desde la <a href={u('/pokedex')}>Pokédex</a>.</p>
   </div>
 
   <script>
