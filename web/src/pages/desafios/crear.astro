@@ -26,19 +26,20 @@ const REGIONES = [['libre', 'Libre'], ...REGS.map((r) => [r.id, `${r.nombre} · 
       <p class="auth-msg err" id="d-err" hidden></p>
     </div>
   </main>
-  <script is:inline src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
   <script>
     import { editorPython } from '../../lib/editor.js';
     import evalPy from '../../lib/desafios-eval.py?raw';
     import { crearDesafio } from '../../lib/desafios.js';
     import { usuario } from '../../lib/nube.js';
+    import { run } from '../../lib/pyrun.js';   // worker con timeout: la solución del autor no congela
     const $ = (id) => document.getElementById(id);
     const B = (window.__BASE || '/').replace(/\/$/, '');
     const sol = editorPython({ doc: '', parent: $('d-sol') });
-    let py = null;
-    async function getPy() {
-      if (!py) { py = await window.loadPyodide(); await py.runPythonAsync(evalPy); }
-      return py;
+    const TIMEOUT = 10000;
+    let listo = null;
+    function asegurar() {   // worker cargado (Pyodide + evalPy) con timeout amplio en la 1ra carga
+      if (!listo) listo = run(evalPy, [], 'construir_casos', ['[]'], 60000).catch((e) => { listo = null; throw e; });
+      return listo;
     }
 
     // --- Constructor de filas de casos ---
@@ -83,16 +84,13 @@ const REGIONES = [['libre', 'Libre'], ...REGS.map((r) => [r.id, `${r.nombre} · 
       if (!filas.length) { err.textContent = 'Agregá al menos un caso de prueba.'; err.hidden = false; return; }
       const b = $('d-publicar'); b.disabled = true; b.textContent = 'Validando…';
       try {
-        const p = await getPy();
+        await asegurar();
         // Paso 1: construir casos desde filas
-        p.globals.set('_filas', JSON.stringify(filas));
-        const r1 = JSON.parse(await p.runPythonAsync('construir_casos(_filas)'));
+        const r1 = JSON.parse(await run(evalPy, [], 'construir_casos', [JSON.stringify(filas)], TIMEOUT));
         if (r1.error) { err.textContent = '⚠️ ' + r1.error; err.hidden = false; return; }
-        // Paso 2: computar esperados con la solución del autor
-        p.globals.set('_cod', sol.state.doc.toString());
-        p.globals.set('_func', func);
-        p.globals.set('_casos', JSON.stringify(r1.casos));
-        const r2 = JSON.parse(await p.runPythonAsync('computar_esperados(_cod, _func, _casos)'));
+        // Paso 2: computar esperados con la solución del autor (puede tener bucle infinito → timeout)
+        const r2 = JSON.parse(await run(evalPy, [], 'computar_esperados',
+          [sol.state.doc.toString(), func, JSON.stringify(r1.casos)], TIMEOUT));
         if (r2.error) { err.textContent = '⚠️ ' + r2.error; err.hidden = false; return; }
         const id = await crearDesafio({
           titulo: $('d-titulo').value, consigna: $('d-consigna').value, func,
@@ -103,5 +101,8 @@ const REGIONES = [['libre', 'Libre'], ...REGS.map((r) => [r.id, `${r.nombre} · 
       } catch (e) { err.textContent = '⚠️ ' + (e.message || e); err.hidden = false; }
       finally { b.disabled = false; b.textContent = '✅ Validar y publicar'; }
     });
+
+    // precalentar el worker en segundo plano: al publicar ya está listo
+    (window.requestIdleCallback || ((f) => setTimeout(f, 1800)))(() => { asegurar().catch(() => {}); });
   </script>
 </Base>

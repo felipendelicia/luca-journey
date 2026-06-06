@@ -37,13 +37,13 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
   </div>
 
   <script type="application/json" id="proy-data" set:html={JSON.stringify({ proyecto, temas })}></script>
-  <script is:inline src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
 
   <script>
     import { editorPython } from '../../lib/editor.js';
     import runnerPy from '../../lib/runner.py?raw';
     import { sincronizar, INSIGNIAS, LEGENDARIOS, spriteUrl } from '../../lib/coleccion.js';
     import { sonarExito, sonarError } from '../../lib/sonidos.js';
+    import { run } from '../../lib/pyrun.js';   // worker con timeout: corta bucles infinitos sin congelar
 
     const D = JSON.parse(document.getElementById('proy-data').textContent);
     const { proyecto } = D;
@@ -86,27 +86,25 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       return partes.join('\n\n');
     }
 
-    // Pyodide singleton
-    let pyReady = null, cargado = false;
-    async function getPy() {
-      if (!pyReady) {
-        pyReady = (async () => {
-          const py = await window.loadPyodide();
-          const pkgs = proyecto.packages || [];
-          if (pkgs.length) await py.loadPackage(['pytest', ...pkgs]);
-          else await py.loadPackage(['pytest']);
-          return py;
-        })();
-      }
-      const py = await pyReady;
-      if (!cargado) { await py.runPythonAsync(runnerPy); cargado = true; }
-      return py;
+    // Python corre en un Web Worker (pyrun.js) con timeout: un bucle infinito termina el worker
+    // con un mensaje claro, en vez de congelar la pestaña.
+    const _pkgs = proyecto.packages || [];
+    const _usaFlask = _pkgs.includes('flask');
+    const PAQUETES = ['pytest', ...(_usaFlask ? ['micropip'] : []), ..._pkgs.filter((p) => p !== 'flask')];
+    const HELPER = _usaFlask ? "import micropip\nawait micropip.install('flask')\n\n" + runnerPy : runnerPy;
+    const TIMEOUT = 10000;
+    let listo = null;
+    function asegurar() {   // worker cargado (Pyodide + pytest + helper); timeout amplio para la 1ra carga
+      if (!listo) listo = run(HELPER, PAQUETES, 'ejecutar', [''], 60000).catch((e) => { listo = null; throw e; });
+      return listo;
     }
 
     // Render resultado de tests de un paso
     function renderResultado(box, tests, cargaError) {
       if (cargaError) {
-        box.innerHTML = '<div class="ejer-err">⚠️ No se pudo ejecutar:<br><code>' + esc(cargaError) + '</code></div>';
+        box.innerHTML = /⏱️|tardó demasiado/.test(cargaError)
+          ? '<div class="ejer-err">' + esc(cargaError) + '</div>'
+          : '<div class="ejer-err">⚠️ No se pudo ejecutar:<br><code>' + esc(cargaError) + '</code></div>';
         sonarError(); return false;
       }
       const tot = tests.length, ok = tests.filter((t) => t.ok).length, todo = tot > 0 && ok === tot;
@@ -209,10 +207,9 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const res = document.getElementById('res-' + paso.id);
       btn.disabled = true; est.textContent = '⏳ Cargando Python (~20s la primera vez)…';
       try {
-        const py = await getPy();
+        await asegurar();
         est.textContent = 'Ejecutando…';
-        py.globals.set('_code', codigoAcumulado(n, ed));
-        const out = JSON.parse(await py.runPythonAsync('ejecutar(_code)'));
+        const out = JSON.parse(await run(HELPER, PAQUETES, 'ejecutar', [codigoAcumulado(n, ed)], TIMEOUT));
         let h = '<div class="ejer-run"><span class="lbl">▶ Ejecutar</span>';
         if (out.out) h += '<pre class="ej-stdout">' + esc(out.out) + '</pre>';
         if (out.ret !== null) h += '<div class="ej-ret">↩ devuelve <code>' + esc(out.ret) + '</code></div>';
@@ -231,17 +228,13 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const res = document.getElementById('res-' + paso.id);
       btn.disabled = true; est.textContent = '⏳ Cargando Python (~20s la primera vez)…';
       try {
-        const py = await getPy();
+        await asegurar();
         est.textContent = 'Corrigiendo…';
         const codigo = codigoAcumulado(n, ed);
         // Guardar código actual antes de corregir
         localStorage.setItem(KEY_PASO(paso.id), ed.state.doc.toString());
-        py.globals.set('_slug', proyecto.slug);
-        py.globals.set('_ej', codigo);
-        py.globals.set('_test', proyecto.test);
-        py.globals.set('_extra', '{}');
-        py.globals.set('_solo', JSON.stringify(paso.tests));
-        const out = await py.runPythonAsync('correr(_slug, _ej, _test, _extra, _solo)');
+        const out = await run(HELPER, PAQUETES, 'correr',
+          [proyecto.slug, codigo, proyecto.test, '{}', JSON.stringify(paso.tests)], TIMEOUT);
         const parsed = JSON.parse(out);
         const byName = {};
         (parsed.tests || []).forEach((t) => (byName[t.name] = t));
@@ -267,5 +260,8 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     }
 
     renderPasos();
+
+    // precalentar el worker en segundo plano: el primer ▶/Corregir ya está listo
+    (window.requestIdleCallback || ((f) => setTimeout(f, 1800)))(() => { asegurar().catch(() => {}); });
   </script>
 </Base>
