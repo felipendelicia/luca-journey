@@ -43,7 +43,8 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     import runnerPy from '../../lib/runner.py?raw';
     import { sincronizar, INSIGNIAS, LEGENDARIOS, spriteUrl } from '../../lib/coleccion.js';
     import { sonarExito, sonarError } from '../../lib/sonidos.js';
-    import { run } from '../../lib/pyrun.js';   // worker con timeout: corta bucles infinitos sin congelar
+    import { crearRunnerPytest } from '../../lib/runner-py.js';   // runner unificado (worker + timeout)
+    import { bloqueError, listaTests, salidaEjecutar } from '../../lib/correr-ui.js';   // render compartido con ejercicios
 
     const D = JSON.parse(document.getElementById('proy-data').textContent);
     const { proyecto } = D;
@@ -86,38 +87,16 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       return partes.join('\n\n');
     }
 
-    // Python corre en un Web Worker (pyrun.js) con timeout: un bucle infinito termina el worker
-    // con un mensaje claro, en vez de congelar la pestaña.
-    const _pkgs = proyecto.packages || [];
-    const _usaFlask = _pkgs.includes('flask');
-    const PAQUETES = ['pytest', ...(_usaFlask ? ['micropip'] : []), ..._pkgs.filter((p) => p !== 'flask')];
-    const HELPER = _usaFlask ? "import micropip\nawait micropip.install('flask')\n\n" + runnerPy : runnerPy;
-    const TIMEOUT = 10000;
-    let listo = null;
-    function asegurar() {   // worker cargado (Pyodide + pytest + helper); timeout amplio para la 1ra carga
-      if (!listo) listo = run(HELPER, PAQUETES, 'ejecutar', [''], 60000).catch((e) => { listo = null; throw e; });
-      return listo;
-    }
+    // Runner unificado (worker + timeout). Mismo motor y render que los ejercicios.
+    const R = crearRunnerPytest(runnerPy, proyecto.packages);
 
     // Render resultado de tests de un paso
     function renderResultado(box, tests, cargaError) {
-      if (cargaError) {
-        box.innerHTML = /⏱️|tardó demasiado/.test(cargaError)
-          ? '<div class="ejer-err">' + esc(cargaError) + '</div>'
-          : '<div class="ejer-err">⚠️ No se pudo ejecutar:<br><code>' + esc(cargaError) + '</code></div>';
-        sonarError(); return false;
-      }
+      if (cargaError) { box.innerHTML = bloqueError(cargaError); sonarError(); return false; }
       const tot = tests.length, ok = tests.filter((t) => t.ok).length, todo = tot > 0 && ok === tot;
       if (todo) sonarExito(); else sonarError();
-      let h = '<div class="ejer-resumen ' + (todo ? 'win' : '') + '">' + ok + ' / ' + tot + ' tests' + (todo ? ' · ¡PASO APROBADO! ✅' : '') + '</div>';
-      h += '<ul class="ejer-lista">';
-      for (const t of tests) {
-        h += '<li class="' + (t.ok ? 'ok' : 'no') + '"><span class="ic">' + (t.ok ? '✅' : '❌') + '</span><code>' + esc(t.name) + '</code>';
-        if (t.msg) h += '<div class="m">' + esc(t.msg) + '</div>';
-        if (t.out) h += '<div class="ej-out"><span class="lbl">🖨️ tus prints</span>' + esc(t.out) + '</div>';
-        h += '</li>';
-      }
-      box.innerHTML = h + '</ul>';
+      const resumen = '<div class="ejer-resumen ' + (todo ? 'win' : '') + '">' + ok + ' / ' + tot + ' tests' + (todo ? ' · ¡PASO APROBADO! ✅' : '') + '</div>';
+      box.innerHTML = resumen + listaTests(tests);
       return todo;
     }
 
@@ -207,14 +186,9 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const res = document.getElementById('res-' + paso.id);
       btn.disabled = true; est.textContent = '⏳ Cargando Python (~20s la primera vez)…';
       try {
-        await asegurar();
         est.textContent = 'Ejecutando…';
-        const out = JSON.parse(await run(HELPER, PAQUETES, 'ejecutar', [codigoAcumulado(n, ed)], TIMEOUT));
-        let h = '<div class="ejer-run"><span class="lbl">▶ Ejecutar</span>';
-        if (out.out) h += '<pre class="ej-stdout">' + esc(out.out) + '</pre>';
-        if (out.ret !== null) h += '<div class="ej-ret">↩ devuelve <code>' + esc(out.ret) + '</code></div>';
-        if (!out.out && out.ret === null) h += '<div class="ej-vacio">Sin salida. Agregá <code>print(...)</code> o poné una llamada como última línea (ej. <code>buscar("pikachu")</code>) para ver qué devuelve.</div>';
-        res.innerHTML = h + '</div>';
+        const out = JSON.parse(await R.ejecutar(codigoAcumulado(n, ed)));
+        res.innerHTML = salidaEjecutar(out);
       } catch (e) {
         res.innerHTML = '<div class="ejer-err">⚠️ ' + esc((e && e.message) || String(e)) + '</div>';
       } finally {
@@ -228,13 +202,11 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const res = document.getElementById('res-' + paso.id);
       btn.disabled = true; est.textContent = '⏳ Cargando Python (~20s la primera vez)…';
       try {
-        await asegurar();
         est.textContent = 'Corrigiendo…';
         const codigo = codigoAcumulado(n, ed);
         // Guardar código actual antes de corregir
         localStorage.setItem(KEY_PASO(paso.id), ed.state.doc.toString());
-        const out = await run(HELPER, PAQUETES, 'correr',
-          [proyecto.slug, codigo, proyecto.test, '{}', JSON.stringify(paso.tests)], TIMEOUT);
+        const out = await R.correr(proyecto.slug, codigo, proyecto.test, '{}', JSON.stringify(paso.tests));
         const parsed = JSON.parse(out);
         const byName = {};
         (parsed.tests || []).forEach((t) => (byName[t.name] = t));
@@ -262,6 +234,6 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     renderPasos();
 
     // precalentar el worker en segundo plano: el primer ▶/Corregir ya está listo
-    (window.requestIdleCallback || ((f) => setTimeout(f, 1800)))(() => { asegurar().catch(() => {}); });
+    (window.requestIdleCallback || ((f) => setTimeout(f, 1800)))(() => { R.asegurar().catch(() => {}); });
   </script>
 </Base>

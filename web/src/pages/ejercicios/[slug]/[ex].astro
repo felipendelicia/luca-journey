@@ -69,8 +69,8 @@ const payload = {
     import { editorPython } from '../../../lib/editor.js';
     import runnerPy from '../../../lib/runner.py?raw';
     import { sonarExito, sonarError } from '../../../lib/sonidos.js';
-    import { traducirError, pistaTest, pareceError } from '../../../lib/errores.js';
-    import { run } from '../../../lib/pyrun.js';   // worker con timeout: corta bucles infinitos sin congelar la pestaña
+    import { crearRunnerPytest } from '../../../lib/runner-py.js';   // runner unificado (worker + timeout)
+    import { bloqueError, listaTests, salidaEjecutar } from '../../../lib/correr-ui.js';   // render compartido
 
     const data = JSON.parse(document.getElementById('ej-data').textContent);
     const KEY = (id) => 'ej:' + data.slug + ':' + id;
@@ -93,59 +93,24 @@ const payload = {
       return partes.join('\n\n\n');
     }
 
-    // Python corre en un Web Worker (pyrun.js) con timeout: un bucle infinito termina el worker
-    // con un mensaje claro, en vez de congelar la pestaña.
-    const _pkgs = data.packages || [];
-    const _usaFlask = _pkgs.includes('flask');
-    const PAQUETES = ['pytest', ...(_usaFlask ? ['micropip'] : []), ..._pkgs.filter((p) => p !== 'flask')];
-    const HELPER = _usaFlask ? "import micropip\nawait micropip.install('flask')\n\n" + runnerPy : runnerPy;
-    const TIMEOUT = 10000;   // 10s para el código del alumno (con el worker ya cargado)
-    let listo = null;
-    // Asegura el worker cargado (Pyodide + pytest + helper) con timeout amplio para no dar falsos
-    // positivos en la primera carga (~20s). Se resetea si el worker muere por timeout.
-    function asegurar() {
-      if (!listo) listo = run(HELPER, PAQUETES, 'ejecutar', [''], 60000).catch((e) => { listo = null; throw e; });
-      return listo;
-    }
+    // Runner unificado (worker + timeout). Mismo motor que proyectos.
+    const R = crearRunnerPytest(runnerPy, data.packages);
 
-    // bloque de error amigable: título + causa + cómo arreglarlo + traceback técnico colapsable
-    function bloqueError(raw) {
-      const e = traducirError(raw);
-      if (!e) return '<div class="ejer-err">⚠️ El código no se pudo ejecutar:<br><code>' + esc(raw) + '</code></div>';
-      return '<div class="ejer-err err-amigable">'
-        + '<div class="err-tit">' + e.ico + ' ' + esc(e.titulo) + (e.linea ? ' <span class="err-linea">línea ' + e.linea + '</span>' : '') + '</div>'
-        + '<div class="err-causa">' + esc(e.causa) + '</div>'
-        + '<div class="err-fix">💡 ' + esc(e.fix) + '</div>'
-        + '<details class="err-raw"><summary>Ver el error técnico</summary><code>' + esc(raw) + '</code></details>'
-        + '</div>';
-    }
     function render(tests, carga) {
       const box = document.getElementById('result');
-      if (carga) { box.innerHTML = /⏱️|tardó demasiado/.test(carga) ? '<div class="ejer-err">' + esc(carga) + '</div>' : bloqueError(carga); sonarError(); return; }
+      if (carga) { box.innerHTML = bloqueError(carga); sonarError(); return; }
       const tot = tests.length, ok = tests.filter((t) => t.ok).length, todo = tot > 0 && ok === tot;
       if (todo) sonarExito(); else sonarError();
       if (todo) localStorage.setItem(KEY(data.exId) + ':ok', '1');   // sticky: una vez resuelto, queda resuelto (un error posterior no lo desmarca)
-      let h = '<div class="ejer-resumen ' + (todo ? 'win' : '') + '">' + ok + ' / ' + tot + ' tests' + (todo ? ' · +' + (ok * 10) + ' EXP · ¡COMPLETO! 🏅' : '') + '</div><ul class="ejer-lista">';
-      for (const t of tests) {
-        h += '<li class="' + (t.ok ? 'ok' : 'no') + '"><span class="ic">' + (t.ok ? '✅' : '❌') + '</span><code>' + esc(t.name) + '</code>';
-        if (t.msg) {
-          const pista = pistaTest(t.msg);
-          h += '<div class="m">💡 ' + esc(pista) + '</div>';
-          if (pista !== t.msg) h += '<details class="m-raw"><summary>detalle del test</summary><code>' + esc(t.msg) + '</code></details>';
-        }
-        if (t.out) h += '<div class="ej-out"><span class="lbl">🖨️ tus prints</span>' + esc(t.out) + '</div>';
-        h += '</li>';
-      }
-      box.innerHTML = h + '</ul>';
+      const resumen = '<div class="ejer-resumen ' + (todo ? 'win' : '') + '">' + ok + ' / ' + tot + ' tests' + (todo ? ' · +' + (ok * 10) + ' EXP · ¡COMPLETO! 🏅' : '') + '</div>';
+      box.innerHTML = resumen + listaTests(tests);
     }
 
     async function corregir() {
       const b = document.getElementById('corregir');
       b.disabled = true; estado('Corrigiendo…');
       try {
-        await asegurar();
-        const out = await run(HELPER, PAQUETES, 'correr',
-          [data.slug, moduloCompleto(), data.test, JSON.stringify(data.extra || {}), JSON.stringify(data.exTests)], TIMEOUT);
+        const out = await R.correr(data.slug, moduloCompleto(), data.test, JSON.stringify(data.extra || {}), JSON.stringify(data.exTests));
         const res = JSON.parse(out);
         const byName = {}; res.tests.forEach((t) => (byName[t.name] = t));
         render(data.exTests.map((nm) => byName[nm]).filter(Boolean), res.carga_error);
@@ -159,14 +124,8 @@ const payload = {
       const box = document.getElementById('result');
       box.innerHTML = '';
       try {
-        await asegurar();
-        const res = JSON.parse(await run(HELPER, PAQUETES, 'ejecutar', [data.preamble + '\n\n' + editor.state.doc.toString()], TIMEOUT));
-        let h = '<div class="ejer-run"><span class="lbl">▶ Ejecutar</span>';
-        if (res.out && pareceError(res.out)) h += bloqueError(res.out);
-        else if (res.out) h += '<pre class="ej-stdout">' + esc(res.out) + '</pre>';
-        if (res.ret !== null) h += '<div class="ej-ret">↩ devuelve <code>' + esc(res.ret) + '</code></div>';
-        if (!res.out && res.ret === null) h += '<div class="ej-vacio">Sin salida. Agregá <code>print(...)</code> o poné una llamada como última línea (ej. <code>mi_funcion(2, 3)</code>) para ver qué devuelve.</div>';
-        box.innerHTML = h + '</div>';
+        const res = JSON.parse(await R.ejecutar(data.preamble + '\n\n' + editor.state.doc.toString()));
+        box.innerHTML = salidaEjecutar(res);
       } catch (e) {
         box.innerHTML = '<div class="ejer-err">⚠️ ' + esc((e && e.message) || e) + '</div>';
       } finally { b.disabled = false; estado(''); }
@@ -182,6 +141,6 @@ const payload = {
     });
 
     // precalentar el worker en segundo plano: cuando aprietes Corregir/▶ ya está listo (sin esperar ~15s)
-    (window.requestIdleCallback || ((f) => setTimeout(f, 1800)))(() => { asegurar().catch(() => {}); });
+    (window.requestIdleCallback || ((f) => setTimeout(f, 1800)))(() => { R.asegurar().catch(() => {}); });
   </script>
 </Base>
