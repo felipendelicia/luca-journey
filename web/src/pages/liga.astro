@@ -60,22 +60,22 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
       </div>
     </section>
 
-    <nav class="reg-tabs liga-tabs" id="liga-tabs" aria-label="Secciones de la Liga">
-      <button class="reg-tab" type="button" data-tab="logros"><span class="rt-emoji">🏅</span><span class="rt-name">Logros</span><span class="rt-chip" id="tab-logros-n"></span></button>
+    <nav class="reg-tabs liga-tabs" id="liga-tabs" role="tablist" aria-label="Secciones de la Liga">
+      <button class="reg-tab" type="button" role="tab" data-tab="logros"><span class="rt-emoji">🏅</span><span class="rt-name">Logros</span><span class="rt-chip" id="tab-logros-n"></span></button>
       {regiones.map((r) => (
-        <button class="reg-tab" type="button" data-tab={r.id} data-region={r.id} title={r.sub}>
+        <button class="reg-tab" type="button" role="tab" data-tab={r.id} data-region={r.id} title={r.sub}>
           <span class="rt-emoji">{r.emoji}</span><span class="rt-name">{r.nombre}</span>
           <span class="rt-chip" data-prog={r.id}></span><span class="rt-bar"><i data-bar={r.id}></i></span>
         </button>
       ))}
     </nav>
 
-    <section class="liga-panel" data-tab="logros" hidden>
+    <section class="liga-panel" data-tab="logros" role="tabpanel" hidden>
       <h2 class="liga-h">🏆 Logros <span class="reg-estado" id="logros-n"></span></h2>
       <div class="logros-grid" id="logros"></div>
     </section>
     {regiones.map((r) => (
-      <section class="liga-panel region" data-region={r.id} data-tab={r.id} hidden>
+      <section class="liga-panel region" data-region={r.id} data-tab={r.id} role="tabpanel" hidden>
         <h2 class="liga-h">{r.emoji} Región {r.nombre} <small>— {r.sub}</small> <span class="reg-estado" data-reg={r.id}></span></h2>
         <div class="medallas" data-medallas={r.id}></div>
         <div class="progreso-temas" data-progreso={r.id}></div>
@@ -240,13 +240,27 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
       function mostrarTab(tab) {
         if (!PANELS.some((p) => p.dataset.tab === tab)) tab = 'logros';
         PANELS.forEach((p) => { p.hidden = p.dataset.tab !== tab; });
-        TABS.forEach((t) => t.classList.toggle('activo', t.dataset.tab === tab));
+        TABS.forEach((t) => {
+          const sel = t.dataset.tab === tab;
+          t.classList.toggle('activo', sel);
+          t.setAttribute('aria-selected', sel ? 'true' : 'false');
+          t.tabIndex = sel ? 0 : -1;
+        });
         try { localStorage.setItem('liga:tab', tab); } catch (e) {}
         if (location.hash.slice(1) !== tab) history.replaceState(null, '', '#' + tab);
         const el = TABS.find((t) => t.dataset.tab === tab);
         if (el) el.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
       }
       TABS.forEach((t) => t.addEventListener('click', () => mostrarTab(t.dataset.tab)));
+      // teclado: ← → para moverse entre pestañas
+      const TABIDS = TABS.map((t) => t.dataset.tab);
+      document.getElementById('liga-tabs').addEventListener('keydown', (e) => {
+        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+        e.preventDefault();
+        const cur = TABS.findIndex((t) => t.classList.contains('activo'));
+        const j = ((cur < 0 ? 0 : cur) + (e.key === 'ArrowRight' ? 1 : -1) + TABIDS.length) % TABIDS.length;
+        mostrarTab(TABIDS[j]); TABS[j].focus();
+      });
       const _guardada = (() => { try { return localStorage.getItem('liga:tab'); } catch (e) { return null; } })();
       mostrarTab(location.hash.slice(1) || _guardada || primeraIncompleta || 'logros');
       window.addEventListener('hashchange', () => mostrarTab(location.hash.slice(1)));

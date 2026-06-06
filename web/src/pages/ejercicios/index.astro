@@ -36,9 +36,9 @@ const integradoresPorRegion = Object.fromEntries(
       </label>
     </section>
 
-    <nav class="reg-tabs" id="reg-tabs" aria-label="Regiones">
+    <nav class="reg-tabs" id="reg-tabs" role="tablist" aria-label="Regiones">
       {grupos.map((g) => (
-        <button class="reg-tab" type="button" data-region={g.id} title={`${g.nombre} · ${g.tema}`}>
+        <button class="reg-tab" type="button" role="tab" data-region={g.id} title={`${g.nombre} · ${g.tema}`}>
           <span class="rt-emoji">{g.emoji}</span>
           <span class="rt-name">{g.nombre}</span>
           <span class="rt-chip" data-prog={g.id}></span>
@@ -49,7 +49,7 @@ const integradoresPorRegion = Object.fromEntries(
 
     <div id="paneles">
       {grupos.map((g) => (
-        <section class="region-panel" data-region={g.id} hidden>
+        <section class="region-panel" data-region={g.id} role="tabpanel" hidden>
           <header class="region-head">
             <h2><span class="rh-emoji">{g.emoji}</span> Región {g.nombre} <small>{g.tema}</small></h2>
             <div class="region-prog">
@@ -263,7 +263,12 @@ const integradoresPorRegion = Object.fromEntries(
         if (!REGS.includes(reg)) reg = REGS[0];
         actual = reg;
         PANELS.forEach((p) => { p.hidden = p.dataset.region !== reg; });
-        TABS.forEach((t) => t.classList.toggle('activo', t.dataset.region === reg));
+        TABS.forEach((t) => {
+          const sel = t.dataset.region === reg;
+          t.classList.toggle('activo', sel);
+          t.setAttribute('aria-selected', sel ? 'true' : 'false');
+          t.tabIndex = sel ? 0 : -1;
+        });
         try { localStorage.setItem('ej:region', reg); } catch (e) {}
         if (push && location.hash.slice(1) !== reg) history.replaceState(null, '', '#' + reg);
         const tab = TABS.find((t) => t.dataset.region === reg);
@@ -273,6 +278,16 @@ const integradoresPorRegion = Object.fromEntries(
         if (buscar.value) { buscar.value = ''; aplicarBusqueda(); }
         mostrar(t.dataset.region, true);
       }));
+      // teclado: ← → para moverse entre regiones
+      document.getElementById('reg-tabs').addEventListener('keydown', (e) => {
+        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+        e.preventDefault();
+        const i = REGS.indexOf(actual);
+        const j = (i + (e.key === 'ArrowRight' ? 1 : -1) + REGS.length) % REGS.length;
+        if (buscar.value) { buscar.value = ''; aplicarBusqueda(); }
+        mostrar(REGS[j], true);
+        const el = TABS.find((t) => t.dataset.region === REGS[j]); if (el) el.focus();
+      });
 
       // 6) búsqueda global (filtra temas de TODAS las regiones)
       function aplicarBusqueda() {

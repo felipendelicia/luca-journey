@@ -302,5 +302,16 @@ const nav = [
       }
     })();
   </script>
+  <script is:inline>
+    // Accesibilidad: Escape cierra el modal/overlay visible más reciente (excepto los de batalla).
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      var sels = ['.av-modal', '.poke-modal', '.rar-modal'];
+      for (var i = 0; i < sels.length; i++) {
+        var ab = Array.prototype.filter.call(document.querySelectorAll(sels[i]), function (m) { return !m.hidden; });
+        if (ab.length) { ab[ab.length - 1].hidden = true; return; }
+      }
+    });
+  </script>
 </body>
 </html>
