@@ -49,11 +49,13 @@ for (const sid in evoData) for (const ev of (evoData[sid].evos || [])) {
 // ~28, nunca a nv.3; Caterpie (común, base) sale bajo; legendarios (tier alto) salen altos.
 const MARGEN_EVO = 8;
 export function nivelMinWild(id) {
-  const tier = tierDe(id, aparicion).nivel;                 // 1..10
-  const porTier = Math.round((tier - 1) / 9 * 38) + 1;      // tier1→1 … tier10→39
   const prod = _nivelProduccion[id];
-  const porEvo = prod === undefined ? 1 : Math.max(1, (prod > 0 ? prod : 22) - MARGEN_EVO); // por nivel: N-8; piedra: 14
-  return Math.min(50, Math.max(porTier, porEvo));
+  if (prod !== undefined) {   // es una evolución → manda el nivel de evolución (con margen)
+    return Math.min(50, Math.max(1, (prod > 0 ? prod : 22) - MARGEN_EVO)); // por nivel: N-8; piedra: 14
+  }
+  // forma base → por rareza (tier): legendarios salen altos, comunes bajos.
+  const tier = tierDe(id, aparicion).nivel;                 // 1..10
+  return Math.round((tier - 1) / 9 * 38) + 1;               // tier1→1 … tier10→39
 }
 // nivel salvaje al atrapar: ≥ mínimo, con cola EXPONENCIAL real (media ~4 sobre el mínimo →
 // niveles MUY altos son rarísimos, sin importar la especie).
