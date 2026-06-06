@@ -876,6 +876,11 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .mo-item{ display:flex; align-items:center; gap:8px; padding:12px 14px; border:1px solid var(--line); border-radius:11px; background:var(--paper-2); cursor:pointer; font:700 .92rem var(--font-mono); color:var(--ink); text-align:left; }
 .mo-item small{ margin-left:auto; font-weight:600; color:var(--ink-soft); }
 .mo-ico{ display:inline-flex; align-items:center; }
+/* botón de música/sonido en la batalla */
+#bt-combate{ position:relative; }
+.bt-mute{ position:absolute; top:8px; right:8px; z-index:5; width:34px; height:34px; border-radius:50%; border:1px solid var(--line);
+  background:var(--paper-2); cursor:pointer; font-size:1rem; line-height:1; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-sm); }
+.bt-mute:hover{ border-color:var(--red); transform:translateY(-1px); }
 .mo-item:hover{ border-color:var(--red); }
 /* banca: tu equipo (cambio manual) */
 .bt-banca-wrap{ margin-top:12px; }

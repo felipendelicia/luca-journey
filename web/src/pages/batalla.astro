@@ -21,6 +21,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     <div id="bt-online" hidden></div>
     <div id="bt-sel" hidden></div>
     <div id="bt-combate" hidden>
+      <button class="bt-mute" id="bt-mute" type="button" title="Música / sonido">🔊</button>
       <div class="bt-rival">
         <div class="bt-info"><span class="bt-nom" id="r-nom"></span><span class="bt-lv" id="r-lv"></span><span class="bt-tipos" id="r-tipos"></span><span class="bt-estado" id="r-estado"></span></div>
         <div class="bt-hpbar"><div class="bt-hp" id="r-hp"></div></div>
@@ -77,7 +78,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     import { combatiente, calcularDano, danoSuper, elegirCPU, equipoCPU, esEstado, aplicarEstado, puedeActuar, aplicarAilment, tickEstado, acierta, ESTADOS } from '../lib/batalla.js';
     import { etiquetaEfec } from '../lib/tipos.js';
     import { retoAlAzar } from '../lib/retos-batalla.js';
-    import { sonarExito, sonarEpico } from '../lib/sonidos.js';
+    import { sonarExito, sonarEpico, musicaBatalla, detenerMusica, toggleSonido, sonidoActivo } from '../lib/sonidos.js';
     import * as online from '../lib/batalla-online.js';
     import { amigos } from '../lib/social.js';
     import { refrescarDesdeNube } from '../lib/nube.js';
@@ -133,6 +134,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const rival = equipoCPU(pool, Math.min(3, equipo.length), Math.max(2, nivelProm + (Math.random() < 0.5 ? -2 : 2)));
       G = { equipo, rival, pa: 0, ra: 0, carga: 0, lock: false, itemsUsados: 0 };
       $('bt-sel').hidden = true; $('bt-combate').hidden = false; $('bt-fin').hidden = true;
+      musicaBatalla();          // 🎵 música de fondo de la pelea
       render(); msg('¡Aparece el rival! Elegí tu ataque.'); armarTimer();
       cry(rivAct().id, 0.45); setTimeout(() => cry(miAct().id, 0.4), 550);
     }
@@ -321,7 +323,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       return false;
     }
     function terminar(gano) {
-      G.lock = true; cancelarTimer(); cancelarRetoTimer();
+      G.lock = true; cancelarTimer(); cancelarRetoTimer(); detenerMusica();
       if (gano) {
         sonarEpico();
         const fams = new Set(G.equipo.map((c) => c.id));
@@ -411,17 +413,31 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       G.lock = false; render(); armarTimer();
     }
 
+    // botón de música/sonido en la batalla (global)
+    (function () {
+      const b = $('bt-mute'); if (!b) return;
+      const pintarMute = () => { b.textContent = sonidoActivo() ? '🔊' : '🔇'; };
+      pintarMute();
+      b.addEventListener('click', () => {
+        const activo = toggleSonido();      // true = quedó activo
+        pintarMute();
+        if (activo && !$('bt-combate').hidden) musicaBatalla(); else detenerMusica();
+      });
+    })();
+
     $('mochila-x').addEventListener('click', cerrarMochila);
     $('mochila-modal').addEventListener('click', (e) => { if (e.target === $('mochila-modal')) cerrarMochila(); });
 
     // ════════════════ Modo EN VIVO (PvP, server-autoritativo) ════════════════
     let OS = null;              // {snap, prev}
     let onlineWired = false;
+    let musOn = false;          // música de batalla online activa
     let selOnline = new Set();
     const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
     const loMsg = (t) => { const m = $('lo-msg'); if (m) m.textContent = t; };
 
     function volverInicio() {
+      detenerMusica(); musOn = false;
       $('bt-fin').hidden = true; $('bt-combate').hidden = true; $('bt-sel').hidden = true; $('bt-online').hidden = true;
       $('reto-modal').hidden = true; $('mochila-modal').hidden = true; $('bt-modo').hidden = false;
     }
@@ -550,6 +566,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       if (pr.balls) m += ' 🔴 +' + pr.balls + ' Pokéballs.';
       if (pr.caramelos) { const t = Object.values(pr.caramelos).reduce((a, b) => a + b, 0); if (t) m += ' 🍬 +' + t + ' caramelos.'; }
       if (pr.insignias && pr.insignias.length) m += ' 🏅 ¡Insignia nueva: ' + pr.insignias.join(', ') + '!';
+      detenerMusica(); musOn = false;
       $('fin-msg').textContent = m; if (gano) sonarEpico(); $('bt-fin').hidden = false;
       try { await refrescarDesdeNube(); } catch {}
     }
@@ -564,7 +581,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       online.onBatalla('invitado', () => loMsg('Invitación enviada. Esperando…'));
       online.onBatalla('invitacion', (d) => { if (confirm(((d && d.de) || 'Alguien') + ' te invitó a un duelo. ¿Aceptar?')) online.aceptar(d.roomId); });
       online.onBatalla('seleccion', (d) => { const m = $('so-msg'); if (m) { const r = (d.listos || []).find((x) => x.uid !== online.miUid()); m.textContent = r && r.listo ? 'Rival listo. ¡Empezamos!' : 'Esperando al rival…'; } });
-      online.onBatalla('estado', (snap) => { const prev = OS && OS.snap; OS = { snap, prev }; renderOnline(); animarOnline(snap, prev); });
+      online.onBatalla('estado', (snap) => { const prev = OS && OS.snap; OS = { snap, prev }; renderOnline(); animarOnline(snap, prev); if (snap.fase === 'combate' && !musOn) { musOn = true; musicaBatalla(); } });
       online.onBatalla('retoSuper', () => abrirRetoOnline());
       online.onBatalla('fin', (d) => finOnline(d));
       online.onBatalla('rivalDesconectado', (d) => { $('bt-msg').textContent = '⚠️ Rival desconectado. Esperando ' + ((d && d.graciaSeg) || 30) + 's…'; });
