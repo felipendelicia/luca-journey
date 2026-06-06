@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "auto-scripts",
+  "region": "alola",
+  "titulo": "Capitán Ilima: el Pokébot de la terminal",
+  "lider": "Capitán Ilima",
+  "premio": 72,
+  "intro": "El Capitán Ilima abre la región Alola con una prueba de automatización. Vas a construir un Pokébot que se maneja desde la terminal: lee opciones, arma su configuración con argparse y muestra un resumen. ¡Pasá la prueba de Ilima!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "leer",
+      "titulo": "1 · Leer una opción",
+      "consigna": "Escribí leer_opcion(argv, flag, defecto) que devuelva el texto que viene JUSTO DESPUÉS de `flag` dentro de la lista `argv`. Si `flag` no está (o no hay nada después), devolvé `defecto`.\n\nEjemplos:\n  leer_opcion([\"--tipo\", \"agua\"], \"--tipo\", \"todos\")  →  \"agua\"\n  leer_opcion([], \"--tipo\", \"todos\")                  →  \"todos\"",
+      "starter": "def leer_opcion(argv, flag, defecto):\n    ",
+      "tests": ["test_leer"]
+    },
+    {
+      "id": "config",
+      "titulo": "2 · Configuración con argparse",
+      "consigna": "Escribí construir_config(argv) que arme un ArgumentParser con estas opciones y devuelva los valores como diccionario (usá vars()):\n  --tipo     : texto, por defecto \"todos\"\n  --cantidad : entero, por defecto 5\n  --shiny    : bandera (action=\"store_true\")\n\nEjemplos:\n  construir_config([\"--cantidad\", \"3\", \"--shiny\"])  →  {\"tipo\": \"todos\", \"cantidad\": 3, \"shiny\": True}\n  construir_config([])  →  {\"tipo\": \"todos\", \"cantidad\": 5, \"shiny\": False}",
+      "starter": "import argparse\n\ndef construir_config(argv):\n    ",
+      "tests": ["test_config"]
+    },
+    {
+      "id": "resumen",
+      "titulo": "3 · Resumen legible",
+      "consigna": "Escribí resumen(config), donde `config` es un dict con \"tipo\", \"cantidad\" y \"shiny\". Devolvé un texto con este formato EXACTO:\n\n  \"Buscando <cantidad> Pokémon de tipo <tipo>.\"\n\nSi shiny es True, agregá la palabra \" shiny\" ANTES del punto final.\n\nEjemplos:\n  resumen({\"tipo\": \"agua\", \"cantidad\": 3, \"shiny\": False})  →  \"Buscando 3 Pokémon de tipo agua.\"\n  resumen({\"tipo\": \"fuego\", \"cantidad\": 1, \"shiny\": True})  →  \"Buscando 1 Pokémon de tipo fuego shiny.\"",
+      "starter": "def resumen(config):\n    ",
+      "tests": ["test_resumen"]
+    },
+    {
+      "id": "ejecutar",
+      "titulo": "4 · El bot completo (final)",
+      "consigna": "Integrá todo: escribí ejecutar(argv) que use construir_config(argv) para leer las opciones y devuelva el texto de resumen(...) correspondiente.\n\nEjemplo:\n  ejecutar([\"--tipo\", \"agua\", \"--cantidad\", \"2\"])  →  \"Buscando 2 Pokémon de tipo agua.\"\n  ejecutar([\"--shiny\"])  →  \"Buscando 5 Pokémon de tipo todos shiny.\"",
+      "starter": "def ejecutar(argv):\n    ",
+      "tests": ["test_ejecutar"]
+    }
+  ]
+}

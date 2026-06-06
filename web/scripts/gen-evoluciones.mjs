@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.resolve(HERE, '..', 'src', 'data', 'evoluciones.json');
-const N = 721, NIVEL_NO_LEVEL = 0;
+const N = 1025, NIVEL_NO_LEVEL = 0;
 
 // item.name de PokeAPI → id de la piedra tipada en la tienda (web/src/lib/items.js).
 const MAP_STONE = {

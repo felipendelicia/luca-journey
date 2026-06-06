@@ -1,0 +1,40 @@
+{
+  "tipo": "integrador",
+  "region": "alola",
+  "titulo": "Profesor Kukui: el bot diario de la Pokédex",
+  "lider": "Profesor Kukui",
+  "premio": 130,
+  "intro": "El Profesor Kukui te corona Campeón de Alola si juntás TODO: leer configuración, cargar datos y producir un reporte automático. Construí el bot diario de la Pokédex y quedate con la corona de la región.",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "config",
+      "titulo": "1 · Leer la configuración",
+      "consigna": "Escribí parsear_config(texto): líneas \"CLAVE=valor\", ignorando vacías y comentarios (#). Devolvé un dict.\n\nEjemplo:\n  parsear_config(\"# bot\\nMINIMO=20\\nMODO=diario\")  →  {\"MINIMO\": \"20\", \"MODO\": \"diario\"}",
+      "starter": "def parsear_config(texto):\n    ",
+      "tests": ["test_config"]
+    },
+    {
+      "id": "cargar",
+      "titulo": "2 · Cargar los Pokémon",
+      "consigna": "Escribí cargar_pokes(lineas), donde cada línea es \"nombre,nivel\". Devolvé una lista de dicts {\"nombre\", \"nivel\"} con el nivel como ENTERO.\n\nEjemplo:\n  cargar_pokes([\"Pikachu,30\", \"Onix,12\"])\n     →  [{\"nombre\": \"Pikachu\", \"nivel\": 30}, {\"nombre\": \"Onix\", \"nivel\": 12}]",
+      "starter": "def cargar_pokes(lineas):\n    ",
+      "tests": ["test_cargar"]
+    },
+    {
+      "id": "seleccionar",
+      "titulo": "3 · Seleccionar y ordenar",
+      "consigna": "Escribí seleccionar(pokes, minimo): devolvé los Pokémon con nivel >= minimo, ORDENADOS por nivel de mayor a menor.\n\nEjemplo:\n  seleccionar([{\"nombre\": \"a\", \"nivel\": 10}, {\"nombre\": \"b\", \"nivel\": 40}, {\"nombre\": \"c\", \"nivel\": 25}], 20)\n     →  [{\"nombre\": \"b\", \"nivel\": 40}, {\"nombre\": \"c\", \"nivel\": 25}]",
+      "starter": "def seleccionar(pokes, minimo):\n    ",
+      "tests": ["test_seleccionar"]
+    },
+    {
+      "id": "ejecutar",
+      "titulo": "4 · El bot completo (final)",
+      "consigna": "Integrá todo: escribí ejecutar(config_texto, lineas). Leé la config (usá MINIMO, por defecto \"1\", convertilo a int), cargá los Pokémon, seleccioná los que llegan al mínimo y devolvé un texto con formato EXACTO:\n\n  \"<cantidad> Pokémon listos (nivel >= <minimo>).\"\n\nEjemplo:\n  ejecutar(\"MINIMO=20\", [\"Pikachu,30\", \"Onix,12\", \"Snorlax,25\"])\n     →  \"2 Pokémon listos (nivel >= 20).\"",
+      "starter": "def ejecutar(config_texto, lineas):\n    ",
+      "tests": ["test_ejecutar"]
+    }
+  ]
+}

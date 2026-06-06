@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.resolve(HERE, '..', 'src', 'data', 'estadisticas.json');
-const N = 721;
+const N = 1025;
 const ORDEN = ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'];
 
 async function jget(url) { for (let i = 0; i < 4; i++) { try { const r = await fetch(url); if (r.ok) return await r.json(); } catch {} } return null; }

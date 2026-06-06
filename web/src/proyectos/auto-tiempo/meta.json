@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "auto-tiempo",
+  "region": "alola",
+  "titulo": "Capitana Acerola: el agendador de tareas",
+  "lider": "Capitana Acerola",
+  "premio": 82,
+  "intro": "Acerola, del tipo fantasma, aparece siempre en el momento justo. Construí un agendador que sepa cuándo toca correr cada tarea. ¡No llegues tarde a la cita con Acerola!",
+  "preamble": "from datetime import datetime, timedelta",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "minutos",
+      "titulo": "1 · Minutos entre dos momentos",
+      "consigna": "Escribí minutos_entre(t1, t2) (dos datetime) que devuelva cuántos minutos COMPLETOS hay de t1 a t2, como entero.\n\nEjemplo:\n  minutos_entre(datetime(2024,1,1,10,0), datetime(2024,1,1,11,30))  →  90",
+      "starter": "from datetime import datetime, timedelta\n\ndef minutos_entre(t1, t2):\n    ",
+      "tests": ["test_minutos"]
+    },
+    {
+      "id": "vencida",
+      "titulo": "2 · ¿Ya venció?",
+      "consigna": "Escribí vencida(programada, ahora) (dos datetime) que devuelva True si `ahora` es igual o posterior a `programada`.\n\nEjemplo:\n  vencida(datetime(2024,1,1,10,0), datetime(2024,1,1,10,5))  →  True",
+      "starter": "from datetime import datetime\n\ndef vencida(programada, ahora):\n    ",
+      "tests": ["test_vencida"]
+    },
+    {
+      "id": "proxima",
+      "titulo": "3 · Próxima corrida",
+      "consigna": "Escribí proxima(ahora, cada_min) que devuelva el datetime de la próxima corrida: `ahora` más `cada_min` minutos. (Usá timedelta.)\n\nEjemplo:\n  proxima(datetime(2024,1,1,10,0), 15)  →  datetime(2024,1,1,10,15)",
+      "starter": "from datetime import datetime, timedelta\n\ndef proxima(ahora, cada_min):\n    ",
+      "tests": ["test_proxima"]
+    },
+    {
+      "id": "pendientes",
+      "titulo": "4 · Tareas pendientes (final)",
+      "consigna": "Escribí pendientes(tareas, ahora): `tareas` es una lista de tuplas (nombre, momento_programado). Devolvé la lista de NOMBRES cuyas tareas ya tendrían que haber corrido (momento <= ahora).\n\nEjemplo:\n  t = [(\"backup\", datetime(2024,1,1,9,0)), (\"reporte\", datetime(2024,1,1,12,0))]\n  pendientes(t, datetime(2024,1,1,10,0))  →  [\"backup\"]",
+      "starter": "from datetime import datetime\n\ndef pendientes(tareas, ahora):\n    ",
+      "tests": ["test_pendientes"]
+    }
+  ]
+}

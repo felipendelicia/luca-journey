@@ -51,6 +51,14 @@ export const GRUPOS = [
       'primer-test', 'casos-limite', 'tdd', 'proyecto-testing',
     ],
   },
+  {
+    nombre: 'Automatizaciones',
+    icono: '⚙️',
+    slugs: [
+      'auto-scripts', 'auto-archivos', 'auto-lote', 'auto-subprocess',
+      'auto-entorno', 'auto-tiempo', 'auto-scraping', 'auto-bot',
+    ],
+  },
   { nombre: 'Git', icono: '🔀', slugs: ['git'] },
   { nombre: 'Ayuda', icono: '❓', slugs: ['ayuda'] },
 ];

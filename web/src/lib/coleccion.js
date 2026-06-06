@@ -100,7 +100,7 @@ export const INSIGNIAS = {
   'errores-try-except': 650, 'raise-validar': 653, 'excepciones-propias': 656, 'assert-afirmaciones': 659,
   'primer-test': 667, 'casos-limite': 677, 'tdd': 696, 'proyecto-testing': 714,
 };
-export const LEGENDARIOS = { kanto: 150, johto: 249, hoenn: 384, sinnoh: 483, unova: 643, kalos: 716 };
+export const LEGENDARIOS = { kanto: 150, johto: 249, hoenn: 384, sinnoh: 483, unova: 643, kalos: 716, alola: 791, galar: 888, paldea: 1007 };
 
 export const spriteUrl = (id, shiny = false) =>
   `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${shiny ? 'shiny/' : ''}${id}.png`;

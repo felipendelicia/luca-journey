@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "auto-entorno",
+  "region": "alola",
+  "titulo": "Capitán Sophocles: el cargador de configuración",
+  "lider": "Capitán Sophocles",
+  "premio": 80,
+  "intro": "Sophocles, el genio de los aparatos, no deja NADA escrito a mano: todo sale de archivos de config. Construí un cargador que lea un .env y aplique valores por defecto. ¡Resolvé el circuito de Sophocles!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "comentario",
+      "titulo": "1 · ¿Línea para ignorar?",
+      "consigna": "Escribí es_comentario(linea) que devuelva True si la línea está vacía (solo espacios) o empieza con # (es un comentario). Si no, False.\n\nEjemplos:\n  es_comentario(\"# nota\")  →  True\n  es_comentario(\"   \")     →  True\n  es_comentario(\"API=1\")   →  False",
+      "starter": "def es_comentario(linea):\n    ",
+      "tests": ["test_comentario"]
+    },
+    {
+      "id": "partir",
+      "titulo": "2 · Partir CLAVE=valor",
+      "consigna": "Escribí partir(linea) que separe una línea \"CLAVE=valor\" en una tupla (clave, valor), sin espacios al borde. Partí SOLO en el primer = (el valor puede tener más).\n\nEjemplos:\n  partir(\"API = abc \")       →  (\"API\", \"abc\")\n  partir(\"URL=http://a=b\")   →  (\"URL\", \"http://a=b\")",
+      "starter": "def partir(linea):\n    ",
+      "tests": ["test_partir"]
+    },
+    {
+      "id": "cargar",
+      "titulo": "3 · Cargar el archivo",
+      "consigna": "Escribí cargar(texto) que recorra todas las líneas, ignore las de comentario/vacías y devuelva un dict con las claves y valores. (Podés reusar es_comentario y partir.)\n\nEjemplo:\n  cargar(\"# config\\nAPI=abc\\nDEBUG=1\")  →  {\"API\": \"abc\", \"DEBUG\": \"1\"}",
+      "starter": "def cargar(texto):\n    ",
+      "tests": ["test_cargar"]
+    },
+    {
+      "id": "defectos",
+      "titulo": "4 · Aplicar valores por defecto (final)",
+      "consigna": "Escribí con_defectos(config, defectos): devolvé un dict que tenga todos los `defectos`, pero donde lo que esté en `config` PISA al defecto.\n\nEjemplo:\n  con_defectos({\"DEBUG\": \"1\"}, {\"DEBUG\": \"0\", \"NIVEL\": \"info\"})\n     →  {\"DEBUG\": \"1\", \"NIVEL\": \"info\"}",
+      "starter": "def con_defectos(config, defectos):\n    ",
+      "tests": ["test_defectos"]
+    }
+  ]
+}

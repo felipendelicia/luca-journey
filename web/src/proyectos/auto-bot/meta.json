@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "auto-bot",
+  "region": "alola",
+  "titulo": "Kahuna Hala: el bot del equipo",
+  "lider": "Kahuna Hala",
+  "premio": 90,
+  "intro": "Hala, el Kahuna de Alola, pone a prueba todo lo aprendido. Construí un bot que cargue un equipo desde texto, lo analice y arme un reporte. ¡Ganate el respeto del Kahuna!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "cargar",
+      "titulo": "1 · Cargar el equipo",
+      "consigna": "Escribí cargar(lineas), donde cada línea es \"nombre,tipo,nivel\". Devolvé una lista de dicts {\"nombre\", \"tipo\", \"nivel\"} con el nivel convertido a ENTERO.\n\nEjemplo:\n  cargar([\"Pikachu,electrico,30\", \"Onix,roca,12\"])\n     →  [{\"nombre\": \"Pikachu\", \"tipo\": \"electrico\", \"nivel\": 30},\n         {\"nombre\": \"Onix\", \"tipo\": \"roca\", \"nivel\": 12}]",
+      "starter": "def cargar(lineas):\n    ",
+      "tests": ["test_cargar"]
+    },
+    {
+      "id": "promedio",
+      "titulo": "2 · Nivel promedio",
+      "consigna": "Escribí promedio_nivel(pokes) (lista de dicts con \"nivel\") que devuelva el promedio de niveles, REDONDEADO a entero. Si la lista está vacía, devolvé 0.\n\nEjemplo:\n  promedio_nivel([{\"nivel\": 10}, {\"nivel\": 20}, {\"nivel\": 30}])  →  20",
+      "starter": "def promedio_nivel(pokes):\n    ",
+      "tests": ["test_promedio"]
+    },
+    {
+      "id": "mejor",
+      "titulo": "3 · El mejor del equipo",
+      "consigna": "Escribí mejor(pokes) que devuelva el NOMBRE del Pokémon de mayor nivel. Si la lista está vacía, devolvé \"\".\n\nEjemplo:\n  mejor([{\"nombre\": \"a\", \"nivel\": 5}, {\"nombre\": \"b\", \"nivel\": 40}])  →  \"b\"",
+      "starter": "def mejor(pokes):\n    ",
+      "tests": ["test_mejor"]
+    },
+    {
+      "id": "reporte",
+      "titulo": "4 · Reporte del bot (final)",
+      "consigna": "Escribí reporte(pokes) que devuelva un texto con este formato EXACTO:\n\n  \"<cantidad> Pokémon, nivel promedio <prom>, mejor: <nombre>.\"\n\nEjemplo:\n  reporte([{\"nombre\": \"Pikachu\", \"nivel\": 30}, {\"nombre\": \"Onix\", \"nivel\": 10}])\n     →  \"2 Pokémon, nivel promedio 20, mejor: Pikachu.\"",
+      "starter": "def reporte(pokes):\n    ",
+      "tests": ["test_reporte"]
+    }
+  ]
+}

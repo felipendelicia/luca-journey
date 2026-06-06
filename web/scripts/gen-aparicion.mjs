@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.resolve(HERE, '..', 'src', 'data', 'aparicion.json');
 
-const N = 721;
+const N = 1025;
 const LOTE = 20;
 const MIN_BST = 200, MAX_BST = 720;   // rango aprox. de BST en gen 1-6
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));

@@ -218,6 +218,12 @@ const BADGES = {
     ['star8', '#f4cf3a', '#caa000', 'bolt'], ['star5', '#f7aee6', '#d060b0'],
     ['circle', '#b06be0', '#7b34c0', 'sparkle'], ['mountain', '#b2eef2', '#48b8d8'],
   ],
+  alola: [
+    ['gear', '#4fd0c0', '#1f8f88'], ['square', '#ffae4c', '#d87a10'],
+    ['spiral', '#b06be0', '#7320b8'], ['hexagon', '#7a8aa0', '#3a4658'],
+    ['diamond', '#ffd23f', '#e0a400'], ['circle', '#5cb3ec', '#1f6dbf', 'sun'],
+    ['octagon', '#5cc08f', '#2f8f5f'], ['star8', '#ffd86b', '#e08a00', 'sparkle'],
+  ],
 };
 
 export function badgeSvg(region, i, won = true, size = 28) {

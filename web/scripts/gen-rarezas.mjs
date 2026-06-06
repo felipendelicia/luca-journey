@@ -9,7 +9,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.resolve(HERE, '..', 'src', 'data', 'rarezas.json');
 
 const peso = {};
-const ids = Array.from({ length: 721 }, (_, i) => i + 1);
+const ids = Array.from({ length: 1025 }, (_, i) => i + 1);
 const lote = 25;
 for (let i = 0; i < ids.length; i += lote) {
   await Promise.all(ids.slice(i, i + lote).map(async (id) => {

@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "auto-archivos",
+  "region": "alola",
+  "titulo": "Capitana Lana: el organizador de descargas",
+  "lider": "Capitana Lana",
+  "premio": 74,
+  "intro": "La Capitana Lana, del agua, vive ordenando su tabla de surf… y su carpeta de descargas es un caos. Construí un organizador que descomponga rutas y arme el destino de cada archivo. ¡Superá la prueba de Lana!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "carpeta",
+      "titulo": "1 · ¿En qué carpeta está?",
+      "consigna": "Escribí carpeta_de(ruta) que devuelva, como texto, la carpeta que contiene al archivo (todo lo anterior al nombre final).\n\nEjemplos:\n  carpeta_de(\"descargas/fotos/pikachu.png\")  →  \"descargas/fotos\"\n  carpeta_de(\"raiz.txt\")  →  \".\"",
+      "starter": "from pathlib import Path\n\ndef carpeta_de(ruta):\n    ",
+      "tests": ["test_carpeta"]
+    },
+    {
+      "id": "prefijo",
+      "titulo": "2 · Renombrar con prefijo",
+      "consigna": "Escribí con_prefijo(nombre, prefijo) que devuelva el nombre con el prefijo adelante.\n\nEjemplo:\n  con_prefijo(\"pikachu.png\", \"2024_\")  →  \"2024_pikachu.png\"",
+      "starter": "def con_prefijo(nombre, prefijo):\n    ",
+      "tests": ["test_prefijo"]
+    },
+    {
+      "id": "destino",
+      "titulo": "3 · Armar la ruta destino",
+      "consigna": "Escribí ruta_destino(carpeta, nombre) que una una carpeta y un nombre de archivo en una sola ruta, como texto. Usá pathlib para no pelear con las barras.\n\nEjemplo:\n  ruta_destino(\"orden/imagenes\", \"pikachu.png\")  →  \"orden/imagenes/pikachu.png\"",
+      "starter": "from pathlib import Path\n\ndef ruta_destino(carpeta, nombre):\n    ",
+      "tests": ["test_destino"]
+    },
+    {
+      "id": "organizar",
+      "titulo": "4 · Organizar por extensión (final)",
+      "consigna": "Escribí organizar(rutas), que recibe una lista de rutas de archivos y devuelve un diccionario que agrupa los NOMBRES de archivo por su extensión (con el punto).\n\nEjemplo:\n  organizar([\"a/x.png\", \"b/y.txt\", \"c/z.png\"])\n     →  {\".png\": [\"x.png\", \"z.png\"], \".txt\": [\"y.txt\"]}",
+      "starter": "from pathlib import Path\n\ndef organizar(rutas):\n    ",
+      "tests": ["test_organizar"]
+    }
+  ]
+}

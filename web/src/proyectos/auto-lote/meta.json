@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "auto-lote",
+  "region": "alola",
+  "titulo": "Capitán Kiawe: limpieza de la carpeta de descargas",
+  "lider": "Capitán Kiawe",
+  "premio": 76,
+  "intro": "Kiawe, el capitán de fuego, hace todo con intensidad… incluso descargar archivos. Su carpeta explotó. Construí un limpiador en lote que clasifique e informe. ¡Aguantá el ritmo de Kiawe!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "es_imagen",
+      "titulo": "1 · ¿Es una imagen?",
+      "consigna": "Escribí es_imagen(nombre) que devuelva True si el archivo es una imagen (termina en .png, .jpg, .jpeg o .gif), sin importar mayúsculas/minúsculas.\n\nEjemplos:\n  es_imagen(\"pikachu.PNG\")  →  True\n  es_imagen(\"notas.txt\")    →  False",
+      "starter": "def es_imagen(nombre):\n    ",
+      "tests": ["test_es_imagen"]
+    },
+    {
+      "id": "total",
+      "titulo": "2 · Tamaño total",
+      "consigna": "Escribí total_tamano(items), donde items es una lista de tuplas (nombre, tamaño). Devolvé la suma de todos los tamaños.\n\nEjemplo:\n  total_tamano([(\"a\", 10), (\"b\", 5)])  →  15",
+      "starter": "def total_tamano(items):\n    ",
+      "tests": ["test_total"]
+    },
+    {
+      "id": "grandes",
+      "titulo": "3 · Los que ocupan mucho",
+      "consigna": "Escribí filtrar_grandes(items, minimo): items es una lista de (nombre, tamaño). Devolvé la lista de NOMBRES cuyo tamaño sea mayor o igual a `minimo`.\n\nEjemplo:\n  filtrar_grandes([(\"a\", 10), (\"b\", 100), (\"c\", 50)], 50)  →  [\"b\", \"c\"]",
+      "starter": "def filtrar_grandes(items, minimo):\n    ",
+      "tests": ["test_grandes"]
+    },
+    {
+      "id": "resumen",
+      "titulo": "4 · Informe de la carpeta (final)",
+      "consigna": "Escribí resumen_carpeta(items) (lista de tuplas (nombre, tamaño)) que devuelva un texto con este formato EXACTO:\n\n  \"<cantidad> archivos, <total> bytes en total.\"\n\nEjemplo:\n  resumen_carpeta([(\"a\", 10), (\"b\", 5)])  →  \"2 archivos, 15 bytes en total.\"\n  resumen_carpeta([])  →  \"0 archivos, 0 bytes en total.\"",
+      "starter": "def resumen_carpeta(items):\n    ",
+      "tests": ["test_resumen"]
+    }
+  ]
+}

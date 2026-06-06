@@ -67,6 +67,15 @@ const SEMANAS = [
   ['casos-limite', 'Casos límite y errores', 'kalos'],
   ['tdd', 'TDD: el test primero', 'kalos'],
   ['proyecto-testing', 'Proyecto: módulo testeado', 'kalos'],
+  // Alola — automatizaciones
+  ['auto-scripts', 'Scripts y argumentos', 'alola'],
+  ['auto-archivos', 'Archivos y rutas', 'alola'],
+  ['auto-lote', 'Procesar carpetas en lote', 'alola'],
+  ['auto-subprocess', 'Ejecutar programas', 'alola'],
+  ['auto-entorno', 'Variables de entorno y config', 'alola'],
+  ['auto-tiempo', 'Fechas, esperas y agendado', 'alola'],
+  ['auto-scraping', 'Scraping: extraer datos', 'alola'],
+  ['auto-bot', 'Proyecto: automatizador', 'alola'],
 ];
 const IGNORAR = new Set(['ejercicios.py', 'soluciones.py', 'test_ejercicios.py']);
 const leer = (p) => (fs.existsSync(p) ? fs.readFileSync(p, 'utf-8') : null);

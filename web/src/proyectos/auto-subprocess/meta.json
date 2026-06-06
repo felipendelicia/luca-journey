@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "auto-subprocess",
+  "region": "alola",
+  "titulo": "Capitana Mallow: el lanzador de comandos",
+  "lider": "Capitana Mallow",
+  "premio": 78,
+  "intro": "Mallow cocina recetas con muchos pasos, igual que un script que encadena programas. Construí un lanzador que arme comandos y entienda sus resultados. ¡Cociná la victoria contra Mallow!",
+  "preamble": "",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "armar",
+      "titulo": "1 · Armar el comando",
+      "consigna": "Escribí armar(programa, args) que devuelva la lista de comando: el programa seguido de todos los argumentos de la lista `args`.\n\nEjemplo:\n  armar(\"python\", [\"bot.py\", \"--v\"])  →  [\"python\", \"bot.py\", \"--v\"]\n  armar(\"ls\", [])  →  [\"ls\"]",
+      "starter": "def armar(programa, args):\n    ",
+      "tests": ["test_armar"]
+    },
+    {
+      "id": "ok",
+      "titulo": "2 · ¿Salió bien?",
+      "consigna": "Escribí ok(returncode) que devuelva True si el código de salida es 0 (éxito), o False en cualquier otro caso.\n\nEjemplos:\n  ok(0)  →  True   ·   ok(2)  →  False",
+      "starter": "def ok(returncode):\n    ",
+      "tests": ["test_ok"]
+    },
+    {
+      "id": "primera",
+      "titulo": "3 · Primera línea útil",
+      "consigna": "Escribí primera_linea(salida) que devuelva la primera línea NO vacía del texto (sin espacios al borde). Si no hay ninguna, devolvé \"\".\n\nEjemplo:\n  primera_linea(\"\\n  Listo!  \\nmás\")  →  \"Listo!\"",
+      "starter": "def primera_linea(salida):\n    ",
+      "tests": ["test_primera"]
+    },
+    {
+      "id": "reporte",
+      "titulo": "4 · Reporte del resultado (final)",
+      "consigna": "Escribí reporte(resultado), donde resultado es un dict con \"returncode\" y \"stdout\". Devolvé:\n  - si returncode es 0:  \"OK: <primera línea útil de stdout>\"\n  - si no:               \"ERROR (codigo <returncode>)\"\n\nEjemplos:\n  reporte({\"returncode\": 0, \"stdout\": \"Hecho\\n\"})  →  \"OK: Hecho\"\n  reporte({\"returncode\": 2, \"stdout\": \"\"})         →  \"ERROR (codigo 2)\"",
+      "starter": "def reporte(resultado):\n    ",
+      "tests": ["test_reporte"]
+    }
+  ]
+}

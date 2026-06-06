@@ -1,0 +1,41 @@
+{
+  "tipo": "lider",
+  "tema": "auto-scraping",
+  "region": "alola",
+  "titulo": "Capitana Mina: el extractor de fichas",
+  "lider": "Capitana Mina",
+  "premio": 84,
+  "intro": "Mina, del tipo hada, es artista: ve patrones donde otros ven ruido. Construí un extractor que saque la ficha de un Pokémon desde el HTML de su página. ¡Capturá el arte de Mina!",
+  "preamble": "import re",
+  "packages": [],
+  "pasos": [
+    {
+      "id": "espacios",
+      "titulo": "1 · Limpiar espacios",
+      "consigna": "Escribí limpiar_espacios(texto) que reemplace cualquier grupo de espacios/saltos por UN solo espacio, y saque los espacios del borde.\n\nEjemplo:\n  limpiar_espacios(\"  Hola   \\n  mundo \")  →  \"Hola mundo\"",
+      "starter": "import re\n\ndef limpiar_espacios(texto):\n    ",
+      "tests": ["test_espacios"]
+    },
+    {
+      "id": "titulo",
+      "titulo": "2 · Extraer el título",
+      "consigna": "Escribí extraer_titulo(html) que devuelva el texto dentro del primer <h1>...</h1>. Si no hay, devolvé \"\".\n\nEjemplo:\n  extraer_titulo(\"<h1>Pikachu</h1><p>...</p>\")  →  \"Pikachu\"",
+      "starter": "import re\n\ndef extraer_titulo(html):\n    ",
+      "tests": ["test_titulo"]
+    },
+    {
+      "id": "items",
+      "titulo": "3 · Extraer la lista",
+      "consigna": "Escribí extraer_items(html) que devuelva la lista de textos dentro de cada <li>...</li>.\n\nEjemplo:\n  extraer_items(\"<ul><li>Rayo</li><li>Placaje</li></ul>\")  →  [\"Rayo\", \"Placaje\"]",
+      "starter": "import re\n\ndef extraer_items(html):\n    ",
+      "tests": ["test_items"]
+    },
+    {
+      "id": "ficha",
+      "titulo": "4 · La ficha completa (final)",
+      "consigna": "Escribí ficha(html) que devuelva un dict con el título y los items: {\"nombre\": <título>, \"movimientos\": <lista de items>}.\n\nEjemplo:\n  ficha(\"<h1>Pikachu</h1><ul><li>Rayo</li><li>Placaje</li></ul>\")\n     →  {\"nombre\": \"Pikachu\", \"movimientos\": [\"Rayo\", \"Placaje\"]}",
+      "starter": "import re\n\ndef ficha(html):\n    ",
+      "tests": ["test_ficha"]
+    }
+  ]
+}
