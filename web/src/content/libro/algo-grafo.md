@@ -40,4 +40,22 @@ def hay_arista(grafo, a, b):
 
 Sobre grafos corren los algoritmos más famosos: encontrar el **camino más corto** (GPS), detectar **comunidades** (redes sociales), ordenar **dependencias** (qué instalar primero). Recorrerlos usa pila (DFS) o cola (BFS) — por eso vinieron antes.
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: Un grafo como "diccionario de adyacencia" mapea…
++ cada nodo → la lista de sus vecinos
+- cada nodo → un único valor
+- números → nodos
+> `{nodo: [vecinos]}` es la forma más práctica en Python.
+```
+
+```quiz
+P: `grafo.get(nodo, [])` sirve para…
++ devolver `[]` si el nodo no existe (en vez de romper)
+- agregar un nodo nuevo
+- ordenar los nodos
+> Evita el `KeyError` dando una lista vacía por defecto.
+```
+
 🕸️ La **Líder Ryme** te espera para tejer su red.

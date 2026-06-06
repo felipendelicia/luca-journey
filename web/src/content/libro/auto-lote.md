@@ -53,4 +53,24 @@ grande = max(archivos, key=lambda par: par[1])  # ("b.txt", 99)
 print(total, grande[0])
 ```
 
-En los ejercicios vas a clasificar y resumir un listado de carpeta. 🔁 El **Capitán Kiawe** quiere ver tu velocidad procesando en lote.
+En los ejercicios vas a clasificar y resumir un listado de carpeta.
+
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: `Path("fotos").glob("*.png")` devuelve…
+- solo el primer .png
++ todos los archivos .png de esa carpeta
+- los .png de todas las subcarpetas
+> `*` matchea cualquier nombre con esa extensión en esa carpeta; `**` entraría a las subcarpetas.
+```
+
+```quiz
+P: El patrón típico para procesar en lote es…
++ recorrer → filtrar → transformar
+- abrir un solo archivo y cerrarlo
+- imprimir todo sin más
+> Recorrés la lista, filtrás lo que te sirve y le hacés algo a cada uno.
+```
+
+🔁 El **Capitán Kiawe** quiere ver tu velocidad procesando en lote.

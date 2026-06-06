@@ -47,4 +47,22 @@ def fib(n):
 
 > ⚠️ Toda recursión se puede escribir con bucles, y viceversa. La recursión brilla cuando el problema **es** recursivo: árboles, fractales, dividir y conquistar.
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: Una función recursiva SIN caso base…
++ se llama para siempre y revienta (RecursionError)
+- devuelve 0
+- es más rápida
+> El caso base es lo que la frena.
+```
+
+```quiz
+P: `factorial(0)` debe devolver…
++ 1
+- 0
+- error
+> Es el caso base: 0! = 1.
+```
+
 🔁 El **Líder Larry** te espera: lo simple, recursivo.

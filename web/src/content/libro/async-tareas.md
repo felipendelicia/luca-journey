@@ -48,4 +48,22 @@ print(repartir([1, 2, 3, 4, 5], 2))   # [[1, 3, 5], [2, 4]]
 
 Un reparto está **equilibrado** si entre el worker más lleno y el más vacío hay como mucho 1 de diferencia.
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: Lanzar 2 tareas juntas con `create_task` hace que el tiempo total sea…
++ el de la más lenta (no la suma)
+- la suma de las dos
+- el doble
+> Corren en paralelo: tarda lo que la más lenta.
+```
+
+```quiz
+P: El reparto round-robin distribuye las tareas…
++ una a cada worker por turno
+- todas al primer worker
+- al azar
+> El operador `%` cicla entre 0, 1, …, n-1.
+```
+
 🧵 El **Líder Kabu** te espera para balancear tareas.

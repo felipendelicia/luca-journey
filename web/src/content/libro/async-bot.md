@@ -46,4 +46,22 @@ Fijate el patrón: **dentro** del lote, todo junto (`gather`); **entre** lotes, 
 
 Asincronía y concurrencia: hacer muchas cosas a la vez sin trabarte, repartir trabajo y controlar el caudal. Es lo que hace que las apps modernas sean rápidas.
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: En el descargador, DENTRO de un lote las descargas van…
++ todas juntas, con `gather`
+- de a una, esperando cada una
+- al azar
+> Dentro del lote, en paralelo; entre lotes, de a uno (respetando el límite).
+```
+
+```quiz
+P: ¿Por qué procesar por lotes en vez de todo junto?
++ respeta el límite de concurrencia y no satura
+- queda más lindo
+- usa menos código
+> Rápido pero prolijo: el lote en paralelo, el límite respetado.
+```
+
 ⚡ El **Líder Raihan** y el **Campeón Leon** te esperan para coronarte **Campeón de Galar**.

@@ -54,4 +54,22 @@ Eso es un bot: funciones simples conectadas. Si cada una está bien testeada, el
 
 Argumentos, archivos, lotes, procesos, configuración, tiempo y scraping: todas las piezas de la automatización. Ahora las juntás.
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: La receta de casi toda automatización es…
++ cargar → transformar → reportar
+- solo imprimir en pantalla
+- abrir y cerrar archivos al azar
+> Cargás datos, los procesás (filtrar/agrupar/calcular) y mostrás o guardás el resultado.
+```
+
+```quiz
+P: ¿Por qué conviene que cada paso del bot sea una función chica?
++ es testeable y el bot se lee como una historia
+- corre más rápido siempre
+- usa menos memoria
+> Funciones chicas y bien testeadas hacen que el todo funcione.
+```
+
 🤖 El **Kahuna Hala** y el **Profesor Kukui** te esperan para coronarte **Campeón de Alola**. ¡A automatizar!

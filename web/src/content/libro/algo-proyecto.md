@@ -50,4 +50,22 @@ El mismo patrón `key=...` sirve para `sorted`, `max` y `min`. Domínalo y resol
 
 Búsqueda, orden, pilas, colas, recursión, grafos y tablas hash: las **estructuras de datos y algoritmos** que son la base de toda la informática. Con esto pensás soluciones, no solo código.
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: `sorted(pokes, key=lambda p: p["nivel"], reverse=True)` ordena…
++ por nivel, de mayor a menor
+- por nombre
+- al azar
+> `key` dice por qué campo ordenar; `reverse=True` lo hace descendente.
+```
+
+```quiz
+P: El patrón `key=...` sirve para…
++ `sorted`, `max` y `min`
+- solo para `sorted`
+- solo para `print`
+> El mismo truco ordena y encuentra el mayor/menor por un campo.
+```
+
 🏆 La **Líder Grusha** y la **Campeona Geeta** te esperan para coronarte **Campeón de Paldea**.

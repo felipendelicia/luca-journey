@@ -50,4 +50,24 @@ print(p.is_dir())     # ¿es carpeta?
 p.mkdir(exist_ok=True)  # crear carpeta (sin error si ya está)
 ```
 
-Con esto manejás archivos sueltos. En los ejercicios vas a descomponer rutas y guardar/leer texto. 📁 La **Capitana Lana** te espera para ordenar su carpeta de descargas.
+Con esto manejás archivos sueltos. En los ejercicios vas a descomponer rutas y guardar/leer texto.
+
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: `Path("datos/a/c.txt").name` devuelve…
+- "datos/a/c"
++ "c.txt"
+- ".txt"
+> `.name` es el nombre final del archivo; `.suffix` sería `".txt"`.
+```
+
+```quiz
+P: ¿Cómo unís una carpeta y un archivo con pathlib?
++ `Path("carpeta") / "archivo.txt"`
+- `Path("carpeta") + "archivo.txt"`
+- `Path.unir("carpeta", "archivo.txt")`
+> Se usa el operador `/` y pathlib pone las barras correctas en cualquier sistema.
+```
+
+📁 La **Capitana Lana** te espera para ordenar su carpeta de descargas.

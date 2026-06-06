@@ -213,7 +213,9 @@ const grupos = agrupar(caps);
     document.querySelectorAll('.book pre.astro-code').forEach((pre) => {
       const lang = (pre.getAttribute('data-language') || '').toLowerCase();
       const codigo = pre.innerText.replace(/\n+$/, '');
-      if (lang === 'quiz') { renderQuiz(pre, codigo); return; }
+      // quiz: Shiki marca el bloque como 'plaintext' (no conoce 'quiz'), así que también lo
+      // detectamos por su contenido (empieza con "P: ").
+      if (lang === 'quiz' || /^\s*P:\s/.test(codigo)) { renderQuiz(pre, codigo); return; }
       const fig = document.createElement('figure');
       fig.className = 'cw';
       const bar = document.createElement('div');

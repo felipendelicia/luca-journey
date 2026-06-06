@@ -46,4 +46,22 @@ def balanceado(texto):
 
 > 💡 Si un problema dice "lo último primero" o "deshacer hacia atrás", pensá en una pila.
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: Una pila (stack) es…
++ LIFO: el último que entra es el primero que sale
+- FIFO: el primero que entra sale primero
+- una lista siempre ordenada
+> Como una pila de platos: ponés y sacás de arriba.
+```
+
+```quiz
+P: ¿Para cuál de estos sirve naturalmente una pila?
++ deshacer acciones / validar paréntesis
+- atender una fila de turnos
+- ordenar de menor a mayor
+> "Lo último primero" → pila. Los turnos son cola (FIFO).
+```
+
 🥞 El **Líder Iono** te espera para apilar a lo grande.

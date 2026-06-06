@@ -43,4 +43,22 @@ Los dos son **O(n²)**: con listas grandes se vuelven lentos. Los algoritmos rea
 
 > 💡 El truco `a, b = b, a` intercambia dos variables sin una tercera. Es marca registrada de Python.
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: Burbuja y selección son algoritmos…
++ O(n²) — lentos con listas grandes
+- O(n log n)
+- instantáneos
+> Los que usa Python de verdad (Timsort) son O(n log n), mucho más rápidos.
+```
+
+```quiz
+P: `a, b = b, a` hace…
++ intercambiar el valor de dos variables
+- sumarlas
+- borrarlas
+> Es el "swap" pythónico, sin variable auxiliar.
+```
+
 🔢 El **Líder Brassius** te espera para ordenar su obra.

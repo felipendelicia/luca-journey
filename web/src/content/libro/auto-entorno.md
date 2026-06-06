@@ -63,4 +63,22 @@ defectos = {"DEBUG": "0", "NIVEL": "info"}
 final = {**defectos, **config}   # config gana donde coincida
 ```
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: ¿Dónde NO deberías escribir una contraseña o API key?
++ en el código fuente
+- en una variable de entorno
+- en un archivo .env ignorado por git
+> Si va en el código, se filtra al subirlo a Git. Va en el entorno o en config.
+```
+
+```quiz
+P: Un valor leído del entorno con `os.environ` es siempre…
++ texto (str)
+- un número
+- un booleano
+> Todo lo del entorno es texto; si querés número o booleano, lo convertís vos.
+```
+
 🔑 El **Capitán Sophocles** te espera para armar un cargador de configuración.

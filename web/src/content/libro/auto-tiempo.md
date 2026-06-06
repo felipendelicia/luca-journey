@@ -63,4 +63,22 @@ from datetime import date
 print(date(2024, 3, 9).strftime("%Y-%m-%d"))   # "2024-03-09"
 ```
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: Restar dos fechas (`date`) te da…
++ un `timedelta` (la diferencia de tiempo)
+- un número de días directo
+- un error
+> Devuelve un `timedelta`; su `.days` te da los días.
+```
+
+```quiz
+P: `d.weekday()` para un sábado devuelve…
+- 0
+- 7
++ 5
+> Lunes = 0 … sábado = 5, domingo = 6.
+```
+
 ⏰ La **Capitana Acerola** te espera para construir un agendador de tareas.

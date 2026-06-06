@@ -47,4 +47,22 @@ print(cabe(3, 3))   # False  (lleno)
 
 > 💡 Límite de concurrencia = respeto. No abuses de las APIs ajenas; un buen bot va de a poco.
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: ¿Por qué limitar la concurrencia?
++ para no saturar la red ni el servidor
+- para que todo sea más lento
+- porque Python lo obliga
+> Lanzar miles de pedidos juntos puede tirar todo abajo o hacer que te bloqueen.
+```
+
+```quiz
+P: `por_lotes([1,2,3,4,5], 2)` da…
++ `[[1,2],[3,4],[5]]`
+- `[[1,2,3,4,5]]`
+- `[[1],[2],[3],[4],[5]]`
+> Lotes de hasta 2 elementos cada uno.
+```
+
 🚦 La **Líder Melony** te espera para controlar la concurrencia.

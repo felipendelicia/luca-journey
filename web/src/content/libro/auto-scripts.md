@@ -63,4 +63,24 @@ Tres cosas clave:
 
 > 💡 En un script real usarías `parser.parse_args()` **sin argumentos**, y `argparse` lee de `sys.argv` solo. Acá le pasamos la lista a mano para poder probarlo.
 
-Con esto ya podés escribir scripts que se configuran desde afuera. En los ejercicios vas a leer argumentos a mano y con `argparse`. ⚡ El **Líder Ilima** te espera en el gimnasio.
+Con esto ya podés escribir scripts que se configuran desde afuera. En los ejercicios vas a leer argumentos a mano y con `argparse`.
+
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: En `sys.argv`, ¿qué es el primer elemento `sys.argv[0]`?
+- El primer argumento que pasaste
++ El nombre del script
+- La cantidad de argumentos
+> `argv[0]` es siempre el nombre del script; los argumentos reales empiezan en `argv[1]`.
+```
+
+```quiz
+P: ¿Qué hace `action="store_true"` en una opción de argparse?
+- Guarda un texto
++ La hace una bandera: `True` si aparece, `False` si no
+- Pide un número
+> Es una bandera (flag): vale `True` solo si la opción está presente.
+```
+
+⚡ El **Líder Ilima** te espera en el gimnasio.

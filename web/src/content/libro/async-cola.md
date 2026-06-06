@@ -54,4 +54,22 @@ def vaciar(cola):
 
 > 💡 Las colas evitan que el productor abrume al consumidor: si la cola se llena, el productor espera. Es la base de los sistemas de tareas (Celery, RabbitMQ…).
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: Una cola FIFO saca primero…
++ al que entró primero
+- al último que entró
+- al más grande
+> First in, first out — como una fila.
+```
+
+```quiz
+P: El patrón productor/consumidor con una cola sirve para…
++ que productores y consumidores avancen a su ritmo
+- ordenar números
+- acelerar cálculos puros
+> La cola los desacopla: si se llena, el productor espera.
+```
+
 🎟️ El **Líder Allister** te espera con su cola fantasma.

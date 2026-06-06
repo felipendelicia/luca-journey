@@ -39,4 +39,22 @@ La diferencia es de dónde sacás:
 - Sistemas de **turnos** y tareas (el que pidió primero se atiende primero).
 - Recorrer un grafo **a lo ancho** (BFS): se visitan los nodos por cercanía usando una cola.
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: Una cola (queue) atiende primero a…
++ el que llegó primero (FIFO)
+- el último que llegó (LIFO)
+- el de nivel más alto
+> Como la fila del Centro Pokémon: first in, first out.
+```
+
+```quiz
+P: Para colas grandes conviene…
++ `collections.deque` (saca del frente al instante)
+- `lista.pop(0)` siempre
+- un diccionario
+> `pop(0)` en una lista mueve todos los elementos; `deque.popleft()` es O(1).
+```
+
 🚶 El **Líder Kofu** te espera con la fila de su restaurante.

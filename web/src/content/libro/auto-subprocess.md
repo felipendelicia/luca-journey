@@ -46,4 +46,22 @@ print(lineas)         # ["rama main", "2 cambios"]
 print(len(lineas))    # 2
 ```
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: En subprocess, un `returncode` de 0 significa…
++ que el programa salió bien
+- que falló
+- que no se ejecutó
+> 0 = éxito; cualquier otro número indica un error.
+```
+
+```quiz
+P: ¿Cómo conviene pasar el comando a `subprocess.run`?
++ como lista: `["git", "status"]`
+- como texto: `"git status"`
+- como diccionario
+> La lista evita problemas con espacios y es más segura.
+```
+
 🖥️ La **Capitana Mallow** te espera para armar comandos y leer resultados.

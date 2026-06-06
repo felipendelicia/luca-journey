@@ -39,4 +39,22 @@ A diferencia del round-robin (que intercala), acá cada hilo recibe un tramo **s
 
 > ⚠️ Dato fino de Python: por el **GIL**, los hilos no aceleran cálculo puro (para eso van procesos). Pero sí ayudan cuando el trabajo espera I/O. Elegí la herramienta según el tipo de trabajo.
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: Dividir en bloques contiguos (vs round-robin) le da a cada hilo…
++ un tramo seguido de la lista
+- elementos intercalados
+- toda la lista
+> Bloques contiguos mantienen juntos los datos cercanos.
+```
+
+```quiz
+P: Por el GIL, los hilos en Python…
++ no aceleran el cálculo puro (para eso van procesos)
+- siempre aceleran todo
+- no sirven para nada
+> Ayudan cuando el trabajo espera (I/O); para CPU puro, `multiprocessing`.
+```
+
 🕸️ La **Líder Opal** te espera para dividir en bloques.

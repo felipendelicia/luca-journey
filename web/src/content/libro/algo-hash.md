@@ -51,4 +51,22 @@ print(a - b)   # {1}      diferencia (en a, no en b)
 
 > 💡 Si tu código hace `if x in lista` dentro de un bucle y va lento, cambiá la lista por un **set**. Suele ser la optimización más grande con el menor esfuerzo.
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: Preguntar `x in conjunto` (un `set`) es…
++ casi instantáneo (O(1))
+- lento, como recorrer una lista (O(n))
+- imposible
+> Los sets usan una tabla hash: van directo al dato.
+```
+
+```quiz
+P: Para contar cuántas veces aparece cada elemento, conviene…
++ un diccionario: `f[x] = f.get(x, 0) + 1`
+- una lista
+- un set
+> El dict guarda elemento → cantidad.
+```
+
 🗂️ La **Líder Tulip** te espera para contar patrones.

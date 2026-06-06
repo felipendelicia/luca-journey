@@ -45,4 +45,22 @@ Cada paso parte el problema al medio: un millón de elementos se resuelve en ~20
 
 > ⚠️ La binaria SOLO funciona si la lista está ordenada. Por eso el próximo capítulo es ordenar.
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: La búsqueda binaria requiere que la lista esté…
++ ordenada
+- vacía
+- sin repetidos
+> Parte el rango al medio descartando mitades; por eso necesita orden.
+```
+
+```quiz
+P: Buscar en un millón de elementos: lineal vs binaria…
++ binaria ~20 pasos; lineal hasta un millón
+- las dos tardan igual
+- la lineal es más rápida
+> O(log n) (binaria) es muchísimo mejor que O(n) (lineal).
+```
+
 🔎 La **Líder Katy** te espera para construir buscadores.

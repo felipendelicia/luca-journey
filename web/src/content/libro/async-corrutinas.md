@@ -44,4 +44,22 @@ Esto importa porque las corrutinas se usan distinto que las funciones normales: 
 
 > 💡 Regla mental: **`async def`** = "esto puede pausarse para dejar correr otra cosa mientras espera". Ideal para lo que espera red, disco o tiempo.
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: Si `descargar` es `async def`, llamar a `descargar()`…
++ devuelve un objeto corrutina, no la ejecuta todavía
+- la ejecuta al instante
+- da un error
+> Para que corra hace falta `await` o el event loop (`asyncio.run`).
+```
+
+```quiz
+P: ¿Qué responde `asyncio.iscoroutinefunction(fn)`?
++ si `fn` fue definida con `async def`
+- si `fn` tiene un `return`
+- si `fn` es rápida
+> Distingue corrutinas de funciones normales.
+```
+
 🌀 El **Líder Milo** te espera para armar un registro de corrutinas.

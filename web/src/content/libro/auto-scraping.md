@@ -56,4 +56,22 @@ print(re.sub(r"<[^>]+>", "", "<b>Hola</b> mundo"))                      # "Hola 
 
 > 💡 Para HTML real y complejo se usa **BeautifulSoup**, que entiende la estructura. Pero entender `re` te da la base para extraer datos de cualquier texto.
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: La parte de "bajar" la página (con `requests`)…
++ necesita acceso a internet (no corre acá en el navegador)
+- se hace solo con el módulo `re`
+- no hace falta nunca
+> Bajar usa `requests` con red real; lo que practicás acá es extraer datos de un HTML ya bajado.
+```
+
+```quiz
+P: `re.findall(r"\d+", texto)` encuentra…
++ todos los grupos de dígitos del texto
+- solo el primer número
+- las letras
+> `findall` devuelve todas las coincidencias; `\d+` son secuencias de dígitos.
+```
+
 🕸️ La **Capitana Mina** te espera para extraer fichas de Pokémon del HTML.

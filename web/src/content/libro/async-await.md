@@ -41,4 +41,22 @@ async def tarea():
 
 > ⚠️ Si te olvidás el `await`, te queda el objeto corrutina sin ejecutar (y Python te avisa: *"coroutine was never awaited"*). Si lo ponés de más, sobre algo que no es corrutina, también falla.
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: `await` se puede usar…
++ solo dentro de una función `async`
+- en cualquier función
+- solo en el nivel global del archivo
+> `await` va adentro de un `async def`.
+```
+
+```quiz
+P: ¿Delante de qué va `await`?
++ de operaciones que esperan (bajar, leer una API, sleep)
+- de cálculos como sumar o recorrer una lista
+- de cualquier línea, por las dudas
+> Esperás lo que tarda (red/disco); los cálculos normales no llevan await.
+```
+
 ⏳ La **Líder Nessa** te espera para marcar dónde van los awaits.

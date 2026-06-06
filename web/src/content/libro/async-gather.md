@@ -45,4 +45,22 @@ fallaron = resultados.count(None)               # 1
 
 > 💡 `gather` es la herramienta más usada de asyncio: "hacé todo esto junto y traeme los resultados".
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: `asyncio.gather(a, b, c)` devuelve los resultados…
++ en el mismo orden en que los pediste
+- en orden de finalización
+- mezclados al azar
+> El orden coincide con el de las corrutinas, aunque terminen en otro orden.
+```
+
+```quiz
+P: Si una tarea falló y dejó `None`, para quedarte con las buenas…
++ filtrás las que no son None: `[r for r in res if r is not None]`
+- las usás todas igual
+- reiniciás todo el programa
+> Descartás los `None` y te quedás con los resultados válidos.
+```
+
 🪢 La **Líder Bea** te espera para recolectar resultados.
