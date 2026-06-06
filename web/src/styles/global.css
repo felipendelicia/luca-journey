@@ -499,6 +499,27 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .evo-card.evolucionando{ animation:evoFlash .5s ease; }
 @keyframes evoFlash{ 0%,100%{ filter:none } 50%{ filter:brightness(2.6) saturate(0) } }
 
+/* Mi PC: tarjetas de instancia (nivel + power-up + evolucionar) */
+.pc-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr)); gap:10px; margin:.6rem 0 1.4rem; }
+.pc-card{ position:relative; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 8px; background:var(--paper-2); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow-sm); }
+.pc-card.es-shiny{ border-color:var(--yellow-deep); box-shadow:0 0 0 2px var(--yellow) inset; }
+.pc-card img{ width:64px; height:64px; image-rendering:pixelated; }
+.pc-nom{ font-weight:700; font-size:.86rem; color:var(--ink); text-align:center; line-height:1.15; }
+.pc-lvl{ font:700 .74rem var(--font-mono); color:var(--ink-soft); }
+.pc-btns{ display:flex; flex-direction:column; gap:5px; width:100%; margin-top:4px; }
+.pc-up,.pc-evo{ font:700 .76rem var(--font-mono); border:none; border-radius:999px; padding:6px 8px; cursor:pointer; }
+.pc-up{ background:var(--paper); border:1px solid var(--line); color:var(--ink); }
+.pc-up:disabled{ opacity:.45; cursor:not-allowed; }
+.pc-evo{ background:var(--red); color:#fff; }
+.pc-evo:hover{ filter:brightness(1.08); }
+.pc-max{ font:700 .74rem var(--font-mono); color:var(--yellow-deep); }
+.pc-evohint{ font:600 .7rem var(--font-mono); color:var(--ink-mute); text-align:center; }
+.pc-car{ position:absolute; top:6px; right:8px; font:700 .72rem var(--font-mono); color:var(--ink-soft); }
+.pc-chooser{ display:flex; flex-wrap:wrap; gap:4px; justify-content:center; width:100%; }
+.pc-chooser button{ display:flex; flex-direction:column; align-items:center; gap:2px; background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:3px 4px; cursor:pointer; font-size:.62rem; color:var(--ink); }
+.pc-chooser button:hover{ border-color:var(--red); }
+.pc-chooser img{ width:38px; height:38px; image-rendering:pixelated; }
+
 /* página /ayuda */
 .ayuda-h{ font-size:1.5rem; margin:2.2rem 0 .3rem; }
 .ayuda-p{ color:var(--ink-soft); max-width:var(--readw); }

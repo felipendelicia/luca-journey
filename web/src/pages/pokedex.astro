@@ -37,15 +37,17 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
 
   <script type="application/json" id="dex-data" set:html={JSON.stringify({ pokemon, temas, regiones: REGIONES, evoluciones, aparicion })}></script>
   <script>
-    import { sincronizar, estado, spriteUrl, evolucionesPosibles, evolucionar } from '../lib/coleccion.js';
+    import { sincronizar, spriteUrl, pc, caramelos, vistos, subirNivel, opcionesEvo, evolucionarInst, costoSubir, NIVEL_MAX } from '../lib/coleccion.js';
     import { sonarExito } from '../lib/sonidos.js';
     import { tierDe } from '../lib/rareza.js';
 
     const D = JSON.parse(document.getElementById('dex-data').textContent);
     sincronizar(D.temas);
     const nombreDe = Object.fromEntries(D.pokemon.map((p) => [p.id, p.nombre]));
-    // rareza: badge del tier (color + nombre), derivado del peso de aparición.
     const apar = D.aparicion || {};
+    const famMap = {}; for (const id in D.evoluciones) famMap[id] = D.evoluciones[id].familia;
+    const familiaDe = (id) => famMap[id] || Number(id);
+    // rareza: badge del tier (color + nombre), derivado del peso de aparición.
     function rarTxt(id) {
       const t = tierDe(id, apar);
       const tasa = (t.rate * 100).toFixed(t.rate < 0.01 ? 2 : 1);
@@ -56,23 +58,25 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
     const buscar = $('buscar'), sinres = $('sinres');
     let filtro = 'todos';
 
-    function contadores(at, shiny) {
+    // Pokédex = COMPLETITUD (vistos). Mi PC = los que TENÉS (instancias).
+    function contadores(vis, pcArr) {
       let c = D.regiones.map(([id, label]) => {
         const total = D.pokemon.filter((p) => p.region === id).length;
-        const tengo = D.pokemon.filter((p) => p.region === id && at[p.id]).length;
+        const tengo = D.pokemon.filter((p) => p.region === id && vis.has(p.id)).length;
         return '<div class="cc"><span>' + label + '</span><b>' + tengo + ' / ' + total + '</b></div>';
       }).join('');
-      c += '<div class="cc"><span>✨ Shiny</span><b>' + shiny.size + '</b></div>';
+      c += '<div class="cc"><span>✨ Shiny</span><b>' + pcArr.filter((m) => m.shiny).length + '</b></div>';
       $('contadores').innerHTML = c;
     }
 
-    function grilla(at, shiny) {
+    function grilla(vis, pcArr) {
+      const cont = {}, shinyEsp = new Set();
+      for (const m of pcArr) { cont[m.id] = (cont[m.id] || 0) + 1; if (m.shiny) shinyEsp.add(m.id); }
       $('secciones').innerHTML = D.regiones.map(([id, label]) => {
         const celdas = D.pokemon.filter((p) => p.region === id).map((p) => {
-          const n = at[p.id] || 0;
-          const esShiny = shiny.has(p.id);
+          const visto = vis.has(p.id), n = cont[p.id] || 0, esShiny = shinyEsp.has(p.id);
           const attrs = 'data-num="' + p.id + '" data-nombre="' + p.nombre.toLowerCase() + '"';
-          if (n > 0) {
+          if (visto) {
             return '<div class="poke tengo' + (esShiny ? ' es-shiny' : '') + '" ' + attrs + ' title="' + p.nombre + '">' +
               '<img loading="lazy" src="' + spriteUrl(p.id, esShiny) + '" alt="' + p.nombre + '" />' + rarTxt(p.id) +
               (esShiny ? '<span class="poke-shiny">✨</span>' : '') + (n > 1 ? '<span class="poke-x">x' + n + '</span>' : '') +
@@ -84,23 +88,39 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       }).join('');
     }
 
-    function evolucionesUI() {
-      const posibles = evolucionesPosibles(D.evoluciones);
+    // tarjeta de una instancia del PC: nivel + Power-Up (caramelos) + Evolucionar (ramificado)
+    function instCard(m, car) {
+      const tengo = car[familiaDe(m.id)] || 0;
+      const costo = costoSubir(m.nivel), max = m.nivel >= NIVEL_MAX;
+      const ops = opcionesEvo(m.iid), puedeEvo = ops.some((o) => o.ok);
+      const evoHint = (ops.length && !puedeEvo) ? (ops[0].nivel > 0 ? 'Nv.' + ops[0].nivel : ops[0].costo + '🍬') : '';
+      return '<div class="pc-card' + (m.shiny ? ' es-shiny' : '') + '">' +
+        '<img src="' + spriteUrl(m.id, m.shiny) + '" alt="' + (nombreDe[m.id] || m.id) + '" />' +
+        '<div class="pc-nom">' + (nombreDe[m.id] || ('Nº ' + m.id)) + (m.shiny ? ' ✨' : '') + '</div>' +
+        '<div class="pc-lvl">Nv. ' + m.nivel + '</div>' +
+        '<div class="pc-btns">' +
+          (max ? '<span class="pc-max">MAX</span>' : '<button class="pc-up" data-up="' + m.iid + '"' + (tengo < costo ? ' disabled' : '') + '>⬆️ ' + costo + '🍬</button>') +
+          (puedeEvo ? '<button class="pc-evo" data-evo="' + m.iid + '">🧬 Evolucionar</button>' : (evoHint ? '<span class="pc-evohint">🔒 ' + evoHint + '</span>' : '')) +
+        '</div>' +
+        '<div class="pc-car">🍬 ' + tengo + '</div></div>';
+    }
+
+    function miPC(pcArr, car) {
       const sec = $('evoluciones-sec');
-      if (!posibles.length) { sec.innerHTML = ''; return; }
-      sec.innerHTML = '<h2 class="liga-h">🧬 Evoluciones disponibles <small>— necesitás 3 · te queda 1 del original</small></h2><div class="evo-grid">' +
-        posibles.map((e) => {
-          const ops = e.opciones.map((to) =>
-            '<button class="evo-btn" data-from="' + e.from + '" data-to="' + to + '">' +
-            '<img src="' + spriteUrl(to) + '" alt="' + (nombreDe[to] || to) + '" /><span>' + (nombreDe[to] || ('Nº ' + to)) + '</span></button>').join('');
-          return '<div class="evo-card"><div class="evo-de"><img src="' + spriteUrl(e.from) + '" alt="' + nombreDe[e.from] + '" />' +
-            '<span>' + nombreDe[e.from] + ' <b>x' + e.cantidad + '</b></span></div><span class="evo-flecha">→</span><div class="evo-ops">' + ops + '</div></div>';
-        }).join('') + '</div>';
-      sec.querySelectorAll('.evo-btn').forEach((b) => b.addEventListener('click', () => {
-        if (evolucionar(+b.dataset.from, +b.dataset.to, D.evoluciones)) {
-          b.closest('.evo-card').classList.add('evolucionando');
-          sonarExito();
-          setTimeout(pintar, 480);
+      if (!pcArr.length) { sec.innerHTML = ''; return; }
+      const porEsp = {}; for (const m of pcArr) (porEsp[m.id] ||= []).push(m);
+      const cards = Object.keys(porEsp).map(Number).sort((a, b) => a - b)
+        .flatMap((id) => porEsp[id].sort((a, b) => b.nivel - a.nivel).map((m) => instCard(m, car))).join('');
+      sec.innerHTML = '<h2 class="liga-h">🎒 Mi PC <small>— subí de nivel con 🍬 caramelos y evolucioná</small></h2><div class="pc-grid">' + cards + '</div>';
+      sec.querySelectorAll('.pc-up').forEach((b) => b.addEventListener('click', () => { if (subirNivel(b.dataset.up)) { sonarExito(); pintar(); } }));
+      sec.querySelectorAll('.pc-evo').forEach((b) => b.addEventListener('click', () => {
+        const iid = b.dataset.evo, ops = opcionesEvo(iid).filter((o) => o.ok);
+        if (ops.length === 1) { if (evolucionarInst(iid, ops[0].a)) { sonarExito(); pintar(); } }
+        else if (ops.length > 1) {
+          const cont = document.createElement('div'); cont.className = 'pc-chooser';
+          cont.innerHTML = ops.map((o) => '<button data-pick="' + o.a + '"><img src="' + spriteUrl(o.a) + '" alt="' + (nombreDe[o.a] || o.a) + '" /><span>' + (nombreDe[o.a] || ('Nº ' + o.a)) + '</span></button>').join('');
+          b.replaceWith(cont);
+          cont.querySelectorAll('[data-pick]').forEach((x) => x.addEventListener('click', () => { if (evolucionarInst(iid, x.dataset.pick)) { sonarExito(); pintar(); } }));
         }
       }));
     }
@@ -123,10 +143,10 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
     }
 
     function pintar() {
-      const st = estado();
-      contadores(st.atrapados, st.shiny);
-      grilla(st.atrapados, st.shiny);
-      evolucionesUI();
+      const pcArr = pc(), vis = vistos(), car = caramelos();
+      contadores(vis, pcArr);
+      grilla(vis, pcArr);
+      miPC(pcArr, car);
       aplicar();
     }
 
