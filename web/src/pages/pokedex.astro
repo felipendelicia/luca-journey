@@ -172,24 +172,35 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
     // modal detallado de UNA instancia: rareza, nivel, caramelos, Power-Up, Evolucionar, árbol, mote, liberar.
     function evoBloque(m, ops) {
       if (!ops.length) return '';
-      // mostramos TODAS las ramas (Eevee tiene varias): las que podés hacer son botones; las que
-      // necesitan otra piedra/nivel/caramelos salen bloqueadas, con qué falta + link a la Tienda.
+      // un solo botón "Evolucionar" → abre el chooser con TODAS las formas + sus requisitos.
+      // Las que podés hacer son tarjetas clickeables; las que necesitan otra piedra/nivel/caramelos
+      // salen apagadas con qué falta + link a la Tienda.
       const tarjetas = ops.map((o) => {
         const nom = nombreDe[o.a] || ('Nº ' + o.a);
         const img = '<img src="' + spriteUrl(o.a) + '" alt="' + nom + '" />';
-        const reqIco = o.req ? '<span class="pm-evo-req">' + itemSvg(o.req, 16) + '</span> + ' : '';
+        const bits = [];
+        if (o.req) bits.push('<span class="pm-evo-req">' + itemSvg(o.req, 15) + '</span>');
+        if (o.nivel > 0) bits.push('Nv.' + o.nivel);
+        if (o.costo) bits.push(o.costo + '🍬');
+        const reqStr = bits.join(' ');
         if (o.ok) {
-          return '<button data-evopick="' + o.a + '">' + img + '<span>' + nom + '<br>' + reqIco + o.costo + '🍬</span></button>';
+          return '<button class="pm-evo-pick" data-evopick="' + o.a + '">' + img + '<b>' + nom + '</b><span class="pm-evo-cost">' + (reqStr || '✓ Listo') + '</span></button>';
         }
         const it = o.req ? ITEMS[o.req] : null;
         const faltaItem = !!o.req && !(tieneItem(o.req) || (o.req.startsWith('piedra') && tieneItem('piedra')));
         const faltaNivel = o.nivel > 0 && m.nivel < o.nivel;
         const motivo = faltaItem ? ('Falta ' + it.nombre) : faltaNivel ? ('Nv.' + o.nivel) : ('Faltan ' + o.costo + '🍬');
-        const reqShow = o.req ? '<span class="pm-evo-req">' + itemSvg(o.req, 16) + '</span> ' : '';
+        const reqShow = o.req ? '<span class="pm-evo-req">' + itemSvg(o.req, 15) + '</span> ' : '';
         const link = faltaItem ? ' <a class="pm-tienda" href="' + (window.__BASE || '') + '/tienda">→ Tienda</a>' : '';
-        return '<div class="pm-evo-locked" title="' + motivo + '">' + img + '<span>' + nom + '<br>🔒 ' + reqShow + motivo + link + '</span></div>';
+        return '<div class="pm-evo-locked" title="' + motivo + '">' + img + '<b>' + nom + '</b><span class="pm-evo-cost">🔒 ' + reqShow + motivo + link + '</span></div>';
       }).join('');
-      return '<div class="pm-evo"><b>🧬 Evolucionar a:</b><div class="pm-evos">' + tarjetas + '</div></div>';
+      const cuenta = ops.length > 1 ? ' <small>(' + ops.length + ' formas)</small>' : '';
+      return '<div class="pm-evo">' +
+        '<button class="pm-btn pm-evo-toggle" id="pm-evo-toggle">🧬 Evolucionar' + cuenta + ' <span class="pm-evo-caret">▾</span></button>' +
+        '<div class="pm-evo-chooser" id="pm-evo-chooser"><div class="pm-evo-chooser-in">' +
+          '<p class="pm-evo-hint">Elegí su evolución — tocá la forma que quieras:</p>' +
+          '<div class="pm-evos">' + tarjetas + '</div>' +
+        '</div></div>';
     }
     // árbol/línea evolutiva de la familia (resalta la especie actual).
     function arbolEvo(m) {
@@ -253,6 +264,11 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       const card = $('poke-modal').querySelector('.poke-modal-card');
       if (card) { card.style.setProperty('--tier-color', t.color); card.scrollTop = 0; card.style.animation = 'none'; void card.offsetWidth; card.style.animation = ''; }
       const up = $('pm-up'); if (up) up.addEventListener('click', () => { if (subirNivel(iid)) { sonarExito(); abrirModal(iid); pintar(); } });
+      const evoT = $('pm-evo-toggle');
+      if (evoT) evoT.addEventListener('click', () => {
+        const ch = $('pm-evo-chooser'); const abierto = ch.classList.toggle('abierto'); evoT.classList.toggle('abierto', abierto);
+        if (abierto) setTimeout(() => ch.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 60);
+      });
       $('poke-modal-cuerpo').querySelectorAll('[data-evopick]').forEach((b) => b.addEventListener('click', () => { if (evolucionarInst(iid, b.dataset.evopick)) { sonarExito(); cerrarModal(); pintar(); } }));
       $('poke-modal-cuerpo').querySelectorAll('.mv-ok').forEach((b) => b.addEventListener('click', () => {
         const mid = Number(b.dataset.mv), cur = (pc().find((x) => x.iid === iid) || {}).movs || [];

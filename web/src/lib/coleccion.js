@@ -189,14 +189,14 @@ const tieneReq = (req) => !req || tieneItem(req) || (esPiedra(req) && tieneItem(
 const usarReq = (req) => !req || usarItem(req) || (esPiedra(req) && usarItem('piedra'));
 
 // Opciones de evolución de una instancia (lista; las ramificadas tienen varias). Cada una con su
-// requisito: nivel>0 pide nivel; nivel===0 puede pedir un item (`req`: piedra tipada / disco de
-// enlace) y/o solo caramelos (amistad/otros). El comodín legacy 'piedra' sirve para cualquier piedra.
+// requisito: nivel>0 pide nivel + caramelos; por piedra/Disco (`req`) pide SOLO el item (0 caramelos,
+// fiel al canon); amistad/otras (nivel===0 sin req) piden caramelos. El comodín legacy 'piedra' sirve.
 export function opcionesEvo(iid) {
   const m = buscarInst(pc(), iid); if (!m) return [];
   const car = caramelos()[familiaDe(m.id)] || 0;
   return ((evoData[m.id] && evoData[m.id].evos) || []).map((ev) => {
-    const costo = costoEvo(ev.nivel);
     const req = ev.req || null;                             // item de tienda que hace falta (o null)
+    const costo = req ? 0 : costoEvo(ev.nivel);             // por piedra/disco: solo el item, sin caramelos
     const ok = (ev.nivel > 0 ? m.nivel >= ev.nivel : true) && tieneReq(req) && car >= costo;
     return { a: ev.a, nivel: ev.nivel, costo, ok, req };
   });
@@ -208,7 +208,7 @@ export function evolucionarInst(iid, targetId) {
   const arr = pc(); const m = buscarInst(arr, iid); if (!m) return false;
   const op = opcionesEvo(iid).find((o) => o.a === Number(targetId) && o.ok); if (!op) return false;
   if (!usarReq(op.req)) return false;                       // gasta la piedra/disco que pida (si pide)
-  const c = get('col:caramelos', {}); c[familiaDe(m.id)] -= op.costo; set('col:caramelos', c);
+  if (op.costo) { const c = get('col:caramelos', {}); c[familiaDe(m.id)] = (c[familiaDe(m.id)] || 0) - op.costo; set('col:caramelos', c); }
   addVisto(m.id);
   m.id = op.a; m.movs = [];          // nueva especie; movs se recalculan en Etapa 2
   addVisto(m.id);
