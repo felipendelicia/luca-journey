@@ -492,8 +492,10 @@ body.dark .ej-mini{ background:#3a1c1a; } body.dark .ej-mini.win{ background:#13
 .dup-keep-nom{ font:700 .92rem var(--font-mono); color:var(--ink); }
 .dup-libs{ display:flex; flex-direction:column; gap:6px; }
 .dup-lib{ display:flex; align-items:center; gap:9px; padding:5px 8px; border-radius:9px; background:var(--paper-2); border:1px solid var(--line); }
+.dup-lib.best{ background:color-mix(in srgb,var(--teal-deep,#1f8f5f) 12%, var(--paper-2)); border-color:color-mix(in srgb,var(--teal-deep,#1f8f5f) 38%, var(--line)); }
 .dup-lib img{ width:34px; height:34px; image-rendering:pixelated; }
 .dup-lib-nom{ flex:1; min-width:0; font:600 .85rem var(--font-mono); color:var(--ink-soft); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.dup-sug{ font:800 .62rem var(--font-mono); color:var(--teal-deep,#1f8f5f); background:color-mix(in srgb,var(--teal-deep,#1f8f5f) 16%, transparent); border-radius:5px; padding:1px 5px; white-space:nowrap; }
 .dup-free{ flex:0 0 auto; padding:5px 10px; border:1px solid var(--line); border-radius:8px; background:var(--paper); color:var(--ink); font:700 .74rem var(--font-mono); cursor:pointer; }
 .dup-free:hover{ border-color:var(--red); color:var(--red-deep); }
 

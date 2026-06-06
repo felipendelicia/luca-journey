@@ -28,8 +28,9 @@ test('Mi PC: limpiador de repetidos agrupa por línea evolutiva y conserva el me
   await page.locator('#pc-dup').click();
   await expect(page.locator('#dup-modal')).toBeVisible();
   await expect(page.locator('.dup-grupo')).toHaveCount(1);   // una familia (Pidgey)
-  await expect(page.locator('.dup-keep')).toContainText('conservar');
-  await expect(page.locator('.dup-lib')).toHaveCount(2);     // 2 candidatos a liberar
+  await expect(page.locator('.dup-lib')).toHaveCount(3);     // TODOS liberables (vos elegís)
+  await expect(page.locator('.dup-free')).toHaveCount(3);    // cada uno con botón Liberar
+  await expect(page.locator('.dup-lib.best')).toHaveCount(1); // 1 sugerido (⭐, igual liberable)
 });
 
 test('evolución: Eevee→Vaporeon con piedra (animación + reveal concreta el cambio)', async ({ page }) => {
