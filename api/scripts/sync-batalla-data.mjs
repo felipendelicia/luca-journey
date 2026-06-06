@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SRC = path.resolve(HERE, '..', '..', 'web', 'src', 'data');
 const DST = path.resolve(HERE, '..', 'src', 'batalla', 'data');
-const FILES = ['tipos.json', 'movimientos.json', 'learnsets.json', 'pokemon.json'];
+const FILES = ['tipos.json', 'movimientos.json', 'learnsets.json', 'pokemon.json', 'evoluciones.json'];
 
 fs.mkdirSync(DST, { recursive: true });
 for (const f of FILES) {
