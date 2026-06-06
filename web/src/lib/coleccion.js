@@ -6,6 +6,7 @@ import { tierDe } from './rareza.js';
 import evoData from '../data/evoluciones.json' with { type: 'json' };
 import aparicion from '../data/aparicion.json' with { type: 'json' };
 import learnsets from '../data/learnsets.json' with { type: 'json' };
+import { ITEMS, BALL_BOOST } from './items.js';
 import { migrarPC } from './migracion-pc.js';
 
 // corre la migración a v2 (conteos→instancias) una vez, antes de tocar el PC.
@@ -187,8 +188,9 @@ export function opcionesEvo(iid) {
   const car = caramelos()[familiaDe(m.id)] || 0;
   return ((evoData[m.id] && evoData[m.id].evos) || []).map((ev) => {
     const costo = costoEvo(ev.nivel);
-    const ok = (ev.nivel === 0 || m.nivel >= ev.nivel) && car >= costo;
-    return { a: ev.a, nivel: ev.nivel, costo, ok };
+    const piedra = ev.nivel === 0;                          // evos por piedra (Eevee, Pikachu…)
+    const ok = (ev.nivel > 0 ? m.nivel >= ev.nivel : tieneItem('piedra')) && car >= costo;
+    return { a: ev.a, nivel: ev.nivel, costo, ok, piedra };
   });
 }
 
@@ -197,6 +199,7 @@ export function opcionesEvo(iid) {
 export function evolucionarInst(iid, targetId) {
   const arr = pc(); const m = buscarInst(arr, iid); if (!m) return false;
   const op = opcionesEvo(iid).find((o) => o.a === Number(targetId) && o.ok); if (!op) return false;
+  if (op.piedra && !usarItem('piedra')) return false;       // las evos por piedra gastan 1 Piedra Evolutiva
   const c = get('col:caramelos', {}); c[familiaDe(m.id)] -= op.costo; set('col:caramelos', c);
   addVisto(m.id);
   m.id = op.a; m.movs = [];          // nueva especie; movs se recalculan en Etapa 2
@@ -230,6 +233,19 @@ export function setMovs(iid, moveIds) {
 // Premios (batalla): sumar caramelos a una familia / sumar Pokéballs.
 export function darCaramelos(id, n) { addCaramelos(id, Math.max(0, n | 0)); }
 export function darBalls(n) { set('col:balls', get('col:balls', 0) + Math.max(0, n | 0)); }
+
+// ───────── Tienda · inventario de items (col:items) ─────────
+export const items = () => get('col:items', {});
+export function darItem(id, n = 1) { const inv = get('col:items', {}); inv[id] = (inv[id] || 0) + n; set('col:items', inv); }
+export const tieneItem = (id) => (get('col:items', {})[id] || 0) > 0;
+export function usarItem(id) { const inv = get('col:items', {}); if (!(inv[id] > 0)) return false; inv[id]--; if (inv[id] <= 0) delete inv[id]; set('col:items', inv); return true; }
+export function comprarItem(id) {
+  const it = ITEMS[id]; if (!it) return false;
+  const balls = get('col:balls', 0); if (balls < it.precio) return false;
+  set('col:balls', balls - it.precio); darItem(id, 1); return true;
+}
+// mejor ball disponible (2=ultra, 1=super, 0=normal)
+export function mejorBallTier() { const inv = items(); if (inv.ultraball) return 2; if (inv.superball) return 1; return 0; }
 
 // Liberar una instancia (GO): la perdés del PC y te da 1 caramelo de la familia. Queda en vistos.
 export function liberar(iid) {
@@ -293,17 +309,23 @@ export function tirar(pokemon, temas, pesos = {}) {
   const regiones = regionesDesbloqueadas(temas);
   const pool = pokemon.filter((p) => regiones.has(p.region));
   if (!pool.length) return { error: 'vacio' };
-  const elegido = elegirPonderado(pool, pesos);
-  // probabilidad de que apareciera justo este (su peso sobre el total del pool)
+  // mejor ball del inventario: la usa + consume; sesga rareza/nivel/shiny/caramelos
+  const ballTier = mejorBallTier();
+  if (ballTier === 2) usarItem('ultraball'); else if (ballTier === 1) usarItem('superball');
+  const boost = BALL_BOOST[ballTier];
+  // rareza: aplanar la distribución (peso^(1/rareza)) → los raros (peso bajo) salen más con mejor ball
+  const pesosSel = boost.rareza === 1 ? pesos : Object.fromEntries(pool.map((p) => [p.id, Math.pow(pesos[p.id] || 1, 1 / boost.rareza)]));
+  const elegido = elegirPonderado(pool, pesosSel);
+  // probabilidad "natural" del Pokémon (su rareza base, sin contar la ball)
   const totalPeso = pool.reduce((a, p) => a + (pesos[p.id] || 1), 0);
   const prob = (pesos[elegido.id] || 1) / totalPeso;
-  // "aparece 1 de cada X intentos" (más intuitivo que el % chico)
   const cadaCuantos = Math.max(1, Math.round(1 / prob));
   balls--;
-  // shiny: 1% de las veces (ahora es propiedad de la instancia)
-  const shiny = Math.random() < PROB_SHINY;
-  const inst = atrapar(elegido.id, { shiny, nivel: nivelWild(elegido.id) }); // instancia + vistos + caramelos
+  const shiny = Math.random() < PROB_SHINY * boost.shiny;
+  const nivel = Math.min(50, Math.round(nivelWild(elegido.id) * (1 + boost.nivelPct)));
+  const inst = atrapar(elegido.id, { shiny, nivel });                // instancia + vistos + 3 caramelos
+  if (boost.caramelos > 3) addCaramelos(elegido.id, boost.caramelos - 3); // caramelos extra de la ball
   const cant = pc().filter((m) => m.id === elegido.id).length;
   set('col:balls', balls);
-  return { pokemon: elegido, cantidad: cant, repetido: cant > 1, shiny, nuevoShiny: shiny, balls, prob, cadaCuantos, nivel: inst.nivel, tier: tierDe(elegido.id, pesos), caramelos: caramelos()[familiaDe(elegido.id)] || 0 };
+  return { pokemon: elegido, cantidad: cant, repetido: cant > 1, shiny, nuevoShiny: shiny, balls, prob, cadaCuantos, nivel: inst.nivel, ball: ballTier, tier: tierDe(elegido.id, pesos), caramelos: caramelos()[familiaDe(elegido.id)] || 0 };
 }
