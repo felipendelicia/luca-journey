@@ -724,6 +724,15 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 
 /* ataques (con stats + descripción) */
 .pm-soon{ font:600 .72rem var(--font-mono); color:var(--ink-mute); margin:-4px 0 10px; }
+/* panel de estadísticas (escaladas por nivel) */
+.st-lista{ display:flex; flex-direction:column; gap:7px; }
+.st-fila{ display:grid; grid-template-columns:64px 38px 1fr; align-items:center; gap:9px; }
+.st-lbl{ font:700 .68rem var(--font-mono); color:var(--ink-soft); }
+.st-val{ font:800 .8rem var(--font-mono); color:var(--ink); text-align:right; }
+.st-bar{ height:9px; background:var(--paper); border:1px solid var(--line); border-radius:999px; overflow:hidden; }
+.st-bar i{ display:block; height:100%; border-radius:999px; transition:width .4s ease; }
+.st-total{ margin-top:10px; font:600 .7rem var(--font-mono); color:var(--ink-mute); text-align:center; }
+.st-total b{ color:var(--ink); }
 .mv-lista{ display:flex; flex-direction:column; gap:7px; max-height:320px; overflow:auto; padding-right:3px; }
 .mv-fila{ width:100%; text-align:left; padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:var(--card); color:var(--ink); }
 .mv-top{ display:flex; align-items:center; gap:8px; }
