@@ -6,8 +6,6 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
 const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
 // temas (para reconstruir y publicar el snapshot al editar desde el perfil)
 const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.ejercicios.map((e) => ({ id: e.id })) }));
-// lista para los datalist de Buscando/Ofrezco
-const lista = pokemon.map((p) => ({ id: p.id, nombre: p.nombre }));
 ---
 <Base title="Perfil — Python con Pokémon" active="">
   <main class="wrap u-wrap">
@@ -113,21 +111,20 @@ const lista = pokemon.map((p) => ({ id: p.id, nombre: p.nombre }));
         <p class="av-sub">Agregá Pokémon a cada lista (escribí el nombre y Enter). Hasta 12 por lista.</p>
         <div class="bo-edit">
           <label class="t-nombre-l">🔎 Busco</label>
-          <input class="bo-input" id="bo-busco-in" list="poke-list" placeholder="Nombre de Pokémon…" autocomplete="off" />
+          <div class="bo-field"><input class="bo-input" id="bo-busco-in" placeholder="Escribí un nombre…" autocomplete="off" /><div class="bo-results" id="bo-busco-res" hidden></div></div>
           <div class="bo-chips" id="bo-busco-chips"></div>
         </div>
         <div class="bo-edit">
           <label class="t-nombre-l">🎁 Ofrezco</label>
-          <input class="bo-input" id="bo-ofrezco-in" list="poke-list" placeholder="Nombre de Pokémon…" autocomplete="off" />
+          <div class="bo-field"><input class="bo-input" id="bo-ofrezco-in" placeholder="Escribí un nombre…" autocomplete="off" /><div class="bo-results" id="bo-ofrezco-res" hidden></div></div>
           <div class="bo-chips" id="bo-ofrezco-chips"></div>
         </div>
         <button class="btn-grande" id="bo-guardar" type="button">Guardar listas</button>
       </div>
     </div>
-    <datalist id="poke-list">{lista.map((p) => (<option value={p.nombre}></option>))}</datalist>
   </main>
 
-  <style>
+  <style is:global>
     .u-wrap { max-width: 920px; }
     /* ── Tarjeta de Entrenador (holográfica, retro-Pokédex) ── */
     .tcard { position: relative; overflow: hidden; border-radius: 20px; padding: 22px; margin-bottom: 18px;
@@ -191,6 +188,13 @@ const lista = pokemon.map((p) => ({ id: p.id, nombre: p.nombre }));
     .bo-chip { display:flex; align-items:center; gap:5px; background: var(--paper); border:1px solid var(--line); border-radius:999px; padding:3px 6px 3px 3px; font:600 .8rem var(--font-mono); cursor:pointer; }
     .bo-chip img { width:24px; height:24px; image-rendering:pixelated; }
     .bo-chip .x { color: var(--red); font-weight:800; }
+    .bo-field { position:relative; }
+    .bo-results { position:absolute; left:0; right:0; top:100%; z-index:6; margin-top:4px; background: var(--card); border:1px solid var(--line); border-radius:11px; max-height:240px; overflow:auto; box-shadow:0 12px 30px -12px rgba(0,0,0,.5); }
+    .bo-results[hidden] { display:none; }
+    .bo-res-item { display:flex; align-items:center; gap:9px; width:100%; padding:7px 11px; background:none; border:none; border-bottom:1px solid var(--line); color: var(--ink); font:600 .88rem var(--font-mono); cursor:pointer; text-align:left; }
+    .bo-res-item:last-child { border-bottom:none; }
+    .bo-res-item:hover { background: var(--paper-2); }
+    .bo-res-item img { width:30px; height:30px; image-rendering:pixelated; flex:0 0 30px; }
   </style>
 
   <script type="application/json" id="u-data" set:html={JSON.stringify({ nombres, regionDe, temas })}></script>
@@ -203,7 +207,7 @@ const lista = pokemon.map((p) => ({ id: p.id, nombre: p.nombre }));
 
     const D = JSON.parse(document.getElementById('u-data').textContent);
     const nombres = D.nombres, regionDe = D.regionDe, temas = D.temas;
-    const idPorNombre = Object.fromEntries(Object.entries(nombres).map(([id, n]) => [n.toLowerCase(), Number(id)]));
+    const pokeList = Object.entries(nombres).map(([id, n]) => ({ id: +id, n }));
     const REGEMOJI = { ...Object.fromEntries(REGION_IDS.map((id) => [id, REGION_POR_ID[id].emoji])), otros: '📦' };
     const REGNOM = { ...Object.fromEntries(REGION_IDS.map((id) => [id, REGION_POR_ID[id].nombre])), otros: 'Otros' };
     const REGORD = REGION_IDS;
@@ -429,18 +433,32 @@ const lista = pokemon.map((p) => ({ id: p.id, nombre: p.nombre }));
         `<span class="bo-chip" data-i="${i}"><img src="${sprite(id)}" alt="" />${esc(nombres[id] || id)} <span class="x">✕</span></span>`).join('');
       $(contId).querySelectorAll('.bo-chip').forEach((ch) => ch.addEventListener('click', () => { arr.splice(+ch.dataset.i, 1); chipsEditor(contId, arr); }));
     }
+    // autocompletar propio: filtra mientras escribís y muestra hasta 8 resultados con sprite
+    function autocompletar(inputId, resId, arr, contId) {
+      const inp = $(inputId), res = $(resId);
+      const cerrar = () => { res.innerHTML = ''; res.hidden = true; };
+      inp.oninput = () => {
+        const q = inp.value.trim().toLowerCase();
+        if (!q) return cerrar();
+        const hits = pokeList.filter((p) => p.n.toLowerCase().includes(q) && !arr.includes(p.id)).slice(0, 8);
+        if (!hits.length) return cerrar();
+        res.innerHTML = hits.map((p) => `<button type="button" class="bo-res-item" data-id="${p.id}"><img src="${sprite(p.id)}" alt="" />${esc(p.n)}</button>`).join('');
+        res.hidden = false;
+        res.querySelectorAll('.bo-res-item').forEach((b) => b.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          const id = +b.dataset.id;
+          if (!arr.includes(id) && arr.length < 12) { arr.push(id); chipsEditor(contId, arr); }
+          inp.value = ''; cerrar(); inp.focus();
+        }));
+      };
+      inp.onblur = () => setTimeout(cerrar, 120);
+    }
     $('u-bo-edit').addEventListener('click', () => {
       const bus = ls('col:buscando', []).slice(), ofr = ls('col:ofrezco', []).slice();
       chipsEditor('bo-busco-chips', bus); chipsEditor('bo-ofrezco-chips', ofr);
-      const add = (inputId, arr, contId) => {
-        const inp = $(inputId);
-        inp.onchange = () => {
-          const id = idPorNombre[(inp.value || '').trim().toLowerCase()];
-          if (id && !arr.includes(id) && arr.length < 12) { arr.push(id); chipsEditor(contId, arr); }
-          inp.value = '';
-        };
-      };
-      add('bo-busco-in', bus, 'bo-busco-chips'); add('bo-ofrezco-in', ofr, 'bo-ofrezco-chips');
+      autocompletar('bo-busco-in', 'bo-busco-res', bus, 'bo-busco-chips');
+      autocompletar('bo-ofrezco-in', 'bo-ofrezco-res', ofr, 'bo-ofrezco-chips');
+      $('bo-busco-in').value = ''; $('bo-ofrezco-in').value = '';
       $('bo-guardar').onclick = async () => {
         localStorage.setItem('col:buscando', JSON.stringify(bus));
         localStorage.setItem('col:ofrezco', JSON.stringify(ofr));
