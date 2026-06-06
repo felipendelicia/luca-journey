@@ -204,6 +204,24 @@ export function evolucionarInst(iid, targetId) {
   return op.a;
 }
 
+// Poné/sacá el mote (apodo) de una instancia. Vacío = sin mote.
+export function renombrar(iid, mote) {
+  const arr = pc(); const m = buscarInst(arr, iid); if (!m) return false;
+  const v = String(mote || '').trim().slice(0, 16);
+  if (v) m.mote = v; else delete m.mote;
+  setPC(arr); return true;
+}
+
+// Liberar una instancia (GO): la perdés del PC y te da 1 caramelo de la familia. Queda en vistos.
+export function liberar(iid) {
+  const arr = pc(); const m = buscarInst(arr, iid); if (!m) return false;
+  const i = arr.indexOf(m); if (i < 0) return false;
+  arr.splice(i, 1);
+  addCaramelos(m.id, 1);
+  setPC(arr);
+  return true;
+}
+
 // Reconciliar el PC con conteos AUTORITATIVOS (vienen del server tras un trade, en 1a).
 // Especie con más cantidad → agrega instancias nivel 1; con menos → saca (menor nivel primero).
 export function reconciliarPC(atrapadosExt, shinyExt = []) {

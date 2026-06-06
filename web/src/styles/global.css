@@ -534,6 +534,26 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .pm-evos button:hover{ border-color:var(--red); }
 .pm-evos img{ width:52px; height:52px; image-rendering:pixelated; }
 .pm-evo-bloq{ color:var(--ink-mute); font:600 .82rem var(--font-mono); }
+.pm-esp{ font:600 .8rem var(--font-mono); color:var(--ink-soft); margin-top:-.2rem; }
+/* árbol de evolución */
+.pm-arbol{ border-top:1px dashed var(--line); margin-top:12px; padding-top:10px; }
+.pm-arbol>b{ display:block; margin-bottom:6px; color:var(--ink); font-size:.86rem; }
+.ev-fila{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+.ev-nodo{ display:flex; flex-direction:column; align-items:center; gap:1px; width:64px; font:600 .62rem var(--font-mono); color:var(--ink-soft); }
+.ev-nodo img{ width:48px; height:48px; image-rendering:pixelated; opacity:.7; }
+.ev-nodo.ev-actual{ color:var(--ink); }
+.ev-nodo.ev-actual img{ opacity:1; filter:drop-shadow(0 0 4px var(--red)); }
+.ev-flecha{ color:var(--red); font-size:1rem; margin:2px 0; }
+/* ataques (aviso etapa 2) */
+.pm-movs{ border-top:1px dashed var(--line); margin-top:12px; padding-top:10px; }
+.pm-movs>b{ display:block; color:var(--ink); font-size:.86rem; }
+.pm-soon{ font:600 .76rem var(--font-mono); color:var(--ink-mute); margin:.3rem 0 0; }
+/* mote + liberar */
+.pm-extra{ display:flex; gap:8px; justify-content:center; margin-top:14px; }
+.pm-mini{ font:700 .78rem var(--font-mono); background:var(--paper-2); border:1px solid var(--line); border-radius:999px; padding:8px 12px; cursor:pointer; color:var(--ink); }
+.pm-mini:hover{ border-color:var(--red); }
+.pm-lib{ color:#b3402e; }
+.pm-lib small{ font-weight:600; }
 
 /* página /ayuda */
 .ayuda-h{ font-size:1.5rem; margin:2.2rem 0 .3rem; }

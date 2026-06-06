@@ -45,13 +45,14 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
 
   <script type="application/json" id="dex-data" set:html={JSON.stringify({ pokemon, temas, regiones: REGIONES, evoluciones, aparicion })}></script>
   <script>
-    import { sincronizar, spriteUrl, pc, caramelos, vistos, subirNivel, opcionesEvo, evolucionarInst, costoSubir, NIVEL_MAX } from '../lib/coleccion.js';
+    import { sincronizar, spriteUrl, pc, caramelos, vistos, subirNivel, opcionesEvo, evolucionarInst, renombrar, liberar, costoSubir, NIVEL_MAX } from '../lib/coleccion.js';
     import { sonarExito } from '../lib/sonidos.js';
     import { tierDe } from '../lib/rareza.js';
 
     const D = JSON.parse(document.getElementById('dex-data').textContent);
     sincronizar(D.temas);
     const nombreDe = Object.fromEntries(D.pokemon.map((p) => [p.id, p.nombre]));
+    const nomInst = (m) => m.mote || nombreDe[m.id] || ('Nº ' + m.id);
     const apar = D.aparicion || {};
     const famMap = {}; for (const id in D.evoluciones) famMap[id] = D.evoluciones[id].familia;
     const familiaDe = (id) => famMap[id] || Number(id);
@@ -96,12 +97,13 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       }).join('');
     }
 
-    // card SIMPLE de una instancia (foto, nombre, nivel, caramelos). Tap → modal con todo.
+    // card SIMPLE de una instancia (foto, nombre/mote, nivel, caramelos). Tap → modal con todo.
     function instCard(m, car) {
       const tengo = car[familiaDe(m.id)] || 0;
-      return '<button class="pc-card' + (m.shiny ? ' es-shiny' : '') + '" data-iid="' + m.iid + '">' +
-        '<img src="' + spriteUrl(m.id, m.shiny) + '" alt="' + (nombreDe[m.id] || m.id) + '" />' +
-        '<div class="pc-nom">' + (nombreDe[m.id] || ('Nº ' + m.id)) + (m.shiny ? ' ✨' : '') + '</div>' +
+      const busca = (nomInst(m) + ' ' + (nombreDe[m.id] || '')).toLowerCase();
+      return '<button class="pc-card' + (m.shiny ? ' es-shiny' : '') + '" data-iid="' + m.iid + '" data-num="' + m.id + '" data-nombre="' + busca + '">' +
+        '<img src="' + spriteUrl(m.id, m.shiny) + '" alt="' + nomInst(m) + '" />' +
+        '<div class="pc-nom">' + nomInst(m) + (m.shiny ? ' ✨' : '') + '</div>' +
         '<div class="pc-meta"><span>Nv. ' + m.nivel + '</span><span>🍬 ' + tengo + '</span></div></button>';
     }
 
@@ -119,7 +121,7 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       sec.querySelectorAll('.pc-card').forEach((b) => b.addEventListener('click', () => abrirModal(b.dataset.iid)));
     }
 
-    // modal detallado de UNA instancia: rareza, nivel, caramelos, Power-Up y Evolucionar.
+    // modal detallado de UNA instancia: rareza, nivel, caramelos, Power-Up, Evolucionar, árbol, mote, liberar.
     function evoBloque(m, ops) {
       if (!ops.length) return '';
       const oks = ops.filter((o) => o.ok);
@@ -131,20 +133,47 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       const falta = (o.nivel > 0 && m.nivel < o.nivel) ? ('Nv.' + o.nivel) : (o.costo + '🍬 caramelos');
       return '<div class="pm-evo pm-evo-bloq">🔒 Evoluciona con <b>' + falta + '</b></div>';
     }
+    // árbol/línea evolutiva de la familia (resalta la especie actual).
+    function arbolEvo(m) {
+      const base = familiaDe(m.id);
+      const fila = (ids) => '<div class="ev-fila">' + [...new Set(ids)].map((id) =>
+        '<div class="ev-nodo' + (id === m.id ? ' ev-actual' : '') + '"><img src="' + spriteUrl(id) + '" alt="' + (nombreDe[id] || id) + '" /><span>' + (nombreDe[id] || ('Nº' + id)) + '</span></div>').join('') + '</div>';
+      const n1 = ((D.evoluciones[base] || {}).evos || []).map((e) => e.a);
+      const n2 = n1.flatMap((id) => ((D.evoluciones[id] || {}).evos || []).map((e) => e.a));
+      let html = fila([base]);
+      if (n1.length) html += '<div class="ev-flecha">↓</div>' + fila(n1);
+      if (n2.length) html += '<div class="ev-flecha">↓</div>' + fila(n2);
+      return '<div class="pm-arbol"><b>🌳 Línea evolutiva</b>' + html + '</div>';
+    }
     function abrirModal(iid) {
       const m = pc().find((x) => x.iid === iid); if (!m) return;
       const car = caramelos()[familiaDe(m.id)] || 0, t = tierDe(m.id, apar);
       const costo = costoSubir(m.nivel), max = m.nivel >= NIVEL_MAX, ops = opcionesEvo(iid);
+      const esp = nombreDe[m.id] || ('Nº ' + m.id);
       $('poke-modal-cuerpo').innerHTML =
-        '<img class="pm-img" src="' + spriteUrl(m.id, m.shiny) + '" alt="' + (nombreDe[m.id] || m.id) + '" />' +
-        '<h2>' + (nombreDe[m.id] || ('Nº ' + m.id)) + (m.shiny ? ' ✨' : '') + '</h2>' +
+        '<img class="pm-img" src="' + spriteUrl(m.id, m.shiny) + '" alt="' + esp + '" />' +
+        '<h2>' + nomInst(m) + (m.shiny ? ' ✨' : '') + '</h2>' +
+        (m.mote ? '<div class="pm-esp">(' + esp + ')</div>' : '') +
         '<div class="pm-row"><span class="cap-tier" style="--tier-color:' + t.color + '">' + (t.ico ? t.ico + ' ' : '') + t.nombre + '</span><span class="pm-lvl">Nv. ' + m.nivel + '</span></div>' +
         '<div class="pm-car">🍬 ' + car + ' caramelos de la familia</div>' +
         '<div class="pm-acciones">' +
           (max ? '<span class="pc-max">Nivel MÁXIMO (50)</span>' : '<button class="pm-btn" id="pm-up"' + (car < costo ? ' disabled' : '') + '>⬆️ Power-Up <small>(' + costo + '🍬)</small></button>') +
-          evoBloque(m, ops) + '</div>';
+          evoBloque(m, ops) + '</div>' +
+        arbolEvo(m) +
+        '<div class="pm-movs"><b>⚔️ Ataques</b><p class="pm-soon">Tus 4 ataques activos y el learnset (qué aprende y a qué nivel) llegan con la <b>batalla</b>. 🥊</p></div>' +
+        '<div class="pm-extra">' +
+          '<button class="pm-mini" id="pm-mote">✏️ ' + (m.mote ? 'Cambiar mote' : 'Poner mote') + '</button>' +
+          '<button class="pm-mini pm-lib" id="pm-lib">🕊️ Liberar <small>(+1🍬)</small></button>' +
+        '</div>';
       const up = $('pm-up'); if (up) up.addEventListener('click', () => { if (subirNivel(iid)) { sonarExito(); abrirModal(iid); pintar(); } });
       $('poke-modal-cuerpo').querySelectorAll('[data-evopick]').forEach((b) => b.addEventListener('click', () => { if (evolucionarInst(iid, b.dataset.evopick)) { sonarExito(); cerrarModal(); pintar(); } }));
+      $('pm-mote').addEventListener('click', () => {
+        const nv = prompt('Mote para tu ' + esp + ' (vacío = sin mote):', m.mote || '');
+        if (nv !== null) { renombrar(iid, nv); abrirModal(iid); pintar(); }
+      });
+      $('pm-lib').addEventListener('click', () => {
+        if (confirm('¿Liberar a ' + nomInst(m) + '? Te da 1 🍬 pero lo perdés para siempre.')) { liberar(iid); sonarExito(); cerrarModal(); pintar(); }
+      });
       $('poke-modal').hidden = false;
     }
     function cerrarModal() { $('poke-modal').hidden = true; }
@@ -163,6 +192,16 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       document.querySelectorAll('.dex-seccion').forEach((s) => {
         const algo = [...s.querySelectorAll('.poke')].some((c) => c.style.display !== 'none'); s.style.display = algo ? '' : 'none';
       });
+      // el buscador también filtra Mi PC; al buscar, se abre para ver coincidencias
+      const cont = $('pc-cont');
+      if (cont) {
+        cont.hidden = q ? false : !pcAbierto;
+        const ar = document.querySelector('.pc-arrow'); if (ar) ar.textContent = cont.hidden ? '▸' : '▾';
+        document.querySelectorAll('.pc-card').forEach((c) => {
+          const ok = !q || c.dataset.num === q || c.dataset.num.startsWith(q) || (c.dataset.nombre || '').includes(q);
+          c.style.display = ok ? '' : 'none';
+        });
+      }
       sinres.hidden = visibles > 0;
     }
 
