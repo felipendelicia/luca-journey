@@ -39,17 +39,18 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
   <script>
     import { sincronizar, estado, spriteUrl, evolucionesPosibles, evolucionar } from '../lib/coleccion.js';
     import { sonarExito } from '../lib/sonidos.js';
+    import { tierDe } from '../lib/rareza.js';
 
     const D = JSON.parse(document.getElementById('dex-data').textContent);
     sincronizar(D.temas);
     const nombreDe = Object.fromEntries(D.pokemon.map((p) => [p.id, p.nombre]));
-    // rareza de aparición: "1 de cada X" (peso del Pokémon sobre el total). Menos común = más valioso.
+    // rareza: badge del tier (color + nombre), derivado del peso de aparición.
     const apar = D.aparicion || {};
-    const totalPeso = Object.values(apar).reduce((a, b) => a + b, 0) || 1;
     function rarTxt(id) {
-      const w = apar[id] || 1; const x = Math.round(totalPeso / w);
-      const c = x >= 10000 ? '1/' + Math.round(x / 1000) + 'k' : x >= 1000 ? '1/' + (x / 1000).toFixed(1) + 'k' : '1/' + x;
-      return '<span class="poke-rar" title="aparición ≈ 1 de cada ' + x + '">' + c + '</span>';
+      const t = tierDe(id, apar);
+      const tasa = (t.rate * 100).toFixed(t.rate < 0.01 ? 2 : 1);
+      return '<span class="poke-tier" style="--tier-color:' + t.color + '" title="' + t.nombre + ' · ~' + tasa + '% de aparición">'
+        + (t.ico ? t.ico + ' ' : '') + t.nombre + '</span>';
     }
     const $ = (id) => document.getElementById(id);
     const buscar = $('buscar'), sinres = $('sinres');

@@ -361,16 +361,17 @@ body.dark .ej-mini{ background:#3a1c1a; } body.dark .ej-mini.win{ background:#13
 .safari-barra{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin:1.2rem 0; }
 .ss-item{ display:flex; align-items:center; gap:8px; background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:10px 16px; box-shadow:var(--shadow-sm); }
 .ss-item .ss-ico{ font-size:20px; } .ss-item b{ font-family:var(--font-display); font-size:1.4rem; } .ss-lbl{ color:var(--ink-mute); font-size:.85rem; }
-.btn-regalo{ margin-left:auto; background:var(--yellow); color:var(--ink); border:none; border-radius:999px; font-family:var(--font-display); font-weight:800; padding:10px 18px; cursor:pointer; box-shadow:var(--shadow-sm); animation:pulso 1.4s infinite; }
+.btn-regalo{ margin-left:auto; background:var(--yellow); color:#1f1a08; border:none; border-radius:999px; font-family:var(--font-display); font-weight:800; padding:10px 18px; cursor:pointer; box-shadow:var(--shadow-sm); animation:pulso 1.4s infinite; }
 @keyframes pulso{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
 .safari-arena{ text-align:center; margin-top:1rem; }
 .arena-pasto{ background:linear-gradient(180deg,#bfe6a0,#8fce6a); border-radius:20px; min-height:240px; display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 40px rgba(0,0,0,.08); border:1px solid #7cb85a; overflow:hidden; }
 .arena-vacio{ color:#3a5a26; font-weight:600; text-align:center; }
 .captura{ text-align:center; animation:pop .45s ease; }
 .captura img{ width:180px; height:180px; image-rendering:pixelated; filter:drop-shadow(0 8px 12px rgba(0,0,0,.25)); }
-.captura-txt{ font-size:1.05rem; margin-top:4px; } .cap-n{ color:var(--ink-mute); font-size:.85rem; font-family:var(--font-mono); }
-.cap-prob{ display:block; margin-top:3px; font-size:.78rem; color:var(--ink-soft); }
-.cap-prob b{ color:var(--ink); }
+/* el texto de captura va SIEMPRE sobre el pasto verde claro → colores oscuros fijos (no var de tema) */
+.captura-txt{ font-size:1.05rem; margin-top:4px; color:#16331e; text-shadow:0 1px 2px rgba(255,255,255,.35); } .cap-n{ color:#3f6b4d; font-size:.85rem; font-family:var(--font-mono); }
+.cap-prob{ display:block; margin-top:3px; font-size:.78rem; color:#2f5a3e; }
+.cap-prob b{ color:#16331e; }
 @keyframes pop{ 0%{transform:scale(.3) rotate(-10deg); opacity:0} 60%{transform:scale(1.12)} 100%{transform:scale(1); opacity:1} }
 .btn-tirar{ margin-top:1rem; background:var(--red); color:#fff; border:none; border-radius:999px; font-family:var(--font-display); font-weight:800; font-size:1.15rem; padding:14px 32px; cursor:pointer; box-shadow:var(--shadow); }
 .btn-tirar:hover{ transform:translateY(-2px); } .btn-tirar[disabled]{ opacity:.5; cursor:default; }
@@ -395,6 +396,10 @@ body.dark .poke.falta img{ filter:brightness(0) invert(.18); }
 .poke.es-shiny{ border-color:var(--yellow-deep); box-shadow:0 0 0 2px var(--yellow) inset; background:linear-gradient(180deg,#fffbe6,var(--paper-2)); }
 .poke-shiny{ position:absolute; top:2px; left:4px; font-size:12px; }
 .poke-rar{ position:absolute; left:3px; bottom:18px; font-family:var(--font-mono); font-size:7.5px; font-weight:700; color:var(--ink-mute); background:var(--paper); border:1px solid var(--line); border-radius:6px; padding:0 3px; line-height:1.5; }
+.poke-tier{ position:absolute; left:3px; bottom:17px; font-family:var(--font-mono); font-size:7px; font-weight:700; letter-spacing:.02em;
+  color:#fff; text-shadow:0 1px 1px rgba(0,0,0,.5); background:var(--tier-color); border-radius:6px; padding:1px 4px; line-height:1.5;
+  box-shadow:0 0 7px -2px var(--tier-color); max-width:calc(100% - 6px); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.poke.falta .poke-tier{ opacity:.82; }
 .poke.falta .poke-rar{ opacity:.8; }
 .dex-buscar{ width:100%; max-width:420px; padding:10px 16px; border:1px solid var(--line); border-radius:999px; background:var(--paper-2); color:var(--ink); font-size:.95rem; margin:.4rem 0 1rem; outline:none; }
 .dex-buscar:focus{ border-color:var(--red); }
@@ -452,6 +457,21 @@ body.shiny-flash{ animation:shinyFlash .7s ease; }
 @keyframes burst{ 0%{ opacity:0; transform:scale(.35) } 22%{ opacity:.55 } 100%{ opacity:0; transform:scale(1.5) } }
 body.tier-shake{ animation:tierShake .55s ease-in-out; }
 @keyframes tierShake{ 0%,100%{ transform:translate(0,0) } 20%{ transform:translate(-6px,4px) } 40%{ transform:translate(6px,-5px) } 60%{ transform:translate(-5px,-3px) } 80%{ transform:translate(5px,4px) } }
+
+/* Safari: modal explicativo de rarezas (usa vars de tema → ambos modos) */
+.btn-rarezas{ cursor:pointer; }
+.rar-modal{ position:fixed; inset:0; z-index:120; display:flex; align-items:center; justify-content:center; padding:18px;
+  background:rgba(0,0,0,.62); backdrop-filter:blur(3px); }
+.rar-modal[hidden]{ display:none; }   /* el atributo hidden gana al display:flex */
+.rar-card{ position:relative; width:100%; max-width:430px; max-height:86vh; overflow:auto;
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:22px; box-shadow:0 24px 60px -20px rgba(0,0,0,.6); }
+.rar-card h2{ margin:0 0 6px; font-size:1.15rem; color:var(--ink); }
+.rar-card p{ margin:0 0 14px; font-size:.9rem; line-height:1.5; color:var(--ink-soft); }
+.rar-x{ position:absolute; top:10px; right:12px; background:none; border:none; font-size:18px; color:var(--ink-mute); cursor:pointer; line-height:1; }
+.rar-lista{ display:flex; flex-direction:column; gap:7px; }
+.rar-fila{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.rar-fila .cap-tier{ margin:0; }
+.rar-tasa{ font:600 .82rem var(--font-mono); color:var(--ink-soft); white-space:nowrap; }
 
 /* logros */
 .logros-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; margin:.6rem 0 1.4rem; }

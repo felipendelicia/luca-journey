@@ -12,6 +12,7 @@ const total = pokemon.length;
   <div class="wrap safari">
     <div class="safari-head">
       <h1>🎒 Safari Pokémon</h1>
+      <button class="navlink btn-rarezas" id="btn-rarezas" type="button">✨ ¿Cómo funcionan las rarezas?</button>
       <a class="navlink" href={u('/pokedex')}>📕 Ver mi Pokédex</a>
     </div>
     <p>Tirá Pokéballs para atrapar Pokémon salvajes. Ganás Pokéballs <strong>resolviendo ejercicios</strong> (+2 c/u) y con el <strong>regalo cada 20 min</strong> (+5). ⚡</p>
@@ -32,14 +33,41 @@ const total = pokemon.length;
     </div>
   </div>
 
+  <div class="rar-modal" id="rar-modal" hidden>
+    <div class="rar-card">
+      <button class="rar-x" id="rar-x" type="button" aria-label="Cerrar">✕</button>
+      <h2>✨ Rarezas del Safari</h2>
+      <p>Cada Pokémon tiene una <b>rareza</b>. Cuanto más raro, <b>menos aparece</b> y más épica es su captura (más temblor, brillo y sonido). El <b>🌟 shiny</b> (~1%) puede tocar sobre cualquier rareza.</p>
+      <div class="rar-lista" id="rar-lista"></div>
+    </div>
+  </div>
+
   <script type="application/json" id="safari-data" set:html={JSON.stringify({ pokemon, temas, pesos })}></script>
   <script>
     import { sincronizar, tirar as lanzar, estado, reclamarRegalo, regaloDisponible, regionesDesbloqueadas, spriteUrl } from '../lib/coleccion.js';
     import { sonarCaptura, sonarShiny, sonarEpico } from '../lib/sonidos.js';
+    import { TIERS } from '../lib/rareza.js';
 
     const D = JSON.parse(document.getElementById('safari-data').textContent);
     const $ = (id) => document.getElementById(id);
     const REGN = { kanto: '🔴 Kanto', johto: '⚪ Johto', hoenn: '🟢 Hoenn', sinnoh: '🔵 Sinnoh', unova: '⚫ Unova', kalos: '🟠 Kalos' };
+
+    // modal explicativo de rarezas (poblado desde TIERS)
+    (function rarezas() {
+      const lista = $('rar-lista'), modal = $('rar-modal');
+      if (!lista || !modal) return;
+      const fila = (color, etiqueta, tasa) =>
+        '<div class="rar-fila"><span class="cap-tier" style="--tier-color:' + color + '">' + etiqueta + '</span>'
+        + '<span class="rar-tasa">' + tasa + '</span></div>';
+      lista.innerHTML = TIERS.map((t) =>
+        fila(t.color, (t.ico ? t.ico + ' ' : '') + t.nombre, '~' + (t.rate * 100).toFixed(t.rate < 0.01 ? 2 : 1) + '%')
+      ).join('') + fila('#ffd23f', '🌟 Shiny', '~1% · sobre cualquiera');
+      const cerrar = () => { modal.hidden = true; };
+      $('btn-rarezas') && $('btn-rarezas').addEventListener('click', () => { modal.hidden = false; });
+      $('rar-x') && $('rar-x').addEventListener('click', cerrar);
+      modal.addEventListener('click', (e) => { if (e.target === modal) cerrar(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrar(); });
+    })();
 
     function refrescar() {
       const e = estado();
