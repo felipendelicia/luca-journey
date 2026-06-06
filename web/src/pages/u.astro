@@ -222,13 +222,15 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
 
     // ---- modal de oferta ----
     // grilla de selección por INSTANCIA (doy = mías; pido = del otro). seleccion guarda {iid,id,nivel,shiny,mote}.
-    function gridInst(el, instancias, seleccion) {
+    function gridInst(el, instancias, seleccion, marca, marcaTxt) {
       el.innerHTML = '';
       if (!instancias || !instancias.length) { el.innerHTML = '<div class="tr-colec-vacio">(sin Pokémon)</div>'; return; }
-      instancias.slice().sort((a, b) => (b.shiny - a.shiny) || (b.nivel - a.nivel) || (a.id - b.id)).forEach((m) => {
+      const esHueco = (m) => !!(marca && marca(m));
+      instancias.slice().sort((a, b) => (Number(esHueco(b)) - Number(esHueco(a))) || (b.shiny - a.shiny) || (b.nivel - a.nivel) || (a.id - b.id)).forEach((m) => {
         const on = () => seleccion.some((x) => x.iid === m.iid);
-        const cell = document.createElement('div'); cell.className = 'tr-cell' + (on() ? ' on' : '');
-        cell.innerHTML = `<img src="${sprite(m.id, m.shiny)}" alt="${esc(nombreInst(m))}" title="${esc(nombreInst(m))}" /><span class="tr-cnt">Nv.${m.nivel}${m.shiny ? ' ✨' : ''}</span>`;
+        const cell = document.createElement('div'); cell.className = 'tr-cell' + (on() ? ' on' : '') + (esHueco(m) ? ' tr-gap' : '');
+        cell.innerHTML = `<img src="${sprite(m.id, m.shiny)}" alt="${esc(nombreInst(m))}" title="${esc(nombreInst(m))}" /><span class="tr-cnt">Nv.${m.nivel}${m.shiny ? ' ✨' : ''}</span>`
+          + (esHueco(m) ? `<span class="tr-falta">${marcaTxt}</span>` : '');
         const btn = document.createElement('button'); btn.type = 'button';
         btn.className = 'tr-pedir' + (on() ? ' on' : ''); btn.textContent = on() ? '✓' : '＋';
         btn.addEventListener('click', () => {
@@ -241,13 +243,18 @@ const regionDe = Object.fromEntries(pokemon.map((p) => [p.id, p.region]));
     }
     async function abrirOferta() {
       doy = []; pido = []; $('of-msg').textContent = '';
-      gridInst($('of-doy'), misInst(), doy);
+      $('of-doy').innerHTML = '<div class="tr-colec-vacio">Cargando…</div>';
       $('of-pido').innerHTML = '<div class="tr-colec-vacio">Cargando…</div>';
       $('of-modal').hidden = false;
-      // las instancias del otro, EN VIVO (el snapshot público puede estar desactualizado)
+      // instancias del otro EN VIVO (el snapshot público puede estar viejo)
       let otras = (perfil.publico && perfil.publico.pcPub) || [];
       try { const r = await pcDeUsuario(perfil.user_id); if (r && Array.isArray(r.pc)) otras = r.pc; } catch {}
-      gridInst($('of-pido'), otras, pido);
+      const mias = misInst();
+      const especiesDeEl = new Set(otras.map((m) => m.id));   // lo que ÉL tiene
+      const especiesMias = new Set(mias.map((m) => m.id));    // lo que YO tengo
+      // en MIS Pokémon marco los que ÉL no tiene; en los de ÉL, los que YO no tengo
+      gridInst($('of-doy'), mias, doy, (m) => !especiesDeEl.has(m.id), '⭐ le falta');
+      gridInst($('of-pido'), otras, pido, (m) => !especiesMias.has(m.id), '⭐ te falta');
     }
     $('of-x').addEventListener('click', () => { $('of-modal').hidden = true; });
     $('of-modal').addEventListener('click', (e) => { if (e.target === $('of-modal')) $('of-modal').hidden = true; });

@@ -180,15 +180,17 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
       const grid = $('tr-colec-grid'); if (!otroColeccion) return;
       const inst = otroColeccion.pc || [];
       const q = ($('tr-colec-buscar').value || '').trim().toLowerCase();
+      const especiesMias = new Set(misInst().map((m) => m.id));   // lo que YO ya tengo
+      const esHueco = (m) => !especiesMias.has(m.id);              // me falta esa especie
       const lista = inst
         .filter((m) => !q || (nombres[m.id] || '').toLowerCase().includes(q) || (m.mote || '').toLowerCase().includes(q))
-        .sort((a, b) => (b.shiny - a.shiny) || (b.nivel - a.nivel) || (a.id - b.id));
+        .sort((a, b) => (Number(esHueco(b)) - Number(esHueco(a))) || (b.shiny - a.shiny) || (b.nivel - a.nivel) || (a.id - b.id));
       if (!lista.length) { grid.innerHTML = '<div class="tr-colec-vacio">Sin Pokémon para mostrar.</div>'; return; }
       grid.innerHTML = '';
       lista.forEach((m) => {
         const on = miPedido.some((p) => p.iid === m.iid);
-        const cell = document.createElement('div'); cell.className = 'tr-cell' + (on ? ' on' : '');
-        cell.innerHTML = `<img src="${sprite(m.id, m.shiny)}" alt="${esc(nombreInst(m))}" title="${esc(nombreInst(m))}" /><span class="tr-cnt">Nv.${m.nivel}${m.shiny ? ' ✨' : ''}</span>`;
+        const cell = document.createElement('div'); cell.className = 'tr-cell' + (on ? ' on' : '') + (esHueco(m) ? ' tr-gap' : '');
+        cell.innerHTML = `<img src="${sprite(m.id, m.shiny)}" alt="${esc(nombreInst(m))}" title="${esc(nombreInst(m))}" /><span class="tr-cnt">Nv.${m.nivel}${m.shiny ? ' ✨' : ''}</span>` + (esHueco(m) ? '<span class="tr-falta">⭐ te falta</span>' : '');
         const btn = document.createElement('button');
         btn.className = 'tr-pedir' + (on ? ' on' : ''); btn.type = 'button'; btn.textContent = on ? '✓ pedido' : 'Pedir';
         btn.addEventListener('click', async () => {
@@ -252,12 +254,15 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     }
 
     function abrirPicker() {
+      const especiesDeEl = new Set(((otroColeccion && otroColeccion.pc) || []).map((m) => m.id));   // lo que ÉL tiene
+      const esHueco = (m) => otroColeccion && !especiesDeEl.has(m.id);                               // le falta esa especie
       const inst = misInst().filter((m) => !yaEnLote(m))
-        .sort((a, b) => (b.shiny - a.shiny) || (b.nivel - a.nivel) || (a.id - b.id));
+        .sort((a, b) => (Number(esHueco(b)) - Number(esHueco(a))) || (b.shiny - a.shiny) || (b.nivel - a.nivel) || (a.id - b.id));
       $('tr-grid').innerHTML = inst.length ? inst.map((m) =>
-        `<div class="tr-pick">
+        `<div class="tr-pick${esHueco(m) ? ' tr-gap' : ''}">
           <img src="${sprite(m.id, m.shiny)}" alt="${esc(nombreInst(m))}" title="${esc(nombreInst(m))}" />
           <span class="tr-cnt">Nv.${m.nivel}${m.shiny ? ' ✨' : ''}</span>
+          ${esHueco(m) ? '<span class="tr-falta">⭐ le falta</span>' : ''}
           <button class="tr-add" data-iid="${m.iid}" type="button">+ ofrecer</button>
         </div>`).join('') : '<div class="tr-colec-vacio">No tenés Pokémon para ofrecer.</div>';
       $('tr-grid').querySelectorAll('.tr-add').forEach((b) => b.addEventListener('click', () => {
