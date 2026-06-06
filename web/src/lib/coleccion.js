@@ -44,13 +44,15 @@ for (const sid in evoData) for (const ev of (evoData[sid].evos || [])) {
   if (_nivelProduccion[ev.a] === undefined || ev.nivel > _nivelProduccion[ev.a]) _nivelProduccion[ev.a] = ev.nivel;
 }
 
-// nivel mínimo salvaje: combina rareza (tier 1..10) y etapa evolutiva. Un Charizard (tier alto +
-// evoluciona a nv.36) nunca sale a nv.3; un Caterpie (común, base) sale bajo.
+// nivel mínimo salvaje: combina rareza (tier 1..10) y etapa evolutiva. Un evolucionado puede
+// salir un poco POR DEBAJO de su nivel de evolución (margen 8): Charizard (evo nv.36) sale desde
+// ~28, nunca a nv.3; Caterpie (común, base) sale bajo; legendarios (tier alto) salen altos.
+const MARGEN_EVO = 8;
 export function nivelMinWild(id) {
   const tier = tierDe(id, aparicion).nivel;                 // 1..10
   const porTier = Math.round((tier - 1) / 9 * 38) + 1;      // tier1→1 … tier10→39
   const prod = _nivelProduccion[id];
-  const porEvo = prod === undefined ? 1 : (prod > 0 ? prod : 22); // base→1, piedra→22, por nivel→N
+  const porEvo = prod === undefined ? 1 : Math.max(1, (prod > 0 ? prod : 22) - MARGEN_EVO); // por nivel: N-8; piedra: 14
   return Math.min(50, Math.max(porTier, porEvo));
 }
 // nivel salvaje al atrapar: ≥ mínimo, con cola EXPONENCIAL real (media ~4 sobre el mínimo →
