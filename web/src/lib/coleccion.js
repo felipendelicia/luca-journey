@@ -130,26 +130,64 @@ export function sincronizar(temas) {
   return nuevo;
 }
 
-// ¿Qué Pokémon podés evolucionar? (tenés COSTO_EVOLUCION o más y existe evolución).
-export function evolucionesPosibles(evoMap) {
-  const at = get('col:atrapados', {});
-  const res = [];
-  for (const [id, n] of Object.entries(at)) {
-    if (n >= COSTO_EVOLUCION && evoMap[id]) res.push({ from: Number(id), cantidad: n, opciones: evoMap[id] });
-  }
-  return res;
+// ───────── niveles + evolución (v2) ─────────
+export const NIVEL_MAX = 50;
+export const costoSubir = (nivel) => 1 + Math.floor(nivel / 8);   // caramelos para nivel→nivel+1
+const costoEvo = (nivelReq) => (nivelReq > 0 ? 25 : 50);          // por nivel: 25; piedra/etc (GO): 50
+const buscarInst = (arr, iid) => arr.find((m) => m.iid === iid);
+
+// Power-Up: gasta caramelos de la familia y sube 1 nivel. true si pudo.
+export function subirNivel(iid) {
+  const arr = pc(); const m = buscarInst(arr, iid); if (!m || m.nivel >= NIVEL_MAX) return false;
+  const c = get('col:caramelos', {}); const f = familiaDe(m.id); const costo = costoSubir(m.nivel);
+  if ((c[f] || 0) < costo) return false;
+  c[f] -= costo; set('col:caramelos', c);
+  m.nivel += 1; setPC(arr);
+  return true;
 }
 
-// Evoluciona: necesitás COSTO_EVOLUCION del 'from'; consume uno menos (te queda 1 del
-// pre-evolucionado) y suma 1 del 'to'. Ej: 3 Bulbasaur -> 1 Bulbasaur + 1 Ivysaur.
-export function evolucionar(fromId, toId, evoMap) {
-  const at = get('col:atrapados', {});
-  if ((at[fromId] || 0) < COSTO_EVOLUCION || !(evoMap[fromId] || []).includes(toId)) return false;
-  at[fromId] -= COSTO_EVOLUCION - 1;
-  if (at[fromId] <= 0) delete at[fromId];
-  at[toId] = (at[toId] || 0) + 1;
-  set('col:atrapados', at);
-  return true;
+// Opciones de evolución de una instancia (lista; las ramificadas tienen varias). Cada una con su
+// requisito: nivel>0 pide nivel; nivel===0 (piedra/trade/amistad → GO puro) solo caramelos.
+export function opcionesEvo(iid) {
+  const m = buscarInst(pc(), iid); if (!m) return [];
+  const car = caramelos()[familiaDe(m.id)] || 0;
+  return ((evoData[m.id] && evoData[m.id].evos) || []).map((ev) => {
+    const costo = costoEvo(ev.nivel);
+    const ok = (ev.nivel === 0 || m.nivel >= ev.nivel) && car >= costo;
+    return { a: ev.a, nivel: ev.nivel, costo, ok };
+  });
+}
+
+// Evoluciona la instancia hacia 'targetId' (una opción de opcionesEvo). Conserva el nivel; el
+// pre-evo queda en vistos; NO deja copia en el PC.
+export function evolucionarInst(iid, targetId) {
+  const arr = pc(); const m = buscarInst(arr, iid); if (!m) return false;
+  const op = opcionesEvo(iid).find((o) => o.a === Number(targetId) && o.ok); if (!op) return false;
+  const c = get('col:caramelos', {}); c[familiaDe(m.id)] -= op.costo; set('col:caramelos', c);
+  addVisto(m.id);
+  m.id = op.a; m.movs = [];          // nueva especie; movs se recalculan en Etapa 2
+  addVisto(m.id);
+  setPC(arr);
+  return op.a;
+}
+
+// Reconciliar el PC con conteos AUTORITATIVOS (vienen del server tras un trade, en 1a).
+// Especie con más cantidad → agrega instancias nivel 1; con menos → saca (menor nivel primero).
+export function reconciliarPC(atrapadosExt, shinyExt = []) {
+  const arr = pc(); const objetivo = atrapadosExt || {};
+  const porEsp = {}; for (const m of arr) (porEsp[m.id] ||= []).push(m);
+  for (const id of new Set([...Object.keys(porEsp), ...Object.keys(objetivo)])) {
+    const tengo = (porEsp[id] || []).length; const quiero = objetivo[id] || 0;
+    if (quiero < tengo) {
+      (porEsp[id] || []).sort((a, b) => a.nivel - b.nivel).slice(0, tengo - quiero)
+        .forEach((m) => { const i = arr.indexOf(m); if (i >= 0) arr.splice(i, 1); });
+    } else if (quiero > tengo) {
+      for (let k = 0; k < quiero - tengo; k++) arr.push({ iid: _uid(), id: Number(id), nivel: 1, exp: 0, shiny: false, movs: [], creado: Date.now() });
+      addVisto(id);
+    }
+  }
+  for (const sid of shinyExt) { addVisto(sid); const inst = arr.find((m) => m.id === Number(sid) && !m.shiny); if (inst) inst.shiny = true; }
+  setPC(arr);
 }
 
 // Regalo: +5 Pokéballs cada 20 minutos (col:regalo guarda el timestamp ms del último).
