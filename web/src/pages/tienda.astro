@@ -1,0 +1,70 @@
+---
+import Base from '../layouts/Base.astro';
+import { ITEMS } from '../lib/items.js';
+import { u } from '../lib/url.ts';
+
+const CATS = [['evo', '🧬 Evolución'], ['cura', '❤️ Curación · batalla'], ['ball', '🎯 Pokéballs']];
+const porCat = (c) => Object.entries(ITEMS).filter(([, it]) => it.cat === c);
+---
+<Base title="Tienda — Python con Pokémon" active="">
+  <div class="wrap tienda">
+    <header class="dex-hero">
+      <div class="dex-scan"></div>
+      <div class="dex-hero-row">
+        <div class="dex-titlewrap">
+          <span class="dex-kicker">▰ Pokédex Codex · tienda</span>
+          <h1 class="dex-title">🛒 Tienda</h1>
+        </div>
+        <div class="dex-acciones">
+          <a class="navlink" href={u('/safari')}>🎒 Safari</a>
+          <a class="navlink" href={u('/pokedex')}>📕 Pokédex</a>
+        </div>
+      </div>
+      <div class="ti-saldo"><span class="ti-saldo-lbl">Saldo</span><b id="ti-balls">0</b><span class="ti-saldo-u">🔴 Pokébolas</span></div>
+    </header>
+
+    <p class="ti-msg" id="ti-msg" hidden></p>
+
+    {CATS.map(([c, label]) => (
+      <section class="ti-sec">
+        <h2 class="pm-h ti-h">{label}</h2>
+        <div class="ti-grid">
+          {porCat(c).map(([id, it]) => (
+            <div class="ti-card" data-id={id} data-precio={it.precio}>
+              <div class="ti-ico">{it.ico}<span class="ti-tengo" id={'tengo-' + id}></span></div>
+              <div class="ti-info">
+                <div class="ti-nom">{it.nombre}</div>
+                <div class="ti-desc">{it.desc}</div>
+              </div>
+              <button class="ti-buy" data-buy={id}><b>{it.precio}</b> 🔴</button>
+            </div>
+          ))}
+        </div>
+      </section>
+    ))}
+    <p class="ti-pie">Las <b>mejores Pokéballs</b> se usan solas en el <a href={u('/safari')}>Safari</a> (la mejor que tengas). Las <b>pociones</b> van en la <b>Mochila</b> de la <a href={u('/batalla')}>Batalla</a>. La <b>Piedra Evolutiva</b> se usa al evolucionar desde la <a href={u('/pokedex')}>Pokédex</a>.</p>
+  </div>
+
+  <script>
+    import { items, comprarItem } from '../lib/coleccion.js';
+    import { sonarExito } from '../lib/sonidos.js';
+    const $ = (id) => document.getElementById(id);
+    const getBalls = () => { try { return JSON.parse(localStorage.getItem('col:balls')) || 0; } catch { return 0; } };
+    function pintar() {
+      const balls = getBalls(), inv = items();
+      $('ti-balls').textContent = balls;
+      document.querySelectorAll('.ti-card').forEach((c) => {
+        const id = c.dataset.id, precio = +c.dataset.precio, tengo = inv[id] || 0;
+        $('tengo-' + id).textContent = tengo ? '×' + tengo : '';
+        c.querySelector('.ti-buy').disabled = balls < precio;
+      });
+    }
+    function aviso(t, ok) { const m = $('ti-msg'); m.hidden = false; m.textContent = t; m.className = 'ti-msg' + (ok ? ' ok' : ' no'); clearTimeout(aviso._t); aviso._t = setTimeout(() => { m.hidden = true; }, 1600); }
+    document.querySelectorAll('[data-buy]').forEach((b) => b.addEventListener('click', () => {
+      if (comprarItem(b.dataset.buy)) { sonarExito(); aviso('✅ ¡Comprado! Se guarda en tu cuenta.', true); pintar(); }
+      else aviso('No te alcanzan las Pokébolas. 💪 Resolvé ejercicios o ganá batallas.', false);
+    }));
+    pintar();
+    window.addEventListener('nube:sincronizado', pintar);
+  </script>
+</Base>
