@@ -11,14 +11,21 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
 ---
 <Base title="Pokédex — Python con Pokémon" active="Pokédex">
   <div class="wrap coleccion">
-    <div class="safari-head">
-      <h1>📕 Mi Pokédex</h1>
-      <div class="dex-acciones">
-        <a class="navlink" href={u('/safari')}>🎒 Ir al Safari</a>
-        <a class="navlink" href={u('/intercambio')}>🔄 Intercambiar</a>
+    <header class="dex-hero">
+      <div class="dex-scan"></div>
+      <div class="dex-hero-row">
+        <div class="dex-titlewrap">
+          <span class="dex-kicker">▰ Pokédex Codex · registro de campo</span>
+          <h1 class="dex-title">Mi Pokédex</h1>
+        </div>
+        <div class="dex-acciones">
+          <a class="navlink" href={u('/safari')}>🎒 Safari</a>
+          <a class="navlink" href={u('/batalla')}>⚔️ Batalla</a>
+          <a class="navlink" href={u('/intercambio')}>🔄 Trade</a>
+        </div>
       </div>
-    </div>
-    <p>Tu colección. Atrapá Pokémon en el <strong>Safari</strong> (con las Pokéballs que ganás resolviendo ejercicios). Sí, podés tener <strong>repetidos</strong>. 😎</p>
+      <div class="dex-hud" id="dex-hud"></div>
+    </header>
 
     <div class="col-contadores" id="contadores"></div>
     <div class="dex-controles">
@@ -70,14 +77,22 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
     let filtro = 'todos';
 
     // Pokédex = COMPLETITUD (vistos). Mi PC = los que TENÉS (instancias).
+    const REG_COLOR = { kanto: '#e0492f', johto: '#caa94e', hoenn: '#56ad4e', sinnoh: '#4d90d5', unova: '#7a7a86', kalos: '#d3793f' };
     function contadores(vis, pcArr) {
-      let c = D.regiones.map(([id, label]) => {
-        const total = D.pokemon.filter((p) => p.region === id).length;
-        const tengo = D.pokemon.filter((p) => p.region === id && vis.has(p.id)).length;
-        return '<div class="cc"><span>' + label + '</span><b>' + tengo + ' / ' + total + '</b></div>';
+      const total = D.pokemon.length, seen = D.pokemon.filter((p) => vis.has(p.id)).length;
+      const pct = Math.round((seen / total) * 100), shiny = pcArr.filter((m) => m.shiny).length;
+      $('dex-hud').innerHTML =
+        '<div class="hud-left"><div class="hud-main"><span class="hud-num">' + seen + '</span><span class="hud-tot">/ ' + total + ' vistos</span></div>' +
+        '<div class="hud-bar"><div class="hud-fill" style="width:' + pct + '%"></div><span class="hud-pct">' + pct + '%</span></div></div>' +
+        '<div class="hud-stats"><div class="hud-stat"><b>' + pcArr.length + '</b><span>📦 en tu PC</span></div>' +
+        '<div class="hud-stat"><b>' + shiny + '</b><span>✨ shiny</span></div>' +
+        '<div class="hud-stat"><b>' + (total - seen) + '</b><span>🔍 por hallar</span></div></div>';
+      $('contadores').innerHTML = D.regiones.map(([id, label]) => {
+        const t = D.pokemon.filter((p) => p.region === id).length;
+        const g = D.pokemon.filter((p) => p.region === id && vis.has(p.id)).length;
+        const p = Math.round((g / t) * 100);
+        return '<div class="cc" style="--rc:' + (REG_COLOR[id] || 'var(--red)') + '"><div class="cc-top"><span class="cc-dot"></span><span class="cc-lbl">' + label.replace(/^\S+\s*/, '') + '</span><b>' + g + '<i>/' + t + '</i></b></div><div class="cc-bar"><div style="width:' + p + '%"></div></div></div>';
       }).join('');
-      c += '<div class="cc"><span>✨ Shiny</span><b>' + pcArr.filter((m) => m.shiny).length + '</b></div>';
-      $('contadores').innerHTML = c;
     }
 
     function grilla(vis, pcArr) {

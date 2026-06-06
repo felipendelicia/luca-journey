@@ -376,43 +376,85 @@ body.dark .ej-mini{ background:#3a1c1a; } body.dark .ej-mini.win{ background:#13
 .btn-tirar{ margin-top:1rem; background:var(--red); color:#fff; border:none; border-radius:999px; font-family:var(--font-display); font-weight:800; font-size:1.15rem; padding:14px 32px; cursor:pointer; box-shadow:var(--shadow); }
 .btn-tirar:hover{ transform:translateY(-2px); } .btn-tirar[disabled]{ opacity:.5; cursor:default; }
 .safari-msg{ min-height:1.4em; color:var(--red-deep); font-weight:600; margin-top:.8rem; }
-.col-contadores{ display:flex; gap:12px; flex-wrap:wrap; margin:1rem 0 .5rem; }
-.cc{ background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:8px 14px; display:flex; flex-direction:column; box-shadow:var(--shadow-sm); }
-.cc span{ font-size:.8rem; color:var(--ink-mute); } .cc b{ font-family:var(--font-display); font-size:1.2rem; }
-.poke-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(78px,1fr)); gap:8px; margin:.6rem 0 1.4rem; }
-.poke{ position:relative; background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:6px 4px 4px; text-align:center; }
-.poke img{ width:56px; height:56px; image-rendering:pixelated; }
-.poke.falta img{ filter:brightness(0); opacity:.25; }
-.poke-nom{ display:block; font-size:.66rem; color:var(--ink-soft); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+/* ═══════ Pokédex — “Device OS” ═══════ */
+/* hero + HUD de completitud */
+.dex-hero{ position:relative; overflow:hidden; margin:.3rem 0 1.1rem; padding:18px 20px 20px; border:1px solid var(--line); border-radius:18px;
+  background:linear-gradient(180deg, color-mix(in srgb,var(--red) 9%, var(--paper-2)), var(--paper-2)); box-shadow:var(--shadow-sm); }
+.dex-scan{ position:absolute; inset:0; pointer-events:none; opacity:.32; mix-blend-mode:overlay; background:repeating-linear-gradient(0deg, transparent 0 3px, rgba(0,0,0,.4) 3px 4px); }
+.dex-hero-row{ position:relative; display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.dex-kicker{ display:block; font:700 .62rem var(--font-pixel); letter-spacing:.1em; text-transform:uppercase; color:var(--red); }
+.dex-title{ margin:.25rem 0 0; font:800 2.1rem var(--font-display); letter-spacing:-.03em; color:var(--ink); line-height:1; }
+.dex-acciones{ display:flex; gap:7px; flex-wrap:wrap; }
+.dex-hud{ position:relative; display:flex; gap:20px; align-items:center; flex-wrap:wrap; margin-top:16px; }
+.hud-left{ flex:1; min-width:220px; }
+.hud-main{ display:flex; align-items:baseline; gap:8px; }
+.hud-num{ font:800 2.6rem var(--font-display); line-height:.85; color:var(--ink); letter-spacing:-.03em; }
+.hud-tot{ font:700 .9rem var(--font-mono); color:var(--ink-soft); }
+.hud-bar{ position:relative; height:14px; margin-top:9px; background:var(--line); border-radius:999px; overflow:hidden; }
+.hud-fill{ height:100%; width:0; border-radius:999px; background:linear-gradient(90deg,#e3350d,#ff8a3d); transition:width 1s cubic-bezier(.2,.8,.2,1); }
+.hud-pct{ position:absolute; right:9px; top:50%; transform:translateY(-50%); font:800 .6rem var(--font-pixel); color:#fff; mix-blend-mode:difference; }
+.hud-stats{ display:flex; gap:9px; }
+.hud-stat{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:8px 13px; text-align:center; min-width:62px; }
+.hud-stat b{ display:block; font:800 1.25rem var(--font-display); color:var(--ink); line-height:1; }
+.hud-stat span{ font:600 .62rem var(--font-mono); color:var(--ink-soft); white-space:nowrap; }
+
+/* contadores por región con mini-barra */
+.col-contadores{ display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:9px; margin:0 0 1.1rem; }
+.cc{ position:relative; background:var(--paper-2); border:1px solid var(--line); border-radius:13px; padding:9px 12px 10px 14px; box-shadow:var(--shadow-sm); overflow:hidden; }
+.cc::before{ content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--rc,var(--red)); }
+.cc-top{ display:flex; align-items:center; gap:7px; }
+.cc-dot{ width:9px; height:9px; border-radius:50%; background:var(--rc,var(--red)); box-shadow:0 0 7px -1px var(--rc,var(--red)); }
+.cc-lbl{ font:700 .76rem var(--font-mono); color:var(--ink); flex:1; }
+.cc-top b{ font:800 .9rem var(--font-mono); color:var(--ink); }
+.cc-top b i{ font-style:normal; font-weight:600; color:var(--ink-mute); font-size:.78em; }
+.cc-bar{ height:5px; margin-top:7px; background:var(--line); border-radius:999px; overflow:hidden; }
+.cc-bar>div{ height:100%; background:var(--rc,var(--red)); border-radius:999px; transition:width .9s ease; }
+
+/* controles tipo escáner */
+.dex-controles{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:.2rem 0 1.1rem; }
+.dex-buscar{ width:100%; max-width:420px; padding:11px 18px; border:1px solid var(--line); border-radius:12px; background:var(--paper-2); color:var(--ink); font:600 .9rem var(--font-mono); margin:0; outline:none; transition:border-color .15s, box-shadow .15s; }
+.dex-buscar::placeholder{ color:var(--ink-mute); }
+.dex-buscar:focus{ border-color:var(--red); box-shadow:0 0 0 3px color-mix(in srgb,var(--red) 18%, transparent); }
+.dex-controles .dex-buscar{ flex:1; min-width:220px; }
+.dex-filtros{ display:flex; gap:7px; flex-wrap:wrap; }
+.dex-f{ font:700 .76rem var(--font-mono); padding:8px 14px; border:1px solid var(--line); border-radius:11px; background:var(--paper-2); color:var(--ink-soft); cursor:pointer; transition:.12s; }
+.dex-f:hover{ border-color:var(--ink-soft); color:var(--ink); }
+.dex-f.activo{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+.dex-sinresultados{ color:var(--ink-mute); font-family:var(--font-mono); }
+
+/* grilla de especies */
+.poke-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(84px,1fr)); gap:9px; margin:.5rem 0 1.6rem; }
+.poke{ position:relative; overflow:hidden; background:var(--paper-2); border:1px solid var(--line); border-radius:13px; padding:8px 4px 5px; text-align:center; cursor:default; transition:transform .12s, border-color .12s, box-shadow .12s; }
+.poke::after{ content:attr(data-num); position:absolute; top:4px; right:6px; font:800 .55rem var(--font-pixel); color:var(--ink-mute); opacity:.4; }
+.poke:hover{ transform:translateY(-3px); border-color:var(--ink-soft); box-shadow:var(--shadow); z-index:2; }
+.poke img{ width:58px; height:58px; image-rendering:pixelated; transition:transform .12s; }
+.poke:hover img{ transform:scale(1.08); }
+.poke.falta img{ filter:brightness(0); opacity:.22; }
+.poke-nom{ display:block; font:600 .66rem var(--font-mono); color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-top:1px; }
 .poke.falta .poke-nom{ color:var(--ink-mute); }
-.poke.tengo{ border-color:#bce7cd; }
-.poke-x{ position:absolute; top:3px; right:5px; background:var(--red); color:#fff; font-family:var(--font-pixel); font-size:8px; padding:2px 5px; border-radius:8px; }
+.poke.tengo{ border-color:color-mix(in srgb,#3fb56e 48%, var(--line)); }
+.poke-x{ position:absolute; top:4px; left:5px; background:var(--ink); color:var(--paper); font:700 8px var(--font-pixel); padding:2px 5px; border-radius:7px; z-index:2; }
 body.dark .poke.falta img{ filter:brightness(0) invert(.18); }
 
-/* shiny ✨ + buscador de la Pokédex */
+/* shiny ✨ */
 .captura.shiny img{ animation:pop .45s ease, brillo 1.2s ease-in-out infinite; }
 @keyframes brillo{ 0%,100%{filter:drop-shadow(0 0 10px gold) drop-shadow(0 8px 12px rgba(0,0,0,.25))} 50%{filter:drop-shadow(0 0 22px #fff3) drop-shadow(0 0 18px gold)} }
 .captura.shiny .captura-txt{ color:#cc9a00; }
 .poke.es-shiny{ border-color:var(--yellow-deep); box-shadow:0 0 0 2px var(--yellow) inset; background:linear-gradient(180deg,#fffbe6,var(--paper-2)); }
-.poke-shiny{ position:absolute; top:2px; left:4px; font-size:12px; }
-.poke-rar{ position:absolute; left:3px; bottom:18px; font-family:var(--font-mono); font-size:7.5px; font-weight:700; color:var(--ink-mute); background:var(--paper); border:1px solid var(--line); border-radius:6px; padding:0 3px; line-height:1.5; }
-.poke-tier{ position:absolute; left:3px; bottom:17px; font-family:var(--font-mono); font-size:7px; font-weight:700; letter-spacing:.02em;
+body.dark .poke.es-shiny{ background:linear-gradient(180deg,#2c2814,var(--paper-2)); }
+.poke-shiny{ position:absolute; top:3px; left:5px; font-size:12px; z-index:2; }
+.poke-rar{ position:absolute; left:4px; bottom:19px; font-family:var(--font-mono); font-size:7.5px; font-weight:700; color:var(--ink-mute); background:var(--paper); border:1px solid var(--line); border-radius:6px; padding:0 3px; line-height:1.5; }
+.poke-tier{ position:absolute; left:4px; bottom:18px; font-family:var(--font-mono); font-size:7px; font-weight:700; letter-spacing:.02em;
   color:#fff; text-shadow:0 1px 1px rgba(0,0,0,.5); background:var(--tier-color); border-radius:6px; padding:1px 4px; line-height:1.5;
-  box-shadow:0 0 7px -2px var(--tier-color); max-width:calc(100% - 6px); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  box-shadow:0 0 7px -2px var(--tier-color); max-width:calc(100% - 8px); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .poke.falta .poke-tier{ opacity:.82; }
 .poke.falta .poke-rar{ opacity:.8; }
-.dex-buscar{ width:100%; max-width:420px; padding:10px 16px; border:1px solid var(--line); border-radius:999px; background:var(--paper-2); color:var(--ink); font-size:.95rem; margin:.4rem 0 1rem; outline:none; }
-.dex-buscar:focus{ border-color:var(--red); }
-.dex-sinresultados{ color:var(--ink-mute); }
-body.dark .poke.es-shiny{ background:linear-gradient(180deg,#2c2814,var(--paper-2)); }
 
-/* controles de la Pokédex: buscador + filtros */
-.dex-controles{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin:.4rem 0 1rem; }
-.dex-controles .dex-buscar{ margin:0; flex:1; min-width:220px; }
-.dex-filtros{ display:flex; gap:8px; flex-wrap:wrap; }
-.dex-f{ font-size:.82rem; padding:7px 13px; border:1px solid var(--line); border-radius:999px; background:var(--paper-2); color:var(--ink); cursor:pointer; }
-.dex-f:hover{ border-color:var(--red); }
-.dex-f.activo{ background:var(--red); color:#fff; border-color:var(--red); }
+/* reveal escalonado de las secciones por región */
+.dex-seccion{ animation:dexRise .5s both; }
+.dex-seccion:nth-child(2){ animation-delay:.05s } .dex-seccion:nth-child(3){ animation-delay:.1s }
+.dex-seccion:nth-child(4){ animation-delay:.15s } .dex-seccion:nth-child(5){ animation-delay:.2s } .dex-seccion:nth-child(6){ animation-delay:.25s }
+@keyframes dexRise{ from{ opacity:0; transform:translateY(14px) } to{ opacity:1; transform:none } }
 
 /* ===== Safari: animación de captura ===== */
 .escena{ position:relative; width:100%; height:100%; min-height:240px; display:flex; align-items:center; justify-content:center; }
