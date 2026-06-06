@@ -281,8 +281,9 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
         sonarEpico();
         const fams = new Set(G.equipo.map((c) => c.id));
         fams.forEach((id) => darCaramelos(id, 3));
+        darBalls(5);
         $('fin-tit').textContent = '🏆 ¡Ganaste!';
-        $('fin-msg').textContent = 'Tu equipo ganó. 🍬 +3 caramelos para cada Pokémon que peleó.';
+        $('fin-msg').textContent = 'Tu equipo ganó. 🍬 +3 caramelos para cada Pokémon que peleó · 🔴 +5 Pokéballs.';
       } else {
         darBalls(5);
         $('fin-tit').textContent = '💪 Perdiste…';

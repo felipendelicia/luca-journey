@@ -3,17 +3,17 @@
 // El id legacy `piedra` (Piedra Evolutiva genérica) NO está en el catálogo: ya no se compra, pero
 // sigue funcionando como comodín para cualquier evo por piedra (ver coleccion.js).
 export const ITEMS = {
-  // ── Evolución ──
-  piedrafuego:  { nombre: 'Piedra Fuego',   ico: '🔥', precio: 80, cat: 'evo', sprite: 'piedrafuego',  desc: 'Evos de Fuego: Vulpix→Ninetales, Growlithe→Arcanine, Eevee→Flareon. Se gasta 1.' },
-  piedraagua:   { nombre: 'Piedra Agua',    ico: '💧', precio: 80, cat: 'evo', sprite: 'piedraagua',   desc: 'Evos de Agua: Eevee→Vaporeon, Poliwhirl→Poliwrath, Shellder→Cloyster, Staryu→Starmie. Se gasta 1.' },
-  piedratrueno: { nombre: 'Piedra Trueno',  ico: '⚡', precio: 80, cat: 'evo', sprite: 'piedratrueno', desc: 'Evos Eléctricas: Pikachu→Raichu, Eevee→Jolteon, Eelektrik→Eelektross. Se gasta 1.' },
-  piedrahoja:   { nombre: 'Piedra Hoja',    ico: '🍃', precio: 80, cat: 'evo', sprite: 'piedrahoja',   desc: 'Evos de Planta: Gloom→Vileplume, Weepinbell→Victreebel, Exeggcute→Exeggutor. Se gasta 1.' },
-  piedraluna:   { nombre: 'Piedra Lunar',   ico: '🌙', precio: 80, cat: 'evo', sprite: 'piedraluna',   desc: 'Clefairy→Clefable, Jigglypuff→Wigglytuff, Nidorina→Nidoqueen, Nidorino→Nidoking. Se gasta 1.' },
-  piedrasol:    { nombre: 'Piedra Solar',   ico: '☀️', precio: 80, cat: 'evo', sprite: 'piedrasol',    desc: 'Gloom→Bellossom, Sunkern→Sunflora, Cottonee→Whimsicott, Petilil→Lilligant. Se gasta 1.' },
-  piedradia:    { nombre: 'Piedra Día',     ico: '✨', precio: 80, cat: 'evo', sprite: 'piedradia',    desc: 'Togetic→Togekiss, Roselia→Roserade, Minccino→Cinccino, Floette→Florges. Se gasta 1.' },
-  piedraalba:   { nombre: 'Piedra Alba',    ico: '🔆', precio: 80, cat: 'evo', sprite: 'piedraalba',   desc: 'Evos de día/macho: Kirlia→Gallade, Snorunt→Froslass. Se gasta 1.' },
-  piedranoche:  { nombre: 'Piedra Noche',   ico: '🌑', precio: 80, cat: 'evo', sprite: 'piedranoche',  desc: 'Murkrow→Honchkrow, Misdreavus→Mismagius, Lampent→Chandelure, Doublade→Aegislash. Se gasta 1.' },
-  discoenlace:  { nombre: 'Disco de Enlace', ico: '🔗', precio: 80, cat: 'evo', sprite: 'discoenlace',  desc: 'Para evos por intercambio: Kadabra→Alakazam, Machoke→Machamp, Graveler→Golem, Haunter→Gengar. Se gasta 1.' },
+  // ── Evolución ── (piedras tipadas single-use: precio bajo; el Disco cubre 25 evos → un poco más)
+  piedrafuego:  { nombre: 'Piedra Fuego',   ico: '🔥', precio: 40, cat: 'evo', sprite: 'piedrafuego',  desc: 'Evos de Fuego: Vulpix→Ninetales, Growlithe→Arcanine, Eevee→Flareon. Se gasta 1.' },
+  piedraagua:   { nombre: 'Piedra Agua',    ico: '💧', precio: 40, cat: 'evo', sprite: 'piedraagua',   desc: 'Evos de Agua: Eevee→Vaporeon, Poliwhirl→Poliwrath, Shellder→Cloyster, Staryu→Starmie. Se gasta 1.' },
+  piedratrueno: { nombre: 'Piedra Trueno',  ico: '⚡', precio: 40, cat: 'evo', sprite: 'piedratrueno', desc: 'Evos Eléctricas: Pikachu→Raichu, Eevee→Jolteon, Eelektrik→Eelektross. Se gasta 1.' },
+  piedrahoja:   { nombre: 'Piedra Hoja',    ico: '🍃', precio: 40, cat: 'evo', sprite: 'piedrahoja',   desc: 'Evos de Planta: Gloom→Vileplume, Weepinbell→Victreebel, Exeggcute→Exeggutor. Se gasta 1.' },
+  piedraluna:   { nombre: 'Piedra Lunar',   ico: '🌙', precio: 40, cat: 'evo', sprite: 'piedraluna',   desc: 'Clefairy→Clefable, Jigglypuff→Wigglytuff, Nidorina→Nidoqueen, Nidorino→Nidoking. Se gasta 1.' },
+  piedrasol:    { nombre: 'Piedra Solar',   ico: '☀️', precio: 40, cat: 'evo', sprite: 'piedrasol',    desc: 'Gloom→Bellossom, Sunkern→Sunflora, Cottonee→Whimsicott, Petilil→Lilligant. Se gasta 1.' },
+  piedradia:    { nombre: 'Piedra Día',     ico: '✨', precio: 40, cat: 'evo', sprite: 'piedradia',    desc: 'Togetic→Togekiss, Roselia→Roserade, Minccino→Cinccino, Floette→Florges. Se gasta 1.' },
+  piedraalba:   { nombre: 'Piedra Alba',    ico: '🔆', precio: 40, cat: 'evo', sprite: 'piedraalba',   desc: 'Evos de día/macho: Kirlia→Gallade, Snorunt→Froslass. Se gasta 1.' },
+  piedranoche:  { nombre: 'Piedra Noche',   ico: '🌑', precio: 40, cat: 'evo', sprite: 'piedranoche',  desc: 'Murkrow→Honchkrow, Misdreavus→Mismagius, Lampent→Chandelure, Doublade→Aegislash. Se gasta 1.' },
+  discoenlace:  { nombre: 'Disco de Enlace', ico: '🔗', precio: 50, cat: 'evo', sprite: 'discoenlace',  desc: 'Para evos por intercambio: Kadabra→Alakazam, Machoke→Machamp, Graveler→Golem, Haunter→Gengar. Se gasta 1.' },
   // ── Curación · batalla ──
   pocion:      { nombre: 'Poción',           ico: '🧪', precio: 15, cat: 'cura', cura: 30,   desc: 'Cura 30 HP de tu Pokémon en batalla.' },
   superpocion: { nombre: 'Súper Poción',     ico: '⚗️', precio: 35, cat: 'cura', cura: 70,   desc: 'Cura 70 HP en batalla.' },

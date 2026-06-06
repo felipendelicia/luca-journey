@@ -15,7 +15,8 @@ const LEGENDARIOS = new Set([
 ]);
 
 const CARAMELOS_GANADOR = 3;          // por familia que peleó
-const BALLS_PERDEDOR = 10;
+const BALLS_GANADOR = 5;              // el ganador también se lleva Pokébolas (premiar ganar)
+const BALLS_PERDEDOR = 10;            // consuelo para el que pierde
 
 export interface Premios {
   gano: boolean; caramelos?: Record<number, number>; balls?: number; insignias?: string[];
@@ -57,7 +58,8 @@ async function aplicarUno(
     const acum = pObj(estado, 'col:caramelos', {});
     for (const f in car) acum[f] = (acum[f] || 0) + car[f];
     setObj(estado, 'col:caramelos', acum);
-    premios.caramelos = car;
+    estado['col:balls'] = String(pNum(estado, 'col:balls') + BALLS_GANADOR);
+    premios.caramelos = car; premios.balls = BALLS_GANADOR;
   } else {
     estado['col:balls'] = String(pNum(estado, 'col:balls') + BALLS_PERDEDOR);
     premios.balls = BALLS_PERDEDOR;

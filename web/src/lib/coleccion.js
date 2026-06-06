@@ -77,7 +77,7 @@ export function atrapar(id, { shiny = false, nivel = 1 } = {}) {
 }
 
 export const BALLS_POR_EJERCICIO = 2;
-export const REGALO_BALLS = 5;                     // Pokéballs por regalo
+export const REGALO_BALLS = 8;                     // Pokéballs por regalo (cada 20 min)
 export const REGALO_COOLDOWN_MS = 20 * 60 * 1000;  // cada 20 minutos
 export const PROB_SHINY = 0.01; // 1% de que un salvaje sea shiny ✨
 export const COSTO_EVOLUCION = 3; // cuántos hacen falta para evolucionar (te queda 1 del pre-evolucionado)
