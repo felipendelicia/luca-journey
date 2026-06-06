@@ -55,6 +55,43 @@ El backend es **NestJS 10 + Prisma v7 + Postgres**, corriendo en Docker. Reempla
 - **Deploy:** el build de producción (`npm run build` desde `web/`) debe correrse con el
   valor real de `PUBLIC_API_URL`. El CORS de la API debe permitir el origen de GitHub Pages.
 
+### Servidor (Raspberry Pi)
+
+El proyecto corre en una **Raspberry Pi** en la LAN, vía **SSH**:
+
+- **Host:** `192.168.1.112` · **Usuario:** `felipe` · **Acceso:** `ssh felipe@192.168.1.112`
+- La contraseña SSH **no se versiona** (vive en la memoria local de Claude, fuera del repo).
+- La Pi es **ARM64 (aarch64)**, Debian 13, **~900 MB RAM**. Docker + compose ya instalados.
+- Deploy en `~/luca-journey/` en la Pi: `docker-compose.yml` + `api/` (fuente) + `.env`
+  (con `JWT_SECRET`, `GOOGLE_*`, `FRONTEND_URL`, `CORS_ORIGINS`; **no versionado**).
+
+#### Deploy: buildear local + transferir la imagen (NO buildear en la Pi)
+
+Los ~900 MB de RAM de la Pi no alcanzan para `npm ci` + `tsc` sin riesgo de OOM. Por eso la
+imagen se **buildea en otra máquina** (cross-build arm64) y se **transfiere** ya armada. El
+`api` del `docker-compose.yml` tiene `image: luca-journey-api:latest` además de `build:`, así
+en la Pi `docker compose up` usa la imagen cargada **sin** rebuildear.
+
+```bash
+# 1) (una vez) habilitar emulación arm64 en la máquina de build
+docker run --privileged --rm tonistiigi/binfmt --install arm64
+# 2) cross-build de la imagen arm64
+docker buildx build --platform linux/arm64 -t luca-journey-api:latest --load ./api
+# 3) transferir la imagen a la Pi
+docker save luca-journey-api:latest | gzip -1 | ssh felipe@192.168.1.112 'gunzip | docker load'
+# 4) sincronizar compose + fuente (liviano; el build real no se corre en la Pi)
+rsync -az --exclude node_modules --exclude dist --exclude .env --exclude '*.tsbuildinfo' \
+  docker-compose.yml api felipe@192.168.1.112:luca-journey/
+# 5) levantar en la Pi (usa la imagen cargada; baja postgres:17 arm64; corre migrate deploy)
+ssh felipe@192.168.1.112 'cd ~/luca-journey && docker compose up -d'
+```
+
+Verificación: `curl http://192.168.1.112:3000/auth/me` → `401`. La API necesita `GOOGLE_*`
+no vacíos para arrancar (con placeholders arranca, pero el login Google no funciona hasta
+poner credenciales reales). La Pi está en LAN: para que el frontend de GitHub Pages la
+alcance hace falta exponerla (túnel/port-forward/dominio) y ajustar `GOOGLE_CALLBACK_URL`,
+`FRONTEND_URL` y `CORS_ORIGINS`.
+
 ## Reglas
 
 - **Teoría:** editá `web/src/content/libro/*.md`. No dupliques contenido en otro lado.

@@ -18,6 +18,7 @@ services:
 
   api:
     build: ./api
+    image: luca-journey-api:latest   # tag fijo: permite buildear en otra máquina y cargar la imagen en la Pi (sin rebuild)
     restart: unless-stopped
     depends_on:
       db:
@@ -30,9 +31,13 @@ services:
       GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL}
       FRONTEND_URL: ${FRONTEND_URL}
       CORS_ORIGINS: ${CORS_ORIGINS}
-      PORT: "3000"
+      PORT: "${API_PORT:-3000}"
+      # TLS app-level (deploy sin reverse proxy): si se setean, la API sirve HTTPS.
+      # El cert se monta vía docker-compose.override.yml en el server. En dev quedan vacíos.
+      TLS_CERT: "${TLS_CERT:-}"
+      TLS_KEY: "${TLS_KEY:-}"
     ports:
-      - "3000:3000"
+      - "${API_PUBLISH:-3000:3000}"
 
 volumes:
   dbdata:
