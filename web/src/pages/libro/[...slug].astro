@@ -62,7 +62,7 @@ const grupos = agrupar(caps);
     let pyReady = null;
     async function getPy(out) {
       if (!pyReady) {
-        out.innerHTML = '<span class="lbl">SALIDA</span>⏳ Cargando Python (~15s la primera vez)…';
+        out.innerHTML = '<span class="lbl">SALIDA</span><span class="py-load"><span class="py-ball"></span>Preparando Python… la primera vez tarda ~15s; después es <b>instantáneo</b> ⚡</span>';
         pyReady = window.loadPyodide();
       }
       return pyReady;
