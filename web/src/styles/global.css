@@ -647,6 +647,10 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .pm-evos button{ display:flex; flex-direction:column; align-items:center; gap:2px; background:var(--paper-2); border:1px solid var(--line); border-radius:13px; padding:8px 9px; cursor:pointer; font:700 .68rem var(--font-mono); color:var(--ink); transition:transform .1s,border-color .1s; }
 .pm-evos button:hover{ border-color:var(--tier-color); transform:translateY(-2px); }
 .pm-evos img{ width:54px; height:54px; image-rendering:pixelated; }
+/* rama evolutiva bloqueada: misma tarjeta, apagada, con qué falta + link a la Tienda */
+.pm-evo-locked{ display:flex; flex-direction:column; align-items:center; gap:2px; background:var(--paper-2); border:1px dashed var(--line); border-radius:13px; padding:8px 9px; font:600 .66rem var(--font-mono); color:var(--ink-mute); }
+.pm-evo-locked img{ width:54px; height:54px; image-rendering:pixelated; opacity:.5; filter:grayscale(.7); }
+.pm-evo-locked .pm-evo-req{ opacity:1; }
 .pm-evo-bloq{ color:var(--ink-mute); font:600 .82rem var(--font-mono); }
 .pm-tienda{ color:var(--red); font-weight:800; text-decoration:none; }
 .pm-tienda:hover{ text-decoration:underline; }

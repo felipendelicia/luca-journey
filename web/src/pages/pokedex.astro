@@ -172,18 +172,24 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
     // modal detallado de UNA instancia: rareza, nivel, caramelos, Power-Up, Evolucionar, árbol, mote, liberar.
     function evoBloque(m, ops) {
       if (!ops.length) return '';
-      const oks = ops.filter((o) => o.ok);
-      if (oks.length) {
-        return '<div class="pm-evo"><b>🧬 Evolucionar a:</b><div class="pm-evos">' +
-          oks.map((o) => '<button data-evopick="' + o.a + '"><img src="' + spriteUrl(o.a) + '" alt="' + (nombreDe[o.a] || o.a) + '" /><span>' + (nombreDe[o.a] || ('Nº ' + o.a)) + '<br>' + (o.req ? '<span class="pm-evo-req">' + itemSvg(o.req, 16) + '</span> + ' : '') + o.costo + '🍬</span></button>').join('') + '</div></div>';
-      }
-      const o = ops[0];
-      const it = o.req ? ITEMS[o.req] : null;
-      const faltaItem = !!o.req && !(tieneItem(o.req) || (o.req.startsWith('piedra') && tieneItem('piedra')));
-      const falta = faltaItem ? ('<span class="pm-evo-req">' + itemSvg(o.req, 18) + '</span> ' + it.nombre)
-        : (o.nivel > 0 && m.nivel < o.nivel) ? ('Nv.' + o.nivel) : (o.costo + '🍬 caramelos');
-      const link = faltaItem ? ' <a class="pm-tienda" href="' + (window.__BASE || '') + '/tienda">→ Tienda</a>' : '';
-      return '<div class="pm-evo pm-evo-bloq">🔒 Evoluciona con <b>' + falta + '</b>' + link + '</div>';
+      // mostramos TODAS las ramas (Eevee tiene varias): las que podés hacer son botones; las que
+      // necesitan otra piedra/nivel/caramelos salen bloqueadas, con qué falta + link a la Tienda.
+      const tarjetas = ops.map((o) => {
+        const nom = nombreDe[o.a] || ('Nº ' + o.a);
+        const img = '<img src="' + spriteUrl(o.a) + '" alt="' + nom + '" />';
+        const reqIco = o.req ? '<span class="pm-evo-req">' + itemSvg(o.req, 16) + '</span> + ' : '';
+        if (o.ok) {
+          return '<button data-evopick="' + o.a + '">' + img + '<span>' + nom + '<br>' + reqIco + o.costo + '🍬</span></button>';
+        }
+        const it = o.req ? ITEMS[o.req] : null;
+        const faltaItem = !!o.req && !(tieneItem(o.req) || (o.req.startsWith('piedra') && tieneItem('piedra')));
+        const faltaNivel = o.nivel > 0 && m.nivel < o.nivel;
+        const motivo = faltaItem ? ('Falta ' + it.nombre) : faltaNivel ? ('Nv.' + o.nivel) : ('Faltan ' + o.costo + '🍬');
+        const reqShow = o.req ? '<span class="pm-evo-req">' + itemSvg(o.req, 16) + '</span> ' : '';
+        const link = faltaItem ? ' <a class="pm-tienda" href="' + (window.__BASE || '') + '/tienda">→ Tienda</a>' : '';
+        return '<div class="pm-evo-locked" title="' + motivo + '">' + img + '<span>' + nom + '<br>🔒 ' + reqShow + motivo + link + '</span></div>';
+      }).join('');
+      return '<div class="pm-evo"><b>🧬 Evolucionar a:</b><div class="pm-evos">' + tarjetas + '</div></div>';
     }
     // árbol/línea evolutiva de la familia (resalta la especie actual).
     function arbolEvo(m) {
