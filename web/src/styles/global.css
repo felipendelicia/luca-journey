@@ -716,7 +716,23 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .bt-pick img{ width:56px; height:56px; image-rendering:pixelated; }
 .bt-pick span{ font-weight:700; font-size:.8rem; }
 .bt-pick small{ font:600 .7rem var(--font-mono); color:var(--ink-soft); }
-.bt-pick.elegido{ border-color:var(--red); box-shadow:0 0 0 2px var(--red) inset; }
+.bt-pick.elegido,.bt-pick.sel{ border-color:var(--red); box-shadow:0 0 0 2px var(--red) inset; }
+/* ── modo de batalla (Práctica / En vivo) + lobby PvP ── */
+.bt-modo{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:1rem 0; }
+.bt-modo-b{ display:flex; flex-direction:column; align-items:center; gap:2px; padding:16px 12px; background:var(--paper-2); border:2px solid var(--line); border-radius:16px; cursor:pointer; color:var(--ink); font:inherit; transition:transform .12s, border-color .12s; }
+.bt-modo-b:hover{ transform:translateY(-2px); border-color:var(--red); }
+.bt-modo-b b{ font-family:var(--font-display); font-size:1.05rem; }
+.bt-modo-b small{ font:600 .72rem var(--font-mono); color:var(--ink-soft); text-align:center; }
+.bt-lobby{ display:flex; flex-direction:column; gap:10px; max-width:420px; margin:.6rem auto; }
+.bt-codejoin{ display:flex; gap:8px; }
+.bt-codejoin input{ flex:1; padding:11px 14px; border:2px solid var(--line); border-radius:12px; background:var(--paper-2); color:var(--ink); font:700 1rem var(--font-mono); letter-spacing:.12em; text-transform:uppercase; }
+.bt-amigos{ display:flex; flex-direction:column; gap:6px; }
+.bt-amigos small{ color:var(--ink-soft); }
+.bt-amigos-l{ display:flex; flex-wrap:wrap; gap:6px; }
+.bt-amigo{ padding:7px 12px; border:1px solid var(--line); border-radius:999px; background:var(--paper-2); color:var(--ink); cursor:pointer; font:600 .85rem var(--font-mono); }
+.bt-amigo:hover{ border-color:var(--red); }
+.bt-volver{ display:block; margin:1rem auto 0; background:none; border:none; color:var(--ink-soft); cursor:pointer; font:600 .9rem var(--font-mono); }
+.bt-rendir{ border-color:var(--red) !important; color:var(--red); }
 /* paneles */
 .bt-rival,.bt-yo{ background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:9px 12px; }
 .bt-yo{ margin-top:6px; }

@@ -11,9 +11,15 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       <h1>⚔️ Batalla</h1>
       <a class="navlink" href={u('/pokedex')}>📕 Mi Pokédex</a>
     </div>
-    <p>Armá un equipo de hasta <b>3</b> y peleá contra un rival CPU. Elegís ataques (tipos importan), y cuando se llena la barra desatás el <b>⚡ Súper</b>: un reto de código de tu nivel. 🥊</p>
+    <p>Armá un equipo de hasta <b>3</b> y peleá. En <b>🤖 Práctica</b> es contra una CPU; en <b>🌐 En vivo</b> contra otro entrenador real. Elegís ataques (tipos importan), y cuando se llena la barra desatás el <b>⚡ Súper</b>: un reto de código de tu nivel. 🥊</p>
 
-    <div id="bt-sel"></div>
+    <div class="bt-modo" id="bt-modo">
+      <button class="bt-modo-b" data-modo="practica"><b>🤖 Práctica</b><small>vs CPU · entrená sin presión</small></button>
+      <button class="bt-modo-b" data-modo="online"><b>🌐 En vivo</b><small>vs jugador real · cola, código o amigo</small></button>
+    </div>
+
+    <div id="bt-online" hidden></div>
+    <div id="bt-sel" hidden></div>
     <div id="bt-combate" hidden>
       <div class="bt-rival">
         <div class="bt-info"><span class="bt-nom" id="r-nom"></span><span class="bt-lv" id="r-lv"></span><span class="bt-tipos" id="r-tipos"></span></div>
@@ -71,6 +77,9 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     import { etiquetaEfec } from '../lib/tipos.js';
     import { retoAlAzar } from '../lib/retos-batalla.js';
     import { sonarExito, sonarEpico } from '../lib/sonidos.js';
+    import * as online from '../lib/batalla-online.js';
+    import { amigos } from '../lib/social.js';
+    import { refrescarDesdeNube } from '../lib/nube.js';
 
     const D = JSON.parse(document.getElementById('bt-data').textContent);
     sincronizar(D.temas);
@@ -347,7 +356,175 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
 
     $('mochila-x').addEventListener('click', cerrarMochila);
     $('mochila-modal').addEventListener('click', (e) => { if (e.target === $('mochila-modal')) cerrarMochila(); });
-    $('fin-otra').addEventListener('click', () => { $('bt-fin').hidden = true; $('bt-combate').hidden = true; $('bt-sel').hidden = false; pintarSeleccion(); });
-    pintarSeleccion();
+
+    // ════════════════ Modo EN VIVO (PvP, server-autoritativo) ════════════════
+    let OS = null;              // {snap, prev}
+    let onlineWired = false;
+    let selOnline = new Set();
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const loMsg = (t) => { const m = $('lo-msg'); if (m) m.textContent = t; };
+
+    function volverInicio() {
+      $('bt-fin').hidden = true; $('bt-combate').hidden = true; $('bt-sel').hidden = true; $('bt-online').hidden = true;
+      $('reto-modal').hidden = true; $('mochila-modal').hidden = true; $('bt-modo').hidden = false;
+    }
+
+    // ── Lobby ──
+    function lobbyOnline() {
+      if (!online.hayOnline) {
+        $('bt-online').innerHTML = '<p class="bt-vacio">El modo en vivo necesita la nube. Iniciá sesión (☁️) para jugar PvP.</p><button class="bt-volver" id="lo-volver">← Volver</button>';
+        $('bt-online').hidden = false; $('lo-volver').onclick = volverInicio; return;
+      }
+      $('bt-online').innerHTML =
+        '<h2 class="liga-h">🌐 En vivo</h2>' +
+        '<div class="bt-lobby">' +
+          '<button class="btn-tirar" id="lo-cola">🎯 Buscar rival (cola)</button>' +
+          '<button class="bt-modo-b" id="lo-codear"><b>🔑 Crear código</b><small>sala privada</small></button>' +
+          '<div class="bt-codejoin"><input id="lo-code" placeholder="CÓDIGO" maxlength="8" /><button class="bt-modo-b" id="lo-join">Unirme</button></div>' +
+          '<div class="bt-amigos" id="lo-amigos"><small>Cargando amigos…</small></div>' +
+        '</div>' +
+        '<p class="bt-msg" id="lo-msg"></p><button class="bt-volver" id="lo-volver">← Volver</button>';
+      $('bt-online').hidden = false;
+      wireOnline();
+      $('lo-cola').onclick = () => { online.buscar(); loMsg('Buscando rival…'); };
+      $('lo-codear').onclick = () => online.crearCodigo();
+      $('lo-join').onclick = () => { const c = $('lo-code').value.trim(); if (c) online.unirseCodigo(c); };
+      $('lo-volver').onclick = () => { online.cancelarCola(); volverInicio(); };
+      cargarAmigos();
+    }
+    async function cargarAmigos() {
+      try {
+        const list = await amigos(); const cont = $('lo-amigos'); if (!cont) return;
+        if (!list || !list.length) { cont.innerHTML = '<small>Sin amigos aún. Agregalos en la Liga 🏆</small>'; return; }
+        cont.innerHTML = '<small>Invitar a un amigo:</small><div class="bt-amigos-l">' + list.map((a) =>
+          '<button class="bt-amigo" data-uid="' + esc(a.userId || a.id) + '">👤 ' + esc(a.nombre || a.handle || 'amigo') + '</button>').join('') + '</div>';
+        cont.querySelectorAll('[data-uid]').forEach((b) => b.onclick = () => { online.invitar(b.dataset.uid); loMsg('Invitación enviada…'); });
+      } catch { const c = $('lo-amigos'); if (c) c.innerHTML = '<small>No se pudieron cargar los amigos.</small>'; }
+    }
+
+    // ── Selección de equipo (en vivo) ──
+    function seleccionOnline(rival) {
+      const arr = [...pc()].sort((a, b) => b.nivel - a.nivel); selOnline = new Set();
+      if (!arr.length) { $('bt-online').innerHTML = '<p class="bt-vacio">No tenés Pokémon. Andá al Safari 🎒</p><button class="bt-volver" id="so-volver">← Volver</button>'; $('bt-online').hidden = false; $('so-volver').onclick = () => { online.rendirse(); volverInicio(); }; return; }
+      $('bt-online').innerHTML =
+        '<h2 class="liga-h">Elegí tu equipo <small>(hasta 3) · rival: ' + esc((rival && rival.nombre) || '?') + '</small></h2>' +
+        '<div class="bt-picks">' + arr.map((m) => '<button class="bt-pick" data-iid="' + m.iid + '"><img src="' + spriteUrl(m.id, m.shiny) + '" alt="" /><span>' + esc(m.mote || ('Nº ' + m.id)) + '</span><small>Nv. ' + m.nivel + '</small></button>').join('') + '</div>' +
+        '<button class="btn-tirar" id="so-listo" disabled>✅ ¡Listo!</button><p class="bt-msg" id="so-msg"></p>';
+      $('bt-online').hidden = false; $('bt-combate').hidden = true;
+      $('bt-online').querySelectorAll('.bt-pick').forEach((b) => b.onclick = () => {
+        const iid = b.dataset.iid;
+        if (selOnline.has(iid)) { selOnline.delete(iid); b.classList.remove('sel'); }
+        else if (selOnline.size < 3) { selOnline.add(iid); b.classList.add('sel'); }
+        $('so-listo').disabled = selOnline.size < 1;
+      });
+      $('so-listo').onclick = () => { online.elegirEquipo([...selOnline]); $('so-listo').disabled = true; $('so-msg').textContent = 'Esperando al rival…'; };
+    }
+
+    // ── Combate (render desde el snapshot del server) ──
+    function renderOnline() {
+      if (!OS || !OS.snap) return;
+      const snap = OS.snap, myUid = online.miUid();
+      const me = snap.jugadores.find((j) => j.uid === myUid), rival = snap.jugadores.find((j) => j.uid !== myUid);
+      if (!me || !rival) return;
+      const myAct = me.equipo[me.activo], rivAct = rival.equipo[rival.activo];
+      $('bt-online').hidden = true; $('bt-sel').hidden = true; $('bt-modo').hidden = true; $('bt-combate').hidden = false;
+      $('r-nom').textContent = rivAct.nombre; $('r-lv').textContent = 'Nv.' + rivAct.nivel; $('r-tipos').textContent = rivAct.tipos.join(' · '); $('r-img').src = spriteUrl(rivAct.id, rivAct.shiny); hp('r-hp', rivAct); dots('r-dots', rival.equipo);
+      $('p-nom').textContent = myAct.nombre; $('p-lv').textContent = 'Nv.' + myAct.nivel; $('p-tipos').textContent = myAct.tipos.join(' · '); $('p-img').src = spriteUrl(myAct.id, myAct.shiny); hp('p-hp', myAct); dots('p-dots', me.equipo);
+      $('bt-carga').style.width = me.super + '%'; $('bt-carga-txt').textContent = 'Súper: ' + me.super + '%';
+      const miTurno = snap.fase === 'combate' && snap.turno === myUid;
+      const ev = (snap.eventos || [])[snap.eventos.length - 1];
+      $('bt-msg').textContent = snap.fase === 'super'
+        ? (snap.superDe === myUid ? '⚡ Resolvé tu reto…' : 'El rival está resolviendo su súper…')
+        : (ev ? ev.texto : (miTurno ? '¡Tu turno!' : 'Turno del rival…'));
+      $('bt-moves').innerHTML = myAct.movs.map((mv, i) =>
+        '<button class="bt-move" data-i="' + i + '"' + (miTurno ? '' : ' disabled') + '><b>' + esc(mv.nombre) + '</b><small>' + esc(mv.tipo) + (mv.poder ? ' · ⚔️' + mv.poder : '') + '</small></button>').join('') +
+        '<button class="bt-move bt-super" id="bt-super"' + (miTurno && me.super >= 100 ? '' : ' disabled') + '>⚡ SÚPER</button>' +
+        '<button class="bt-move bt-mochila" id="bt-mochila"' + (miTurno ? '' : ' disabled') + '>🎒 Mochila</button>' +
+        '<button class="bt-move bt-rendir" id="bt-rendir">🏳️ Rendirse</button>';
+      $('bt-moves').querySelectorAll('.bt-move[data-i]').forEach((b) => b.onclick = () => { if (miTurno) online.mover(+b.dataset.i); });
+      $('bt-super').onclick = () => { if (miTurno && me.super >= 100) online.lanzarSuper(); };
+      $('bt-mochila').onclick = () => { if (miTurno) abrirMochilaOnline(); };
+      $('bt-rendir').onclick = () => { if (confirm('¿Rendirte? Cuenta como derrota.')) online.rendirse(); };
+      $('bt-banca').innerHTML = me.equipo.map((c, i) => {
+        const ko = c.hp <= 0, act = i === me.activo, dis = act || ko || !miTurno, pct = Math.max(0, Math.round((c.hp / c.hpMax) * 100));
+        return '<button class="bt-banca-m' + (act ? ' activo' : '') + (ko ? ' ko' : '') + '" data-sw="' + i + '"' + (dis ? ' disabled' : '') + '><img src="' + spriteUrl(c.id, c.shiny) + '" alt="" /><span class="bm-nom">' + esc(c.nombre) + '</span><span class="bm-hp"><i style="width:' + pct + '%"></i></span><small>' + (ko ? '💀 Debilitado' : act ? '● En combate' : 'Nv.' + c.nivel) + '</small></button>';
+      }).join('');
+      $('bt-banca').querySelectorAll('[data-sw]').forEach((b) => b.onclick = () => { if (miTurno) online.cambiar(+b.dataset.sw); });
+    }
+    // animación ligera al recibir estado: flash del que recibió daño
+    function animarOnline(snap, prev) {
+      if (!prev) return; const myUid = online.miUid();
+      const flash = (jN, jO, imgId, esRival) => {
+        const a = jN && jN.equipo[jN.activo], o = jO && jO.equipo[jO.activo];
+        if (a && o && a.iid === o.iid && a.hp < o.hp) { const img = $(imgId); destello(esRival, ''); img.classList.add('bt-hit'); setTimeout(() => img.classList.remove('bt-hit'), 220); if (a.hp <= 0) cry(a.id, 0.3); }
+      };
+      flash(snap.jugadores.find((j) => j.uid === myUid), prev.jugadores.find((j) => j.uid === myUid), 'p-img', false);
+      flash(snap.jugadores.find((j) => j.uid !== myUid), prev.jugadores.find((j) => j.uid !== myUid), 'r-img', true);
+    }
+
+    // súper por código (pausa): abrís TU reto; al resolver mandás la calidad al server
+    function abrirRetoOnline() {
+      const reto = retoAlAzar(regionesDesbloqueadas(D.temas)); const t0 = Date.now();
+      $('reto-q').textContent = reto.q;
+      $('reto-ops').innerHTML = reto.op.map((o, i) => '<button class="reto-op" data-i="' + i + '">' + esc(o) + '</button>').join('');
+      $('reto-ops').querySelectorAll('.reto-op').forEach((b) => b.onclick = () => resolverRetoOnline(reto, +b.dataset.i, t0));
+      $('reto-modal').hidden = false;
+      let seg = RETO_SEG; const bar = $('reto-timer-bar'); bar.style.width = '100%'; cancelarRetoTimer();
+      retoH = setInterval(() => { seg--; bar.style.width = Math.max(0, seg / RETO_SEG * 100) + '%'; if (seg <= 0) { cancelarRetoTimer(); resolverRetoOnline(reto, -1, t0); } }, 1000);
+    }
+    function resolverRetoOnline(reto, i, t0) {
+      if ($('reto-modal').hidden) return; cancelarRetoTimer(); $('reto-modal').hidden = true;
+      const ok = i === reto.c, seg = (Date.now() - t0) / 1000;
+      const calidad = ok ? Math.max(0.05, Math.min(1, 1 - seg / 12)) : 0;
+      if (ok) sonarExito();
+      online.resolverSuper(calidad);
+    }
+    function abrirMochilaOnline() {
+      const inv = items(); const curas = Object.entries(ITEMS).filter(([id, it]) => it.cat === 'cura' && inv[id] > 0);
+      if (!curas.length) { $('bt-msg').textContent = 'No tenés pociones. Comprá en la Tienda 🛒'; return; }
+      $('mochila-lista').innerHTML = curas.map(([id, it]) => '<button class="mo-item" data-pocion="' + id + '">' + it.ico + ' <b>' + esc(it.nombre) + '</b><small>cura ' + (it.cura > 9000 ? 'TODO' : it.cura) + ' HP · ×' + inv[id] + '</small></button>').join('');
+      $('mochila-lista').querySelectorAll('[data-pocion]').forEach((b) => b.onclick = () => { const id = b.dataset.pocion; if (usarItem(id)) { online.usarPocion(id); $('mochila-modal').hidden = true; } });
+      $('mochila-modal').hidden = false;
+    }
+    async function finOnline(data) {
+      const gano = data.ganador === online.miUid(), pr = data.premios || {};
+      $('fin-tit').textContent = gano ? '🏆 ¡Ganaste!' : '💪 Perdiste…';
+      let m = gano ? 'Venciste a tu rival.' : 'Caíste esta vez.';
+      if (pr.balls) m += ' 🔴 +' + pr.balls + ' Pokéballs.';
+      if (pr.caramelos) { const t = Object.values(pr.caramelos).reduce((a, b) => a + b, 0); if (t) m += ' 🍬 +' + t + ' caramelos.'; }
+      if (pr.insignias && pr.insignias.length) m += ' 🏅 ¡Insignia nueva: ' + pr.insignias.join(', ') + '!';
+      $('fin-msg').textContent = m; if (gano) sonarEpico(); $('bt-fin').hidden = false;
+      try { await refrescarDesdeNube(); } catch {}
+    }
+
+    // suscripción a los eventos del gateway (una sola vez)
+    function wireOnline() {
+      if (onlineWired) return; onlineWired = true;
+      online.conectarBatalla(localStorage.getItem('liga:nombre') || '');
+      online.onBatalla('emparejado', (d) => { OS = null; seleccionOnline(d.rival); });
+      online.onBatalla('enCola', () => loMsg('En cola, esperando rival…'));
+      online.onBatalla('codigoCreado', (d) => loMsg('Tu código: ' + d.codigo + ' — compartilo. Esperando rival…'));
+      online.onBatalla('invitado', () => loMsg('Invitación enviada. Esperando…'));
+      online.onBatalla('invitacion', (d) => { if (confirm(((d && d.de) || 'Alguien') + ' te invitó a un duelo. ¿Aceptar?')) online.aceptar(d.roomId); });
+      online.onBatalla('seleccion', (d) => { const m = $('so-msg'); if (m) { const r = (d.listos || []).find((x) => x.uid !== online.miUid()); m.textContent = r && r.listo ? 'Rival listo. ¡Empezamos!' : 'Esperando al rival…'; } });
+      online.onBatalla('estado', (snap) => { const prev = OS && OS.snap; OS = { snap, prev }; renderOnline(); animarOnline(snap, prev); });
+      online.onBatalla('retoSuper', () => abrirRetoOnline());
+      online.onBatalla('fin', (d) => finOnline(d));
+      online.onBatalla('rivalDesconectado', (d) => { $('bt-msg').textContent = '⚠️ Rival desconectado. Esperando ' + ((d && d.graciaSeg) || 30) + 's…'; });
+      online.onBatalla('rivalVolvio', () => { $('bt-msg').textContent = 'El rival volvió. ¡Seguimos!'; });
+      online.onBatalla('abortado', () => { volverInicio(); lobbyOnline(); loMsg('La sala se cerró (el rival salió).'); });
+      online.onBatalla('error', (e) => {
+        const map = { 'ya-estas-en-sala': 'Ya estás en una sala.', 'codigo-invalido': 'Código inválido.', 'equipo-invalido': 'Equipo inválido.', 'no-es-tu-turno': 'No es tu turno.', 'super-no-listo': 'El súper no está listo todavía.', 'no-en-combate': 'No estás en combate.' };
+        const t = map[e && e.msg] || ('Error: ' + ((e && e.msg) || '?')); loMsg(t); if (!$('bt-combate').hidden) $('bt-msg').textContent = t;
+      });
+    }
+
+    // ── arranque: elegir modo ──
+    $('fin-otra').addEventListener('click', volverInicio);
+    document.querySelectorAll('#bt-modo .bt-modo-b').forEach((b) => b.addEventListener('click', () => {
+      $('bt-modo').hidden = true;
+      if (b.dataset.modo === 'online') lobbyOnline();
+      else { $('bt-sel').hidden = false; pintarSeleccion(); }
+    }));
   </script>
 </Base>
