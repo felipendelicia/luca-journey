@@ -2,6 +2,8 @@
 // Aprender = atrapar: cada ejercicio resuelto da Pokéballs; completar un tema o
 // una región te da capturas garantizadas. Se pueden tener REPETIDOS (conteo por id).
 
+import { tierDe } from './rareza.js';
+
 const get = (k, def) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? def; } catch { return def; } };
 const set = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 
@@ -169,5 +171,5 @@ export function tirar(pokemon, temas, pesos = {}) {
   }
   set('col:balls', balls);
   set('col:atrapados', at);
-  return { pokemon: elegido, cantidad: at[elegido.id], repetido: at[elegido.id] > 1, shiny, nuevoShiny, balls, prob, cadaCuantos };
+  return { pokemon: elegido, cantidad: at[elegido.id], repetido: at[elegido.id] > 1, shiny, nuevoShiny, balls, prob, cadaCuantos, tier: tierDe(elegido.id, pesos) };
 }
