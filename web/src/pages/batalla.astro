@@ -31,6 +31,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       </div>
       <p class="bt-msg" id="bt-msg">¡Que empiece la batalla!</p>
       <div class="bt-carga"><div class="bt-carga-fill" id="bt-carga"></div><span id="bt-carga-txt">Súper: 0%</span></div>
+      <div class="bt-timer" id="bt-timer" hidden><span class="bt-timer-txt" id="bt-timer-txt"></span><div class="bt-timer-bar"><i id="bt-timer-bar"></i></div></div>
       <div class="bt-moves" id="bt-moves"></div>
       <div class="bt-banca-wrap"><span class="bt-banca-lbl">Tu equipo <small>(tocá para cambiar)</small></span><div class="bt-banca" id="bt-banca"></div></div>
     </div>
@@ -39,6 +40,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
   <div class="reto-modal" id="reto-modal" hidden>
     <div class="reto-card">
       <h2>⚡ ¡Súper ataque! Resolvé para potenciarlo</h2>
+      <div class="reto-timer"><i id="reto-timer-bar"></i></div>
       <p class="reto-q" id="reto-q"></p>
       <div class="reto-ops" id="reto-ops"></div>
     </div>
@@ -99,7 +101,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const rival = equipoCPU(pool, Math.min(3, equipo.length), Math.max(2, nivelProm + (Math.random() < 0.5 ? -2 : 2)));
       G = { equipo, rival, pa: 0, ra: 0, carga: 0, lock: false };
       $('bt-sel').hidden = true; $('bt-combate').hidden = false; $('bt-fin').hidden = true;
-      render(); msg('¡Aparece el rival! Elegí tu ataque.');
+      render(); msg('¡Aparece el rival! Elegí tu ataque.'); armarTimer();
     }
     function poolRival() {
       // especies “salvajes” simples por región desbloqueada (líderes/starters conocidos)
@@ -113,6 +115,28 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     const miAct = () => G.equipo[G.pa];
     const rivAct = () => G.rival[G.ra];
     const vivos = (t) => t.filter((c) => c.hp > 0).length;
+
+    // ── timeout de turno: si no movés en TURNO_SEG, actúa solo ──
+    const TURNO_SEG = 30, RETO_SEG = 15;
+    let timerH = null, retoH = null;
+    function cancelarTimer() { if (timerH) { clearInterval(timerH); timerH = null; } $('bt-timer').hidden = true; }
+    function cancelarRetoTimer() { if (retoH) { clearInterval(retoH); retoH = null; } }
+    function armarTimer() {
+      cancelarTimer();
+      if (!G || G.lock || !$('bt-fin').hidden || vivos(G.equipo) === 0 || vivos(G.rival) === 0) return;
+      let seg = TURNO_SEG;
+      const cont = $('bt-timer'), txt = $('bt-timer-txt'), bar = $('bt-timer-bar');
+      cont.hidden = false;
+      const pintarT = () => { txt.textContent = '⏱ ' + seg + 's para mover'; bar.style.width = (seg / TURNO_SEG * 100) + '%'; cont.classList.toggle('urgente', seg <= 5); };
+      pintarT();
+      timerH = setInterval(() => { seg--; if (seg <= 0) { cancelarTimer(); autoMover(); } else pintarT(); }, 1000);
+    }
+    function autoMover() {
+      if (!G || G.lock) return;
+      msg('⏰ ¡Se acabó el tiempo! ' + miAct().nombre + ' actúa por instinto…');
+      const ms = miAct().movs;
+      turno(ms[Math.floor(Math.random() * ms.length)]);
+    }
 
     function render() {
       const p = miAct(), r = rivAct();
@@ -142,12 +166,12 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     // cambiar de Pokémon (manual): usa el turno → el rival ataca después.
     async function cambiar(i) {
       if (G.lock || i === G.pa || G.equipo[i].hp <= 0) return;
-      G.lock = true; render();
+      cancelarTimer(); G.lock = true; render();
       G.pa = i; msg('¡Adelante, ' + miAct().nombre + '!'); render();
       await esperar(750);
       await turnoRival();
       if (fin()) return;
-      G.lock = false; render();
+      G.lock = false; render(); armarTimer();
     }
     function hp(id, c) {
       const pct = Math.max(0, Math.round((c.hp / c.hpMax) * 100));
@@ -191,13 +215,13 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     }
 
     async function turno(mov) {
-      if (G.lock) return; G.lock = true; render();
+      if (G.lock) return; cancelarTimer(); G.lock = true; render();
       await usarMov(miAct(), mov, 'r');
       if (fin()) return;
       await turnoRival();
       if (fin()) return;
       G.carga = Math.min(100, G.carga + 34);
-      G.lock = false; render();
+      G.lock = false; render(); armarTimer();
     }
     async function turnoRival() {
       await usarMov(rivAct(), elegirCPU(rivAct(), miAct()), 'p');
@@ -209,7 +233,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       return false;
     }
     function terminar(gano) {
-      G.lock = true;
+      G.lock = true; cancelarTimer(); cancelarRetoTimer();
       if (gano) {
         sonarEpico();
         const fams = new Set(G.equipo.map((c) => c.id));
@@ -227,7 +251,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     // ── Súper: reto de código ──
     function abrirReto() {
       if (G.carga < 100 || G.lock) return;
-      G.lock = true; render();
+      cancelarTimer(); G.lock = true; render();
       const reg = regionesDesbloqueadas(D.temas);
       const reto = retoAlAzar(reg);
       const t0 = Date.now();
@@ -235,8 +259,13 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       $('reto-ops').innerHTML = reto.op.map((o, i) => '<button class="reto-op" data-i="' + i + '">' + o + '</button>').join('');
       $('reto-ops').querySelectorAll('.reto-op').forEach((b) => b.addEventListener('click', () => resolverReto(reto, +b.dataset.i, t0)));
       $('reto-modal').hidden = false;
+      // timeout del reto: si no respondés en RETO_SEG, el súper se apaga
+      let seg = RETO_SEG; const bar = $('reto-timer-bar'); bar.style.width = '100%';
+      retoH = setInterval(() => { seg--; bar.style.width = Math.max(0, seg / RETO_SEG * 100) + '%'; if (seg <= 0) { cancelarRetoTimer(); resolverReto(reto, -1, t0); } }, 1000);
     }
     async function resolverReto(reto, i, t0) {
+      if ($('reto-modal').hidden) return;   // ya resuelto (click o timeout)
+      cancelarRetoTimer();
       $('reto-modal').hidden = true;
       G.carga = 0;
       const ok = i === reto.c;
@@ -255,7 +284,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       if (fin()) return;
       await turnoRival();
       if (fin()) return;
-      G.lock = false; render();
+      G.lock = false; render(); armarTimer();
     }
 
     $('fin-otra').addEventListener('click', () => { $('bt-fin').hidden = true; $('bt-combate').hidden = true; $('bt-sel').hidden = false; pintarSeleccion(); });
