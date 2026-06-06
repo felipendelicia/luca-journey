@@ -171,13 +171,20 @@ const lista = pokemon.map((p) => ({ id: p.id, nombre: p.nombre }));
     .tcard-edit { font:700 .72rem var(--font-mono); color: var(--ink-soft); background: var(--paper-2); border:1px solid var(--line); border-radius:8px; padding:3px 9px; cursor:pointer; }
     .tcard-edit:hover { color: var(--ink); }
 
-    /* Buscando / Ofrezco */
+    /* Buscando / Ofrezco — dos tableros color-coded */
     .u-bo { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
     @media (max-width:560px){ .u-bo { grid-template-columns:1fr; } }
-    .u-bo-col h4 { margin:0 0 8px; font:800 .8rem var(--font-mono); }
-    .u-bo-list { display:flex; flex-wrap:wrap; gap:6px; }
-    .u-bo-poke { display:flex; align-items:center; gap:5px; background: var(--paper-2); border:1px solid var(--line); border-radius:999px; padding:3px 9px 3px 3px; font:600 .8rem var(--font-mono); }
-    .u-bo-poke img { width:26px; height:26px; image-rendering:pixelated; }
+    .u-bo-col { border:1px solid var(--line); border-top:3px solid var(--acc, var(--line)); border-radius:14px; padding:13px 13px 15px; background: var(--paper-2); }
+    .u-bo-col.busca { --acc:#5cb3ec; }
+    .u-bo-col.ofrece { --acc: var(--teal-deep,#1f8f5f); }
+    .u-bo-col h4 { margin:0 0 11px; font:800 .9rem var(--font-display); display:flex; align-items:center; gap:8px; }
+    .u-bo-col .bo-count { margin-left:auto; font:800 .68rem var(--font-mono); color:var(--acc); background: color-mix(in srgb, var(--acc) 14%, var(--paper)); border:1px solid color-mix(in srgb, var(--acc) 35%, var(--line)); border-radius:999px; padding:1px 9px; }
+    .u-bo-list { display:grid; grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); gap:9px; }
+    .bo-tile { display:flex; flex-direction:column; align-items:center; gap:3px; padding:8px 3px 6px; border-radius:11px; background: var(--paper); border:1px solid var(--line); transition: transform .12s, border-color .12s; }
+    .bo-tile:hover { transform: translateY(-2px); border-color: var(--acc); }
+    .bo-tile img { width:46px; height:46px; image-rendering:pixelated; }
+    .bo-tile span { font:600 .62rem var(--font-mono); color: var(--ink-soft); max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .bo-vacio { color: var(--ink-mute); font:600 .82rem var(--font-mono); padding:10px 2px; }
     .bo-edit { margin:10px 0; }
     .bo-input { width:100%; padding:9px 12px; border:1px solid var(--line); border-radius:10px; background: var(--paper-2); color: var(--ink); font:600 .9rem var(--font-mono); }
     .bo-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
@@ -240,11 +247,12 @@ const lista = pokemon.map((p) => ({ id: p.id, nombre: p.nombre }));
       const bus = buscandoData(), ofr = ofrezcoData();
       if (!esMio && !bus.length && !ofr.length) { $('u-bo-sec').hidden = true; return; }
       $('u-bo-sec').hidden = false;
-      const lista = (arr, vacio) => arr.length
-        ? `<div class="u-bo-list">${arr.map((id) => `<span class="u-bo-poke"><img src="${sprite(id)}" alt="" />${esc(nombres[id] || ('Nº ' + id))}</span>`).join('')}</div>`
-        : `<div class="tr-colec-vacio">${vacio}</div>`;
-      $('u-bo').innerHTML = `<div class="u-bo-col"><h4>🔎 Busca</h4>${lista(bus, '—')}</div>`
-        + `<div class="u-bo-col"><h4>🎁 Ofrece</h4>${lista(ofr, '—')}</div>`;
+      const tile = (id) => `<div class="bo-tile" title="${esc(nombres[id] || ('Nº ' + id))}"><img src="${sprite(id)}" alt="${esc(nombres[id] || id)}" /><span>${esc(nombres[id] || ('Nº ' + id))}</span></div>`;
+      const col = (cls, ico, titulo, arr, vacio) =>
+        `<div class="u-bo-col ${cls}"><h4>${ico} ${titulo} <span class="bo-count">${arr.length}</span></h4>`
+        + (arr.length ? `<div class="u-bo-list">${arr.map(tile).join('')}</div>` : `<div class="bo-vacio">${vacio}</div>`) + '</div>';
+      $('u-bo').innerHTML = col('busca', '🔎', 'Busca', bus, esMio ? 'Agregá los que querés conseguir' : '—')
+        + col('ofrece', '🎁', 'Ofrece', ofr, esMio ? 'Agregá los que querés dar' : '—');
     }
 
     function pintarPerfil(p) {
