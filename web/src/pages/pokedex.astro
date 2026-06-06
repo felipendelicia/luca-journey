@@ -34,12 +34,12 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
     <input class="dex-buscar" id="buscar" type="search" placeholder="🔍 Buscar por nombre o número…" autocomplete="off" />
 
     <div class="dex-tabs" id="dex-tabs" role="tablist">
-      <button class="dex-tab activo" data-tab="dex" id="tab-dex" type="button" role="tab">📕 Pokédex</button>
-      <button class="dex-tab" data-tab="pc" id="tab-pc" type="button" role="tab">🎒 Mi PC</button>
+      <button class="dex-tab" data-tab="dex" id="tab-dex" type="button" role="tab">📕 Pokédex</button>
+      <button class="dex-tab activo" data-tab="pc" id="tab-pc" type="button" role="tab">🎒 Mi PC</button>
     </div>
     <p class="dex-sinresultados" id="sinres" hidden>Ningún Pokémon coincide.</p>
 
-    <section class="dex-panel" id="panel-dex">
+    <section class="dex-panel" id="panel-dex" hidden>
       <div class="dex-filtros" id="filtros">
         <button class="dex-f activo" data-f="todos" type="button">Todos</button>
         <button class="dex-f" data-f="tengo" type="button">✅ Los que tengo</button>
@@ -48,7 +48,7 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
       </div>
       <div id="secciones"></div>
     </section>
-    <section class="dex-panel" id="panel-pc" hidden>
+    <section class="dex-panel" id="panel-pc">
       <div class="pc-orden">
         <span class="pc-orden-lbl">⇅ Ordenar</span>
         <select id="pc-orden" class="pc-select">

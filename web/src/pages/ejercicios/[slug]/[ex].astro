@@ -129,7 +129,7 @@ const payload = {
       if (carga) { box.innerHTML = bloqueError(carga); sonarError(); return; }
       const tot = tests.length, ok = tests.filter((t) => t.ok).length, todo = tot > 0 && ok === tot;
       if (todo) sonarExito(); else sonarError();
-      localStorage.setItem(KEY(data.exId) + ':ok', todo ? '1' : '0');
+      if (todo) localStorage.setItem(KEY(data.exId) + ':ok', '1');   // sticky: una vez resuelto, queda resuelto (un error posterior no lo desmarca)
       let h = '<div class="ejer-resumen ' + (todo ? 'win' : '') + '">' + ok + ' / ' + tot + ' tests' + (todo ? ' · +' + (ok * 10) + ' EXP · ¡COMPLETO! 🏅' : '') + '</div><ul class="ejer-lista">';
       for (const t of tests) {
         h += '<li class="' + (t.ok ? 'ok' : 'no') + '"><span class="ic">' + (t.ok ? '✅' : '❌') + '</span><code>' + esc(t.name) + '</code>';

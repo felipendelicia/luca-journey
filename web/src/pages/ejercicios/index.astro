@@ -3,50 +3,71 @@ import Base from '../../layouts/Base.astro';
 import datos from '../../data/ejercicios.json';
 import proyectos from '../../data/proyectos.json';
 import { u } from '../../lib/url.ts';
-import { REGIONES as REGS, etiquetaTema } from '../../lib/regiones.mjs';
+import { REGIONES as REGS } from '../../lib/regiones.mjs';
 
-const REGIONES = REGS.map((r) => [r.id, etiquetaTema(r)]);
 let n = 0;
-const grupos = REGIONES.map(([id, label]) => ({
-  id, label,
-  temas: datos.filter((w) => (w.region || 'kanto') === id).map((it) => ({
+const grupos = REGS.map((r) => ({
+  id: r.id, nombre: r.nombre, emoji: r.emoji, tema: r.tema,
+  temas: datos.filter((w) => (w.region || 'kanto') === r.id).map((it) => ({
     slug: it.slug, titulo: it.titulo, n: ++n,
     total: it.ejercicios.length,
     ids: it.ejercicios.map((e) => e.id).join(','),
   })),
 })).filter((g) => g.temas.length);
 
-// Líderes por tema (tipo=lider) e integradores por región (tipo=integrador)
 const lideresPorTema = Object.fromEntries(
   Object.values(proyectos).filter((p) => p.tipo === 'lider' && p.tema).map((p) => [p.tema, p])
 );
 const integradoresPorRegion = Object.fromEntries(
   Object.values(proyectos).filter((p) => p.tipo === 'integrador' && p.region).map((p) => [p.region, p])
 );
-
-const BASE = import.meta.env.BASE_URL || '/';
 ---
 <Base title="Ejercicios — Python con Pokémon" active="Ejercicios">
-  <div class="wrap">
-    <section class="hero-home" style="padding:48px 36px 40px; margin-bottom:26px;">
-      <p class="kick">Practicá en el navegador</p>
-      <h1>Ejercicios</h1>
-      <p>Resolvé los ejercicios de cada tema y corregilos al instante: corro los tests reales con Python en tu navegador. ⚡</p>
+  <div class="wrap ej-wrap">
+    <section class="ej-hero">
+      <div>
+        <p class="kick">Practicá en el navegador</p>
+        <h1>Ejercicios</h1>
+        <p class="ej-sub">Elegí una región y resolvé sus gimnasios. Corrijo los tests reales con Python en tu navegador. ⚡</p>
+      </div>
+      <label class="ej-search">
+        <span class="ej-search-ico" aria-hidden="true">🔍</span>
+        <input id="ej-buscar" type="search" placeholder="Buscar un tema…" autocomplete="off" aria-label="Buscar un tema" />
+      </label>
     </section>
 
-    <div id="grid">
+    <nav class="reg-tabs" id="reg-tabs" aria-label="Regiones">
       {grupos.map((g) => (
-        <details class="grupo grupo-idx" open>
-          <summary>{g.label}<span class="g-count">{g.temas.length}</span></summary>
+        <button class="reg-tab" type="button" data-region={g.id} title={`${g.nombre} · ${g.tema}`}>
+          <span class="rt-emoji">{g.emoji}</span>
+          <span class="rt-name">{g.nombre}</span>
+          <span class="rt-chip" data-prog={g.id}></span>
+          <span class="rt-bar"><i data-bar={g.id}></i></span>
+        </button>
+      ))}
+    </nav>
+
+    <div id="paneles">
+      {grupos.map((g) => (
+        <section class="region-panel" data-region={g.id} hidden>
+          <header class="region-head">
+            <h2><span class="rh-emoji">{g.emoji}</span> Región {g.nombre} <small>{g.tema}</small></h2>
+            <div class="region-prog">
+              <span class="region-bar"><i data-fill={g.id}></i></span>
+              <span class="region-pct" data-pct={g.id}>0 / {g.temas.length}</span>
+            </div>
+          </header>
+
           <div class="cards indice">
             {g.temas.map((s) => (
               <>
-                <a class="card" href={u(`/ejercicios/${s.slug}`)} data-slug={s.slug} data-total={s.total} data-ids={s.ids} style="display:flex; align-items:center; gap:8px;">
+                <a class="card tema-card" href={u(`/ejercicios/${s.slug}`)} data-slug={s.slug} data-total={s.total} data-ids={s.ids} data-nombre={s.titulo.toLowerCase()}>
                   <span class="num">{s.n}</span>
-                  <span>
-                    <h3 style="margin:0; font-size:.98rem;">{s.titulo}</h3>
+                  <span class="tc-body">
+                    <h3>{s.titulo}</h3>
                     <p class="ej-prog">{s.total} ejercicios</p>
                   </span>
+                  <span class="tc-check" aria-hidden="true"></span>
                 </a>
                 {lideresPorTema[s.slug] && (
                   <div
@@ -70,7 +91,7 @@ const BASE = import.meta.env.BASE_URL || '/';
             ))}
             {integradoresPorRegion[g.id] && (
               <div
-                class="lider-card bloq"
+                class="lider-card bloq integrador"
                 id={'lider-' + integradoresPorRegion[g.id].slug}
                 data-integrador-slug={integradoresPorRegion[g.id].slug}
                 data-integrador-region={g.id}
@@ -85,38 +106,127 @@ const BASE = import.meta.env.BASE_URL || '/';
               </div>
             )}
           </div>
-        </details>
+        </section>
       ))}
     </div>
+
+    <p id="ej-sinres" class="ej-sinres" hidden>Ningún tema coincide con tu búsqueda.</p>
   </div>
+
+  <style>
+    .ej-wrap { max-width: 1080px; }
+    .ej-hero { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap; margin: 8px 0 18px; }
+    .ej-hero h1 { margin: 2px 0 6px; }
+    .ej-sub { color: var(--ink-soft); max-width: 52ch; margin:0; }
+    .ej-search { display:flex; align-items:center; gap:8px; background: var(--paper-2); border: 1px solid var(--line); border-radius: 999px; padding: 9px 15px; min-width: 240px; transition: border-color .15s, box-shadow .15s; }
+    .ej-search:focus-within { border-color: var(--red); box-shadow: 0 0 0 3px color-mix(in srgb, var(--red) 22%, transparent); }
+    .ej-search-ico { opacity:.6; font-size:.95rem; }
+    .ej-search input { border:none; background:none; outline:none; color: var(--ink); font:600 .92rem var(--font-mono); width: 100%; }
+
+    /* ── barra de pestañas de región (sticky bajo el topbar) ── */
+    .reg-tabs { position: sticky; top: 56px; z-index: 40; display:flex; gap:4px; overflow-x:auto; scrollbar-width:none;
+      padding: 8px 4px; margin: 0 -4px 22px; background: color-mix(in srgb, var(--paper) 88%, transparent);
+      backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+    .reg-tabs::-webkit-scrollbar { display:none; }
+    .reg-tab { position:relative; flex: 0 0 auto; display:flex; align-items:center; gap:7px; cursor:pointer;
+      padding: 8px 14px 10px; border: 1px solid transparent; border-radius: 12px; background: transparent;
+      color: var(--ink-soft); font: 700 .86rem var(--font-display); transition: background .15s, color .15s; white-space:nowrap; }
+    .reg-tab:hover { background: var(--paper-2); color: var(--ink); }
+    .reg-tab .rt-emoji { font-size: 1.05rem; filter: saturate(.5) opacity(.7); transition: filter .15s; }
+    .reg-tab .rt-chip { font: 800 .64rem var(--font-mono); color: var(--ink-mute); background: var(--paper); border-radius: 6px; padding: 1px 5px; }
+    .reg-tab .rt-bar { position:absolute; left: 12px; right: 12px; bottom: 3px; height: 3px; border-radius: 3px; background: var(--line); overflow:hidden; }
+    .reg-tab .rt-bar i { display:block; height:100%; width:0; background: linear-gradient(90deg, var(--teal,#3fae7a), var(--teal-deep,#1f8f5f)); transition: width .4s ease; }
+    .reg-tab.activo { background: var(--card); color: var(--ink); border-color: var(--line); box-shadow: 0 4px 14px -8px rgba(0,0,0,.5); }
+    .reg-tab.activo .rt-emoji { filter:none; }
+    .reg-tab.activo .rt-chip { background: var(--red); color:#fff; }
+    .reg-tab.completa .rt-name::after { content:" ✓"; color: var(--teal-deep,#1f8f5f); }
+
+    /* ── panel de región ── */
+    .region-panel[hidden] { display:none; }
+    .region-head { display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin: 4px 0 16px; }
+    .region-head h2 { margin:0; font-size: 1.25rem; display:flex; align-items:baseline; gap:8px; }
+    .region-head h2 small { font: 600 .8rem var(--font-mono); color: var(--ink-soft); }
+    .rh-emoji { font-size:1.15rem; }
+    .region-prog { display:flex; align-items:center; gap:10px; margin-left:auto; }
+    .region-bar { width: 160px; max-width: 38vw; height: 8px; border-radius: 999px; background: var(--paper-2); border:1px solid var(--line); overflow:hidden; }
+    .region-bar i { display:block; height:100%; width:0; background: linear-gradient(90deg, var(--yellow,#ffcf3f), var(--teal-deep,#1f8f5f)); transition: width .5s ease; }
+    .region-pct { font: 800 .8rem var(--font-mono); color: var(--ink-soft); }
+
+    /* tema cards: layout + tilde de completado */
+    .cards.indice .tema-card { display:flex; align-items:center; gap:10px; position:relative; }
+    .tema-card .tc-body { min-width:0; }
+    .tema-card .tc-body h3 { margin:0; font-size:.98rem; }
+    .tema-card .tc-check { margin-left:auto; width:22px; height:22px; flex:0 0 22px; }
+    .tema-card.done .tc-check { background: var(--teal-deep,#1f8f5f); border-radius:50%; position:relative; }
+    .tema-card.done .tc-check::after { content:"✓"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#fff; font:800 .8rem var(--font-mono); }
+    .tema-card.done { border-color: color-mix(in srgb, var(--teal-deep,#1f8f5f) 45%, var(--line)); }
+
+    /* modo búsqueda: ocultar líderes/integradores y la barra de progreso de la región */
+    :global(body.ej-buscando) .lider-card { display:none; }
+    :global(body.ej-buscando) .region-prog { display:none; }
+    :global(body.ej-buscando) .reg-tab.activo { background:transparent; box-shadow:none; border-color:transparent; }
+
+    .ej-sinres { text-align:center; color: var(--ink-soft); padding: 32px 0; font:600 .95rem var(--font-mono); }
+
+    @media (max-width: 600px) {
+      .reg-tab .rt-name { display:none; }
+      .reg-tab { padding: 8px 11px 10px; }
+      .reg-tab .rt-bar { left:8px; right:8px; }
+    }
+  </style>
 
   <script is:inline>
     (function () {
-      // Progreso de ejercicios en las cards normales
-      document.querySelectorAll('#grid .card').forEach((c) => {
+      const PANELS = Array.from(document.querySelectorAll('.region-panel'));
+      const TABS = Array.from(document.querySelectorAll('.reg-tab'));
+      const REGS = PANELS.map((p) => p.dataset.region);
+      const buscar = document.getElementById('ej-buscar');
+      const sinres = document.getElementById('ej-sinres');
+      const ok = (slug, id) => localStorage.getItem('ej:' + slug + ':' + id + ':ok') === '1';
+
+      // 1) progreso de cada tema-card + acumulado por región (en GIMNASIOS completos)
+      const prog = {};   // region -> {hechos, temas}  (gimnasios completos / totales)
+      PANELS.forEach((p) => { prog[p.dataset.region] = { hechos: 0, temas: 0 }; });
+      document.querySelectorAll('.tema-card').forEach((c) => {
         const slug = c.dataset.slug, total = +c.dataset.total;
         const ids = (c.dataset.ids || '').split(',').filter(Boolean);
-        const done = ids.filter((id) => localStorage.getItem('ej:' + slug + ':' + id + ':ok') === '1').length;
+        const done = ids.filter((id) => ok(slug, id)).length;
+        const reg = c.closest('.region-panel').dataset.region;
+        prog[reg].temas += 1;
+        if (total > 0 && done === total) prog[reg].hechos += 1;
+        const p = c.querySelector('.ej-prog');
         if (done > 0) {
-          const p = c.querySelector('.ej-prog');
-          p.textContent = done + ' / ' + total + ' ejercicios' + (done === total ? ' ✅' : '');
+          p.textContent = done + ' / ' + total + ' ejercicios';
           if (done === total) c.classList.add('done');
         }
       });
 
-      // Cards de líderes por tema
+      // 2) pintar tabs (chip, barra, ✓) + barra del encabezado de región
+      REGS.forEach((reg) => {
+        const { hechos, temas } = prog[reg];
+        const pct = temas ? Math.round((hechos / temas) * 100) : 0;
+        const chip = document.querySelector('[data-prog="' + reg + '"]');
+        const bar = document.querySelector('[data-bar="' + reg + '"]');
+        const fill = document.querySelector('[data-fill="' + reg + '"]');
+        const pctEl = document.querySelector('[data-pct="' + reg + '"]');
+        const tab = TABS.find((t) => t.dataset.region === reg);
+        if (chip) chip.textContent = hechos + '/' + temas;
+        if (bar) bar.style.width = pct + '%';
+        if (fill) fill.style.width = pct + '%';
+        if (pctEl) pctEl.textContent = hechos + ' / ' + temas + ' gimnasios' + (hechos === temas ? '  🏅' : '');
+        if (tab && temas && hechos === temas) tab.classList.add('completa');
+      });
+
+      // 3) líderes por tema (igual que antes)
       document.querySelectorAll('[data-lider-slug]').forEach((card) => {
-        const slug = card.dataset.liderSlug;
-        const tema = card.dataset.liderTema;
+        const slug = card.dataset.liderSlug, tema = card.dataset.liderTema;
         const ids = (card.dataset.liderIds || '').split(',').filter(Boolean);
-        const total = +card.dataset.liderTotal;
-        const href = card.dataset.liderHref;
-        const done = ids.filter((id) => localStorage.getItem('ej:' + tema + ':' + id + ':ok') === '1').length;
+        const total = +card.dataset.liderTotal, href = card.dataset.liderHref;
+        const done = ids.filter((id) => ok(tema, id)).length;
         const desbloqueado = total > 0 && done === total;
         const ganado = localStorage.getItem('proy:' + slug + ':ok') === '1';
         const sub = document.getElementById('lider-sub-' + slug);
         const est = document.getElementById('lider-est-' + slug);
-        // siempre clickeable: SE PUEDE LEER aunque no esté desbloqueado para completar
         card.style.cursor = 'pointer';
         card.addEventListener('click', () => { window.location.href = href; });
         if (desbloqueado) {
@@ -129,22 +239,12 @@ const BASE = import.meta.env.BASE_URL || '/';
         }
       });
 
-      // Cards de integradores por región
+      // 4) integradores por región (igual que antes)
       document.querySelectorAll('[data-integrador-slug]').forEach((card) => {
-        const slug = card.dataset.integradorSlug;
-        const region = card.dataset.integradorRegion;
-        const href = card.dataset.integradorHref;
+        const slug = card.dataset.integradorSlug, href = card.dataset.integradorHref;
         const sub = document.getElementById('lider-sub-' + slug);
         const est = document.getElementById('lider-est-' + slug);
         const ganado = localStorage.getItem('proy:' + slug + ':ok') === '1';
-        // Desbloqueado cuando todos los líderes de la región están vencidos
-        // (buscamos todas las lider-cards de esta región)
-        const lideresDeLaRegion = document.querySelectorAll('[data-lider-slug]');
-        // Filtramos los que pertenecen a temas de esta región: no tenemos esa info aquí directamente,
-        // así que comprobamos si todos están ganados revisando los slugs de líderes con :ok
-        // En Fase 1 no hay integradores, así que esta lógica no se activa — dejamos bloqueada
-        // a menos que ganado === true
-        // siempre clickeable: se puede leer
         card.style.cursor = 'pointer';
         card.addEventListener('click', () => { window.location.href = href; });
         if (ganado) {
@@ -156,6 +256,55 @@ const BASE = import.meta.env.BASE_URL || '/';
           if (est) est.textContent = '📖';
         }
       });
+
+      // 5) navegación por región
+      let actual = REGS[0];
+      function mostrar(reg, push) {
+        if (!REGS.includes(reg)) reg = REGS[0];
+        actual = reg;
+        PANELS.forEach((p) => { p.hidden = p.dataset.region !== reg; });
+        TABS.forEach((t) => t.classList.toggle('activo', t.dataset.region === reg));
+        try { localStorage.setItem('ej:region', reg); } catch (e) {}
+        if (push && location.hash.slice(1) !== reg) history.replaceState(null, '', '#' + reg);
+        const tab = TABS.find((t) => t.dataset.region === reg);
+        if (tab) tab.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+      }
+      TABS.forEach((t) => t.addEventListener('click', () => {
+        if (buscar.value) { buscar.value = ''; aplicarBusqueda(); }
+        mostrar(t.dataset.region, true);
+      }));
+
+      // 6) búsqueda global (filtra temas de TODAS las regiones)
+      function aplicarBusqueda() {
+        const q = buscar.value.trim().toLowerCase();
+        if (!q) {
+          document.body.classList.remove('ej-buscando');
+          sinres.hidden = true;
+          mostrar(actual, false);
+          return;
+        }
+        document.body.classList.add('ej-buscando');
+        let any = false;
+        PANELS.forEach((p) => {
+          let matches = 0;
+          p.querySelectorAll('.tema-card').forEach((c) => {
+            const hit = c.dataset.nombre.includes(q);
+            c.style.display = hit ? '' : 'none';
+            if (hit) matches++;
+          });
+          p.hidden = matches === 0;
+          if (matches) any = true;
+        });
+        sinres.hidden = any;
+      }
+      buscar.addEventListener('input', aplicarBusqueda);
+
+      // 7) región inicial: hash > guardada > primera incompleta > primera
+      const guardada = (() => { try { return localStorage.getItem('ej:region'); } catch (e) { return null; } })();
+      const primeraIncompleta = REGS.find((r) => prog[r].temas && prog[r].hechos < prog[r].temas);
+      const inicial = (location.hash.slice(1)) || guardada || primeraIncompleta || REGS[0];
+      mostrar(inicial, false);
+      window.addEventListener('hashchange', () => { if (!buscar.value) mostrar(location.hash.slice(1), false); });
     })();
   </script>
 </Base>
