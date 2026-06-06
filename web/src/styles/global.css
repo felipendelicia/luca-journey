@@ -667,6 +667,46 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .pm-tienda{ color:var(--red); font-weight:800; text-decoration:none; }
 .pm-tienda:hover{ text-decoration:underline; }
 
+/* ── Escena de evolución (estilo Pokémon Rojo Fuego) ── */
+.evo-scene{ position:fixed; inset:0; z-index:1000; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:26px;
+  background:radial-gradient(circle at 50% 42%, #1b2350 0%, #0a0e22 55%, #05060f 100%);
+  overflow:hidden; animation:evoFade .35s ease; }
+@keyframes evoFade{ from{ opacity:0 } to{ opacity:1 } }
+/* haces de luz girando detrás del Pokémon */
+.evo-rays{ position:absolute; top:42%; left:50%; width:170vmax; height:170vmax; transform:translate(-50%,-50%);
+  background:repeating-conic-gradient(from 0deg, rgba(255,255,255,.10) 0deg 5deg, transparent 5deg 14deg);
+  animation:evoSpin 9s linear infinite; opacity:.5;
+  -webkit-mask:radial-gradient(circle at center, #000 12%, transparent 62%); mask:radial-gradient(circle at center, #000 12%, transparent 62%); }
+.evo-scene.reveal .evo-rays{ opacity:.85; animation-duration:3.5s; }
+@keyframes evoSpin{ to{ transform:translate(-50%,-50%) rotate(360deg) } }
+/* estrellas de fondo */
+.evo-stars{ position:absolute; inset:0; opacity:.5;
+  background-image:radial-gradient(1.5px 1.5px at 18% 24%, #fff, transparent), radial-gradient(1.5px 1.5px at 72% 16%, #cfe0ff, transparent),
+    radial-gradient(1.5px 1.5px at 35% 72%, #fff, transparent), radial-gradient(2px 2px at 84% 64%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 58% 44%, #bcd, transparent), radial-gradient(1.5px 1.5px at 9% 60%, #fff, transparent);
+  animation:evoTwinkle 3.2s ease-in-out infinite alternate; }
+@keyframes evoTwinkle{ from{ opacity:.25 } to{ opacity:.65 } }
+.evo-stage{ position:relative; width:260px; height:260px; display:flex; align-items:center; justify-content:center; }
+.evo-mon{ position:absolute; width:200px; height:200px; image-rendering:pixelated; transition:opacity .12s linear, transform .12s linear; will-change:opacity,transform; }
+/* silueta blanca brillante (Rojo Fuego) */
+.evo-mon.sil{ filter:brightness(0) invert(1) drop-shadow(0 0 14px rgba(160,200,255,.95)) drop-shadow(0 0 26px rgba(120,170,255,.6)); }
+.evo-scene.reveal .evo-new{ filter:drop-shadow(0 0 18px rgba(255,255,255,.5)); animation:evoPop .5s cubic-bezier(.2,1.4,.4,1); }
+@keyframes evoPop{ 0%{ transform:scale(.5) } 60%{ transform:scale(1.12) } 100%{ transform:scale(1) } }
+/* estallido de estrellas al revelar */
+.evo-burst{ position:absolute; inset:-30px; border-radius:50%; opacity:0; pointer-events:none;
+  background:radial-gradient(circle, rgba(255,255,255,.9) 0%, rgba(255,240,170,.5) 18%, transparent 60%); }
+.evo-burst.on{ animation:evoBurst .7s ease-out; }
+@keyframes evoBurst{ 0%{ opacity:0; transform:scale(.3) } 30%{ opacity:1 } 100%{ opacity:0; transform:scale(1.8) } }
+/* destello blanco que tapa todo en el clímax */
+.evo-flash{ position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none; transition:opacity .14s ease; }
+.evo-flash.on{ opacity:1; }
+.evo-text{ position:relative; z-index:2; max-width:80%; text-align:center; color:#eaf1ff; font-family:var(--font-pixel); font-size:.92rem; line-height:1.7; text-shadow:0 2px 10px rgba(80,130,255,.6); }
+.evo-text b{ color:#ffe27a; }
+.evo-done{ position:relative; z-index:2; margin-top:2px; background:linear-gradient(180deg,#ffd23f,#e0a400); color:#3a2a00; border:none; border-radius:999px;
+  font:800 1.05rem var(--font-display); padding:13px 34px; cursor:pointer; box-shadow:0 8px 22px -10px #ffd23f; animation:evoFade .4s ease; }
+.evo-done:hover{ transform:translateY(-2px); }
+@media (prefers-reduced-motion: reduce){ .evo-rays,.evo-stars,.evo-mon,.evo-new,.evo-burst{ animation:none !important; transition:none !important; } }
+
 /* PANELES (línea evolutiva / ataques) */
 .pm-panel{ text-align:left; margin-top:15px; background:var(--paper-2); border:1px solid var(--line); border-radius:15px; padding:13px 14px; }
 .pm-h{ display:flex; align-items:center; gap:9px; font:800 .72rem var(--font-pixel); letter-spacing:.05em; text-transform:uppercase; color:var(--ink); margin-bottom:11px; }

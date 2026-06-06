@@ -70,12 +70,26 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
     </div>
   </div>
 
+  <!-- Escena de evolución estilo Pokémon Rojo Fuego: silueta blanca old↔new + haces + destello + reveal -->
+  <div class="evo-scene" id="evo-scene" hidden>
+    <div class="evo-rays"></div>
+    <div class="evo-stars"></div>
+    <div class="evo-stage">
+      <img class="evo-mon evo-old sil" id="evo-old" src="" alt="" />
+      <img class="evo-mon evo-new sil" id="evo-new" src="" alt="" />
+      <div class="evo-burst" id="evo-burst"></div>
+    </div>
+    <p class="evo-text" id="evo-text"></p>
+    <button class="evo-done" id="evo-done" hidden>¡Genial! ✨</button>
+    <div class="evo-flash" id="evo-flash"></div>
+  </div>
+
   <script type="application/json" id="dex-data" set:html={JSON.stringify({ pokemon, temas, regiones: REGIONES, evoluciones, aparicion })}></script>
   <script>
     import { sincronizar, spriteUrl, pc, caramelos, vistos, subirNivel, opcionesEvo, evolucionarInst, renombrar, liberar, learnsetDe, setMovs, tieneItem, costoSubir, NIVEL_MAX } from '../lib/coleccion.js';
     import { ITEMS } from '../lib/items.js';
     import { itemSvg } from '../lib/sprites.js';
-    import { sonarExito } from '../lib/sonidos.js';
+    import { sonarExito, sonarEpico } from '../lib/sonidos.js';
     import { tierDe } from '../lib/rareza.js';
     import { tiposDe } from '../lib/tipos.js';
     import movimientos from '../data/movimientos.json';
@@ -269,7 +283,11 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
         const ch = $('pm-evo-chooser'); const abierto = ch.classList.toggle('abierto'); evoT.classList.toggle('abierto', abierto);
         if (abierto) setTimeout(() => ch.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 60);
       });
-      $('poke-modal-cuerpo').querySelectorAll('[data-evopick]').forEach((b) => b.addEventListener('click', () => { if (evolucionarInst(iid, b.dataset.evopick)) { sonarExito(); cerrarModal(); pintar(); } }));
+      $('poke-modal-cuerpo').querySelectorAll('[data-evopick]').forEach((b) => b.addEventListener('click', () => {
+        const inst = pc().find((x) => x.iid === iid); if (!inst) return;
+        const targetId = Number(b.dataset.evopick);
+        animarEvolucion(iid, inst.id, nomInst(inst), inst.shiny, targetId);
+      }));
       $('poke-modal-cuerpo').querySelectorAll('.mv-ok').forEach((b) => b.addEventListener('click', () => {
         const mid = Number(b.dataset.mv), cur = (pc().find((x) => x.iid === iid) || {}).movs || [];
         let next;
@@ -288,6 +306,48 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       $('poke-modal').hidden = false;
     }
     function cerrarModal() { $('poke-modal').hidden = true; }
+
+    // ── Animación de evolución estilo Pokémon Rojo Fuego ──
+    const CRY_BASE = 'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/';
+    function cry(id, vol = 0.5) { try { const a = new Audio(CRY_BASE + id + '.ogg'); a.volume = vol; a.play().catch(() => {}); } catch {} }
+    const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
+    let evoEnCurso = false;
+
+    async function animarEvolucion(iid, oldId, oldNom, shiny, newId) {
+      if (evoEnCurso) return; evoEnCurso = true;
+      const newNom = nombreDe[newId] || ('Nº ' + newId);
+      const scene = $('evo-scene'), old = $('evo-old'), nuevo = $('evo-new'), flash = $('evo-flash'), burst = $('evo-burst'), txt = $('evo-text'), done = $('evo-done');
+      old.src = spriteUrl(oldId, shiny); nuevo.src = spriteUrl(newId, shiny);
+      old.style.opacity = '1'; old.style.transform = 'scale(1)'; old.classList.add('sil');
+      nuevo.style.opacity = '0'; nuevo.style.transform = 'scale(.55)'; nuevo.classList.add('sil');
+      burst.classList.remove('on'); flash.classList.remove('on'); done.hidden = true;
+      txt.textContent = '¿Qué? ¡' + oldNom + ' está evolucionando!';
+      scene.hidden = false; scene.classList.remove('reveal');
+      cerrarModal();
+      await dormir(1500);
+      sonarExito();
+      // morfeo: alterna silueta vieja↔nueva, acelerando
+      let t = 440; const fin = Date.now() + 3400; let verNuevo = false;
+      while (Date.now() < fin) {
+        verNuevo = !verNuevo;
+        old.style.opacity = verNuevo ? '0' : '1'; old.style.transform = verNuevo ? 'scale(.55)' : 'scale(1)';
+        nuevo.style.opacity = verNuevo ? '1' : '0'; nuevo.style.transform = verNuevo ? 'scale(1)' : 'scale(.55)';
+        await dormir(t); t = Math.max(70, Math.round(t * 0.82));
+      }
+      // destello blanco → commit + reveal en color
+      flash.classList.add('on'); sonarEpico();
+      await dormir(160);
+      evolucionarInst(iid, newId);                  // se concreta la evolución (gasta el item)
+      old.style.opacity = '0';
+      nuevo.classList.remove('sil'); nuevo.style.opacity = '1'; nuevo.style.transform = 'scale(1)';
+      scene.classList.add('reveal'); burst.classList.add('on');
+      await dormir(120); flash.classList.remove('on');
+      cry(newId, 0.6);
+      txt.innerHTML = '¡Felicidades! Tu <b>' + oldNom + '</b><br>evolucionó a <b>' + newNom + '</b>! 🎉';
+      done.hidden = false;
+    }
+    function cerrarEvo() { $('evo-scene').hidden = true; $('evo-scene').classList.remove('reveal'); evoEnCurso = false; pintar(); }
+    $('evo-done').addEventListener('click', cerrarEvo);
 
     function aplicar() {
       const q = buscar.value.trim().toLowerCase();
