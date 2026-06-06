@@ -139,6 +139,9 @@ export function init() {
     }
   };
   auth.onChange(aplicarSesion);
-  aplicarSesion(auth.user());
+  // Diferir el estado inicial: init() corre ANTES de que Base.astro registre sus
+  // listeners de 'nube:cambio'/'nube:sinsesion'. Si emitimos sincrónico, el overlay
+  // se queda en el loader (nunca muestra el login). setTimeout(0) los deja registrarse.
+  setTimeout(() => aplicarSesion(auth.user()), 0);
   vigilar();
 }
