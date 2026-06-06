@@ -648,6 +648,8 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .pm-evos button:hover{ border-color:var(--tier-color); transform:translateY(-2px); }
 .pm-evos img{ width:54px; height:54px; image-rendering:pixelated; }
 .pm-evo-bloq{ color:var(--ink-mute); font:600 .82rem var(--font-mono); }
+.pm-tienda{ color:var(--red); font-weight:800; text-decoration:none; }
+.pm-tienda:hover{ text-decoration:underline; }
 
 /* PANELES (línea evolutiva / ataques) */
 .pm-panel{ text-align:left; margin-top:15px; background:var(--paper-2); border:1px solid var(--line); border-radius:15px; padding:13px 14px; }
@@ -781,6 +783,13 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .bt-move:disabled{ opacity:.5; cursor:not-allowed; }
 .bt-super{ grid-column:1/-1; align-items:center; text-align:center; font-weight:800; background:linear-gradient(90deg,#f7b733,#fc4a1a); color:#fff; border:none; }
 .bt-super:disabled{ background:var(--line); color:var(--ink-mute); }
+.bt-mochila{ grid-column:1/-1; align-items:center; text-align:center; font-weight:800; background:var(--paper-2); border:1px solid var(--line); color:var(--ink); }
+.bt-mochila:hover:not(:disabled){ border-color:var(--red); }
+.bt-mochila-nota{ font:600 .76rem var(--font-mono); color:var(--ink-mute); margin:-2px 0 12px; }
+.mochila-lista{ display:flex; flex-direction:column; gap:8px; }
+.mo-item{ display:flex; align-items:center; gap:8px; padding:12px 14px; border:1px solid var(--line); border-radius:11px; background:var(--paper-2); cursor:pointer; font:700 .92rem var(--font-mono); color:var(--ink); text-align:left; }
+.mo-item small{ margin-left:auto; font-weight:600; color:var(--ink-soft); }
+.mo-item:hover{ border-color:var(--red); }
 /* banca: tu equipo (cambio manual) */
 .bt-banca-wrap{ margin-top:12px; }
 .bt-banca-lbl{ display:block; font:800 .64rem var(--font-pixel); letter-spacing:.05em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:7px; }

@@ -13,6 +13,7 @@ const total = pokemon.length;
     <div class="safari-head">
       <h1>🎒 Safari Pokémon</h1>
       <button class="navlink btn-rarezas" id="btn-rarezas" type="button">✨ ¿Cómo funcionan las rarezas?</button>
+      <a class="navlink" href={u('/tienda')}>🛒 Tienda</a>
       <a class="navlink" href={u('/pokedex')}>📕 Ver mi Pokédex</a>
     </div>
     <p>Tirá Pokéballs para atrapar Pokémon salvajes. Ganás Pokéballs <strong>resolviendo ejercicios</strong> (+2 c/u) y con el <strong>regalo cada 20 min</strong> (+5). ⚡</p>
@@ -167,11 +168,13 @@ const total = pokemon.length;
       const titulo = r.shiny
         ? '✨ ¡Un <b>' + p.nombre + '</b> SHINY! ✨'
         : (r.repetido ? '¡Otro <b>' + p.nombre + '</b>! Ya tenés <b>' + r.cantidad + '</b>' : '¡Atrapaste a <b>' + p.nombre + '</b>!');
+      const ballTxt = r.ball === 2 ? '🟡 <b>¡Ultra Ball!</b> ' : r.ball === 1 ? '🔵 <b>¡Super Ball!</b> ' : '';
+      const carGan = [3, 5, 8][r.ball] || 3;
       const txt = document.createElement('div');
       txt.className = 'captura-txt';
-      txt.innerHTML = titulo + ' <span class="cap-n">Nº ' + p.id + ' · Nv.' + r.nivel + '</span>' +
+      txt.innerHTML = ballTxt + titulo + ' <span class="cap-n">Nº ' + p.id + ' · Nv.' + r.nivel + '</span>' +
         '<span class="cap-tier" style="--tier-color:' + t.color + '">' + (t.ico ? t.ico + ' ' : '') + t.nombre + '</span>' +
-        '<span class="cap-prob">🎲 1 de cada <b>' + r.cadaCuantos + '</b> · 🍬 +3 caramelos</span>';
+        '<span class="cap-prob">🎲 1 de cada <b>' + r.cadaCuantos + '</b> · 🍬 +' + carGan + ' caramelos</span>';
       escena.appendChild(txt);
       $('msg').textContent = r.shiny
         ? '🌟 ¡INCREÍBLE! Un shiny aparece 1 de cada 100 veces.'

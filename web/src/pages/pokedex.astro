@@ -21,6 +21,7 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
         <div class="dex-acciones">
           <a class="navlink" href={u('/safari')}>🎒 Safari</a>
           <a class="navlink" href={u('/batalla')}>⚔️ Batalla</a>
+          <a class="navlink" href={u('/tienda')}>🛒 Tienda</a>
           <a class="navlink" href={u('/intercambio')}>🔄 Trade</a>
         </div>
       </div>
@@ -71,7 +72,7 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
 
   <script type="application/json" id="dex-data" set:html={JSON.stringify({ pokemon, temas, regiones: REGIONES, evoluciones, aparicion })}></script>
   <script>
-    import { sincronizar, spriteUrl, pc, caramelos, vistos, subirNivel, opcionesEvo, evolucionarInst, renombrar, liberar, learnsetDe, setMovs, costoSubir, NIVEL_MAX } from '../lib/coleccion.js';
+    import { sincronizar, spriteUrl, pc, caramelos, vistos, subirNivel, opcionesEvo, evolucionarInst, renombrar, liberar, learnsetDe, setMovs, tieneItem, costoSubir, NIVEL_MAX } from '../lib/coleccion.js';
     import { sonarExito } from '../lib/sonidos.js';
     import { tierDe } from '../lib/rareza.js';
     import { tiposDe } from '../lib/tipos.js';
@@ -172,11 +173,13 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       const oks = ops.filter((o) => o.ok);
       if (oks.length) {
         return '<div class="pm-evo"><b>🧬 Evolucionar a:</b><div class="pm-evos">' +
-          oks.map((o) => '<button data-evopick="' + o.a + '"><img src="' + spriteUrl(o.a) + '" alt="' + (nombreDe[o.a] || o.a) + '" /><span>' + (nombreDe[o.a] || ('Nº ' + o.a)) + '<br>' + o.costo + '🍬</span></button>').join('') + '</div></div>';
+          oks.map((o) => '<button data-evopick="' + o.a + '"><img src="' + spriteUrl(o.a) + '" alt="' + (nombreDe[o.a] || o.a) + '" /><span>' + (nombreDe[o.a] || ('Nº ' + o.a)) + '<br>' + (o.piedra ? '🪨 + ' : '') + o.costo + '🍬</span></button>').join('') + '</div></div>';
       }
       const o = ops[0];
-      const falta = (o.nivel > 0 && m.nivel < o.nivel) ? ('Nv.' + o.nivel) : (o.costo + '🍬 caramelos');
-      return '<div class="pm-evo pm-evo-bloq">🔒 Evoluciona con <b>' + falta + '</b></div>';
+      const faltaPiedra = o.piedra && !tieneItem('piedra');
+      const falta = faltaPiedra ? '🪨 Piedra Evolutiva' : (o.nivel > 0 && m.nivel < o.nivel) ? ('Nv.' + o.nivel) : (o.costo + '🍬 caramelos');
+      const link = faltaPiedra ? ' <a class="pm-tienda" href="' + (window.__BASE || '') + '/tienda">→ Tienda</a>' : '';
+      return '<div class="pm-evo pm-evo-bloq">🔒 Evoluciona con <b>' + falta + '</b>' + link + '</div>';
     }
     // árbol/línea evolutiva de la familia (resalta la especie actual).
     function arbolEvo(m) {

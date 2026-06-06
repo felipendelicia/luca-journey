@@ -46,6 +46,15 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     </div>
   </div>
 
+  <div class="reto-modal" id="mochila-modal" hidden>
+    <div class="reto-card mochila-card">
+      <button class="rar-x" id="mochila-x" type="button" aria-label="Cerrar">✕</button>
+      <h2>🎒 Mochila — usar poción</h2>
+      <p class="bt-mochila-nota">Cura a tu Pokémon activo. Usarla <b>gasta tu turno</b>.</p>
+      <div class="mochila-lista" id="mochila-lista"></div>
+    </div>
+  </div>
+
   <div class="bt-fin" id="bt-fin" hidden>
     <div class="bt-fin-card">
       <h2 id="fin-tit"></h2>
@@ -56,7 +65,8 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
 
   <script type="application/json" id="bt-data" set:html={JSON.stringify({ temas })}></script>
   <script>
-    import { pc, sincronizar, spriteUrl, regionesDesbloqueadas, darCaramelos, darBalls } from '../lib/coleccion.js';
+    import { pc, sincronizar, spriteUrl, regionesDesbloqueadas, darCaramelos, darBalls, items, usarItem } from '../lib/coleccion.js';
+    import { ITEMS } from '../lib/items.js';
     import { combatiente, calcularDano, danoSuper, elegirCPU, equipoCPU, esEstado, aplicarEstado } from '../lib/batalla.js';
     import { etiquetaEfec } from '../lib/tipos.js';
     import { retoAlAzar } from '../lib/retos-batalla.js';
@@ -111,7 +121,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       // pool de especies para el rival: las regiones desbloqueadas (1..721 simplificado por starters comunes)
       const pool = poolRival();
       const rival = equipoCPU(pool, Math.min(3, equipo.length), Math.max(2, nivelProm + (Math.random() < 0.5 ? -2 : 2)));
-      G = { equipo, rival, pa: 0, ra: 0, carga: 0, lock: false };
+      G = { equipo, rival, pa: 0, ra: 0, carga: 0, lock: false, itemsUsados: 0 };
       $('bt-sel').hidden = true; $('bt-combate').hidden = false; $('bt-fin').hidden = true;
       render(); msg('¡Aparece el rival! Elegí tu ataque.'); armarTimer();
       cry(rivAct().id, 0.45); setTimeout(() => cry(miAct().id, 0.4), 550);
@@ -162,9 +172,11 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       $('bt-carga').style.width = G.carga + '%'; $('bt-carga-txt').textContent = 'Súper: ' + G.carga + '%';
       $('bt-moves').innerHTML = p.movs.map((mv, i) =>
         '<button class="bt-move" data-i="' + i + '"' + (G.lock ? ' disabled' : '') + '><b>' + mv.nombre + '</b><small>' + mv.tipo + (mv.poder ? ' · ⚔️' + mv.poder : '') + '</small></button>').join('') +
-        '<button class="bt-move bt-super" id="bt-super"' + (G.carga < 100 || G.lock ? ' disabled' : '') + '>⚡ SÚPER</button>';
+        '<button class="bt-move bt-super" id="bt-super"' + (G.carga < 100 || G.lock ? ' disabled' : '') + '>⚡ SÚPER</button>' +
+        '<button class="bt-move bt-mochila" id="bt-mochila"' + (G.lock || G.itemsUsados >= 2 ? ' disabled' : '') + '>🎒 Mochila (' + (2 - G.itemsUsados) + ')</button>';
       $('bt-moves').querySelectorAll('.bt-move[data-i]').forEach((b) => b.addEventListener('click', () => turno(p.movs[+b.dataset.i])));
       $('bt-super').addEventListener('click', abrirReto);
+      $('bt-mochila').addEventListener('click', abrirMochila);
       // banca: tu equipo (tocá un suplente vivo para cambiarlo)
       $('bt-banca').innerHTML = G.equipo.map((c, i) => {
         const ko = c.hp <= 0, act = i === G.pa, dis = act || ko || G.lock;
@@ -270,6 +282,30 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       $('bt-fin').hidden = false;
     }
 
+    // ── Mochila: usar pociones (cura el activo, cuesta el turno) ──
+    function abrirMochila() {
+      if (G.lock || G.itemsUsados >= 2) return;
+      const inv = items();
+      const curas = Object.entries(ITEMS).filter(([id, it]) => it.cat === 'cura' && inv[id] > 0);
+      if (!curas.length) { msg('No tenés pociones. Comprá en la Tienda 🛒'); return; }
+      cancelarTimer();
+      $('mochila-lista').innerHTML = curas.map(([id, it]) => '<button class="mo-item" data-pocion="' + id + '">' + it.ico + ' <b>' + it.nombre + '</b><small>cura ' + (it.cura > 9000 ? 'TODO' : it.cura) + ' HP · ×' + inv[id] + '</small></button>').join('');
+      $('mochila-lista').querySelectorAll('[data-pocion]').forEach((b) => b.addEventListener('click', () => usarPocion(b.dataset.pocion)));
+      $('mochila-modal').hidden = false;
+    }
+    function cerrarMochila() { $('mochila-modal').hidden = true; if (G && !G.lock) armarTimer(); }
+    async function usarPocion(itemId) {
+      const it = ITEMS[itemId]; if (G.lock || G.itemsUsados >= 2 || !it) return;
+      if (!usarItem(itemId)) return;
+      $('mochila-modal').hidden = true; cancelarTimer(); G.lock = true;
+      const a = miAct(); const cura = Math.min(a.hpMax - a.hp, it.cura); a.hp += cura; G.itemsUsados++;
+      msg('¡Usaste ' + it.nombre + '! ' + a.nombre + ' recuperó ' + cura + ' HP.'); render();
+      await esperar(850);
+      await turnoRival();
+      if (fin()) return;
+      G.lock = false; render(); armarTimer();
+    }
+
     // ── Súper: reto de código ──
     function abrirReto() {
       if (G.carga < 100 || G.lock) return;
@@ -309,6 +345,8 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       G.lock = false; render(); armarTimer();
     }
 
+    $('mochila-x').addEventListener('click', cerrarMochila);
+    $('mochila-modal').addEventListener('click', (e) => { if (e.target === $('mochila-modal')) cerrarMochila(); });
     $('fin-otra').addEventListener('click', () => { $('bt-fin').hidden = true; $('bt-combate').hidden = true; $('bt-sel').hidden = false; pintarSeleccion(); });
     pintarSeleccion();
   </script>
