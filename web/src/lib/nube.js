@@ -3,6 +3,7 @@
 // los cambios externos (intercambios) llegan por realtime.
 import { hayApi, auth, apiGet, apiPut } from './api.js';
 import * as rt from './realtime.js';
+import { reconciliarPC } from './coleccion.js';
 
 const haySupabase = hayApi;            // alias interno
 const PREFIJOS = ['ej:', 'col:', 'proy:'];
@@ -108,6 +109,11 @@ function suscribirProgreso() {
     if (!estado) return;
     if (serial(estado) === _ultima) return;
     aplicarNube(estado);
+    // un trade (resuelto por el server sobre conteos) cambió mi colección → reconciliar el PC
+    // de instancias con los conteos nuevos, sin perder los niveles de lo que ya tenía.
+    try {
+      reconciliarPC(JSON.parse(estado['col:atrapados'] || '{}'), JSON.parse(estado['col:shiny'] || '[]'));
+    } catch {}
     window.dispatchEvent(new CustomEvent('nube:cambio', { detail: { user: _user } }));
     window.dispatchEvent(new CustomEvent('nube:sincronizado'));
     toast('🔄 Tu colección se actualizó (intercambio)');
