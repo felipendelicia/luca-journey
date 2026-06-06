@@ -23,22 +23,40 @@ function movsDe(inst) {
   return movs.length ? movs : [FORCEJEO];
 }
 
-// combatiente listo para pelear (a partir de una instancia del PC).
+// combatiente listo para pelear (a partir de una instancia del PC). atkMod/defMod = etapas de
+// stat (1 = normal), que cambian los movimientos de estado (Gruñido, Malicioso, Látigo…).
 export function combatiente(inst) {
   return {
     iid: inst.iid, id: inst.id, nombre: inst.mote || NOM[inst.id] || ('Nº ' + inst.id),
     nivel: inst.nivel, shiny: !!inst.shiny, tipos: tiposDe(inst.id),
-    movs: movsDe(inst), hpMax: hpMax(inst.nivel), hp: hpMax(inst.nivel),
+    movs: movsDe(inst), hpMax: hpMax(inst.nivel), hp: hpMax(inst.nivel), atkMod: 1, defMod: 1,
   };
 }
 
-// daño de un movimiento (atacante → defensor). Devuelve {dmg, efec, stab}.
+// ¿es un movimiento de estado (sin daño)?
+export const esEstado = (mov) => mov.categoria === 'Estado' || !mov.poder;
+
+// daño de un movimiento (atacante → defensor), con tipo, STAB y las etapas de stat. {dmg, efec, stab}.
 export function calcularDano(atacante, mov, defensor) {
   const efec = efectividad(mov.tipo, defensor.tipos);
   const stab = atacante.tipos.includes(mov.tipo) ? 1.5 : 1;
   const base = (mov.poder || 40) * 0.18 * (1 + atacante.nivel * 0.03);
+  const mod = (atacante.atkMod || 1) / (defensor.defMod || 1);
   const rand = 0.85 + Math.random() * 0.15;
-  return { dmg: Math.max(1, Math.round(base * efec * stab * rand)), efec, stab };
+  return { dmg: Math.max(1, Math.round(base * efec * stab * mod * rand)), efec, stab };
+}
+
+// aplica un movimiento de ESTADO: lee la descripción y sube/baja Ataque o Defensa. Devuelve texto.
+export function aplicarEstado(mov, atacante, defensor) {
+  const d = mov.desc || '';
+  const baja = /\b(baja|reduce|disminu|debilita)/i.test(d);
+  const sube = /\b(sube|aumenta|increment|refuerza|crece|eleva)/i.test(d);
+  const stat = /defensa/i.test(d) ? 'def' : /ataque/i.test(d) ? 'atk' : null;
+  if (!stat || (!baja && !sube)) return '…pero no tuvo mucho efecto.';
+  const target = sube ? atacante : defensor;          // subir = a uno mismo; bajar = al rival
+  const key = stat === 'def' ? 'defMod' : 'atkMod';
+  target[key] = Math.max(0.4, Math.min(2.2, (target[key] || 1) * (baja ? 0.7 : 1.4)));
+  return target.nombre + ': ' + (stat === 'def' ? 'Defensa' : 'Ataque') + (baja ? ' bajó ↓' : ' subió ↑');
 }
 
 // SÚPER (código resuelto): golpe grande con el mejor movimiento por tipo. calidad 0..1.
@@ -48,10 +66,10 @@ export function danoSuper(atacante, defensor, calidad = 1) {
   return { dmg: Math.round(r.dmg * (2 + calidad * 1.5)), efec: r.efec, mov: mejor };
 }
 
-// IA: elige el movimiento de mayor daño esperado contra el rival.
+// IA: elige el movimiento de mayor daño esperado (prefiere los de daño sobre los de estado).
 export function elegirCPU(atacante, defensor) {
   return [...atacante.movs]
-    .map((mv) => ({ mv, e: efectividad(mv.tipo, defensor.tipos) * (mv.poder || 40) }))
+    .map((mv) => ({ mv, e: efectividad(mv.tipo, defensor.tipos) * (mv.poder || 0) }))
     .sort((a, b) => b.e - a.e)[0].mv;
 }
 

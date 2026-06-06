@@ -41,7 +41,7 @@ export function efectividad(tipoAtaque, tiposDefensor) {
 // etiqueta legible del multiplicador
 export function etiquetaEfec(mult) {
   if (mult === 0) return 'No afecta…';
-  if (mult >= 2) return '¡Súper eficaz!';
-  if (mult <= 0.5) return 'Poco eficaz…';
+  if (mult >= 2) return '¡Es muy eficaz!';
+  if (mult <= 0.5) return 'No es muy eficaz…';
   return '';
 }

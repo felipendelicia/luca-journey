@@ -55,7 +55,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
   <script type="application/json" id="bt-data" set:html={JSON.stringify({ temas })}></script>
   <script>
     import { pc, sincronizar, spriteUrl, regionesDesbloqueadas, darCaramelos, darBalls } from '../lib/coleccion.js';
-    import { combatiente, calcularDano, danoSuper, elegirCPU, equipoCPU } from '../lib/batalla.js';
+    import { combatiente, calcularDano, danoSuper, elegirCPU, equipoCPU, esEstado, aplicarEstado } from '../lib/batalla.js';
     import { etiquetaEfec } from '../lib/tipos.js';
     import { retoAlAzar } from '../lib/retos-batalla.js';
     import { sonarExito, sonarEpico } from '../lib/sonidos.js';
@@ -116,6 +116,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
 
     function render() {
       const p = miAct(), r = rivAct();
+      if (!p || !r) return;   // un equipo quedó eliminado → terminar() maneja la UI
       $('r-nom').textContent = r.nombre; $('r-lv').textContent = 'Nv.' + r.nivel; $('r-tipos').textContent = r.tipos.join('/');
       $('p-nom').textContent = p.nombre; $('p-lv').textContent = 'Nv.' + p.nivel; $('p-tipos').textContent = p.tipos.join('/');
       $('r-img').src = spriteUrl(r.id, r.shiny); $('p-img').src = spriteUrl(p.id, p.shiny);
@@ -156,26 +157,42 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     function dots(id, team) { $(id).innerHTML = team.map((c) => '<span class="bt-dot' + (c.hp <= 0 ? ' ko' : '') + '"></span>').join(''); }
     function msg(t) { $('bt-msg').textContent = t; }
 
+    // usar un movimiento: si es de ESTADO cambia stats; si no, hace daño.
+    async function usarMov(at, mov, defLado) {
+      const def = defLado === 'p' ? miAct() : rivAct();
+      if (esEstado(mov)) {
+        const txt = aplicarEstado(mov, at, def);
+        msg('¡' + at.nombre + ' usó ' + mov.nombre + '!  ' + txt);
+        render(); await esperar(950);
+      } else {
+        await aplicarGolpe(at, mov, defLado, calcularDano(at, mov, def));
+      }
+    }
     async function aplicarGolpe(at, mov, defLado, dmgInfo) {
       const def = defLado === 'p' ? miAct() : rivAct();
       def.hp = Math.max(0, def.hp - dmgInfo.dmg);
       const ef = etiquetaEfec(dmgInfo.efec);
-      msg(at.nombre + ' usó ' + (mov.nombre || 'su ataque') + ' (-' + dmgInfo.dmg + ')' + (ef ? ' · ' + ef : ''));
+      msg('¡' + at.nombre + ' usó ' + (mov.nombre || 'su ataque') + '!' + (ef ? '  ' + ef : ''));
       (defLado === 'p' ? $('p-img') : $('r-img')).classList.add('bt-hit');
       render(); await esperar(150);
       (defLado === 'p' ? $('p-img') : $('r-img')).classList.remove('bt-hit');
       await esperar(650);
-      if (def.hp <= 0) { msg(def.nombre + ' se debilitó.'); await esperar(500); avanzar(defLado); render(); await esperar(400); }
+      if (def.hp <= 0) {
+        msg(def.nombre + ' se debilitó.'); await esperar(500);
+        avanzar(defLado);
+        if ((defLado === 'p' ? G.pa : G.ra) < 0) return;   // equipo eliminado → el caller corre fin()
+        render(); await esperar(400);
+      }
     }
     function avanzar(lado) {
       const team = lado === 'p' ? G.equipo : G.rival;
-      let idx = team.findIndex((c, i) => c.hp > 0);
+      const idx = team.findIndex((c) => c.hp > 0);
       if (lado === 'p') G.pa = idx; else G.ra = idx;
     }
 
     async function turno(mov) {
       if (G.lock) return; G.lock = true; render();
-      await aplicarGolpe(miAct(), mov, 'r', calcularDano(miAct(), mov, rivAct()));
+      await usarMov(miAct(), mov, 'r');
       if (fin()) return;
       await turnoRival();
       if (fin()) return;
@@ -183,8 +200,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       G.lock = false; render();
     }
     async function turnoRival() {
-      const mov = elegirCPU(rivAct(), miAct());
-      await aplicarGolpe(rivAct(), mov, 'p', calcularDano(rivAct(), mov, miAct()));
+      await usarMov(rivAct(), elegirCPU(rivAct(), miAct()), 'p');
     }
 
     function fin() {
