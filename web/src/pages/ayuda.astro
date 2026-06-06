@@ -29,7 +29,12 @@ const regiones = [
         <p class="kick">Guía del proyecto</p>
         <h1>¿Cómo funciona?</h1>
         <p>Una plataforma para aprender a programar desde cero, jugando. Todo corre <strong>en tu navegador</strong> — no se instala nada.</p>
+        <button class="btn-grande sec" id="ver-tuto" type="button" style="margin-top:14px;">🧭 Ver el tutorial</button>
       </section>
+      <script>
+        import { iniciarTutorial } from '../lib/tutorial.js';
+        document.getElementById('ver-tuto')?.addEventListener('click', () => iniciarTutorial(true));
+      </script>
 
       <h2 class="ayuda-h">✨ Las features</h2>
       <div class="cards">

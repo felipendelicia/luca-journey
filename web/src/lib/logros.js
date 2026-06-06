@@ -1,5 +1,5 @@
 // logros.js — logros desbloqueables, calculados desde el progreso (localStorage).
-import { estado } from './coleccion.js';
+import { estado, rachaEstado } from './coleccion.js';
 
 export const LOGROS = [
   { id: 'primer-ej', ico: '🌱', nombre: 'Primer paso', desc: 'Resolvé tu primer ejercicio', check: (c) => c.ejHechos >= 1 },
@@ -21,6 +21,10 @@ export const LOGROS = [
   { id: 'desafiante', ico: '⚔️', nombre: 'Desafiante', desc: 'Resolvé un desafío de la comunidad', check: (c) => c.desafiosResueltos >= 1 },
   { id: 'creador', ico: '🛠️', nombre: 'Creador', desc: 'Creá tu primer desafío', check: (c) => c.desafiosCreados >= 1 },
   { id: 'arquitecto', ico: '🏗️', nombre: 'Arquitecto', desc: 'Creá 5 desafíos para la comunidad', check: (c) => c.desafiosCreados >= 5 },
+  { id: 'primera-evo', ico: '🧬', nombre: '¡Evolución!', desc: 'Evolucioná tu primer Pokémon', check: (c) => c.evos >= 1 },
+  { id: 'racha-7', ico: '🔥', nombre: 'En llamas', desc: 'Llegá a 7 días de racha diaria', check: (c) => c.racha >= 7 },
+  { id: 'primer-duelo', ico: '🥊', nombre: 'A las pistas', desc: 'Jugá tu primer duelo PvP', check: (c) => c.pvpJugados >= 1 },
+  { id: 'as-pvp', ico: '🏆', nombre: 'As del PvP', desc: 'Ganá 10 duelos PvP', check: (c) => c.pvpVictorias >= 10 },
 ];
 
 export function contexto(temas) {
@@ -37,6 +41,7 @@ export function contexto(temas) {
   }
   const ids = Object.keys(st.atrapados).map(Number);
   const valores = Object.values(st.atrapados);
+  let pvp = {}; try { pvp = JSON.parse(localStorage.getItem('col:pvp') || '{}'); } catch {}
   return {
     ejHechos,
     totalEj: temas.reduce((a, t) => a + t.ejercicios.length, 0),
@@ -46,6 +51,10 @@ export function contexto(temas) {
     maxRepe: valores.length ? Math.max(...valores) : 0,
     desafiosCreados: Number(localStorage.getItem('col:desafios_creados') || 0),
     desafiosResueltos: Number(localStorage.getItem('col:desafios_resueltos') || 0),
+    evos: Number(localStorage.getItem('col:evos') || 0),
+    racha: (rachaEstado() || {}).dias || 0,
+    pvpJugados: pvp.jugados || 0,
+    pvpVictorias: pvp.victorias || 0,
     reg,
     regiones: Object.keys(porReg),
   };

@@ -22,6 +22,7 @@ const cards = [
       <p class="kick">La plataforma del curso</p>
       <h1>Python con Pokémon</h1>
       <p>Aprendé a programar desde cero — Linux, Python y mucha aventura — directo en tu navegador. 🏆</p>
+      <div class="racha-chip" id="racha-chip" hidden></div>
       <div class="cta">
         <a class="btn-grande" href={u('/libro')}>📖 Empezar a leer</a>
         <a class="btn-grande sec" href={u('/ejercicios')}>🏋️ Resolver ejercicios</a>
@@ -40,4 +41,26 @@ const cards = [
       ))}
     </div>
   </main>
+
+  <script>
+    import { rachaHoy } from '../lib/coleccion.js';
+    import { hayApi } from '../lib/api.js';
+    import { iniciarTutorial } from '../lib/tutorial.js';
+    let hecho = false;
+    function arranque() {
+      if (hecho) return; hecho = true;
+      const r = rachaHoy();
+      const chip = document.getElementById('racha-chip');
+      if (chip) {
+        const plural = r.dias === 1 ? 'día' : 'días';
+        chip.innerHTML = '🔥 <b>' + r.dias + '</b> ' + plural + ' de racha' + (r.bonus ? ' · <b>+' + r.bonus + '</b> 🔴 ¡bonus diario!' : '');
+        chip.hidden = false;
+        if (r.nuevo && r.bonus) { chip.classList.add('racha-nuevo'); import('../lib/sonidos.js').then((s) => s.sonarExito && s.sonarExito()).catch(() => {}); }
+      }
+      setTimeout(() => iniciarTutorial(), 900);   // tour de primer uso (una sola vez)
+    }
+    // con nube: arrancar DESPUÉS de sincronizar (para que el bonus persista en la cuenta). Sin nube: al toque.
+    if (hayApi) window.addEventListener('nube:sincronizado', arranque, { once: true });
+    else arranque();
+  </script>
 </Base>

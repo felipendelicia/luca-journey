@@ -78,6 +78,30 @@ code{font-family:var(--font-mono); font-size:.85em; background:#fbe7e1; color:va
 .hero-home::after{content:""; position:absolute; inset:0; pointer-events:none;
   background:repeating-linear-gradient(transparent 0 3px, rgba(0,0,0,.05) 3px 4px); mix-blend-mode:overlay;}
 .hero-home .kick{font-family:var(--font-pixel); font-size:11px; letter-spacing:.3em; color:var(--yellow); text-transform:uppercase;}
+.racha-chip{ display:inline-flex; align-items:center; gap:6px; margin-top:14px; padding:8px 16px; border-radius:999px;
+  background:rgba(255,120,40,.16); border:1px solid rgba(255,140,60,.5); color:#ffd9b0; font:700 .9rem var(--font-mono); }
+.racha-chip b{ color:#fff; }
+.racha-chip.racha-nuevo{ animation:rachaPop .6s cubic-bezier(.2,1.5,.4,1); box-shadow:0 0 18px -4px rgba(255,140,60,.7); }
+@keyframes rachaPop{ 0%{ transform:scale(.7); opacity:0 } 60%{ transform:scale(1.08) } 100%{ transform:scale(1); opacity:1 } }
+/* ── Tutorial de onboarding (tour por pasos) ── */
+.tuto-overlay{ position:fixed; inset:0; z-index:1100; display:flex; align-items:center; justify-content:center; padding:18px;
+  background:rgba(4,8,6,.66); backdrop-filter:blur(3px); animation:pmFade .2s ease; }
+.tuto-card{ position:relative; width:min(420px,94vw); background:var(--paper); border:1px solid var(--line); border-radius:20px;
+  padding:30px 26px 22px; text-align:center; box-shadow:var(--shadow); animation:rachaPop .4s cubic-bezier(.2,1.3,.4,1); }
+.tuto-x{ position:absolute; top:12px; right:12px; background:none; border:none; color:var(--ink-soft); font-size:1.1rem; cursor:pointer; }
+.tuto-ico{ font-size:3rem; line-height:1; margin-bottom:6px; }
+.tuto-t{ font-family:var(--font-display); font-size:1.4rem; margin:.2rem 0 .5rem; color:var(--ink); }
+.tuto-d{ font:400 .98rem/1.6 var(--font-sans,system-ui); color:var(--ink-soft); margin:0 0 16px; }
+.tuto-d b{ color:var(--ink); }
+.tuto-dots{ display:flex; gap:6px; justify-content:center; margin-bottom:18px; }
+.tuto-dot{ width:7px; height:7px; border-radius:50%; background:var(--line); transition:background .2s,transform .2s; }
+.tuto-dot.on{ background:var(--red); transform:scale(1.3); }
+.tuto-nav{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.tuto-skip,.tuto-prev{ background:none; border:none; color:var(--ink-mute); font:600 .85rem var(--font-mono); cursor:pointer; }
+.tuto-prev{ margin-left:auto; }
+.tuto-next{ background:linear-gradient(180deg, color-mix(in srgb,var(--red) 85%,#fff), var(--red)); color:#fff; border:none;
+  border-radius:999px; font:800 .95rem var(--font-mono); padding:11px 22px; cursor:pointer; box-shadow:0 7px 16px -9px var(--red); }
+.tuto-next:hover{ transform:translateY(-1px); }
 .hero-home h1{font-size:clamp(2.2rem,6vw,3.6rem); margin:.3rem 0; color:#fff; border:none; letter-spacing:-.03em;}
 .hero-home p{font-size:1.08rem; opacity:.95; max-width:620px; margin:.3rem auto;}
 .hero-home .cta{margin-top:1.6rem; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}

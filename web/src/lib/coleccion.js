@@ -212,6 +212,7 @@ export function evolucionarInst(iid, targetId) {
   addVisto(m.id);
   m.id = op.a; m.movs = [];          // nueva especie; movs se recalculan en Etapa 2
   addVisto(m.id);
+  set('col:evos', get('col:evos', 0) + 1);   // contador para el logro "primera evolución"
   setPC(arr);
   return op.a;
 }
@@ -295,6 +296,22 @@ export function reclamarRegalo() {
 export function regaloDisponible() {
   const ult = Number(localStorage.getItem('col:regalo')) || 0;
   return Date.now() - ult >= REGALO_COOLDOWN_MS;
+}
+
+// ───────── Racha diaria ─────────
+// col:racha = { dias, ultima:'YYYY-MM-DD' }. Días consecutivos dan bonus de Pokébolas (escalado).
+const hoyISO = () => new Date().toLocaleDateString('en-CA');   // YYYY-MM-DD local
+const diaAnterior = (iso) => { const d = new Date(iso + 'T12:00:00'); d.setDate(d.getDate() - 1); return d.toLocaleDateString('en-CA'); };
+export function rachaEstado() { return get('col:racha', { dias: 0, ultima: '' }); }
+// Reclama la racha del día (idempotente por día). Devuelve { dias, bonus, nuevo }.
+export function rachaHoy() {
+  const hoy = hoyISO(); const r = rachaEstado();
+  if (r.ultima === hoy) return { dias: r.dias, bonus: 0, nuevo: false };   // ya reclamada hoy
+  const dias = r.ultima === diaAnterior(hoy) ? (r.dias || 0) + 1 : 1;      // consecutivo o reinicio
+  const bonus = 5 * Math.min(dias, 5);                                     // +5..+25
+  set('col:racha', { dias, ultima: hoy });
+  set('col:balls', get('col:balls', 0) + bonus);
+  return { dias, bonus, nuevo: true };
 }
 
 // Elige un Pokémon del pool con probabilidad proporcional a su peso (rareza):
