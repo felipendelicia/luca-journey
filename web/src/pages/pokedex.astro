@@ -1,10 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
 import datos from '../data/ejercicios.json';
-import pokemon from '../data/pokemon.json';
-import evoluciones from '../data/evoluciones.json';
-import aparicion from '../data/aparicion.json';
-import estadisticas from '../data/estadisticas.json';
 import { u } from '../lib/url.ts';
 import { REGIONES as REGS, etiqueta } from '../lib/regiones.mjs';
 
@@ -96,7 +92,7 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
     <div class="evo-flash" id="evo-flash"></div>
   </div>
 
-  <script type="application/json" id="dex-data" set:html={JSON.stringify({ pokemon, temas, regiones: REGIONES, evoluciones, aparicion, estadisticas })}></script>
+  <script type="application/json" id="dex-data" set:html={JSON.stringify({ temas, regiones: REGIONES })}></script>
   <script>
     import { sincronizar, spriteUrl, pc, caramelos, vistos, subirNivel, opcionesEvo, evolucionarInst, renombrar, liberar, learnsetDe, setMovs, tieneItem, costoSubir, NIVEL_MAX } from '../lib/coleccion.js';
     import { ITEMS } from '../lib/items.js';
@@ -105,8 +101,15 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
     import { tierDe } from '../lib/rareza.js';
     import { tiposDe } from '../lib/tipos.js';
     import movimientos from '../data/movimientos.json';
+    // Data pesada como módulo (Vite la bundlea a un chunk /_astro hasheado: fuera del HTML,
+    // cacheado cache-first por el service worker y compartido entre páginas).
+    import pokemon from '../data/pokemon.json';
+    import evoluciones from '../data/evoluciones.json';
+    import aparicion from '../data/aparicion.json';
+    import estadisticas from '../data/estadisticas.json';
 
-    const D = JSON.parse(document.getElementById('dex-data').textContent);
+    const meta = JSON.parse(document.getElementById('dex-data').textContent);
+    const D = { pokemon, evoluciones, aparicion, estadisticas, temas: meta.temas, regiones: meta.regiones };
     sincronizar(D.temas);
     const nombreDe = Object.fromEntries(D.pokemon.map((p) => [p.id, p.nombre]));
     const nomInst = (m) => m.mote || nombreDe[m.id] || ('Nº ' + m.id);

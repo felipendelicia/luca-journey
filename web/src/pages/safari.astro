@@ -2,7 +2,6 @@
 import Base from '../layouts/Base.astro';
 import datos from '../data/ejercicios.json';
 import pokemon from '../data/pokemon.json';
-import pesos from '../data/aparicion.json';
 import { ballSvg } from '../lib/sprites.js';
 import { u } from '../lib/url.ts';
 
@@ -44,15 +43,18 @@ const total = pokemon.length;
     </div>
   </div>
 
-  <script type="application/json" id="safari-data" set:html={JSON.stringify({ pokemon, temas, pesos })}></script>
+  <script type="application/json" id="safari-data" set:html={JSON.stringify({ temas })}></script>
   <script>
     import { sincronizar, tirar as lanzar, estado, vistos, reclamarRegalo, regaloDisponible, regionesDesbloqueadas, spriteUrl } from '../lib/coleccion.js';
     import { sonarCaptura, sonarShiny, sonarEpico } from '../lib/sonidos.js';
     import { TIERS } from '../lib/rareza.js';
     import { ballSvg } from '../lib/sprites.js';
     import { REGIONES as REGS, etiqueta } from '../lib/regiones.mjs';
+    import pokemon from '../data/pokemon.json';   // módulo → chunk /_astro cacheado (compartido con pokedex/liga)
+    import pesos from '../data/aparicion.json';
 
-    const D = JSON.parse(document.getElementById('safari-data').textContent);
+    const meta = JSON.parse(document.getElementById('safari-data').textContent);
+    const D = { pokemon, pesos, temas: meta.temas };
     const $ = (id) => document.getElementById(id);
 
     // modal explicativo de rarezas (poblado desde TIERS)

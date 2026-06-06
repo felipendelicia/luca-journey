@@ -1,11 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import datos from '../data/ejercicios.json';
-import pokemon from '../data/pokemon.json';
-import { badgeSvg } from '../lib/sprites.js';
 import { REGIONES } from '../lib/regiones.mjs';
-
-const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
 
 const BADGES = {
   kanto: [['Roca', '🪨'], ['Cascada', '💧'], ['Trueno', '⚡'], ['Arcoíris', '🌈'], ['Alma', '💗'], ['Pantano', '🟣'], ['Volcán', '🔥'], ['Tierra', '🌍']],
@@ -22,7 +18,6 @@ function temasDe(region) {
   return datos.filter((w) => (w.region || 'kanto') === region).map((w, i) => ({
     slug: w.slug, titulo: w.titulo, exIds: w.ejercicios.map((e) => e.id),
     gym: (BADGES[region][i] || ['?', '⭐'])[0], emoji: (BADGES[region][i] || ['?', '⭐'])[1],
-    med: badgeSvg(region, i, true, 42), medOff: badgeSvg(region, i, false, 42), medMini: badgeSvg(region, i, true, 20),
   }));
 }
 const regiones = REGIONES.map((r) => ({ id: r.id, nombre: r.nombre, emoji: r.emoji, sub: r.tema, titulo: `Campeón de ${r.nombre}`, temas: temasDe(r.id) }));
@@ -206,8 +201,9 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
     cargar();
   </script>
 
-  <script type="application/json" id="liga-data" set:html={JSON.stringify({ regiones, totalEj, nombres })}></script>
-  <script is:inline>
+  <script type="application/json" id="liga-data" set:html={JSON.stringify({ regiones, totalEj })}></script>
+  <script>
+    import { badgeSvg } from '../lib/sprites.js';   // medallas computadas en el cliente (no inlineadas en el HTML)
     (function () {
       const data = JSON.parse(document.getElementById('liga-data').textContent);
       const $ = (s) => document.querySelector(s);
@@ -223,7 +219,7 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
       for (const r of data.regiones) {
         let medReg = 0;
         const meds = [], filas = [];
-        for (const t of r.temas) {
+        r.temas.forEach((t, i) => {
           const done = t.exIds.filter((id) => localStorage.getItem('ej:' + t.slug + ':' + id + ':ok') === '1').length;
           const total = t.exIds.length;
           const yaTeniaMedalla = hitos.has('tema:' + t.slug);
@@ -231,11 +227,11 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
           doneTotal += done;
           if (completo) { medallas++; medReg++; }
           const pct = total ? Math.round((done / total) * 100) : 0;
-          filas.push('<a class="pt-row" href="' + B + '/ejercicios/' + t.slug + '"><span class="pt-emoji">' + t.medMini + '</span>' +
+          filas.push('<a class="pt-row" href="' + B + '/ejercicios/' + t.slug + '"><span class="pt-emoji">' + badgeSvg(r.id, i, true, 20) + '</span>' +
             '<span class="pt-nom">' + t.titulo + '</span><span class="pt-bar"><i style="width:' + pct + '%"></i></span>' +
             '<span class="pt-num">' + done + '/' + total + '</span></a>');
-          meds.push('<div class="medalla ' + (completo ? 'ganada' : '') + '" title="Gimnasio ' + t.gym + '"><div class="med-ico">' + (completo ? t.med : t.medOff) + '</div><div class="med-nom">' + t.gym + '</div></div>');
-        }
+          meds.push('<div class="medalla ' + (completo ? 'ganada' : '') + '" title="Gimnasio ' + t.gym + '"><div class="med-ico">' + badgeSvg(r.id, i, completo, 42) + '</div><div class="med-nom">' + t.gym + '</div></div>');
+        });
         $('[data-medallas="' + r.id + '"]').innerHTML = meds.join('');
         $('[data-progreso="' + r.id + '"]').innerHTML = filas.join('');
         const completaReg = medReg === r.temas.length && r.temas.length;
@@ -360,10 +356,10 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
     })();
   </script>
 
-  <script is:inline>
+  <script>
+    import pokemon from '../data/pokemon.json';   // módulo → chunk /_astro cacheado (compartido con pokedex)
     (function () {
-      const D = JSON.parse(document.getElementById('liga-data').textContent);
-      const nombres = D.nombres || {};
+      const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
       const sprite = (id) => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + id + '.png';
       const av = document.getElementById('avatar');
       const modal = document.getElementById('avatar-modal');
