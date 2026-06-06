@@ -32,6 +32,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       <p class="bt-msg" id="bt-msg">¡Que empiece la batalla!</p>
       <div class="bt-carga"><div class="bt-carga-fill" id="bt-carga"></div><span id="bt-carga-txt">Súper: 0%</span></div>
       <div class="bt-moves" id="bt-moves"></div>
+      <div class="bt-banca-wrap"><span class="bt-banca-lbl">Tu equipo <small>(tocá para cambiar)</small></span><div class="bt-banca" id="bt-banca"></div></div>
     </div>
   </div>
 
@@ -126,6 +127,26 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
         '<button class="bt-move bt-super" id="bt-super"' + (G.carga < 100 || G.lock ? ' disabled' : '') + '>⚡ SÚPER</button>';
       $('bt-moves').querySelectorAll('.bt-move[data-i]').forEach((b) => b.addEventListener('click', () => turno(p.movs[+b.dataset.i])));
       $('bt-super').addEventListener('click', abrirReto);
+      // banca: tu equipo (tocá un suplente vivo para cambiarlo)
+      $('bt-banca').innerHTML = G.equipo.map((c, i) => {
+        const ko = c.hp <= 0, act = i === G.pa, dis = act || ko || G.lock;
+        const hpPct = Math.max(0, Math.round((c.hp / c.hpMax) * 100));
+        return '<button class="bt-banca-m' + (act ? ' activo' : '') + (ko ? ' ko' : '') + '" data-sw="' + i + '"' + (dis ? ' disabled' : '') + '>' +
+          '<img src="' + spriteUrl(c.id, c.shiny) + '" alt="" /><span class="bm-nom">' + c.nombre + '</span>' +
+          '<span class="bm-hp"><i style="width:' + hpPct + '%"></i></span>' +
+          '<small>' + (ko ? '💀 Debilitado' : act ? '● En combate' : 'Nv.' + c.nivel) + '</small></button>';
+      }).join('');
+      $('bt-banca').querySelectorAll('[data-sw]').forEach((b) => b.addEventListener('click', () => cambiar(+b.dataset.sw)));
+    }
+    // cambiar de Pokémon (manual): usa el turno → el rival ataca después.
+    async function cambiar(i) {
+      if (G.lock || i === G.pa || G.equipo[i].hp <= 0) return;
+      G.lock = true; render();
+      G.pa = i; msg('¡Adelante, ' + miAct().nombre + '!'); render();
+      await esperar(750);
+      await turnoRival();
+      if (fin()) return;
+      G.lock = false; render();
     }
     function hp(id, c) {
       const pct = Math.max(0, Math.round((c.hp / c.hpMax) * 100));

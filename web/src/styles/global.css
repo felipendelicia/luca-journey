@@ -722,6 +722,23 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .bt-move:disabled{ opacity:.5; cursor:not-allowed; }
 .bt-super{ grid-column:1/-1; align-items:center; text-align:center; font-weight:800; background:linear-gradient(90deg,#f7b733,#fc4a1a); color:#fff; border:none; }
 .bt-super:disabled{ background:var(--line); color:var(--ink-mute); }
+/* banca: tu equipo (cambio manual) */
+.bt-banca-wrap{ margin-top:12px; }
+.bt-banca-lbl{ display:block; font:800 .64rem var(--font-pixel); letter-spacing:.05em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:7px; }
+.bt-banca-lbl small{ font-family:var(--font-mono); font-weight:600; text-transform:none; letter-spacing:0; }
+.bt-banca{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.bt-banca-m{ display:flex; flex-direction:column; align-items:center; gap:3px; padding:8px 5px; border:1px solid var(--line); border-radius:12px; background:var(--paper-2); cursor:pointer; color:var(--ink); transition:transform .1s,border-color .1s; }
+.bt-banca-m:hover:not(:disabled){ transform:translateY(-2px); border-color:var(--red); }
+.bt-banca-m:disabled{ cursor:default; }
+.bt-banca-m img{ width:46px; height:46px; image-rendering:pixelated; }
+.bm-nom{ font:700 .72rem var(--font-mono); }
+.bt-banca-m small{ font:600 .62rem var(--font-mono); color:var(--ink-soft); }
+.bm-hp{ display:block; width:80%; height:5px; background:var(--line); border-radius:999px; overflow:hidden; }
+.bm-hp i{ display:block; height:100%; background:#33c659; border-radius:999px; }
+.bt-banca-m.activo{ border-color:var(--red); box-shadow:0 0 0 1px var(--red) inset; }
+.bt-banca-m.activo small{ color:var(--red); }
+.bt-banca-m.ko{ opacity:.45; }
+.bt-banca-m.ko img{ filter:grayscale(1); }
 /* reto modal */
 .reto-modal{ position:fixed; inset:0; z-index:70; display:flex; align-items:center; justify-content:center; padding:18px; background:rgba(0,0,0,.6); }
 .reto-modal[hidden]{ display:none; }
