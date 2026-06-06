@@ -517,7 +517,7 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 /* modal de instancia (detalle + acciones) */
 .poke-modal{ position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; padding:18px; background:rgba(0,0,0,.55); }
 .poke-modal[hidden]{ display:none; }
-.poke-modal-card{ position:relative; width:min(560px,100%); max-height:88vh; overflow:auto; background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); padding:22px 20px 20px; text-align:center; }
+.poke-modal-card{ position:relative; width:clamp(300px,60vw,920px); max-width:92vw; max-height:88vh; overflow:auto; background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); padding:22px 20px 20px; text-align:center; }
 #poke-modal-cuerpo h2{ margin:.3rem 0 .2rem; color:var(--ink); }
 .pm-img{ width:180px; height:180px; image-rendering:pixelated; }
 .pm-row{ display:flex; justify-content:center; align-items:center; gap:10px; margin:.2rem 0; }
@@ -547,7 +547,16 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 /* ataques (aviso etapa 2) */
 .pm-movs{ border-top:1px dashed var(--line); margin-top:12px; padding-top:10px; }
 .pm-movs>b{ display:block; color:var(--ink); font-size:.86rem; }
-.pm-soon{ font:600 .76rem var(--font-mono); color:var(--ink-mute); margin:.3rem 0 0; }
+.pm-movs>b small{ color:var(--ink-soft); font-weight:600; }
+.pm-soon{ font:600 .74rem var(--font-mono); color:var(--ink-mute); margin:.3rem 0 .5rem; }
+.mv-lista{ display:flex; flex-direction:column; gap:5px; max-height:230px; overflow:auto; }
+.mv-fila{ display:flex; justify-content:space-between; align-items:center; gap:8px; width:100%; text-align:left; padding:7px 11px; border-radius:9px; border:1px solid var(--line); background:var(--paper-2); font:700 .8rem var(--font-mono); color:var(--ink); }
+.mv-meta{ font-weight:600; font-size:.7rem; color:var(--ink-soft); white-space:nowrap; }
+.mv-ok{ cursor:pointer; }
+.mv-ok:hover{ border-color:var(--red); }
+.mv-act{ background:var(--red); color:#fff; border-color:var(--red); }
+.mv-act .mv-meta{ color:rgba(255,255,255,.85); }
+.mv-bloq{ opacity:.5; }
 /* mote + liberar */
 .pm-extra{ display:flex; gap:8px; justify-content:center; margin-top:14px; }
 .pm-mini{ font:700 .78rem var(--font-mono); background:var(--paper-2); border:1px solid var(--line); border-radius:999px; padding:8px 12px; cursor:pointer; color:var(--ink); }

@@ -45,9 +45,10 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
 
   <script type="application/json" id="dex-data" set:html={JSON.stringify({ pokemon, temas, regiones: REGIONES, evoluciones, aparicion })}></script>
   <script>
-    import { sincronizar, spriteUrl, pc, caramelos, vistos, subirNivel, opcionesEvo, evolucionarInst, renombrar, liberar, costoSubir, NIVEL_MAX } from '../lib/coleccion.js';
+    import { sincronizar, spriteUrl, pc, caramelos, vistos, subirNivel, opcionesEvo, evolucionarInst, renombrar, liberar, learnsetDe, setMovs, costoSubir, NIVEL_MAX } from '../lib/coleccion.js';
     import { sonarExito } from '../lib/sonidos.js';
     import { tierDe } from '../lib/rareza.js';
+    import movimientos from '../data/movimientos.json';
 
     const D = JSON.parse(document.getElementById('dex-data').textContent);
     sincronizar(D.temas);
@@ -145,6 +146,20 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       if (n2.length) html += '<div class="ev-flecha">↓</div>' + fila(n2);
       return '<div class="pm-arbol"><b>🌳 Línea evolutiva</b>' + html + '</div>';
     }
+    // bloque de ataques: learnset por nivel (desbloqueados elegibles, bloqueados grises) + 4 activos.
+    function movsBloque(m) {
+      const activos = new Set(m.movs || []);
+      const filas = learnsetDe(m.id).map((x) => {
+        const mv = movimientos[x.m] || { nombre: 'Mov ' + x.m, tipo: '—', poder: null };
+        const pod = mv.poder ? ' · ⚔️' + mv.poder : '';
+        if (x.n > m.nivel) return '<div class="mv-fila mv-bloq"><span>🔒 ' + mv.nombre + '</span><span class="mv-meta">' + mv.tipo + ' · Nv.' + x.n + '</span></div>';
+        const act = activos.has(x.m);
+        return '<button class="mv-fila mv-ok' + (act ? ' mv-act' : '') + '" data-mv="' + x.m + '"><span>' + (act ? '✓ ' : '') + mv.nombre + '</span><span class="mv-meta">' + mv.tipo + pod + '</span></button>';
+      }).join('');
+      return '<div class="pm-movs"><b>⚔️ Ataques <small>(' + (m.movs || []).length + '/4 activos)</small></b>' +
+        '<p class="pm-soon">Tocá para elegir hasta 4 (de los desbloqueados). Recambiás cuando quieras. Se usan en la batalla.</p>' +
+        '<div class="mv-lista">' + filas + '</div></div>';
+    }
     function abrirModal(iid) {
       const m = pc().find((x) => x.iid === iid); if (!m) return;
       const car = caramelos()[familiaDe(m.id)] || 0, t = tierDe(m.id, apar);
@@ -160,13 +175,21 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
           (max ? '<span class="pc-max">Nivel MÁXIMO (50)</span>' : '<button class="pm-btn" id="pm-up"' + (car < costo ? ' disabled' : '') + '>⬆️ Power-Up <small>(' + costo + '🍬)</small></button>') +
           evoBloque(m, ops) + '</div>' +
         arbolEvo(m) +
-        '<div class="pm-movs"><b>⚔️ Ataques</b><p class="pm-soon">Tus 4 ataques activos y el learnset (qué aprende y a qué nivel) llegan con la <b>batalla</b>. 🥊</p></div>' +
+        movsBloque(m) +
         '<div class="pm-extra">' +
           '<button class="pm-mini" id="pm-mote">✏️ ' + (m.mote ? 'Cambiar mote' : 'Poner mote') + '</button>' +
           '<button class="pm-mini pm-lib" id="pm-lib">🕊️ Liberar <small>(+1🍬)</small></button>' +
         '</div>';
       const up = $('pm-up'); if (up) up.addEventListener('click', () => { if (subirNivel(iid)) { sonarExito(); abrirModal(iid); pintar(); } });
       $('poke-modal-cuerpo').querySelectorAll('[data-evopick]').forEach((b) => b.addEventListener('click', () => { if (evolucionarInst(iid, b.dataset.evopick)) { sonarExito(); cerrarModal(); pintar(); } }));
+      $('poke-modal-cuerpo').querySelectorAll('.mv-ok').forEach((b) => b.addEventListener('click', () => {
+        const mid = Number(b.dataset.mv), cur = (pc().find((x) => x.iid === iid) || {}).movs || [];
+        let next;
+        if (cur.includes(mid)) next = cur.filter((x) => x !== mid);
+        else if (cur.length < 4) next = [...cur, mid];
+        else return;
+        setMovs(iid, next); abrirModal(iid);
+      }));
       $('pm-mote').addEventListener('click', () => {
         const nv = prompt('Mote para tu ' + esp + ' (vacío = sin mote):', m.mote || '');
         if (nv !== null) { renombrar(iid, nv); abrirModal(iid); pintar(); }

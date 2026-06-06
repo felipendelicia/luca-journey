@@ -5,6 +5,7 @@
 import { tierDe } from './rareza.js';
 import evoData from '../data/evoluciones.json' with { type: 'json' };
 import aparicion from '../data/aparicion.json' with { type: 'json' };
+import learnsets from '../data/learnsets.json' with { type: 'json' };
 import { migrarPC } from './migracion-pc.js';
 
 // corre la migración a v2 (conteos→instancias) una vez, antes de tocar el PC.
@@ -209,6 +210,20 @@ export function renombrar(iid, mote) {
   const arr = pc(); const m = buscarInst(arr, iid); if (!m) return false;
   const v = String(mote || '').trim().slice(0, 16);
   if (v) m.mote = v; else delete m.mote;
+  setPC(arr); return true;
+}
+
+// Learnset COMPLETO de una especie (incl. ataques aún bloqueados): [{m:moveId, n:nivel}].
+export const learnsetDe = (id) => learnsets[id] || [];
+// Ataques DESBLOQUEADOS por una instancia: del learnset, los que aprende a nivel ≤ su nivel.
+export function movsDesbloqueados(inst) {
+  return (learnsets[inst.id] || []).filter((x) => x.n <= inst.nivel);
+}
+// Fijar los 4 ataques ACTIVOS de una instancia (deben estar desbloqueados; máximo 4).
+export function setMovs(iid, moveIds) {
+  const arr = pc(); const m = buscarInst(arr, iid); if (!m) return false;
+  const ok = new Set(movsDesbloqueados(m).map((x) => x.m));
+  m.movs = (moveIds || []).map(Number).filter((id) => ok.has(id)).slice(0, 4);
   setPC(arr); return true;
 }
 
