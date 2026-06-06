@@ -8,3 +8,8 @@ dist/
 # variables de entorno locales
 .env
 .env.local
+
+# e2e (Playwright)
+.env.e2ebak
+test-results/
+playwright-report/

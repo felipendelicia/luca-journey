@@ -266,8 +266,11 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
       return '<div class="pm-panel"><div class="pm-h">📊 Estadísticas <small>(a Nv. ' + L + ')</small></div>' +
         '<div class="st-lista">' + filas + '</div><div class="st-total">Suma base: <b>' + total + '</b> · crecen con el nivel</div></div>';
     }
-    function abrirModal(iid) {
+    function abrirModal(iid, enLugar) {
       const m = pc().find((x) => x.iid === iid); if (!m) return;
+      // si es una actualización en-lugar (Power-Up / elegir ataque / mote), preservamos el scroll
+      const cardPrev = $('poke-modal').querySelector('.poke-modal-card');
+      const scPrev = enLugar && cardPrev ? cardPrev.scrollTop : 0;
       const car = caramelos()[familiaDe(m.id)] || 0, t = tierDe(m.id, apar), tps = tiposDe(m.id);
       const costo = costoSubir(m.nivel), max = m.nivel >= NIVEL_MAX, ops = opcionesEvo(iid);
       const esp = nombreDe[m.id] || ('Nº ' + m.id);
@@ -293,8 +296,12 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
           '<button class="pm-mini pm-lib" id="pm-lib">🕊️ Liberar <small>(+1🍬)</small></button>' +
         '</div>';
       const card = $('poke-modal').querySelector('.poke-modal-card');
-      if (card) { card.style.setProperty('--tier-color', t.color); card.scrollTop = 0; card.style.animation = 'none'; void card.offsetWidth; card.style.animation = ''; }
-      const up = $('pm-up'); if (up) up.addEventListener('click', () => { if (subirNivel(iid)) { sonarExito(); abrirModal(iid); pintar(); } });
+      if (card) {
+        card.style.setProperty('--tier-color', t.color);
+        if (enLugar) { card.scrollTop = scPrev; }   // sin saltar arriba ni re-animar
+        else { card.scrollTop = 0; card.style.animation = 'none'; void card.offsetWidth; card.style.animation = ''; }
+      }
+      const up = $('pm-up'); if (up) up.addEventListener('click', () => { if (subirNivel(iid)) { sonarExito(); abrirModal(iid, true); pintar(); } });
       const evoT = $('pm-evo-toggle');
       if (evoT) evoT.addEventListener('click', () => {
         const ch = $('pm-evo-chooser'); const abierto = ch.classList.toggle('abierto'); evoT.classList.toggle('abierto', abierto);
@@ -311,11 +318,11 @@ const REGIONES = [['kanto', '🔴 Kanto'], ['johto', '⚪ Johto'], ['hoenn', '�
         if (cur.includes(mid)) next = cur.filter((x) => x !== mid);
         else if (cur.length < 4) next = [...cur, mid];
         else return;
-        setMovs(iid, next); abrirModal(iid);
+        setMovs(iid, next); abrirModal(iid, true);
       }));
       $('pm-mote').addEventListener('click', () => {
         const nv = prompt('Mote para tu ' + esp + ' (vacío = sin mote):', m.mote || '');
-        if (nv !== null) { renombrar(iid, nv); abrirModal(iid); pintar(); }
+        if (nv !== null) { renombrar(iid, nv); abrirModal(iid, true); pintar(); }
       });
       $('pm-lib').addEventListener('click', () => {
         if (confirm('¿Liberar a ' + nomInst(m) + '? Te da 1 🍬 pero lo perdés para siempre.')) { liberar(iid); sonarExito(); cerrarModal(); pintar(); }
