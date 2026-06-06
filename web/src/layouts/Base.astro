@@ -101,8 +101,19 @@ const nav = [
       var base = window.__BASE || '/';
       var esLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
       if ('serviceWorker' in navigator && !esLocal) {
+        // si ya había un SW controlando y entra uno nuevo (deploy), recargar UNA vez para
+        // tomar el HTML fresco (evita 404 de assets hasheados viejos del HTML cacheado).
+        if (navigator.serviceWorker.controller) {
+          var recargando = false;
+          navigator.serviceWorker.addEventListener('controllerchange', function () {
+            if (recargando) return; recargando = true; window.location.reload();
+          });
+        }
         window.addEventListener('load', function () {
-          navigator.serviceWorker.register(base + 'sw.js').catch(function () {});
+          // updateViaCache:'none' → el browser nunca cachea sw.js (detecta updates al toque)
+          navigator.serviceWorker.register(base + 'sw.js', { updateViaCache: 'none' }).then(function (reg) {
+            reg.update();
+          }).catch(function () {});
         });
       } else if ('serviceWorker' in navigator && esLocal) {
         // en dev el SW estanca el caché (504 Outdated Optimize Dep): desregistrarlo y limpiar sus caches

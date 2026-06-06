@@ -4,7 +4,7 @@
 // - Assets de Astro (/_astro/, con hash en el nombre): cache-first (el nombre cambia
 //   en cada build, así que cachear es seguro y da carga offline/rápida).
 // - Pyodide y fuentes (CDN, otro origen): no se tocan, van directo a la red.
-const VERSION = 'v2';
+const VERSION = 'v3';
 const CACHE = 'pokedex-codex-' + VERSION;
 const SCOPE = new URL(self.registration.scope).pathname; // '/' o '/luca-journey/'
 
