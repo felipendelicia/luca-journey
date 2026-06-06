@@ -86,7 +86,7 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
 
     <div class="av-modal" id="dip-modal" hidden>
       <div class="av-card dip-card" role="dialog" aria-modal="true" aria-label="Diploma de Campeón">
-        <div class="av-head"><b>📜 Diploma de Campeón</b><button class="av-x" id="dip-x" type="button">✕</button></div>
+        <div class="av-head"><b>📜 Diploma de Campeón</b><button class="av-x" aria-label="Cerrar" id="dip-x" type="button">✕</button></div>
         <canvas id="dip-canvas" width="1200" height="630"></canvas>
         <div class="dip-actions">
           <button class="btn-grande" id="dip-download" type="button">⬇️ Descargar</button>
@@ -97,7 +97,7 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
 
     <div class="av-modal" id="avatar-modal" hidden>
       <div class="av-card">
-        <div class="av-head"><b>📷 Elegí tu foto de perfil</b><button class="av-x" id="av-cerrar" type="button">✕</button></div>
+        <div class="av-head"><b>📷 Elegí tu foto de perfil</b><button class="av-x" aria-label="Cerrar" id="av-cerrar" type="button">✕</button></div>
         <p class="av-sub" id="av-sub"></p>
         <div class="av-grid" id="avatar-grid"></div>
         <button class="btn-sec" id="av-reset" type="button">↺ Usar emoji 🎓</button>

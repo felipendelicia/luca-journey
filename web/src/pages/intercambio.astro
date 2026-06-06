@@ -80,7 +80,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
 
     <div class="av-modal" id="tr-modal" hidden>
       <div class="av-card">
-        <div class="av-head"><b>🎒 Elegí qué ofrecer</b><button class="av-x" id="tr-modal-x" type="button">✕</button></div>
+        <div class="av-head"><b>🎒 Elegí qué ofrecer</b><button class="av-x" aria-label="Cerrar" id="tr-modal-x" type="button">✕</button></div>
         <p class="av-sub">Tocá <b>+</b> para sumar al lote. ✨ = ofrecé el shiny (si lo tenés).</p>
         <div class="av-grid" id="tr-grid"></div>
         <button class="btn-grande" id="tr-modal-ok" type="button">Listo</button>

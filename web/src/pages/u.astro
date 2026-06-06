@@ -87,7 +87,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     <!-- modal proponer intercambio -->
     <div class="av-modal" id="of-modal" hidden>
       <div class="av-card" role="dialog" aria-modal="true" aria-label="Proponer intercambio">
-        <div class="av-head"><b>🔄 Proponer intercambio</b><button class="av-x" id="of-x" type="button">✕</button></div>
+        <div class="av-head"><b>🔄 Proponer intercambio</b><button class="av-x" aria-label="Cerrar" id="of-x" type="button">✕</button></div>
         <p class="av-sub">Elegí qué <b>das</b> (de lo tuyo) y qué <b>pedís</b> (de su Pokédex). El otro acepta cuando entre.</p>
         <div class="tr-lab">Vos das</div>
         <div class="tr-grid of-grid" id="of-doy"></div>
@@ -101,7 +101,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     <!-- modal editar equipo destacado -->
     <div class="av-modal" id="eq-modal" hidden>
       <div class="av-card" role="dialog" aria-modal="true" aria-label="Equipo destacado">
-        <div class="av-head"><b>⚡ Equipo destacado</b><button class="av-x" id="eq-x" type="button">✕</button></div>
+        <div class="av-head"><b>⚡ Equipo destacado</b><button class="av-x" aria-label="Cerrar" id="eq-x" type="button">✕</button></div>
         <p class="av-sub">Elegí hasta <b>6</b> Pokémon de tu PC para mostrar en tu tarjeta. <span id="eq-n">0/6</span></p>
         <div class="tr-grid of-grid" id="eq-grid"></div>
         <button class="btn-grande" id="eq-guardar" type="button">Guardar equipo</button>
@@ -111,7 +111,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     <!-- modal editar buscando/ofrezco -->
     <div class="av-modal" id="bo-modal" hidden>
       <div class="av-card" role="dialog" aria-modal="true" aria-label="Buscando y Ofrezco">
-        <div class="av-head"><b>🔁 Buscando / Ofrezco</b><button class="av-x" id="bo-x" type="button">✕</button></div>
+        <div class="av-head"><b>🔁 Buscando / Ofrezco</b><button class="av-x" aria-label="Cerrar" id="bo-x" type="button">✕</button></div>
         <p class="av-sub">Agregá Pokémon a cada lista (escribí el nombre y Enter). Hasta 12 por lista.</p>
         <div class="bo-edit">
           <label class="t-nombre-l">🔎 Busco</label>
