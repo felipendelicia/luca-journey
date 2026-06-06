@@ -98,10 +98,9 @@ export function sincronizar(temas) {
   let balls = get('col:balls', 0);
   const ganados = new Set(get('col:ganados', []));
   const hitos = new Set(get('col:hitos', []));
-  const at = get('col:atrapados', {});
   const nuevo = { balls: 0, capturas: [] };
 
-  const capturar = (id) => { if (id) { at[id] = (at[id] || 0) + 1; nuevo.capturas.push(id); } };
+  const capturar = (id) => { if (id) { atrapar(id); nuevo.capturas.push(id); } };
   const proyOk = (k) => localStorage.getItem('proy:' + k + ':ok') === '1';
 
   for (const t of temas) {
@@ -131,7 +130,6 @@ export function sincronizar(temas) {
   set('col:balls', balls);
   set('col:ganados', [...ganados]);
   set('col:hitos', [...hitos]);
-  set('col:atrapados', at);
   return nuevo;
 }
 
@@ -234,17 +232,11 @@ export function tirar(pokemon, temas, pesos = {}) {
   const prob = (pesos[elegido.id] || 1) / totalPeso;
   // "aparece 1 de cada X intentos" (más intuitivo que el % chico)
   const cadaCuantos = Math.max(1, Math.round(1 / prob));
-  const at = get('col:atrapados', {});
-  at[elegido.id] = (at[elegido.id] || 0) + 1;
   balls--;
-  // shiny: 1% de las veces; se guarda aparte (podés tener el shiny de un Pokémon)
+  // shiny: 1% de las veces (ahora es propiedad de la instancia)
   const shiny = Math.random() < PROB_SHINY;
-  let nuevoShiny = false;
-  if (shiny) {
-    const s = get('col:shiny', []);
-    if (!s.includes(elegido.id)) { s.push(elegido.id); set('col:shiny', s); nuevoShiny = true; }
-  }
+  atrapar(elegido.id, { shiny });                 // crea la instancia + vistos + caramelos
+  const cant = pc().filter((m) => m.id === elegido.id).length;
   set('col:balls', balls);
-  set('col:atrapados', at);
-  return { pokemon: elegido, cantidad: at[elegido.id], repetido: at[elegido.id] > 1, shiny, nuevoShiny, balls, prob, cadaCuantos, tier: tierDe(elegido.id, pesos) };
+  return { pokemon: elegido, cantidad: cant, repetido: cant > 1, shiny, nuevoShiny: shiny, balls, prob, cadaCuantos, tier: tierDe(elegido.id, pesos), caramelos: caramelos()[familiaDe(elegido.id)] || 0 };
 }

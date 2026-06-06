@@ -169,7 +169,7 @@ const total = pokemon.length;
       txt.className = 'captura-txt';
       txt.innerHTML = titulo + ' <span class="cap-n">Nº ' + p.id + '</span>' +
         '<span class="cap-tier" style="--tier-color:' + t.color + '">' + (t.ico ? t.ico + ' ' : '') + t.nombre + '</span>' +
-        '<span class="cap-prob">🎲 1 de cada <b>' + r.cadaCuantos + '</b></span>';
+        '<span class="cap-prob">🎲 1 de cada <b>' + r.cadaCuantos + '</b> · 🍬 +3 caramelos</span>';
       escena.appendChild(txt);
       $('msg').textContent = r.shiny
         ? '🌟 ¡INCREÍBLE! Un shiny aparece 1 de cada 100 veces.'
