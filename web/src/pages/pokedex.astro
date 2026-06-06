@@ -125,7 +125,7 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
     let filtro = 'todos';
 
     // Pokédex = COMPLETITUD (vistos). Mi PC = los que TENÉS (instancias).
-    const REG_COLOR = { kanto: '#e0492f', johto: '#caa94e', hoenn: '#56ad4e', sinnoh: '#4d90d5', unova: '#7a7a86', kalos: '#d3793f' };
+    const REG_COLOR = { kanto: '#e0492f', johto: '#caa94e', hoenn: '#56ad4e', sinnoh: '#4d90d5', unova: '#7a7a86', kalos: '#d3793f', alola: '#e06d9f', galar: '#7b6cd9', paldea: '#e0843a' };
     function contadores(vis, pcArr) {
       const total = D.pokemon.length, seen = D.pokemon.filter((p) => vis.has(p.id)).length;
       const pct = Math.round((seen / total) * 100), shiny = pcArr.filter((m) => m.shiny).length;
@@ -407,10 +407,13 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
       sinres.hidden = !q || (enDex ? visDex : visPc) > 0;
     }
 
+    // El grid de la Pokédex (1025 celdas) se arma LAZY: solo cuando su tab está visible. Como la tab
+    // por defecto es Mi PC, evitamos construir 1025 nodos al cargar. `dexSucio` = hay que rearmarlo.
+    let dexSucio = true;
     function pintar() {
       const pcArr = pc(), vis = vistos(), car = caramelos();
       contadores(vis, pcArr);
-      grilla(vis, pcArr);
+      if (!$('panel-dex').hidden) { grilla(vis, pcArr); dexSucio = false; } else { dexSucio = true; }
       miPC(pcArr, car);
       const seen = D.pokemon.filter((p) => vis.has(p.id)).length;
       $('tab-dex').innerHTML = '📕 Pokédex <span class="tab-n">' + seen + ' / ' + D.pokemon.length + '</span>';
@@ -424,6 +427,7 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
       t.classList.add('activo');
       const dex = t.dataset.tab === 'dex';
       $('panel-dex').hidden = !dex; $('panel-pc').hidden = dex;
+      if (dex && dexSucio) { grilla(vistos(), pc()); dexSucio = false; }   // armar el grid al abrir la Pokédex
       aplicar();
     }));
 
