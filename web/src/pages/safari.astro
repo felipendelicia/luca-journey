@@ -167,7 +167,7 @@ const total = pokemon.length;
         : (r.repetido ? '¡Otro <b>' + p.nombre + '</b>! Ya tenés <b>' + r.cantidad + '</b>' : '¡Atrapaste a <b>' + p.nombre + '</b>!');
       const txt = document.createElement('div');
       txt.className = 'captura-txt';
-      txt.innerHTML = titulo + ' <span class="cap-n">Nº ' + p.id + '</span>' +
+      txt.innerHTML = titulo + ' <span class="cap-n">Nº ' + p.id + ' · Nv.' + r.nivel + '</span>' +
         '<span class="cap-tier" style="--tier-color:' + t.color + '">' + (t.ico ? t.ico + ' ' : '') + t.nombre + '</span>' +
         '<span class="cap-prob">🎲 1 de cada <b>' + r.cadaCuantos + '</b> · 🍬 +3 caramelos</span>';
       escena.appendChild(txt);

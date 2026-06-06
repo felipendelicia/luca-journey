@@ -4,6 +4,7 @@
 
 import { tierDe } from './rareza.js';
 import evoData from '../data/evoluciones.json' with { type: 'json' };
+import aparicion from '../data/aparicion.json' with { type: 'json' };
 import { migrarPC } from './migracion-pc.js';
 
 // corre la migración a v2 (conteos→instancias) una vez, antes de tocar el PC.
@@ -35,10 +36,35 @@ function addVisto(id) { const v = get('col:vistos', []); if (!v.includes(Number(
 function addCaramelos(id, n) { const c = get('col:caramelos', {}); const f = familiaDe(id); c[f] = (c[f] || 0) + n; set('col:caramelos', c); }
 
 export const CARAMELOS_POR_CAPTURA = 3;
+
+// nivel al que cada especie se "produce" por evolución (reverse de evoData). Sirve para que un
+// Pokémon evolucionado NO aparezca salvaje a nivel bajo.
+const _nivelProduccion = {};   // id -> nivel del trigger que lo produce (0 = piedra/etc)
+for (const sid in evoData) for (const ev of (evoData[sid].evos || [])) {
+  if (_nivelProduccion[ev.a] === undefined || ev.nivel > _nivelProduccion[ev.a]) _nivelProduccion[ev.a] = ev.nivel;
+}
+
+// nivel mínimo salvaje: combina rareza (tier 1..10) y etapa evolutiva. Un Charizard (tier alto +
+// evoluciona a nv.36) nunca sale a nv.3; un Caterpie (común, base) sale bajo.
+export function nivelMinWild(id) {
+  const tier = tierDe(id, aparicion).nivel;                 // 1..10
+  const porTier = Math.round((tier - 1) / 9 * 38) + 1;      // tier1→1 … tier10→39
+  const prod = _nivelProduccion[id];
+  const porEvo = prod === undefined ? 1 : (prod > 0 ? prod : 22); // base→1, piedra→22, por nivel→N
+  return Math.min(50, Math.max(porTier, porEvo));
+}
+// nivel salvaje al atrapar: ≥ mínimo, con cola EXPONENCIAL real (media ~4 sobre el mínimo →
+// niveles MUY altos son rarísimos, sin importar la especie).
+export function nivelWild(id) {
+  const min = nivelMinWild(id);
+  const extra = Math.floor(-4 * Math.log(1 - Math.random()));
+  return Math.min(50, min + extra);
+}
+
 // crea una instancia nueva (al atrapar) + suma a vistos + caramelos a la familia. Devuelve la instancia.
-export function atrapar(id, { shiny = false } = {}) {
+export function atrapar(id, { shiny = false, nivel = 1 } = {}) {
   id = Number(id);
-  const inst = { iid: _uid(), id, nivel: 1, exp: 0, shiny, movs: [], creado: Date.now() };
+  const inst = { iid: _uid(), id, nivel, exp: 0, shiny, movs: [], creado: Date.now() };
   const arr = pc(); arr.push(inst); setPC(arr);
   addVisto(id); addCaramelos(id, CARAMELOS_POR_CAPTURA);
   return inst;
@@ -100,7 +126,7 @@ export function sincronizar(temas) {
   const hitos = new Set(get('col:hitos', []));
   const nuevo = { balls: 0, capturas: [] };
 
-  const capturar = (id) => { if (id) { atrapar(id); nuevo.capturas.push(id); } };
+  const capturar = (id) => { if (id) { atrapar(id, { nivel: nivelWild(id) }); nuevo.capturas.push(id); } };
   const proyOk = (k) => localStorage.getItem('proy:' + k + ':ok') === '1';
 
   for (const t of temas) {
@@ -235,8 +261,8 @@ export function tirar(pokemon, temas, pesos = {}) {
   balls--;
   // shiny: 1% de las veces (ahora es propiedad de la instancia)
   const shiny = Math.random() < PROB_SHINY;
-  atrapar(elegido.id, { shiny });                 // crea la instancia + vistos + caramelos
+  const inst = atrapar(elegido.id, { shiny, nivel: nivelWild(elegido.id) }); // instancia + vistos + caramelos
   const cant = pc().filter((m) => m.id === elegido.id).length;
   set('col:balls', balls);
-  return { pokemon: elegido, cantidad: cant, repetido: cant > 1, shiny, nuevoShiny: shiny, balls, prob, cadaCuantos, tier: tierDe(elegido.id, pesos), caramelos: caramelos()[familiaDe(elegido.id)] || 0 };
+  return { pokemon: elegido, cantidad: cant, repetido: cant > 1, shiny, nuevoShiny: shiny, balls, prob, cadaCuantos, nivel: inst.nivel, tier: tierDe(elegido.id, pesos), caramelos: caramelos()[familiaDe(elegido.id)] || 0 };
 }
