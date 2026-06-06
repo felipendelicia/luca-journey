@@ -1,4 +1,4 @@
-import{e as L}from"./editor.C-mImdU9.js";import{t as N}from"./errores.gFQpAbai.js";import"./hoisted.C0dLEML3.js";const k=`# trazador.py — traza la ejecución del código PASO A PASO para el visualizador del libro.
+import{e as L}from"./editor.C-mImdU9.js";import{t as N}from"./errores.gFQpAbai.js";import"./hoisted.BSjKEMcL.js";const k=`# trazador.py — traza la ejecución del código PASO A PASO para el visualizador del libro.
 # Corre el código bajo sys.settrace y registra, antes de cada línea, el número de línea,
 # las variables y lo impreso hasta ese momento. Devuelve JSON con la lista de pasos.
 import sys
