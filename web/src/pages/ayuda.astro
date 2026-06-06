@@ -6,9 +6,10 @@ const features = [
   ['📖', 'El libro', 'Toda la teoría, de Python a la IA. Cada ejemplo de código se puede <strong>editar y ejecutar</strong> ahí mismo, sin instalar nada.', '/libro'],
   ['🏋️', 'Ejercicios', 'Resolvés cada ejercicio y tocás <strong>Corregir</strong>: corro los <strong>tests reales</strong> en tu navegador y te digo qué pasa, ejercicio por ejercicio.', '/ejercicios'],
   ['🏆', 'La Liga', 'Tu progreso se vuelve un juego: <strong>EXP</strong>, <strong>niveles</strong>, <strong>medallas</strong> de gimnasio y <strong>logros</strong>. Completá una región para ser su Campeón.', '/liga'],
-  ['📕', 'Pokédex', 'Coleccionás Pokémon (¡con repetidos y shiny ✨!). Buscador, filtros y <strong>evoluciones</strong>: juntás 3 repetidos y evolucionás.', '/pokedex'],
-  ['🎒', 'Safari', 'Ganás <strong>Pokéballs</strong> resolviendo ejercicios y tirás para atrapar Pokémon salvajes, con animación y suspenso.', '/safari'],
-  ['⚔️', 'Desafíos de la comunidad', 'Creá o resolvé retos de Python hechos por otros entrenadores. Ganá Pokéballs, votá los mejores y mirá cómo los resolvieron los demás.', '/desafios'],
+  ['📕', 'Pokédex', 'Tu colección estilo <strong>Pokémon GO</strong>: cada Pokémon es una instancia con su <strong>nivel</strong>. Subís nivel y evolucionás con <strong>🍬 caramelos</strong>. Tocá uno para ver su modal (rareza, línea evolutiva, ataques, mote, liberar).', '/pokedex'],
+  ['🎒', 'Safari', 'Ganás <strong>Pokéballs</strong> resolviendo ejercicios y tirás para atrapar Pokémon salvajes (¡con su <strong>nivel</strong>!), con animación y suspenso.', '/safari'],
+  ['⚔️', 'Batalla', 'Armá un equipo y peleá por turnos contra un rival CPU. Los <strong>tipos</strong> importan y, cuando se llena la barra, desatás el <strong>⚡ Súper</strong>: un reto de código de tu nivel.', '/batalla'],
+  ['🧩', 'Desafíos de la comunidad', 'Creá o resolvé retos de Python hechos por otros entrenadores. Ganá Pokéballs, votá los mejores y mirá cómo los resolvieron los demás.', '/desafios'],
   ['🥊', 'Líderes de Gimnasio', 'Mini-proyectos por pasos que se desbloquean al terminar los ejercicios de cada tema. Vencerlos te da la medalla del gimnasio.', '/ejercicios'],
 ];
 
@@ -59,6 +60,9 @@ const regiones = [
         <li>Completar un tema te da su Pokémon <b>insignia</b>; completar una región, un <b>legendario</b>.</li>
         <li>1% de los salvajes son <b>shiny ✨</b>. Atrapar repetidos da <b>🍬 caramelos</b> para <b>subir de nivel</b> a tus Pokémon (en el PC) y <b>evolucionarlos</b> por nivel.</li>
       </ol>
+
+      <h2 class="ayuda-h">⚔️ Batalla</h2>
+      <p class="ayuda-p">En <a href={u('/batalla')}>Batalla</a> armás un equipo de hasta <strong>3 Pokémon</strong> y peleás por turnos contra un rival CPU. Cada Pokémon usa hasta <strong>4 ataques</strong> (los elegís en el modal de la Pokédex, o usa los más fuertes que tenga). Los <strong>tipos</strong> deciden el daño (agua le gana a fuego, etc.) y el <strong>nivel</strong> sube el HP y la pegada. A medida que atacás se llena una <strong>barra de carga</strong>: al 100% desatás el <strong>⚡ Súper ataque</strong>, que te pide resolver un <strong>reto de código</strong> de un tema que ya viste — si acertás (y rápido), pegás durísimo. Ganar te da <strong>🍬 caramelos</strong>; perder, unas <strong>Pokéballs</strong> de consuelo.</p>
 
       <h2 class="ayuda-h">💾 Tu progreso</h2>
       <p class="ayuda-p">Todo lo que hacés (ejercicios, medallas, Pokémon) se guarda <strong>en la nube</strong> ligado a tu cuenta de Google. Podés seguir desde cualquier dispositivo. Sin cuenta, la app funciona igual pero el progreso queda solo en este navegador.</p>
