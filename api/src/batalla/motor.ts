@@ -136,7 +136,10 @@ export function aplicarAccion(
           const r = calcularDano(atk, mov, def, rng);
           def.hp = Math.max(0, def.hp - r.dmg);
           const ef = etiquetaEfec(r.efec);
-          push('mover', `${atk.nombre} usó ${mov.nombre}: ${r.dmg} de daño.${ef ? ' ' + ef : ''}`, { dmg: r.dmg, efec: r.efec, mov: mov.id });
+          const msg = r.efec === 0
+            ? `${atk.nombre} usó ${mov.nombre}… ¡pero no afecta a ${def.nombre}!`
+            : `${atk.nombre} usó ${mov.nombre}: ${r.dmg} de daño.${ef ? ' ' + ef : ''}`;
+          push('mover', msg, { dmg: r.dmg, efec: r.efec, mov: mov.id });
           if (def.hp > 0) { const ta = aplicarAilment(mov, atk, def, rng); if (ta) push('ailment', ta); }
         }
         yo.super = Math.min(SUPER_MAX, yo.super + SUPER_GANANCIA);

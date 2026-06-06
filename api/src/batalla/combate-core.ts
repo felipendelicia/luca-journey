@@ -98,7 +98,8 @@ export function calcularDano(atacante: Combatiente, mov: Mov, defensor: Combatie
   const mod = (atacante.atkMod || 1) / (defensor.defMod || 1);
   const quema = (atacante.estado === 'quemadura' && mov.categoria === 'Físico') ? 0.5 : 1;   // quemado pega menos físico
   const rand = 0.85 + rng() * 0.15;
-  return { dmg: Math.max(1, Math.round(base * efec * stab * mod * quema * rand)), efec, stab };
+  // inmune (efec 0) = 0 de daño; si pega, mínimo 1.
+  return { dmg: efec === 0 ? 0 : Math.max(1, Math.round(base * efec * stab * mod * quema * rand)), efec, stab };
 }
 
 // movimiento de ESTADO: lee la descripción y sube/baja Ataque o Defensa. Devuelve texto.

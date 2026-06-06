@@ -205,6 +205,19 @@ describe('estados alterados + fallar', () => {
     expect(def.estado).toBe('veneno');
   });
 
+  it('un ataque inmune (Normal vs Fantasma) hace 0 daño y avisa "no afecta"', () => {
+    // Rattata(19)=Normal ataca a Gengar(94)=Fantasma/Veneno → Normal x0 Fantasma.
+    const e = crearCombate('r', [
+      { uid: 'A', nombre: 'A', equipo: [inst('a', 19)] },
+      { uid: 'B', nombre: 'B', equipo: [inst('b', 94)] },
+    ], 'A');
+    e.jugadores[0].equipo[0].movs = [{ id: 1, nombre: 'Placaje', tipo: 'Normal', poder: 80 } as Mov];
+    const hp0 = e.jugadores[1].equipo[0].hp;
+    const r = aplicarAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0);
+    expect(e.jugadores[1].equipo[0].hp).toBe(hp0);   // sin daño
+    expect(r.eventos.some((ev: any) => /no afecta/i.test(ev.texto))).toBe(true);
+  });
+
   it('un ataque que falla (precisión 0) no hace daño y pasa el turno', () => {
     const e = combateBasico();
     e.jugadores[0].equipo[0].movs = [{ id: 1, nombre: 'Falla', tipo: 'Normal', poder: 80, precision: 0 } as Mov];
