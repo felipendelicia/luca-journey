@@ -24,9 +24,9 @@ export type Estado = Record<string, any>;
 export type Item = { id: number | string; shiny?: boolean };
 
 export function leerCol(estado: Estado) {
-  const atra = JSON.parse((estado['col:atrapados'] as string) || '{}');
-  const shiny = JSON.parse((estado['col:shiny'] as string) || '[]');
-  return { atra: atra as MapaAtrapados, shiny: shiny as number[] };
+  // tolerante a JSON corrupto en la nube: no tirar 500 en un intercambio por data inválida.
+  const p = (v: any, def: any) => { try { return JSON.parse((v as string) || JSON.stringify(def)); } catch { return def; } };
+  return { atra: p(estado['col:atrapados'], {}) as MapaAtrapados, shiny: p(estado['col:shiny'], []) as number[] };
 }
 export function escribirCol(estado: Estado, atra: MapaAtrapados, shiny: number[]): Estado {
   return { ...estado, 'col:atrapados': JSON.stringify(atra), 'col:shiny': JSON.stringify(shiny) };

@@ -5,10 +5,10 @@ import { u } from '../lib/url.ts';
 const features = [
   ['📖', 'El libro', 'Toda la teoría, de Python a la IA. Cada ejemplo de código se puede <strong>editar y ejecutar</strong> ahí mismo, sin instalar nada.', '/libro'],
   ['🏋️', 'Ejercicios', 'Resolvés cada ejercicio y tocás <strong>Corregir</strong>: corro los <strong>tests reales</strong> en tu navegador y te digo qué pasa, ejercicio por ejercicio.', '/ejercicios'],
-  ['🏆', 'La Liga', 'Tu progreso se vuelve un juego: <strong>EXP</strong>, <strong>niveles</strong>, <strong>medallas</strong> de gimnasio y <strong>logros</strong>. Completá una región para ser su Campeón.', '/liga'],
+  ['🏆', 'La Liga', 'Tu progreso se vuelve un juego: <strong>EXP</strong>, <strong>niveles</strong>, <strong>medallas</strong> de gimnasio, <strong>logros</strong> y <strong>racha diaria 🔥</strong>. Completá una región para ser su Campeón y descargar tu <strong>📜 diploma</strong>.', '/liga'],
   ['📕', 'Pokédex', 'Tu colección estilo <strong>Pokémon GO</strong>: cada Pokémon es una instancia con su <strong>nivel</strong>. Subís nivel y evolucionás con <strong>🍬 caramelos</strong>. Tocá uno para ver su modal (rareza, línea evolutiva, ataques, mote, liberar).', '/pokedex'],
   ['🎒', 'Safari', 'Ganás <strong>Pokéballs</strong> resolviendo ejercicios y tirás para atrapar Pokémon salvajes (¡con su <strong>nivel</strong>!), con animación y suspenso.', '/safari'],
-  ['⚔️', 'Batalla', 'Armá un equipo y peleá por turnos contra un rival CPU. Los <strong>tipos</strong> importan y, cuando se llena la barra, desatás el <strong>⚡ Súper</strong>: un reto de código de tu nivel.', '/batalla'],
+  ['⚔️', 'Batalla', 'Armá un equipo y peleá por turnos: contra una <strong>CPU</strong> para practicar, o <strong>en vivo (PvP)</strong> contra otro entrenador con <strong>ranking ELO</strong>. Los <strong>tipos</strong> importan y, cuando se llena la barra, desatás el <strong>⚡ Súper</strong>: un reto de código de tu nivel.', '/batalla'],
   ['🛒', 'Tienda', 'Gastá tus <strong>Pokébolas</strong> en <strong>piedras evolutivas por tipo</strong> (Fuego, Agua, Trueno, Hoja, Lunar, Solar, Día, Alba, Noche) y el <strong>Disco de Enlace</strong> (evos por intercambio), más <strong>pociones</strong> (curar en batalla) y <strong>mejores Pokéballs</strong> (Super/Ultra). Cada Pokémon pide la piedra que le corresponde; la evolución se hace en la <strong>Pokédex</strong>.', '/tienda'],
   ['🧩', 'Desafíos de la comunidad', 'Creá o resolvé retos de Python hechos por otros entrenadores. Ganá Pokéballs, votá los mejores y mirá cómo los resolvieron los demás.', '/desafios'],
   ['🥊', 'Líderes de Gimnasio', 'Mini-proyectos por pasos que se desbloquean al terminar los ejercicios de cada tema. Vencerlos te da la medalla del gimnasio.', '/ejercicios'],
@@ -21,6 +21,9 @@ const regiones = [
   ['🔵', 'Sinnoh', 'Bases de datos', 'SQL y SQLite: tablas, consultas, JOIN, desde Python'],
   ['⚫', 'Unova', 'Inteligencia Artificial', 'Machine Learning con scikit-learn: clasificar, predecir, evaluar'],
   ['🟠', 'Kalos', 'Testing y calidad', 'manejo de errores, excepciones, escribir tests, TDD'],
+  ['🌺', 'Alola', 'Automatizaciones', 'scripts con argumentos, archivos y rutas (pathlib), procesar en lote, subprocess, entorno, fechas, scraping y un bot'],
+  ['🛡️', 'Galar', 'Asincronía y concurrencia', 'async/await, corrutinas, tareas, gather, colas, hilos y límite de concurrencia'],
+  ['🔶', 'Paldea', 'Algoritmos y estructuras', 'búsqueda y orden, pila, cola, recursión, grafos, tablas hash y complejidad'],
 ];
 ---
 <Base title="¿Cómo funciona? — Python con Pokémon" active="">
@@ -47,7 +50,7 @@ const regiones = [
         ))}
       </div>
 
-      <h2 class="ayuda-h">🗺️ El viaje: 6 regiones</h2>
+      <h2 class="ayuda-h">🗺️ El viaje: 9 regiones</h2>
       <p class="ayuda-p">El curso es una aventura por regiones Pokémon. Cada región te enseña un mundo nuevo, con su libro, sus ejercicios y sus 8 medallas de gimnasio.</p>
       <div class="ayuda-regiones">
         {regiones.map(([emoji, nombre, tema, detalle]) => (
