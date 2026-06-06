@@ -227,6 +227,10 @@ export function setMovs(iid, moveIds) {
   setPC(arr); return true;
 }
 
+// Premios (batalla): sumar caramelos a una familia / sumar Pokéballs.
+export function darCaramelos(id, n) { addCaramelos(id, Math.max(0, n | 0)); }
+export function darBalls(n) { set('col:balls', get('col:balls', 0) + Math.max(0, n | 0)); }
+
 // Liberar una instancia (GO): la perdés del PC y te da 1 caramelo de la familia. Queda en vistos.
 export function liberar(iid) {
   const arr = pc(); const m = buscarInst(arr, iid); if (!m) return false;

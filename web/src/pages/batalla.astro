@@ -1,0 +1,227 @@
+---
+import Base from '../layouts/Base.astro';
+import datos from '../data/ejercicios.json';
+import { u } from '../lib/url.ts';
+
+const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.ejercicios.map((e) => ({ id: e.id })) }));
+---
+<Base title="Batalla — Python con Pokémon" active="Batalla">
+  <div class="wrap batalla">
+    <div class="safari-head">
+      <h1>⚔️ Batalla</h1>
+      <a class="navlink" href={u('/pokedex')}>📕 Mi Pokédex</a>
+    </div>
+    <p>Armá un equipo de hasta <b>3</b> y peleá contra un rival CPU. Elegís ataques (tipos importan), y cuando se llena la barra desatás el <b>⚡ Súper</b>: un reto de código de tu nivel. 🥊</p>
+
+    <div id="bt-sel"></div>
+    <div id="bt-combate" hidden>
+      <div class="bt-rival">
+        <div class="bt-info"><span class="bt-nom" id="r-nom"></span><span class="bt-lv" id="r-lv"></span><span class="bt-tipos" id="r-tipos"></span></div>
+        <div class="bt-hpbar"><div class="bt-hp" id="r-hp"></div></div>
+        <div class="bt-equipo" id="r-dots"></div>
+      </div>
+      <div class="bt-arena">
+        <img class="bt-sprite bt-sprite-r" id="r-img" src="" alt="rival" />
+        <img class="bt-sprite bt-sprite-p" id="p-img" src="" alt="vos" />
+      </div>
+      <div class="bt-yo">
+        <div class="bt-info"><span class="bt-nom" id="p-nom"></span><span class="bt-lv" id="p-lv"></span><span class="bt-tipos" id="p-tipos"></span></div>
+        <div class="bt-hpbar"><div class="bt-hp" id="p-hp"></div></div>
+        <div class="bt-equipo" id="p-dots"></div>
+      </div>
+      <p class="bt-msg" id="bt-msg">¡Que empiece la batalla!</p>
+      <div class="bt-carga"><div class="bt-carga-fill" id="bt-carga"></div><span id="bt-carga-txt">Súper: 0%</span></div>
+      <div class="bt-moves" id="bt-moves"></div>
+    </div>
+  </div>
+
+  <div class="reto-modal" id="reto-modal" hidden>
+    <div class="reto-card">
+      <h2>⚡ ¡Súper ataque! Resolvé para potenciarlo</h2>
+      <p class="reto-q" id="reto-q"></p>
+      <div class="reto-ops" id="reto-ops"></div>
+    </div>
+  </div>
+
+  <div class="bt-fin" id="bt-fin" hidden>
+    <div class="bt-fin-card">
+      <h2 id="fin-tit"></h2>
+      <p id="fin-msg"></p>
+      <button class="btn-tirar" id="fin-otra">Otra batalla</button>
+    </div>
+  </div>
+
+  <script type="application/json" id="bt-data" set:html={JSON.stringify({ temas })}></script>
+  <script>
+    import { pc, sincronizar, spriteUrl, regionesDesbloqueadas, darCaramelos, darBalls } from '../lib/coleccion.js';
+    import { combatiente, calcularDano, danoSuper, elegirCPU, equipoCPU } from '../lib/batalla.js';
+    import { etiquetaEfec } from '../lib/tipos.js';
+    import { retoAlAzar } from '../lib/retos-batalla.js';
+    import { sonarExito, sonarEpico } from '../lib/sonidos.js';
+
+    const D = JSON.parse(document.getElementById('bt-data').textContent);
+    sincronizar(D.temas);
+    const $ = (id) => document.getElementById(id);
+    const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
+    const REGION_POOL = { kanto: [], johto: [], hoenn: [], sinnoh: [], unova: [], kalos: [] };
+
+    let G = null; // estado del combate
+
+    // ── Fase 1: selección de equipo ──
+    function pintarSeleccion() {
+      const arr = pc();
+      if (!arr.length) {
+        $('bt-sel').innerHTML = '<p class="bt-vacio">No tenés Pokémon todavía. Andá al <b>Safari</b> a atrapar algunos. 🎒</p>';
+        return;
+      }
+      const cards = [...arr].sort((a, b) => b.nivel - a.nivel).map((m) =>
+        '<button class="bt-pick" data-iid="' + m.iid + '"><img src="' + spriteUrl(m.id, m.shiny) + '" alt="" /><span>' + (m.mote || ('Nº ' + m.id)) + '</span><small>Nv. ' + m.nivel + '</small></button>').join('');
+      $('bt-sel').innerHTML = '<h2 class="liga-h">Elegí tu equipo <small>(hasta 3)</small></h2><div class="bt-picks">' + cards + '</div>' +
+        '<button class="btn-tirar" id="bt-go" disabled>⚔️ ¡Pelear!</button>';
+      const sel = new Set();
+      $('bt-sel').querySelectorAll('.bt-pick').forEach((b) => b.addEventListener('click', () => {
+        const iid = b.dataset.iid;
+        if (sel.has(iid)) { sel.delete(iid); b.classList.remove('elegido'); }
+        else if (sel.size < 3) { sel.add(iid); b.classList.add('elegido'); }
+        $('bt-go').disabled = sel.size === 0;
+      }));
+      $('bt-go').addEventListener('click', () => empezar([...sel]));
+    }
+
+    // ── Fase 2: combate ──
+    function empezar(iids) {
+      const arr = pc();
+      const equipo = iids.map((iid) => combatiente(arr.find((m) => m.iid === iid)));
+      const nivelProm = Math.round(equipo.reduce((a, c) => a + c.nivel, 0) / equipo.length);
+      // pool de especies para el rival: las regiones desbloqueadas (1..721 simplificado por starters comunes)
+      const pool = poolRival();
+      const rival = equipoCPU(pool, Math.min(3, equipo.length), Math.max(2, nivelProm + (Math.random() < 0.5 ? -2 : 2)));
+      G = { equipo, rival, pa: 0, ra: 0, carga: 0, lock: false };
+      $('bt-sel').hidden = true; $('bt-combate').hidden = false; $('bt-fin').hidden = true;
+      render(); msg('¡Aparece el rival! Elegí tu ataque.');
+    }
+    function poolRival() {
+      // especies “salvajes” simples por región desbloqueada (líderes/starters conocidos)
+      const reg = regionesDesbloqueadas(D.temas);
+      const base = { kanto: [1, 4, 7, 25, 133, 143, 68, 65, 94, 130], johto: [152, 155, 158, 196, 197, 248], hoenn: [252, 255, 258, 282, 373], sinnoh: [387, 390, 393, 448, 445], unova: [495, 498, 501, 530], kalos: [650, 653, 656, 700] };
+      let pool = [];
+      for (const r of Object.keys(base)) if (reg.has(r)) pool = pool.concat(base[r]);
+      return pool.length ? pool : base.kanto;
+    }
+
+    const miAct = () => G.equipo[G.pa];
+    const rivAct = () => G.rival[G.ra];
+    const vivos = (t) => t.filter((c) => c.hp > 0).length;
+
+    function render() {
+      const p = miAct(), r = rivAct();
+      $('r-nom').textContent = r.nombre; $('r-lv').textContent = 'Nv.' + r.nivel; $('r-tipos').textContent = r.tipos.join('/');
+      $('p-nom').textContent = p.nombre; $('p-lv').textContent = 'Nv.' + p.nivel; $('p-tipos').textContent = p.tipos.join('/');
+      $('r-img').src = spriteUrl(r.id, r.shiny); $('p-img').src = spriteUrl(p.id, p.shiny);
+      hp('r-hp', r); hp('p-hp', p);
+      dots('r-dots', G.rival); dots('p-dots', G.equipo);
+      $('bt-carga').style.width = G.carga + '%'; $('bt-carga-txt').textContent = 'Súper: ' + G.carga + '%';
+      $('bt-moves').innerHTML = p.movs.map((mv, i) =>
+        '<button class="bt-move" data-i="' + i + '"' + (G.lock ? ' disabled' : '') + '><b>' + mv.nombre + '</b><small>' + mv.tipo + (mv.poder ? ' · ⚔️' + mv.poder : '') + '</small></button>').join('') +
+        '<button class="bt-move bt-super" id="bt-super"' + (G.carga < 100 || G.lock ? ' disabled' : '') + '>⚡ SÚPER</button>';
+      $('bt-moves').querySelectorAll('.bt-move[data-i]').forEach((b) => b.addEventListener('click', () => turno(p.movs[+b.dataset.i])));
+      $('bt-super').addEventListener('click', abrirReto);
+    }
+    function hp(id, c) {
+      const pct = Math.max(0, Math.round((c.hp / c.hpMax) * 100));
+      const el = $(id); el.style.width = pct + '%';
+      el.className = 'bt-hp' + (pct <= 25 ? ' bajo' : pct <= 50 ? ' medio' : '');
+    }
+    function dots(id, team) { $(id).innerHTML = team.map((c) => '<span class="bt-dot' + (c.hp <= 0 ? ' ko' : '') + '"></span>').join(''); }
+    function msg(t) { $('bt-msg').textContent = t; }
+
+    async function aplicarGolpe(at, mov, defLado, dmgInfo) {
+      const def = defLado === 'p' ? miAct() : rivAct();
+      def.hp = Math.max(0, def.hp - dmgInfo.dmg);
+      const ef = etiquetaEfec(dmgInfo.efec);
+      msg(at.nombre + ' usó ' + (mov.nombre || 'su ataque') + ' (-' + dmgInfo.dmg + ')' + (ef ? ' · ' + ef : ''));
+      (defLado === 'p' ? $('p-img') : $('r-img')).classList.add('bt-hit');
+      render(); await esperar(150);
+      (defLado === 'p' ? $('p-img') : $('r-img')).classList.remove('bt-hit');
+      await esperar(650);
+      if (def.hp <= 0) { msg(def.nombre + ' se debilitó.'); await esperar(500); avanzar(defLado); render(); await esperar(400); }
+    }
+    function avanzar(lado) {
+      const team = lado === 'p' ? G.equipo : G.rival;
+      let idx = team.findIndex((c, i) => c.hp > 0);
+      if (lado === 'p') G.pa = idx; else G.ra = idx;
+    }
+
+    async function turno(mov) {
+      if (G.lock) return; G.lock = true; render();
+      await aplicarGolpe(miAct(), mov, 'r', calcularDano(miAct(), mov, rivAct()));
+      if (fin()) return;
+      await turnoRival();
+      if (fin()) return;
+      G.carga = Math.min(100, G.carga + 34);
+      G.lock = false; render();
+    }
+    async function turnoRival() {
+      const mov = elegirCPU(rivAct(), miAct());
+      await aplicarGolpe(rivAct(), mov, 'p', calcularDano(rivAct(), mov, miAct()));
+    }
+
+    function fin() {
+      if (vivos(G.rival) === 0) { terminar(true); return true; }
+      if (vivos(G.equipo) === 0) { terminar(false); return true; }
+      return false;
+    }
+    function terminar(gano) {
+      G.lock = true;
+      if (gano) {
+        sonarEpico();
+        const fams = new Set(G.equipo.map((c) => c.id));
+        fams.forEach((id) => darCaramelos(id, 3));
+        $('fin-tit').textContent = '🏆 ¡Ganaste!';
+        $('fin-msg').textContent = 'Tu equipo ganó. 🍬 +3 caramelos para cada Pokémon que peleó.';
+      } else {
+        darBalls(5);
+        $('fin-tit').textContent = '💪 Perdiste…';
+        $('fin-msg').textContent = 'No aflojes. 🔴 +5 Pokéballs de consuelo para seguir entrenando.';
+      }
+      $('bt-fin').hidden = false;
+    }
+
+    // ── Súper: reto de código ──
+    function abrirReto() {
+      if (G.carga < 100 || G.lock) return;
+      G.lock = true; render();
+      const reg = regionesDesbloqueadas(D.temas);
+      const reto = retoAlAzar(reg);
+      const t0 = Date.now();
+      $('reto-q').textContent = reto.q;
+      $('reto-ops').innerHTML = reto.op.map((o, i) => '<button class="reto-op" data-i="' + i + '">' + o + '</button>').join('');
+      $('reto-ops').querySelectorAll('.reto-op').forEach((b) => b.addEventListener('click', () => resolverReto(reto, +b.dataset.i, t0)));
+      $('reto-modal').hidden = false;
+    }
+    async function resolverReto(reto, i, t0) {
+      $('reto-modal').hidden = true;
+      G.carga = 0;
+      const ok = i === reto.c;
+      if (ok) {
+        const seg = (Date.now() - t0) / 1000;
+        const calidad = Math.max(0, Math.min(1, 1 - seg / 12)); // rápido = mejor
+        sonarExito();
+        const s = danoSuper(miAct(), rivAct(), calidad);
+        msg('✅ ¡Correcto! ' + miAct().nombre + ' desata un SÚPER con ' + s.mov.nombre + '!');
+        await esperar(500);
+        await aplicarGolpe(miAct(), s.mov, 'r', { dmg: s.dmg, efec: s.efec });
+      } else {
+        msg('❌ Incorrecto… el súper se apagó.');
+        await esperar(700);
+      }
+      if (fin()) return;
+      await turnoRival();
+      if (fin()) return;
+      G.lock = false; render();
+    }
+
+    $('fin-otra').addEventListener('click', () => { $('bt-fin').hidden = true; $('bt-combate').hidden = true; $('bt-sel').hidden = false; pintarSeleccion(); });
+    pintarSeleccion();
+  </script>
+</Base>
