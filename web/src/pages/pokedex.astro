@@ -60,9 +60,19 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
           <option value="shiny">✨ Shiny primero</option>
           <option value="rareza">★ Rareza (más raro primero)</option>
         </select>
+        <button class="pc-dup-btn" id="pc-dup" type="button" title="Encontrá repetidos por línea evolutiva">🧹 Repetidos</button>
       </div>
       <div id="evoluciones-sec"></div>
     </section>
+  </div>
+
+  <!-- modal: repetidos por línea evolutiva -->
+  <div class="av-modal" id="dup-modal" hidden>
+    <div class="av-card dup-card">
+      <div class="av-head"><b>🧹 Repetidos por línea evolutiva</b><button class="av-x" id="dup-x" type="button">✕</button></div>
+      <p class="av-sub">Tenés varios Pokémon de la misma familia. Te marco el <b>mejor para conservar</b> y podés liberar los demás (cada uno te da 1 🍬).</p>
+      <div id="dup-body"></div>
+    </div>
   </div>
 
   <div class="poke-modal" id="poke-modal" hidden>
@@ -419,6 +429,55 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
 
     $('pc-orden').addEventListener('change', (e) => { ordenPC = e.target.value; miPC(pc(), caramelos()); aplicar(); });
     buscar.addEventListener('input', aplicar);
+
+    // ── limpiador de repetidos por línea evolutiva ──
+    // agrupa el PC por familia; en familias con >1, recomienda conservar el mejor
+    // (shiny → mayor nivel → más evolucionado) y sugiere liberar el resto.
+    function analizarDup() {
+      const fam = {};
+      pc().forEach((m) => { const f = familiaDe(m.id); (fam[f] ||= []).push(m); });
+      const esFinal = (id) => !(D.evoluciones[id] && D.evoluciones[id].evos && D.evoluciones[id].evos.length);
+      return Object.keys(fam).filter((f) => fam[f].length >= 2).map((f) => {
+        const arr = fam[f].slice().sort((a, b) =>
+          (b.shiny - a.shiny) || (b.nivel - a.nivel) || ((esFinal(b.id) ? 1 : 0) - (esFinal(a.id) ? 1 : 0)) || (b.id - a.id));
+        return { fam: Number(f), conservar: arr[0], liberar: arr.slice(1) };
+      }).sort((a, b) => b.liberar.length - a.liberar.length);
+    }
+    function filaLib(m) {
+      return '<div class="dup-lib"><img src="' + spriteUrl(m.id, m.shiny) + '" alt="" />'
+        + '<span class="dup-lib-nom">' + nomInst(m) + ' · Nv.' + m.nivel + (m.shiny ? ' ✨' : '') + '</span>'
+        + '<button class="dup-free" type="button" data-iid="' + m.iid + '">Liberar 🍬</button></div>';
+    }
+    function pintarDup() {
+      const grupos = analizarDup();
+      const body = $('dup-body');
+      const totalLib = grupos.reduce((a, g) => a + g.liberar.length, 0);
+      if (!grupos.length) { body.innerHTML = '<p class="dex-vacio">No tenés repetidos por línea evolutiva. ¡Tu PC está impecable! ✨</p>'; return; }
+      body.innerHTML = '<p class="dup-resumen">Hay <b>' + totalLib + '</b> Pokémon repetidos en <b>' + grupos.length + '</b> familia(s).</p>'
+        + grupos.map((g) => {
+          const fam = nombreDe[g.fam] || ('Nº ' + g.fam);
+          const k = g.conservar;
+          const keep = '<div class="dup-keep"><img src="' + spriteUrl(k.id, k.shiny) + '" alt="" />'
+            + '<div><span class="dup-keep-tag">⭐ conservar</span><div class="dup-keep-nom">' + nomInst(k) + ' · Nv.' + k.nivel + (k.shiny ? ' ✨' : '') + '</div></div></div>';
+          return '<div class="dup-grupo"><div class="dup-grupo-h"><span>🧬 Línea de ' + fam + ' <small>(' + (g.liberar.length + 1) + ')</small></span>'
+            + '<button class="dup-all" type="button" data-fam="' + g.fam + '">Liberar ' + g.liberar.length + ' repetido(s)</button></div>'
+            + keep + '<div class="dup-libs">' + g.liberar.map(filaLib).join('') + '</div></div>';
+        }).join('');
+      body.querySelectorAll('.dup-free').forEach((b) => b.addEventListener('click', () => liberarUno(b.dataset.iid)));
+      body.querySelectorAll('.dup-all').forEach((b) => b.addEventListener('click', () => {
+        const g = analizarDup().find((x) => x.fam === Number(b.dataset.fam)); if (!g) return;
+        if (!confirm('¿Liberar ' + g.liberar.length + ' Pokémon de la línea? (conservás el mejor; cada uno da 1 🍬)')) return;
+        g.liberar.forEach((m) => liberar(m.iid)); sonarExito(); pintarDup(); pintar();
+      }));
+    }
+    function liberarUno(iid) {
+      const m = pc().find((x) => x.iid === iid); if (!m) return;
+      if (!confirm('¿Liberar a ' + nomInst(m) + '? Te da 1 🍬 pero lo perdés para siempre.')) return;
+      liberar(iid); sonarExito(); pintarDup(); pintar();
+    }
+    $('pc-dup').addEventListener('click', () => { pintarDup(); $('dup-modal').hidden = false; });
+    $('dup-x').addEventListener('click', () => { $('dup-modal').hidden = true; });
+    $('dup-modal').addEventListener('click', (e) => { if (e.target === $('dup-modal')) $('dup-modal').hidden = true; });
     document.querySelectorAll('.dex-f').forEach((b) => b.addEventListener('click', () => {
       document.querySelectorAll('.dex-f').forEach((x) => x.classList.remove('activo'));
       b.classList.add('activo'); filtro = b.dataset.f; aplicar();

@@ -476,6 +476,26 @@ body.dark .ej-mini{ background:#3a1c1a; } body.dark .ej-mini.win{ background:#13
 .pc-select{ padding:9px 14px; border:1px solid var(--line); border-radius:11px; background:var(--paper-2); color:var(--ink); font:700 .82rem var(--font-mono); cursor:pointer; outline:none; transition:border-color .12s, box-shadow .12s; }
 .pc-select:hover{ border-color:var(--ink-soft); }
 .pc-select:focus{ border-color:var(--red); box-shadow:0 0 0 3px color-mix(in srgb,var(--red) 18%, transparent); }
+/* botón "Repetidos" + modal del limpiador por línea evolutiva */
+.pc-dup-btn{ margin-left:auto; padding:9px 14px; border:1px solid color-mix(in srgb,var(--teal-deep,#1f8f5f) 45%, var(--line)); border-radius:11px; background:color-mix(in srgb,var(--teal-deep,#1f8f5f) 12%, var(--paper-2)); color:var(--ink); font:800 .82rem var(--font-mono); cursor:pointer; transition:transform .12s, border-color .12s; }
+.pc-dup-btn:hover{ transform:translateY(-1px); border-color:var(--teal-deep,#1f8f5f); }
+.dup-card{ max-width:560px; }
+.dup-resumen{ color:var(--ink-soft); font:600 .9rem var(--font-mono); margin:.2rem 0 1rem; }
+.dup-grupo{ border:1px solid var(--line); border-radius:14px; padding:12px; margin-bottom:12px; background:var(--paper); }
+.dup-grupo-h{ display:flex; align-items:center; justify-content:space-between; gap:10px; font:800 .9rem var(--font-display); margin-bottom:10px; }
+.dup-grupo-h small{ color:var(--ink-soft); font-weight:600; }
+.dup-all{ flex:0 0 auto; padding:5px 11px; border:1px solid color-mix(in srgb,var(--red) 40%, var(--line)); border-radius:9px; background:color-mix(in srgb,var(--red) 10%, var(--paper-2)); color:var(--red-deep); font:700 .74rem var(--font-mono); cursor:pointer; }
+.dup-all:hover{ background:color-mix(in srgb,var(--red) 18%, var(--paper-2)); }
+.dup-keep{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; background:color-mix(in srgb,var(--teal-deep,#1f8f5f) 12%, var(--paper-2)); border:1px solid color-mix(in srgb,var(--teal-deep,#1f8f5f) 35%, var(--line)); margin-bottom:8px; }
+.dup-keep img{ width:46px; height:46px; image-rendering:pixelated; }
+.dup-keep-tag{ font:800 .62rem var(--font-mono); color:var(--teal-deep,#1f8f5f); text-transform:uppercase; letter-spacing:.05em; }
+.dup-keep-nom{ font:700 .92rem var(--font-mono); color:var(--ink); }
+.dup-libs{ display:flex; flex-direction:column; gap:6px; }
+.dup-lib{ display:flex; align-items:center; gap:9px; padding:5px 8px; border-radius:9px; background:var(--paper-2); border:1px solid var(--line); }
+.dup-lib img{ width:34px; height:34px; image-rendering:pixelated; }
+.dup-lib-nom{ flex:1; min-width:0; font:600 .85rem var(--font-mono); color:var(--ink-soft); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.dup-free{ flex:0 0 auto; padding:5px 10px; border:1px solid var(--line); border-radius:8px; background:var(--paper); color:var(--ink); font:700 .74rem var(--font-mono); cursor:pointer; }
+.dup-free:hover{ border-color:var(--red); color:var(--red-deep); }
 
 /* ═══ Tienda ═══ */
 .ti-saldo{ position:relative; display:flex; align-items:baseline; gap:9px; margin-top:14px; }
