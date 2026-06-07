@@ -12,7 +12,7 @@ export interface Inst { iid: string; id: number; nivel: number; shiny?: boolean;
 export interface Combatiente {
   iid: string; id: number; nombre: string; nivel: number; shiny: boolean; tipos: string[];
   movs: Mov[]; hpMax: number; hp: number; atkMod: number; defMod: number; estado: EstadoAlt; estadoT: number;
-  atk: number; def: number; spa: number; spd: number; spe: number;   // stats base por especie (Gen 3)
+  atk: number; def: number; spa: number; spd: number; spe: number;   // stats EFECTIVAS (con IV/EV/naturaleza)
   hab?: string | null; gen?: 'm' | 'f' | null;
 }
 // data que cada lado inyecta (con sus propios JSON) para construir combatientes
@@ -121,9 +121,11 @@ export const FORCEJEO: Mov = { id: 0, nombre: 'Forcejeo', tipo: 'Normal', poder:
 export const hpMax = (nivel: number): number => 40 + nivel * 5;   // fallback si no hay stats base
 export const tiposDe = (id: number, tipos: Record<string, string[]>): string[] => tipos[String(id)] || ['Normal'];
 
-// stats efectivas estilo Gen 3 (0 IV/EV, naturaleza neutra)
-export const statEf = (base: number, nivel: number): number => Math.floor(2 * (base || 60) * nivel / 100) + 5;
-export const hpEf = (baseHp: number, nivel: number): number => Math.floor(2 * (baseHp || 60) * nivel / 100) + nivel + 10;
+// stats efectivas estilo Gen 3 con IV (0-31), EV (0-252) y multiplicador de naturaleza (1.1/0.9/1).
+export const statEf = (base: number, nivel: number, iv = 0, ev = 0, natMult = 1): number =>
+  Math.floor((Math.floor((2 * (base || 60) + iv + Math.floor(ev / 4)) * nivel / 100) + 5) * natMult);
+export const hpEf = (baseHp: number, nivel: number, iv = 0, ev = 0): number =>
+  Math.floor((2 * (baseHp || 60) + iv + Math.floor(ev / 4)) * nivel / 100) + nivel + 10;
 // críticos: 1/16 como en Gen 3, daño ×2 (lo tira el orquestador y lo pasa a calcularDano).
 export const CRIT_CHANCE = 1 / 16;
 export const tiraCritico = (rng: Rng = Math.random): boolean => rng() < CRIT_CHANCE;
@@ -153,14 +155,23 @@ export const sinPP = (c: Combatiente): boolean => c.movs.every((m) => (m.pp ?? 1
 
 // combatiente listo para pelear a partir de una instancia del PC + la data inyectada.
 export function combatiente(inst: Inst, d: DatosCombate): Combatiente {
-  const st = (d.estadisticas || {})[String(inst.id)];   // [hp, atk, def, spa, spd, spe]
-  const hpM = st ? hpEf(st[0], inst.nivel) : hpMax(inst.nivel);
+  const st = (d.estadisticas || {})[String(inst.id)];   // [hp, atk, def, spa, spd, spe] base
+  const idn = identidad(inst, d);
+  const ev = inst.evs || [0, 0, 0, 0, 0, 0];
+  const nat = NATURALEZAS[idn.nat] || NATURALEZAS[0];
+  const nm = (k: number) => nat.sube === k ? 1.1 : nat.baja === k ? 0.9 : 1;
+  const hpM = st ? hpEf(st[0], inst.nivel, idn.ivs[0], ev[0]) : hpMax(inst.nivel);
   return {
     iid: inst.iid, id: inst.id, nombre: inst.mote || d.nombres[inst.id] || ('Nº ' + inst.id),
     nivel: inst.nivel, shiny: !!inst.shiny, tipos: tiposDe(inst.id, d.tipos),
     movs: movsDe(inst, d.learnsets, d.movimientos), hpMax: hpM, hp: hpM,
-    atk: st ? st[1] : 60, def: st ? st[2] : 60, spa: st ? st[3] : 60, spd: st ? st[4] : 60, spe: st ? st[5] : 60,
+    atk: st ? statEf(st[1], inst.nivel, idn.ivs[1], ev[1], nm(1)) : 60,
+    def: st ? statEf(st[2], inst.nivel, idn.ivs[2], ev[2], nm(2)) : 60,
+    spa: st ? statEf(st[3], inst.nivel, idn.ivs[3], ev[3], nm(3)) : 60,
+    spd: st ? statEf(st[4], inst.nivel, idn.ivs[4], ev[4], nm(4)) : 60,
+    spe: st ? statEf(st[5], inst.nivel, idn.ivs[5], ev[5], nm(5)) : 60,
     atkMod: 1, defMod: 1, estado: null, estadoT: 0,
+    hab: idn.hab, gen: idn.gen,
   };
 }
 
@@ -172,8 +183,8 @@ export function calcularDano(atacante: Combatiente, mov: Mov, defensor: Combatie
   if (efec === 0) return { dmg: 0, efec, stab: 1, crit: false };   // inmune: no afecta
   const fisico = esFisico(mov);
   const stab = atacante.tipos.includes(mov.tipo) ? 1.5 : 1;
-  const A = statEf(fisico ? atacante.atk : atacante.spa, atacante.nivel) * (atacante.atkMod || 1);   // físico→Ataque, especial→At.Esp.
-  const D = statEf(fisico ? defensor.def : defensor.spd, defensor.nivel) * (defensor.defMod || 1);
+  const A = (fisico ? atacante.atk : atacante.spa) * (atacante.atkMod || 1);   // ya efectiva
+  const D = (fisico ? defensor.def : defensor.spd) * (defensor.defMod || 1);
   const baseDmg = Math.floor(Math.floor((2 * atacante.nivel / 5 + 2) * (mov.poder || 40) * A / D) / 50) + 2;   // fórmula estilo Gen 3
   const quema = (atacante.estado === 'quemadura' && fisico) ? 0.5 : 1;   // quemado pega menos físico
   const rand = 0.85 + rng() * 0.15;

@@ -5,6 +5,7 @@ import {
   aplicarAilment, tickEstado, combatiente, movsDe, tiposDe, sinPP, Combatiente, Mov, DatosCombate,
 } from './combate-core';
 import { NATURALEZAS, semilla, identidad, rolarIdentidad } from './combate-core';
+import { statEf as statEf3, hpEf as hpEf3 } from './combate-core';
 
 // combatiente sintético (no necesita data real): se sobreescribe lo que cada test precise.
 const luchador = (over: Partial<Combatiente> = {}): Combatiente => ({
@@ -472,6 +473,18 @@ describe('movsDe / combatiente (data inyectada)', () => {
   it('respeta el mote por sobre el nombre', () => {
     const c = combatiente({ iid: 'a', id: 4, nivel: 20, mote: 'Chizu' }, datos);
     expect(c.nombre).toBe('Chizu');
+  });
+});
+
+describe('stats con IV/EV/naturaleza', () => {
+  test('statEf suma IV y ⌊EV/4⌋ y aplica multiplicador de naturaleza', () => {
+    expect(statEf3(100, 100, 31, 0, 1.1)).toBe(259);
+    expect(statEf3(100, 100, 31, 252, 1)).toBe(299);
+    expect(statEf3(100, 100)).toBe(205);   // compat vieja
+  });
+  test('hpEf suma IV y ⌊EV/4⌋', () => {
+    expect(hpEf3(100, 100, 31, 0)).toBe(341);
+    expect(hpEf3(100, 100)).toBe(310);     // compat vieja
   });
 });
 
