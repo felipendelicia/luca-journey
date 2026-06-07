@@ -2,8 +2,8 @@
 // y ejercicios. Autocompletado Python rico, indentación de 4 espacios, cierre de
 // brackets, y atajo Ctrl/Cmd+Enter para correr.
 import { basicSetup } from 'codemirror';
-import { EditorView, keymap } from '@codemirror/view';
-import { Prec, Compartment } from '@codemirror/state';
+import { EditorView, keymap, Decoration, ViewPlugin } from '@codemirror/view';
+import { Prec, Compartment, RangeSetBuilder } from '@codemirror/state';
 import { indentMore, indentLess } from '@codemirror/commands';
 import { python } from '@codemirror/lang-python';
 import { oneDark } from '@codemirror/theme-one-dark';
@@ -143,6 +143,30 @@ const pyLinter = linter(async (view) => {
     message: (esIndent ? 'Indentación: ' : 'Sintaxis: ') + traducirSintaxis(info.msg || '') }];
 }, { delay: 700 });
 
+// indentación visible: los espacios iniciales se ven como puntitos tenues y los TABS se RESALTAN
+// (para cazar tabs intrusos, que rompen la indentación de Python). Solo el whitespace del comienzo de línea.
+const wsTab = Decoration.mark({ class: 'cm-ws-tab' });
+const wsSpace = Decoration.mark({ class: 'cm-ws-space' });
+const verIndentacion = ViewPlugin.fromClass(class {
+  constructor(view) { this.decorations = this.build(view); }
+  update(u) { if (u.docChanged || u.viewportChanged) this.decorations = this.build(u.view); }
+  build(view) {
+    const b = new RangeSetBuilder();
+    for (const { from, to } of view.visibleRanges) {
+      let pos = from;
+      while (pos <= to) {
+        const line = view.state.doc.lineAt(pos);
+        const t = line.text;
+        for (let i = 0; i < t.length && (t[i] === ' ' || t[i] === '\t'); i++) {
+          b.add(line.from + i, line.from + i + 1, t[i] === '\t' ? wsTab : wsSpace);
+        }
+        pos = line.to + 1;
+      }
+    }
+    return b.finish();
+  }
+}, { decorations: (v) => v.decorations });
+
 const modoOscuro = () => !document.body.classList.contains('claro');
 const esMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || '');
 const fontPx = () => { const n = parseInt(localStorage.getItem('editor:fontPx'), 10); return n >= 12 && n <= 22 ? n : 14; };
@@ -165,6 +189,7 @@ export function editorPython({ doc = '', parent, onRun, onChange, extra = [], ba
     EditorView.lineWrapping,
     EditorView.contentAttributes.of({ 'aria-label': 'Editor de código Python' }),
     pyLinter, lintGutter(),   // subrayado de errores de sintaxis (inline, estilo VS Code)
+    verIndentacion,           // indentación visible (puntitos en espacios, tabs resaltados)
     // Tab: acepta la sugerencia si el popup está abierto; si no, indenta EN EL CURSOR (estilo VS Code).
     // Esc suelta el foco del editor (accesibilidad de teclado). Alta precedencia para ganarle a basicSetup.
     Prec.highest(keymap.of([

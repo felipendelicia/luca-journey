@@ -165,6 +165,10 @@ code{font-family:var(--font-mono); font-size:.85em; background:#fbe7e1; color:va
   border:1px solid var(--line, rgba(255,255,255,.16)); border-radius:9px; box-shadow:0 8px 22px -10px rgba(0,0,0,.5); }
 .cm-tooltip-lint .cm-diagnostic{ font:600 .82rem var(--font-mono, monospace); padding:5px 9px; }
 .cm-tooltip-lint .cm-diagnostic-error{ border-left:4px solid #e0492f; }
+/* indentación visible — espacios iniciales como puntitos tenues, TABS resaltados (para cazar tabs intrusos) */
+.cm-ws-space{ background-image:radial-gradient(circle at center, rgba(150,160,180,.5) .5px, transparent 1.7px); background-repeat:no-repeat; background-position:center; }
+body.claro .cm-ws-space{ background-image:radial-gradient(circle at center, rgba(70,80,100,.45) .5px, transparent 1.7px); }
+.cm-ws-tab{ background:rgba(224,73,47,.18); box-shadow:inset 2px 0 0 rgba(224,73,47,.6); border-radius:2px; }
 @media (prefers-reduced-motion: reduce){ .ed-sym, .ed-tool{ transition:none; } }
 @media (max-width:640px){ .ed-sym, .ed-tool{ min-width:34px; height:34px; padding:0 7px; } }
 .pg-out{background:#0b0d14; color:#cdf5d6; font-family:var(--font-mono); font-size:12.5px; line-height:1.5;
