@@ -877,78 +877,101 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .bt-rank-ol .r-rt{ font-weight:800; color:var(--yellow-deep,#e0a400); }
 .bt-rank-ol .r-v{ margin-left:auto; color:var(--ink-soft); }
 .bt-rendir{ border-color:var(--red) !important; color:var(--red); }
-/* paneles */
-.bt-rival,.bt-yo{ background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:9px 12px; }
-.bt-yo{ margin-top:6px; }
-.bt-info{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-.bt-nom{ font-weight:800; color:var(--ink); }
-.bt-lv{ font:700 .76rem var(--font-mono); color:var(--ink-soft); }
-.bt-tipos{ font:600 .7rem var(--font-mono); color:var(--ink-mute); margin-left:auto; }
-/* chip de estado alterado (☠️/🔥/⚡/💤/❄️/💫) */
+/* ════════ COMBATE estilo GBA / Pokémon Rojo Fuego ════════ */
+#bt-combate{ position:relative; --gba-cream:#f7f0df; --gba-ink:#37373f; --gba-edge:#23232b; --gba-frame:#5d6b8f; }
+/* en combate, ocultar el intro + selector de modo (inmersión "pantalla de juego") */
+.batalla:has(#bt-combate:not([hidden])) > .safari-head,
+.batalla:has(#bt-combate:not([hidden])) > p,
+.batalla:has(#bt-combate:not([hidden])) > .bt-modo{ display:none; }
+/* campo: cielo + pasto, con marco de "pantalla" y plataformas elípticas */
+.bt-field{ position:relative; height:300px; margin:6px 0 12px; border-radius:6px; overflow:hidden;
+  border:4px solid var(--gba-edge); box-shadow:inset 0 0 0 2px var(--gba-frame), 0 4px 0 rgba(0,0,0,.28);
+  background:linear-gradient(#a4d6ec 0%, #c4e6ee 36%, #d3ebb2 36%, #8cc468 72%, #7bb95a 100%); image-rendering:pixelated; }
+.bt-arena{ position:absolute; inset:0; }
+.bt-arena::before,.bt-arena::after{ content:''; position:absolute; height:32px; border-radius:50%; pointer-events:none;
+  background:radial-gradient(ellipse at 50% 38%, rgba(255,255,255,.4), rgba(110,165,80,.5) 58%, transparent 76%); }
+.bt-arena::before{ width:150px; top:108px; right:16px; }     /* plataforma rival */
+.bt-arena::after{ width:200px; bottom:24px; left:2px; }      /* plataforma jugador */
+.bt-sprite{ position:absolute; image-rendering:pixelated; filter:drop-shadow(0 4px 0 rgba(0,0,0,.13)); }
+.bt-sprite-r{ width:112px; height:112px; top:34px; right:34px; }
+.bt-sprite-p{ width:150px; height:150px; bottom:22px; left:22px; }   /* de espaldas: sin flip */
+
+/* cuadros de datos (FireRed): caja crema, borde oscuro, esquinas redondeadas */
+.bt-rival,.bt-yo{ position:absolute; z-index:2; min-width:170px; padding:6px 13px 8px;
+  background:var(--gba-cream); color:var(--gba-ink); border:3px solid var(--gba-edge); border-radius:5px 16px 16px 5px;
+  box-shadow:inset 0 0 0 2px #fff, inset -3px -3px 0 rgba(120,90,40,.1), 0 2px 0 rgba(0,0,0,.22); }
+.bt-rival{ top:14px; left:12px; }
+.bt-yo{ bottom:14px; right:12px; border-radius:16px 5px 5px 16px; }
+.bt-info{ display:flex; align-items:baseline; gap:8px; }
+.bt-nom{ font:800 .9rem var(--font-mono); color:var(--gba-ink); text-transform:uppercase; letter-spacing:.02em; }
+.bt-lv{ font:700 .72rem var(--font-mono); color:var(--gba-ink); margin-left:auto; }
+.bt-tipos{ display:none; }                                   /* GBA no muestra tipos en pantalla */
 .bt-estado:empty{ display:none; }
-.bt-est{ display:inline-flex; align-items:center; gap:3px; padding:2px 7px; border-radius:999px; font:800 .62rem var(--font-mono); letter-spacing:.04em;
-  color:#fff; background:var(--e,#888); box-shadow:0 1px 4px -1px var(--e,#888); }
-.bt-hpbar{ height:11px; background:var(--line); border-radius:999px; overflow:hidden; margin:5px 0; }
-.bt-hp{ height:100%; width:100%; background:#33c659; border-radius:999px; transition:width .5s ease; }
-.bt-hp.medio{ background:#e8b923; } .bt-hp.bajo{ background:#e0492f; }
-.bt-equipo{ display:flex; gap:5px; }
-.bt-dot{ width:11px; height:11px; border-radius:50%; background:#33c659; border:1px solid rgba(0,0,0,.2); }
-.bt-dot.ko{ background:var(--line); }
-/* arena */
-.bt-arena{ position:relative; height:200px; margin:4px 0; background:radial-gradient(circle at 50% 95%, #9ad29a, #6fb56f); border:1px solid var(--line); border-radius:16px; overflow:hidden; }
-.bt-sprite{ position:absolute; image-rendering:pixelated; }
-.bt-sprite-r{ width:96px; height:96px; top:14px; right:34px; }
-.bt-sprite-p{ width:128px; height:128px; bottom:4px; left:26px; transform:scaleX(-1); }
+.bt-est{ display:inline-flex; align-items:center; gap:2px; padding:0 5px; border-radius:3px; font:800 .54rem var(--font-mono);
+  color:#fff; background:var(--e,#888); border:1px solid rgba(0,0,0,.35); }
+/* barra de HP GBA: tag "HP" + canaleta oscura + relleno verde/amarillo/rojo */
+.bt-hpbar{ position:relative; height:6px; margin:7px 0 2px 22px; background:#3a3a46; border:1px solid #16161c; border-radius:999px; overflow:hidden; }
+.bt-hpbar::before{ content:'HP'; position:absolute; left:-21px; top:-4px; font:800 .6rem var(--font-mono); color:#f2ab18; -webkit-text-stroke:.4px #7a3f00; }
+.bt-hp{ height:100%; width:100%; background:#5cd24a; transition:width .5s ease; box-shadow:inset 0 1px 0 rgba(255,255,255,.45); }
+.bt-hp.medio{ background:#f2c624; } .bt-hp.bajo{ background:#f04a38; }
+.bt-equipo{ display:flex; gap:4px; margin-top:5px; }
+.bt-dot{ width:9px; height:9px; border-radius:50%; background:#5cd24a; border:1.5px solid var(--gba-edge); box-shadow:inset 0 0 0 1px #fff; }
+.bt-dot.ko{ background:#a0a0a8; }
+
+/* animaciones de sprites */
 .bt-hit{ animation:btHit .26s linear; }
-@keyframes btHit{ 0%,100%{ filter:none; opacity:1; transform:translate(0,0) } 20%{ filter:brightness(3); opacity:.4 } 35%{ transform:translate(5px,0) } 55%{ transform:translate(-5px,0) } 75%{ transform:translate(3px,0) } }
+@keyframes btHit{ 0%,100%{ filter:drop-shadow(0 4px 0 rgba(0,0,0,.13)); opacity:1; transform:translate(0,0) } 20%{ filter:brightness(3); opacity:.4 } 35%{ transform:translate(5px,0) } 55%{ transform:translate(-5px,0) } 75%{ transform:translate(3px,0) } }
 .bt-sprite-r.bt-hit,.bt-sprite-p.bt-hit{ animation:btHit .26s linear; }
-.bt-sprite-p.bt-hit{ animation:btHitP .26s linear; }
-@keyframes btHitP{ 0%,100%{ filter:none; opacity:1; transform:scaleX(-1) translate(0,0) } 20%{ filter:brightness(3); opacity:.4 } 35%{ transform:scaleX(-1) translate(5px,0) } 55%{ transform:scaleX(-1) translate(-5px,0) } 75%{ transform:scaleX(-1) translate(3px,0) } }
-/* embiste del atacante */
 .bt-sprite-r.bt-lunge{ animation:lungeR .19s ease; }
 @keyframes lungeR{ 50%{ transform:translateY(13px) scale(1.07) } }
 .bt-sprite-p.bt-lunge{ animation:lungeP .19s ease; }
-@keyframes lungeP{ 50%{ transform:scaleX(-1) translateY(-15px) scale(1.07) } }
-/* debilitado: cae y se desvanece */
+@keyframes lungeP{ 50%{ transform:translateY(-15px) scale(1.07) } }
 .bt-sprite-r.bt-faint{ animation:faintR .6s ease forwards; }
 @keyframes faintR{ to{ transform:translateY(40px) scale(.7); opacity:0 } }
 .bt-sprite-p.bt-faint{ animation:faintP .6s ease forwards; }
-@keyframes faintP{ to{ transform:scaleX(-1) translateY(40px) scale(.7); opacity:0 } }
-/* destello del tipo en el impacto */
-.bt-fx{ position:absolute; width:90px; height:90px; transform:translate(-50%,-50%); border-radius:50%; pointer-events:none;
+@keyframes faintP{ to{ transform:translateY(40px) scale(.7); opacity:0 } }
+.bt-fx{ position:absolute; width:90px; height:90px; transform:translate(-50%,-50%); border-radius:50%; pointer-events:none; z-index:3;
   background:radial-gradient(circle, var(--c) 0%, color-mix(in srgb,var(--c) 60%, transparent) 35%, transparent 70%);
   box-shadow:0 0 24px 6px var(--c); animation:btFx .45s ease-out forwards; }
 @keyframes btFx{ 0%{ transform:translate(-50%,-50%) scale(.2); opacity:1 } 100%{ transform:translate(-50%,-50%) scale(1.7); opacity:0 } }
-/* sacudida de la arena en golpes fuertes */
+.bt-field.bt-sacude{ animation:btSacude .3s ease; }
 .bt-arena.bt-sacude{ animation:btSacude .3s ease; }
 @keyframes btSacude{ 0%,100%{ transform:translate(0,0) } 20%{ transform:translate(-5px,3px) } 40%{ transform:translate(5px,-3px) } 60%{ transform:translate(-4px,-2px) } 80%{ transform:translate(4px,2px) } }
-/* cuadro de texto estilo Pokémon (FireRed): caja clara con borde doble + flecha parpadeante */
-.bt-msg{ position:relative; display:flex; align-items:center; text-align:left; min-height:3.1em; margin:8px 0;
-  padding:13px 30px 13px 16px; border:3px solid #34467e; border-radius:11px; line-height:1.35;
-  background:#f7f7ef; color:#2a2a2a; font:700 .96rem var(--font-mono);
-  box-shadow:inset 0 0 0 2px #fff, inset 0 0 0 5px #6d83c0, 0 3px 0 rgba(0,0,0,.18); }
-.bt-msg::after{ content:'▼'; position:absolute; right:12px; bottom:7px; font-size:.72rem; color:#34467e; animation:btBlink 1s steps(1) infinite; }
+
+/* cuadro de texto (FireRed): caja crema, borde doble azul + flecha ▼ */
+.bt-msg{ position:relative; display:flex; align-items:center; text-align:left; min-height:3em; margin:0 0 10px;
+  padding:14px 32px 14px 18px; border:4px solid var(--gba-edge); border-radius:8px; line-height:1.4;
+  background:var(--gba-cream); color:var(--gba-ink); font:700 1rem var(--font-mono);
+  box-shadow:inset 0 0 0 3px #fff, inset 0 0 0 6px var(--gba-frame), 0 3px 0 rgba(0,0,0,.22); }
+.bt-msg::after{ content:'▼'; position:absolute; right:13px; bottom:8px; font-size:.7rem; color:var(--gba-frame); animation:btBlink 1s steps(1) infinite; }
 @keyframes btBlink{ 50%{ opacity:0 } }
-.bt-carga{ position:relative; height:18px; background:var(--line); border-radius:999px; overflow:hidden; margin:.3rem 0 .6rem; }
-.bt-carga-fill{ height:100%; width:0; background:linear-gradient(90deg,#f7b733,#fc4a1a); transition:width .4s ease; }
-.bt-carga span{ position:absolute; inset:0; text-align:center; font:700 .72rem var(--font-mono); color:#222; line-height:18px; }
+
+/* barra de SÚPER (medidor pixel) */
+.bt-carga{ position:relative; height:16px; background:#3a3a46; border:2px solid var(--gba-edge); border-radius:4px; overflow:hidden; margin:.2rem 0 .7rem; }
+.bt-carga-fill{ height:100%; width:0; background:repeating-linear-gradient(90deg,#f7b733 0 6px,#f5a623 6px 8px); transition:width .4s ease; }
+.bt-carga span{ position:absolute; inset:0; text-align:center; font:800 .64rem var(--font-mono); color:#fff; line-height:13px; text-shadow:0 1px 0 rgba(0,0,0,.5); letter-spacing:.03em; }
 /* timer de turno */
 .bt-timer{ margin:2px 0 6px; }
 .bt-timer[hidden]{ display:none; }
 .bt-timer-txt{ font:700 .68rem var(--font-mono); color:var(--ink-soft); }
-.bt-timer-bar{ height:4px; margin-top:3px; background:var(--line); border-radius:999px; overflow:hidden; }
-.bt-timer-bar i{ display:block; height:100%; width:100%; background:#5fa84a; border-radius:999px; transition:width 1s linear; }
+.bt-timer-bar{ height:5px; margin-top:3px; background:#3a3a46; border:1px solid var(--gba-edge); border-radius:999px; overflow:hidden; }
+.bt-timer-bar i{ display:block; height:100%; width:100%; background:#5cd24a; transition:width 1s linear; }
 .bt-timer.urgente .bt-timer-txt{ color:var(--red); }
 .bt-timer.urgente .bt-timer-bar i{ background:var(--red); }
-.bt-moves{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-.bt-move{ display:flex; flex-direction:column; gap:1px; padding:10px; border:1px solid var(--line); border-radius:12px; background:var(--paper-2); cursor:pointer; color:var(--ink); text-align:left; }
-.bt-move b{ font-size:.88rem; } .bt-move small{ font:600 .68rem var(--font-mono); color:var(--ink-soft); }
-.bt-move:hover:not(:disabled){ border-color:var(--red); }
-.bt-move:disabled{ opacity:.5; cursor:not-allowed; }
-.bt-super{ grid-column:1/-1; align-items:center; text-align:center; font-weight:800; background:linear-gradient(90deg,#f7b733,#fc4a1a); color:#fff; border:none; }
-.bt-super:disabled{ background:var(--line); color:var(--ink-mute); }
-.bt-mochila{ grid-column:1/-1; align-items:center; text-align:center; font-weight:800; background:var(--paper-2); border:1px solid var(--line); color:var(--ink); }
-.bt-mochila:hover:not(:disabled){ border-color:var(--red); }
+
+/* menú de ataques (FIGHT): caja crema con slots */
+.bt-moves{ display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:8px; background:var(--gba-cream);
+  border:4px solid var(--gba-edge); border-radius:8px; box-shadow:inset 0 0 0 3px #fff, 0 3px 0 rgba(0,0,0,.2); }
+.bt-move{ display:flex; flex-direction:column; gap:2px; padding:9px 11px; border:2px solid var(--gba-edge); border-radius:4px;
+  background:#fff; cursor:pointer; color:var(--gba-ink); text-align:left; font-family:var(--font-mono); }
+.bt-move b{ font-size:.86rem; font-weight:800; } .bt-move small{ font:700 .64rem var(--font-mono); color:#6a6a72; }
+.bt-move:hover:not(:disabled){ background:#fff6cf; border-color:var(--red); }
+.bt-move:disabled{ opacity:.45; cursor:not-allowed; }
+.bt-super{ grid-column:1/-1; align-items:center; text-align:center; font-weight:800; color:#fff; border-color:#b8480f;
+  background:repeating-linear-gradient(90deg,#f7b733 0 8px,#fc4a1a 8px 16px); }
+.bt-super:disabled{ background:#cfcfd6; color:#fff; border-color:var(--gba-edge); }
+.bt-mochila{ grid-column:1/-1; align-items:center; text-align:center; font-weight:800; background:#fff; color:var(--gba-ink); }
+.bt-mochila:hover:not(:disabled){ background:#fff6cf; border-color:var(--red); }
 .bt-mochila-nota{ font:600 .76rem var(--font-mono); color:var(--ink-mute); margin:-2px 0 12px; }
 .mochila-lista{ display:flex; flex-direction:column; gap:8px; }
 .mo-item{ display:flex; align-items:center; gap:8px; padding:12px 14px; border:1px solid var(--line); border-radius:11px; background:var(--paper-2); cursor:pointer; font:700 .92rem var(--font-mono); color:var(--ink); text-align:left; }

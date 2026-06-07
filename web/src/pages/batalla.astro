@@ -22,19 +22,21 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     <div id="bt-sel" hidden></div>
     <div id="bt-combate" hidden>
       <button class="bt-mute" id="bt-mute" type="button" title="Música / sonido">🔊</button>
-      <div class="bt-rival">
-        <div class="bt-info"><span class="bt-nom" id="r-nom"></span><span class="bt-lv" id="r-lv"></span><span class="bt-tipos" id="r-tipos"></span><span class="bt-estado" id="r-estado"></span></div>
-        <div class="bt-hpbar"><div class="bt-hp" id="r-hp"></div></div>
-        <div class="bt-equipo" id="r-dots"></div>
-      </div>
-      <div class="bt-arena">
-        <img class="bt-sprite bt-sprite-r" id="r-img" src="" alt="rival" />
-        <img class="bt-sprite bt-sprite-p" id="p-img" src="" alt="vos" />
-      </div>
-      <div class="bt-yo">
-        <div class="bt-info"><span class="bt-nom" id="p-nom"></span><span class="bt-lv" id="p-lv"></span><span class="bt-tipos" id="p-tipos"></span><span class="bt-estado" id="p-estado"></span></div>
-        <div class="bt-hpbar"><div class="bt-hp" id="p-hp"></div></div>
-        <div class="bt-equipo" id="p-dots"></div>
+      <div class="bt-field">
+        <div class="bt-arena">
+          <img class="bt-sprite bt-sprite-r" id="r-img" src="" alt="rival" />
+          <img class="bt-sprite bt-sprite-p" id="p-img" src="" alt="vos" />
+        </div>
+        <div class="bt-rival">
+          <div class="bt-info"><span class="bt-nom" id="r-nom"></span><span class="bt-lv" id="r-lv"></span><span class="bt-tipos" id="r-tipos"></span><span class="bt-estado" id="r-estado"></span></div>
+          <div class="bt-hpbar"><div class="bt-hp" id="r-hp"></div></div>
+          <div class="bt-equipo" id="r-dots"></div>
+        </div>
+        <div class="bt-yo">
+          <div class="bt-info"><span class="bt-nom" id="p-nom"></span><span class="bt-lv" id="p-lv"></span><span class="bt-tipos" id="p-tipos"></span><span class="bt-estado" id="p-estado"></span></div>
+          <div class="bt-hpbar"><div class="bt-hp" id="p-hp"></div></div>
+          <div class="bt-equipo" id="p-dots"></div>
+        </div>
       </div>
       <p class="bt-msg" id="bt-msg">¡Que empiece la batalla!</p>
       <div class="bt-carga"><div class="bt-carga-fill" id="bt-carga"></div><span id="bt-carga-txt">Súper: 0%</span></div>
@@ -179,7 +181,11 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       $('r-nom').textContent = r.nombre; $('r-lv').textContent = 'Nv.' + r.nivel; $('r-tipos').textContent = r.tipos.join('/');
       $('p-nom').textContent = p.nombre; $('p-lv').textContent = 'Nv.' + p.nivel; $('p-tipos').textContent = p.tipos.join('/');
       $('r-estado').innerHTML = estadoChip(r); $('p-estado').innerHTML = estadoChip(p);
-      $('r-img').src = spriteUrl(r.id, r.shiny); $('p-img').src = spriteUrl(p.id, p.shiny);
+      $('r-img').src = spriteUrl(r.id, r.shiny);
+      // jugador de ESPALDAS (como en los juegos); si la gen no tiene back-sprite, cae al de frente
+      const pImg = $('p-img');
+      pImg.onerror = () => { pImg.onerror = null; pImg.src = spriteUrl(p.id, p.shiny); };
+      pImg.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/' + (p.shiny ? 'shiny/' : '') + p.id + '.png';
       hp('r-hp', r); hp('p-hp', p);
       dots('r-dots', G.rival); dots('p-dots', G.equipo);
       $('bt-carga').style.width = G.carga + '%'; $('bt-carga-txt').textContent = 'Súper: ' + G.carga + '%';
