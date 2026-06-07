@@ -11,3 +11,6 @@ __pycache__/
 
 # git worktrees creados por el harness
 .claude/worktrees/
+
+# artefacto de tooling (no es output del build de Astro)
+docs/settings.json
