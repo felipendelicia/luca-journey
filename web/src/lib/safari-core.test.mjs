@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { probCaptura, pisoIV, sincronizaNat, fleeProb, baseCaptura, catchBall } from './safari-core.js';
+import { shinyChance, pisoRacha, esNoche, biomaActual, rolarTam } from './safari-core.js';
 
 const poke = { key: 'pokeball', catch: 1 };
 const ultra = { key: 'ultraball', catch: 2 };
@@ -56,4 +57,38 @@ test('sincronizaNat: synchronize → nat del compañero; otra → null', () => {
 test('fleeProb: crece con la rareza, en [0.1, 0.5]', () => {
   assert.ok(fleeProb(10) > fleeProb(1));
   assert.ok(fleeProb(1) >= 0.1 && fleeProb(10) <= 0.5);
+});
+test('shinyChance: racha 0 = 0.01, crece, cap 0.08', () => {
+  assert.equal(shinyChance(0), 0.01);
+  assert.ok(shinyChance(25) > shinyChance(10));
+  assert.equal(shinyChance(1000), 0.08);
+});
+test('pisoRacha: umbrales 15/30/50', () => {
+  assert.equal(pisoRacha(14), 0);
+  assert.equal(pisoRacha(15), 1);
+  assert.equal(pisoRacha(30), 2);
+  assert.equal(pisoRacha(50), 3);
+});
+test('esNoche: 23h noche, 12h día, 5h noche', () => {
+  assert.equal(esNoche(new Date(2026, 0, 1, 23, 0)), true);
+  assert.equal(esNoche(new Date(2026, 0, 1, 12, 0)), false);
+  assert.equal(esNoche(new Date(2026, 0, 1, 5, 0)), true);
+});
+test('biomaActual: determinista, rota cada 10 min', () => {
+  assert.equal(biomaActual(0), 'hierba');
+  assert.equal(biomaActual(599999), 'hierba');
+  assert.equal(biomaActual(600000), 'agua');
+  assert.equal(biomaActual(1200000), 'cueva');
+  assert.equal(biomaActual(1800000), 'hierba');
+});
+test('catchBall dusk: noche o cueva → 3.5; día+superficie → 1', () => {
+  const dusk = { key: 'dusk' };
+  assert.equal(catchBall(dusk, ctx({ noche: true, bioma: 'hierba' })), 3.5);
+  assert.equal(catchBall(dusk, ctx({ noche: false, bioma: 'cueva' })), 3.5);
+  assert.equal(catchBall(dusk, ctx({ noche: false, bioma: 'hierba' })), 1);
+});
+test('rolarTam: extremos y rango', () => {
+  assert.equal(rolarTam(() => 0.01), 'XXS');
+  assert.equal(rolarTam(() => 0.5), 'M');
+  assert.equal(rolarTam(() => 0.99), 'XXL');
 });
