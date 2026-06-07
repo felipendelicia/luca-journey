@@ -89,6 +89,12 @@ export const naturalezaDe = (inst) => NATURALEZAS[identidadDe(inst).nat] || NATU
 export const habMeta = (key) => (habilidades.meta || {})[key] || null;
 export const yieldDe = (id) => yields[String(id)] || [0, 0, 0, 0, 0, 0];
 
+// % de IVs (0-100) y estrellas (0-4) para el header estilo GO.
+export const ivPct = (ivs) => Math.round((ivs.reduce((a, b) => a + b, 0) / 186) * 100);
+export const ivEstrellas = (ivs) => { const p = ivPct(ivs); return p >= 90 ? 4 : p >= 75 ? 3 : p >= 50 ? 2 : p >= 25 ? 1 : 0; };
+// frase del "Juez" por IV individual (0-31).
+export const juezIV = (iv) => iv === 31 ? '¡Inmejorable!' : iv >= 26 ? 'Fantástico' : iv >= 16 ? 'Muy bueno' : iv >= 1 ? 'Normal' : 'Flojo';
+
 // otorga EVs a una instancia (por iid) según un vector yield. Persiste. Respeta caps.
 export function darEV(iid, yieldVec) {
   const arr = pc(); const m = arr.find((x) => x.iid === iid); if (!m) return;
@@ -381,5 +387,5 @@ export function tirar(pokemon, temas, pesos = {}) {
   if (boost.caramelos > 3) addCaramelos(elegido.id, boost.caramelos - 3); // caramelos extra de la ball
   const cant = pc().filter((m) => m.id === elegido.id).length;
   set('col:balls', balls);
-  return { pokemon: elegido, cantidad: cant, repetido: cant > 1, shiny, nuevoShiny: shiny, balls, prob, cadaCuantos, nivel: inst.nivel, ball: ballTier, tier: tierDe(elegido.id, pesos), caramelos: caramelos()[familiaDe(elegido.id)] || 0 };
+  return { pokemon: elegido, cantidad: cant, repetido: cant > 1, shiny, nuevoShiny: shiny, balls, prob, cadaCuantos, nivel: inst.nivel, ball: ballTier, tier: tierDe(elegido.id, pesos), caramelos: caramelos()[familiaDe(elegido.id)] || 0, inst };
 }

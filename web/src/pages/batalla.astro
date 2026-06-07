@@ -28,15 +28,17 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
           <img class="bt-sprite bt-sprite-p" id="p-img" src="" alt="vos" />
         </div>
         <div class="bt-rival">
-          <div class="bt-info"><span class="bt-nom" id="r-nom"></span><span class="bt-lv" id="r-lv"></span><span class="bt-estado" id="r-estado"></span></div>
+          <div class="bt-info"><span class="bt-nom" id="r-nom"></span><span class="bt-gen" id="r-gen"></span><span class="bt-lv" id="r-lv"></span><span class="bt-estado" id="r-estado"></span></div>
           <div class="bt-hpbar"><div class="bt-hp" id="r-hp"></div></div>
           <div class="bt-row2"><span class="bt-hpnum" id="r-hpnum"></span><span class="bt-tipos" id="r-tipos"></span></div>
+          <div class="bt-hab" id="r-hab"></div>
           <div class="bt-equipo" id="r-dots"></div>
         </div>
         <div class="bt-yo">
-          <div class="bt-info"><span class="bt-nom" id="p-nom"></span><span class="bt-lv" id="p-lv"></span><span class="bt-estado" id="p-estado"></span></div>
+          <div class="bt-info"><span class="bt-nom" id="p-nom"></span><span class="bt-gen" id="p-gen"></span><span class="bt-lv" id="p-lv"></span><span class="bt-estado" id="p-estado"></span></div>
           <div class="bt-hpbar"><div class="bt-hp" id="p-hp"></div></div>
           <div class="bt-row2"><span class="bt-hpnum" id="p-hpnum"></span><span class="bt-tipos" id="p-tipos"></span></div>
+          <div class="bt-hab" id="p-hab"></div>
           <div class="bt-equipo" id="p-dots"></div>
         </div>
       </div>
@@ -76,7 +78,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
 
   <script type="application/json" id="bt-data" set:html={JSON.stringify({ temas })}></script>
   <script>
-    import { pc, sincronizar, spriteUrl, regionesDesbloqueadas, darCaramelos, darBalls, items, usarItem, darEV, yieldDe } from '../lib/coleccion.js';
+    import { pc, sincronizar, spriteUrl, regionesDesbloqueadas, darCaramelos, darBalls, items, usarItem, darEV, yieldDe, habMeta } from '../lib/coleccion.js';
     import { ITEMS } from '../lib/items.js';
     import { itemSvg } from '../lib/sprites.js';
     import { combatiente, calcularDano, danoSuper, elegirCPU, equipoCPU, esEstado, aplicarEstado, puedeActuar, aplicarAilment, tickEstado, acierta, tiraCritico, sinPP, FORCEJEO, ESTADOS, habAlEntrar, habAlContacto } from '../lib/batalla.js';
@@ -104,6 +106,13 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       ? FRSPR + 'versions/generation-iii/firered-leafgreen/' + (back ? 'back/' : '') + (shiny ? 'shiny/' : '') + id + '.png'
       : FRSPR + (back ? 'back/' : '') + (shiny ? 'shiny/' : '') + id + '.png';
     const chipsTipo = (tipos) => (tipos || []).map((t) => '<span class="bt-tipo" style="background:' + (TCOLOR[t] || '#888') + '">' + t + '</span>').join('');
+    // HUD: género (♂/♀) junto al nombre + habilidad debajo. `c` es un Combatiente (.gen / .hab).
+    const genHud = (gen) => gen === 'm' ? '<span class="bt-gen-m">♂</span>' : gen === 'f' ? '<span class="bt-gen-f">♀</span>' : '';
+    function hudIdent(pre, c) {
+      $(pre + '-gen').innerHTML = genHud(c && c.gen);
+      const hm = c && c.hab ? habMeta(c.hab) : null;
+      $(pre + '-hab').innerHTML = hm ? '<span class="bt-hab-ico">✦</span> ' + hm.nombre : '';
+    }
     function destello(esRival, tipo) {
       const arena = document.querySelector('.bt-arena'); if (!arena) return;
       const fx = document.createElement('div'); fx.className = 'bt-fx';
@@ -194,6 +203,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       if (!p || !r) return;   // un equipo quedó eliminado → terminar() maneja la UI
       $('r-nom').textContent = r.nombre; $('r-lv').textContent = 'Nv.' + r.nivel; $('r-tipos').innerHTML = chipsTipo(r.tipos);
       $('p-nom').textContent = p.nombre; $('p-lv').textContent = 'Nv.' + p.nivel; $('p-tipos').innerHTML = chipsTipo(p.tipos);
+      hudIdent('r', r); hudIdent('p', p);
       $('r-hpnum').textContent = Math.max(0, r.hp) + '/' + r.hpMax; $('p-hpnum').textContent = Math.max(0, p.hp) + '/' + p.hpMax;
       $('r-estado').innerHTML = estadoChip(r); $('p-estado').innerHTML = estadoChip(p);
       // sprites GBA reales (FireRed/LeafGreen) para gen 1-3; fallback al sprite por defecto
@@ -566,6 +576,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       $('bt-online').hidden = true; $('bt-sel').hidden = true; $('bt-modo').hidden = true; $('bt-combate').hidden = false;
       $('r-nom').textContent = rivAct.nombre; $('r-lv').textContent = 'Nv.' + rivAct.nivel; $('r-tipos').textContent = rivAct.tipos.join(' · '); $('r-estado').innerHTML = estadoChip(rivAct); $('r-img').src = spriteUrl(rivAct.id, rivAct.shiny); hp('r-hp', rivAct); dots('r-dots', rival.equipo);
       $('p-nom').textContent = myAct.nombre; $('p-lv').textContent = 'Nv.' + myAct.nivel; $('p-tipos').textContent = myAct.tipos.join(' · '); $('p-estado').innerHTML = estadoChip(myAct); $('p-img').src = spriteUrl(myAct.id, myAct.shiny); hp('p-hp', myAct); dots('p-dots', me.equipo);
+      hudIdent('r', rivAct); hudIdent('p', myAct);
       $('bt-carga').style.width = me.super + '%'; $('bt-carga-txt').textContent = 'Súper: ' + me.super + '%';
       const miTurno = snap.fase === 'combate' && snap.turno === myUid;
       const ev = (snap.eventos || [])[snap.eventos.length - 1];

@@ -94,8 +94,9 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
 
   <script type="application/json" id="dex-data" set:html={JSON.stringify({ temas, regiones: REGIONES })}></script>
   <script>
-    import { sincronizar, spriteUrl, pc, caramelos, vistos, subirNivel, opcionesEvo, evolucionarInst, renombrar, liberar, learnsetDe, setMovs, tieneItem, costoSubir, NIVEL_MAX } from '../lib/coleccion.js';
-    import { ITEMS } from '../lib/items.js';
+    import { sincronizar, spriteUrl, pc, caramelos, vistos, subirNivel, opcionesEvo, evolucionarInst, renombrar, liberar, learnsetDe, setMovs, tieneItem, costoSubir, NIVEL_MAX,
+      identidadDe, evsDe, naturalezaDe, habMeta, ivPct, ivEstrellas, juezIV, usarVitamina, usarItem } from '../lib/coleccion.js';
+    import { ITEMS, itemsPorCat } from '../lib/items.js';
     import { itemSvg } from '../lib/sprites.js';
     import { sonarExito, sonarEpico, musicaEvolucion, detenerMusica } from '../lib/sonidos.js';
     import { tierDe } from '../lib/rareza.js';
@@ -280,6 +281,72 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
       return '<div class="pm-panel"><div class="pm-h">📊 Estadísticas <small>(a Nv. ' + L + ')</small></div>' +
         '<div class="st-lista">' + filas + '</div><div class="st-total">Suma base: <b>' + total + '</b> · crecen con el nivel</div></div>';
     }
+    // símbolo de género (♂ azul / ♀ rosa); sin género → ''.
+    const generoChip = (gen) => gen === 'm' ? '<span class="id-gen id-gen-m" title="Macho">♂</span>'
+      : gen === 'f' ? '<span class="id-gen id-gen-f" title="Hembra">♀</span>' : '';
+    const ID_LBL = ['PS', 'Atq', 'Def', 'At.Esp', 'Df.Esp', 'Vel'];
+    const ID_STAT = ['#ff5959', '#f5ac78', '#fae078', '#9db7f5', '#a7db8d', '#fa92b2'];   // tinte de stat
+    // mapa stat-idx → vitamina (para los botones), desde el catálogo (cat:'ev').
+    const VIT_POR_STAT = {}; for (const it of itemsPorCat('ev')) VIT_POR_STAT[it.ev] = it.id;
+
+    // Panel IDENTIDAD: header GO (IV%/estrellas/veredicto), desglose IV+EV por stat, naturaleza,
+    // habilidad y género. Botones de vitamina por cada stat (si tenés la vitamina) suben EV en vivo.
+    function identidadBloque(m) {
+      const idn = identidadDe(m), evs = evsDe(m), nat = naturalezaDe(m);
+      const pct = ivPct(idn.ivs), estrellas = ivEstrellas(idn.ivs);
+      const veredicto = pct >= 90 ? '¡Prodigio absoluto!' : pct >= 75 ? 'Ejemplar excepcional'
+        : pct >= 50 ? 'Buen ejemplar' : pct >= 25 ? 'Del montón' : 'Necesita cariño';
+      const estrellasHtml = Array.from({ length: 4 }, (_, i) => i < estrellas ? '★' : '☆').join('');
+      const evTotal = evs.reduce((a, b) => a + b, 0);
+      // header GO: anillo de % + estrellas + veredicto
+      const header =
+        '<div class="id-head" style="--idp:' + pct + '">' +
+          '<div class="id-ring"><svg viewBox="0 0 36 36" class="id-ring-svg"><circle class="id-ring-bg" cx="18" cy="18" r="15.5"/>' +
+            '<circle class="id-ring-fg" cx="18" cy="18" r="15.5" style="stroke-dasharray:' + (pct / 100 * 97.4).toFixed(1) + ' 97.4"/></svg>' +
+            '<span class="id-ring-num">' + pct + '<i>%</i></span></div>' +
+          '<div class="id-head-txt"><div class="id-stars" data-s="' + estrellas + '">' + estrellasHtml + '</div>' +
+            '<div class="id-verdict">' + veredicto + '</div>' +
+            '<div class="id-sub">Genética perfecta al ' + pct + '%</div></div></div>';
+      // filas por stat: barra IV (0-31) + nº + juez, barra EV (0-252) + nº; botón vitamina si tenés
+      const filas = ID_LBL.map((lbl, i) => {
+        const iv = idn.ivs[i], ev = evs[i];
+        const ivPctW = Math.round(iv / 31 * 100), evPctW = Math.round(ev / 252 * 100);
+        const subeBaja = nat.sube === i ? ' id-up' : nat.baja === i ? ' id-down' : '';
+        const flecha = nat.sube === i ? '<i class="id-arr id-arr-up">↑</i>' : nat.baja === i ? '<i class="id-arr id-arr-down">↓</i>' : '';
+        const vit = VIT_POR_STAT[i];
+        const evMax = ev >= 100;
+        const btn = (vit && tieneItem(vit) && !evMax)
+          ? '<button class="id-vit" data-vit-stat="' + i + '" title="' + ITEMS[vit].nombre + ': +10 EV de ' + lbl + '">' + itemSvg('vitamina', 16, ID_STAT[i]) + '<span>+10</span></button>'
+          : (vit && tieneItem(vit) && evMax ? '<span class="id-vit id-vit-max" title="Tope de vitamina (100)">MÁX</span>' : '');
+        return '<div class="id-row' + subeBaja + '">' +
+            '<span class="id-lbl">' + lbl + flecha + '</span>' +
+            '<div class="id-bars">' +
+              '<div class="id-line id-line-iv"><span class="id-track"><i style="width:' + ivPctW + '%"></i></span>' +
+                '<b class="id-num">' + iv + '<small>/31</small></b><span class="id-juez">' + juezIV(iv) + '</span></div>' +
+              '<div class="id-line id-line-ev"><span class="id-track"><i style="width:' + evPctW + '%;background:' + ID_STAT[i] + '"></i></span>' +
+                '<b class="id-num id-num-ev">' + ev + '<small>/252</small></b>' + btn + '</div>' +
+            '</div></div>';
+      }).join('');
+      // naturaleza / habilidad
+      const natTxt = (nat.sube == null)
+        ? '<b>' + nat.nombre + '</b> <span class="id-neutra">neutra</span>'
+        : '<b>' + nat.nombre + '</b> <span class="id-natup">↑ ' + ID_LBL[nat.sube] + '</span> <span class="id-natdown">↓ ' + ID_LBL[nat.baja] + '</span>';
+      const hm = habMeta(idn.hab);
+      const habTxt = hm
+        ? '<div class="id-hab-nom"><b>' + hm.nombre + '</b>' + (hm.efecto ? '<span class="id-hab-badge">activa</span>' : '') + '</div>' +
+            (hm.desc ? '<div class="id-hab-desc">' + hm.desc + '</div>' : '')
+        : '<div class="id-hab-nom"><span class="id-na">—</span></div>';
+      return '<div class="pm-panel id-panel"><div class="pm-h">🧬 Identidad ' + generoChip(idn.gen) +
+          '<small>EV ' + evTotal + ' / 510</small></div>' +
+        header +
+        '<div class="id-rows">' +
+          '<div class="id-legend"><span class="id-leg id-leg-iv">IV (genes)</span><span class="id-leg id-leg-ev">EV (entreno)</span></div>' +
+          filas + '</div>' +
+        '<div class="id-meta">' +
+          '<div class="id-cell"><span class="id-cell-k">Naturaleza</span><span class="id-cell-v">' + natTxt + '</span></div>' +
+          '<div class="id-cell id-cell-hab"><span class="id-cell-k">Habilidad</span><span class="id-cell-v">' + habTxt + '</span></div>' +
+        '</div></div>';
+    }
     function abrirModal(iid, enLugar) {
       const m = pc().find((x) => x.iid === iid); if (!m) return;
       // si es una actualización en-lugar (Power-Up / elegir ataque / mote), preservamos el scroll
@@ -293,7 +360,7 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
           '<span class="pm-num">Nº ' + String(m.id).padStart(3, '0') + '</span>' +
           (m.shiny ? '<span class="pm-shiny-led">✨</span>' : '') +
           '<div class="pm-platform"><img class="pm-img" src="' + spriteUrl(m.id, m.shiny) + '" alt="' + esp + '" /></div></div>' +
-        '<div class="pm-id"><div class="pm-name">' + nomInst(m) + '</div>' +
+        '<div class="pm-id"><div class="pm-name">' + nomInst(m) + generoChip(identidadDe(m).gen) + '</div>' +
           (m.mote ? '<div class="pm-esp">(' + esp + ')</div>' : '') +
           '<div class="pm-pills">' + tps.map((tp) => '<span class="pm-type" data-t="' + tp + '">' + tp + '</span>').join('') +
             '<span class="pm-lvlchip">Nv. ' + m.nivel + '</span>' +
@@ -303,7 +370,7 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
           '<div class="pm-acciones">' +
             (max ? '<span class="pc-max">Nivel MÁXIMO (' + NIVEL_MAX + ')</span>' : '<button class="pm-btn" id="pm-up"' + (car < costo ? ' disabled' : '') + '>⬆️ Power-Up <small>(' + costo + '🍬)</small></button>') +
             evoBloque(m, ops) + '</div>' +
-          statsBloque(m) + arbolEvo(m) + movsBloque(m) +
+          statsBloque(m) + identidadBloque(m) + arbolEvo(m) + movsBloque(m) +
         '</div>' +
         '<div class="pm-extra">' +
           '<button class="pm-mini" id="pm-mote">✏️ ' + (m.mote ? 'Cambiar mote' : 'Poner mote') + '</button>' +
@@ -333,6 +400,11 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
         else if (cur.length < 4) next = [...cur, mid];
         else return;
         setMovs(iid, next); abrirModal(iid, true);
+      }));
+      $('poke-modal-cuerpo').querySelectorAll('[data-vit-stat]').forEach((b) => b.addEventListener('click', () => {
+        const stat = Number(b.dataset.vitStat); const vit = VIT_POR_STAT[stat];
+        if (!vit || !tieneItem(vit)) return;
+        if (usarVitamina(iid, stat)) { usarItem(vit); sonarExito(); abrirModal(iid, true); }   // gasta la vitamina + +10 EV; re-render
       }));
       $('pm-mote').addEventListener('click', () => {
         const nv = prompt('Mote para tu ' + esp + ' (vacío = sin mote):', m.mote || '');

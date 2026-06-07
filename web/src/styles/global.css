@@ -414,6 +414,16 @@ body.dark .ej-mini{ background:#3a1c1a; } body.dark .ej-mini.win{ background:#13
 .captura-txt{ font-size:1.05rem; margin-top:4px; color:#16331e; text-shadow:0 1px 2px rgba(255,255,255,.35); } .cap-n{ color:#3f6b4d; font-size:.85rem; font-family:var(--font-mono); }
 .cap-prob{ display:block; margin-top:3px; font-size:.78rem; color:#2f5a3e; }
 .cap-prob b{ color:#16331e; }
+/* línea de identidad de la captura (sobre el pasto): género · IVs% · naturaleza · habilidad */
+.cap-id{ display:inline-flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:5px; margin-top:6px;
+  font:800 .76rem var(--font-mono); color:#1d4b2c; background:rgba(255,255,255,.78); border:1px solid rgba(22,51,30,.18);
+  border-radius:999px; padding:4px 13px; text-shadow:none; box-shadow:0 2px 7px -3px rgba(22,51,30,.4); }
+.cap-id .cap-dot{ color:#7aa389; font-style:normal; }
+.cap-id .cap-gm{ color:#2f6fcc; font-style:normal; font-weight:900; }
+.cap-id .cap-gf{ color:#d24b96; font-style:normal; font-weight:900; }
+.cap-iv{ font-weight:900; color:#1d4b2c; }
+.cap-iv-good{ color:#0b7c78; }
+.cap-iv-top{ color:#c08400; text-shadow:0 0 7px rgba(255,203,5,.5); }
 @keyframes pop{ 0%{transform:scale(.3) rotate(-10deg); opacity:0} 60%{transform:scale(1.12)} 100%{transform:scale(1); opacity:1} }
 .btn-tirar{ margin-top:1rem; background:var(--red); color:#fff; border:none; border-radius:999px; font-family:var(--font-display); font-weight:800; font-size:1.15rem; padding:14px 32px; cursor:pointer; box-shadow:var(--shadow); }
 .btn-tirar:hover{ transform:translateY(-2px); } .btn-tirar[disabled]{ opacity:.5; cursor:default; }
@@ -797,6 +807,78 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .st-bar i{ display:block; height:100%; border-radius:999px; transition:width .4s ease; }
 .st-total{ margin-top:10px; font:600 .7rem var(--font-mono); color:var(--ink-mute); text-align:center; }
 .st-total b{ color:var(--ink); }
+
+/* ───── panel IDENTIDAD (IV/EV · naturaleza · habilidad · género) ───── */
+.id-panel{ overflow:hidden; }
+/* símbolo de género junto al nombre */
+.id-gen{ font-weight:800; font-size:.92em; margin-left:6px; vertical-align:baseline; }
+.id-gen-m{ color:#3e7bd6; } .id-gen-f{ color:#e060a0; }
+.pm-name .id-gen{ font-size:.7em; }
+/* header GO: anillo de % + estrellas + veredicto */
+.id-head{ display:flex; align-items:center; gap:14px; padding:11px 13px; margin-bottom:13px; border-radius:13px;
+  background:linear-gradient(135deg, color-mix(in srgb,var(--tier-color) 16%, var(--card)), var(--card));
+  border:1px solid color-mix(in srgb,var(--tier-color) 30%, var(--line)); }
+.id-ring{ position:relative; width:58px; height:58px; flex:0 0 auto; }
+.id-ring-svg{ width:58px; height:58px; transform:rotate(-90deg); }
+.id-ring-bg{ fill:none; stroke:var(--line); stroke-width:3.2; }
+.id-ring-fg{ fill:none; stroke:var(--tier-color); stroke-width:3.2; stroke-linecap:round; transition:stroke-dasharray .6s ease; }
+.id-ring-num{ position:absolute; inset:0; display:flex; align-items:baseline; justify-content:center; gap:1px;
+  font:800 1.08rem var(--font-display); color:var(--ink); letter-spacing:-.04em; }
+.id-ring-num i{ font:700 .56rem var(--font-mono); color:var(--ink-soft); font-style:normal; }
+.id-head-txt{ min-width:0; }
+.id-stars{ font-size:1.05rem; letter-spacing:1px; color:var(--ink-mute); line-height:1; }
+.id-stars[data-s="3"],.id-stars[data-s="4"]{ color:var(--yellow-deep); text-shadow:0 0 9px color-mix(in srgb,var(--yellow) 60%,transparent); }
+.id-stars[data-s="2"]{ color:var(--yellow-deep); }
+.id-stars[data-s="1"]{ color:var(--ink-soft); }
+.id-verdict{ font:800 .92rem var(--font-display); color:var(--ink); margin-top:3px; letter-spacing:-.01em; }
+.id-sub{ font:600 .66rem var(--font-mono); color:var(--ink-mute); margin-top:1px; }
+/* leyenda IV / EV */
+.id-legend{ display:flex; gap:14px; margin:0 0 9px; font:700 .6rem var(--font-pixel); letter-spacing:.03em; }
+.id-leg{ display:inline-flex; align-items:center; gap:5px; color:var(--ink-soft); }
+.id-leg::before{ content:''; width:11px; height:8px; border-radius:3px; }
+.id-leg-iv::before{ background:var(--tier-color); }
+.id-leg-ev::before{ background:repeating-linear-gradient(45deg,#9db7f5,#9db7f5 3px,transparent 3px,transparent 6px), #c7d4ee; }
+/* filas por stat: IV arriba, EV abajo */
+.id-rows{ display:flex; flex-direction:column; gap:10px; }
+.id-row{ display:grid; grid-template-columns:54px 1fr; align-items:center; gap:10px;
+  padding-left:8px; border-left:3px solid transparent; }
+.id-row.id-up{ border-left-color:#27c93f; } .id-row.id-down{ border-left-color:#4d90d5; }
+.id-lbl{ font:800 .68rem var(--font-mono); color:var(--ink-soft); display:flex; align-items:center; gap:2px; }
+.id-arr{ font-style:normal; font-weight:900; font-size:.86em; }
+.id-arr-up{ color:#27c93f; } .id-arr-down{ color:#4d90d5; }
+.id-bars{ display:flex; flex-direction:column; gap:5px; min-width:0; }
+.id-line{ display:flex; align-items:center; gap:8px; min-width:0; }
+.id-track{ flex:1; height:9px; min-width:36px; background:var(--paper); border:1px solid var(--line); border-radius:999px; overflow:hidden; }
+.id-track i{ display:block; height:100%; border-radius:999px; transition:width .45s ease; }
+.id-line-iv .id-track i{ background:linear-gradient(90deg, color-mix(in srgb,var(--tier-color) 55%,#fff), var(--tier-color)); }
+.id-num{ font:800 .72rem var(--font-mono); color:var(--ink); white-space:nowrap; min-width:46px; text-align:right; }
+.id-num small{ font-weight:600; color:var(--ink-mute); font-size:.82em; }
+.id-num-ev{ color:var(--ink-soft); }
+.id-juez{ font:700 .62rem var(--font-mono); color:var(--ink-mute); white-space:nowrap; min-width:68px; }
+.id-line-iv .id-juez{ color:color-mix(in srgb,var(--tier-color) 70%, var(--ink-soft)); }
+/* botón vitamina por stat */
+.id-vit{ display:inline-flex; align-items:center; gap:4px; font:800 .6rem var(--font-pixel); letter-spacing:.02em;
+  background:var(--card); border:1px solid var(--line); border-radius:999px; padding:2px 8px 2px 4px; cursor:pointer; color:var(--ink-soft); transition:.12s; }
+.id-vit:hover{ border-color:var(--teal); color:var(--teal-deep); background:color-mix(in srgb,var(--teal) 10%, var(--card)); transform:translateY(-1px); }
+.id-vit:active{ transform:translateY(0); }
+.id-vit-max{ background:transparent; border-style:dashed; cursor:default; color:var(--ink-mute); padding:2px 8px; }
+.id-vit-max:hover{ transform:none; border-color:var(--line); color:var(--ink-mute); background:transparent; }
+/* naturaleza + habilidad */
+.id-meta{ display:grid; grid-template-columns:1fr; gap:9px; margin-top:13px; }
+.id-cell{ background:var(--card); border:1px solid var(--line); border-radius:11px; padding:9px 11px; }
+.id-cell-k{ display:block; font:800 .58rem var(--font-pixel); letter-spacing:.05em; text-transform:uppercase; color:var(--ink-mute); margin-bottom:3px; }
+.id-cell-v{ font:600 .82rem var(--font-mono); color:var(--ink); }
+.id-cell-v b{ color:var(--ink); }
+.id-neutra{ font:700 .66rem var(--font-mono); color:var(--ink-mute); }
+.id-natup{ color:#1f9d4d; font-weight:800; font-size:.82em; margin-left:4px; }
+.id-natdown{ color:#3e7bd6; font-weight:800; font-size:.82em; margin-left:2px; }
+.id-hab-nom{ display:flex; align-items:center; gap:8px; }
+.id-hab-badge{ font:800 .54rem var(--font-pixel); letter-spacing:.04em; text-transform:uppercase; color:#fff;
+  background:linear-gradient(180deg,var(--teal),var(--teal-deep)); border-radius:999px; padding:2px 7px; }
+.id-hab-desc{ font:500 .74rem var(--font-body); color:var(--ink-mute); margin-top:4px; line-height:1.34; }
+.id-na{ color:var(--ink-mute); }
+@media (min-width:520px){ .id-meta{ grid-template-columns:1fr 1fr; } .id-cell-hab{ grid-column:1 / -1; } }
+
 .mv-lista{ display:flex; flex-direction:column; gap:7px; max-height:320px; overflow:auto; padding-right:3px; }
 .mv-fila{ width:100%; text-align:left; padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:var(--card); color:var(--ink); }
 .mv-top{ display:flex; align-items:center; gap:8px; }
@@ -909,7 +991,15 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .bt-yo{ bottom:14px; right:12px; border-radius:16px 5px 5px 16px; }
 .bt-info{ display:flex; align-items:baseline; gap:8px; }
 .bt-nom{ font:800 .9rem var(--font-mono); color:var(--gba-ink); text-transform:uppercase; letter-spacing:.02em; }
+.bt-gen{ font:900 .82rem var(--font-mono); margin-left:-4px; }
+.bt-gen:empty{ display:none; }
+.bt-gen-m{ color:#2f6fcc; } .bt-gen-f{ color:#d24b96; }
 .bt-lv{ font:700 .72rem var(--font-mono); color:var(--gba-ink); margin-left:auto; }
+/* habilidad bajo el HUD: línea chica, congruente con el cuadro FireRed */
+.bt-hab{ font:700 .58rem var(--font-mono); color:var(--gba-ink); opacity:.78; margin-top:3px; letter-spacing:.01em;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.bt-hab:empty{ display:none; }
+.bt-hab-ico{ color:#c07a10; }
 .bt-row2{ display:flex; align-items:center; gap:6px; margin-top:4px; }
 .bt-hpnum{ font:800 .64rem var(--font-mono); color:var(--gba-ink); }
 .bt-tipos{ display:flex; gap:3px; margin-left:auto; }
