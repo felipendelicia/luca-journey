@@ -330,7 +330,7 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
         ? '<div class="id-hab-nom"><b>' + hm.nombre + '</b>' + (hm.efecto ? '<span class="id-hab-badge">activa</span>' : '') + '</div>' +
             (hm.desc ? '<div class="id-hab-desc">' + hm.desc + '</div>' : '')
         : '<div class="id-hab-nom"><span class="id-na">—</span></div>';
-      return '<div class="pm-panel id-panel"><div class="pm-h">📊 Estadísticas ' + generoChip(idn.gen) + alfaChip(m) +
+      return '<div class="pm-panel id-panel"><div class="pm-h">📊 Estadísticas ' + generoChip(idn.gen) + alfaChip(m) + tamChip(m) +
           '<small>Nv. ' + L + ' · EV ' + evTotal + '/510</small></div>' +
         header +
         '<div class="es-formula">Cada número = <b class="es-k-base">base</b> de la especie + <b class="es-k-iv">IV</b> (genes, fijos) + <b class="es-k-ev">EV</b> (entrenás), y la <b>naturaleza</b> sube/baja un 10%.</div>' +
@@ -345,6 +345,9 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
       : gen === 'f' ? '<span class="id-gen id-gen-f" title="Hembra">♀</span>' : '';
     // marca ALFA (captura rara con IVs garantizados altos); solo si inst.alfa.
     const alfaChip = (m) => m && m.alfa ? '<span class="id-alfa" title="Alfa · ejemplar raro de genética superior">👑 Alfa</span>' : '';
+    // chip de tamaño del ejemplar (cosmético); ausente o 'M' → ''.
+    const TAM_LBL = { XXS: '🔬 XXS', S: 'S', L: 'L', XL: '🔶 XL', XXL: '👑 XXL' };
+    const tamChip = (m) => (m && m.tam && m.tam !== 'M') ? '<span class="id-tam" title="Tamaño del ejemplar (cosmético)">' + (TAM_LBL[m.tam] || m.tam) + '</span>' : '';
     const ID_LBL = ['PS', 'Atq', 'Def', 'At.Esp', 'Df.Esp', 'Vel'];
     const ID_STAT = ['#ff5959', '#f5ac78', '#fae078', '#9db7f5', '#a7db8d', '#fa92b2'];   // tinte de stat
     // mapa stat-idx → vitamina (para los botones), desde el catálogo (cat:'ev').
@@ -363,7 +366,7 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
           '<span class="pm-num">Nº ' + String(m.id).padStart(3, '0') + '</span>' +
           (m.shiny ? '<span class="pm-shiny-led">✨</span>' : '') +
           '<div class="pm-platform"><img class="pm-img" src="' + spriteUrl(m.id, m.shiny) + '" alt="' + esp + '" /></div></div>' +
-        '<div class="pm-id"><div class="pm-name">' + nomInst(m) + generoChip(identidadDe(m).gen) + alfaChip(m) + '</div>' +
+        '<div class="pm-id"><div class="pm-name">' + nomInst(m) + generoChip(identidadDe(m).gen) + alfaChip(m) + tamChip(m) + '</div>' +
           (m.mote ? '<div class="pm-esp">(' + esp + ')</div>' : '') +
           '<div class="pm-pills">' + tps.map((tp) => '<span class="pm-type" data-t="' + tp + '">' + tp + '</span>').join('') +
             '<span class="pm-lvlchip">Nv. ' + m.nivel + '</span>' +
