@@ -6,10 +6,12 @@ import { tierDe } from './rareza.js';
 import evoData from '../data/evoluciones.json' with { type: 'json' };
 import aparicion from '../data/aparicion.json' with { type: 'json' };
 import learnsets from '../data/learnsets.json' with { type: 'json' };
-import { ITEMS, BALL_BOOST } from './items.js';
+import { ITEMS } from './items.js';
 import { migrarPC } from './migracion-pc.js';
 import habilidades from '../data/habilidades.json';
 import yields from '../data/yields.json';
+import tipos from '../data/tipos.json' with { type: 'json' };
+import { probCaptura, pisoIV, fleeProb, sincronizaNat } from './safari-core.js';
 import { rolarIdentidad, identidad as identidadCore, NATURALEZAS, sumarEV } from './combate-core.ts';
 
 // corre la migración a v2 (conteos→instancias) una vez, antes de tocar el PC.
@@ -71,11 +73,11 @@ export function nivelWild(id) {
 }
 
 // crea una instancia nueva (al atrapar) + suma a vistos + caramelos a la familia. Devuelve la instancia.
-export function atrapar(id, { shiny = false, nivel = 1 } = {}) {
+export function atrapar(id, { shiny = false, nivel = 1, alfa = false, ivs = null, nat = null, hab = null, gen = null } = {}) {
   id = Number(id);
-  const idn = rolarIdentidad(id, habilidades);
+  const idn = (ivs && nat != null) ? { ivs, nat, hab, gen } : rolarIdentidad(id, habilidades);
   const inst = { iid: _uid(), id, nivel, exp: 0, shiny, movs: [], creado: Date.now(),
-    ivs: idn.ivs, nat: idn.nat, hab: idn.hab, gen: idn.gen, evs: [0, 0, 0, 0, 0, 0] };
+    ivs: idn.ivs, nat: idn.nat, hab: idn.hab, gen: idn.gen, evs: [0, 0, 0, 0, 0, 0], ...(alfa ? { alfa: true } : {}) };
   const arr = pc(); arr.push(inst); setPC(arr);
   addVisto(id); addCaramelos(id, CARAMELOS_POR_CAPTURA);
   return inst;
@@ -288,8 +290,6 @@ export function comprarItem(id) {
   const balls = get('col:balls', 0); if (balls < it.precio) return false;
   set('col:balls', balls - it.precio); darItem(id, 1); return true;
 }
-// mejor ball disponible (2=ultra, 1=super, 0=normal)
-export function mejorBallTier() { const inv = items(); if (inv.ultraball) return 2; if (inv.superball) return 1; return 0; }
 
 // Liberar una instancia (GO): la perdés del PC y te da 1 caramelo de la familia. Queda en vistos.
 export function liberar(iid) {
@@ -359,33 +359,72 @@ function elegirPonderado(pool, pesos) {
   return pool[pool.length - 1];
 }
 
-// Tirá una Pokéball: atrapás un salvaje de las regiones desbloqueadas, ponderado por
-// rareza (puede aparecer cualquiera, pero con probabilidades distintas). Permite repetidos.
-export function tirar(pokemon, temas, pesos = {}) {
-  let balls = get('col:balls', 0);
-  if (balls <= 0) return { error: 'sin-balls' };
-  // salvajes solo de las regiones desbloqueadas (hacés ejercicios de una región
-  // para que aparezcan sus Pokémon). Se permiten repetidos.
+// ───────────────────────── safari profundo (encuentro 2 pasos) ─────────────────────────
+const BALL_KEYS = ['pokeball', 'superball', 'ultraball', 'veloz', 'turno', 'red', 'repeticion', 'xeneize', 'master'];
+
+// inventario de balls que tenés (pokeball = contador col:balls; el resto = items). [{key,n,...meta}]
+export function inventarioBalls() {
+  const inv = items();
+  return BALL_KEYS
+    .map((k) => ({ key: k, n: k === 'pokeball' ? get('col:balls', 0) : (inv[k] || 0), ...ITEMS[k] }))
+    .filter((b) => b.n > 0);
+}
+export const tieneBall = (key) => key === 'pokeball' ? get('col:balls', 0) > 0 : (items()[key] || 0) > 0;
+function consumirBall(key) {
+  if (key === 'pokeball') set('col:balls', Math.max(0, get('col:balls', 0) - 1));
+  else usarItem(key);
+}
+
+// compañero (para Sincronía). col:companero = iid.
+export const companero = () => { const iid = get('col:companero', null); return iid ? pc().find((m) => m.iid === iid) || null : null; };
+export function setCompanero(iid) { set('col:companero', iid); }
+
+// sube los `n` IVs más bajos (no perfectos) a 31. Para alfa (3 garantizados).
+function forzarPerfectos(ivs, n) {
+  const out = ivs.slice();
+  const idxs = out.map((v, i) => [v, i]).filter(([v]) => v < 31).sort((a, b) => a[0] - b[0]).slice(0, n);
+  for (const [, i] of idxs) out[i] = 31;
+  return out;
+}
+
+export const PROB_ALFA = 0.04;
+
+// PASO 1: aparece un salvaje. Rolea especie + identidad + shiny + alfa. NO persiste.
+export function encontrar(pokemon, temas, pesos = {}) {
   const regiones = regionesDesbloqueadas(temas);
   const pool = pokemon.filter((p) => regiones.has(p.region));
   if (!pool.length) return { error: 'vacio' };
-  // mejor ball del inventario: la usa + consume; sesga rareza/nivel/shiny/caramelos
-  const ballTier = mejorBallTier();
-  if (ballTier === 2) usarItem('ultraball'); else if (ballTier === 1) usarItem('superball');
-  const boost = BALL_BOOST[ballTier];
-  // rareza: aplanar la distribución (peso^(1/rareza)) → los raros (peso bajo) salen más con mejor ball
-  const pesosSel = boost.rareza === 1 ? pesos : Object.fromEntries(pool.map((p) => [p.id, Math.pow(pesos[p.id] || 1, 1 / boost.rareza)]));
-  const elegido = elegirPonderado(pool, pesosSel);
-  // probabilidad "natural" del Pokémon (su rareza base, sin contar la ball)
-  const totalPeso = pool.reduce((a, p) => a + (pesos[p.id] || 1), 0);
-  const prob = (pesos[elegido.id] || 1) / totalPeso;
-  const cadaCuantos = Math.max(1, Math.round(1 / prob));
-  balls--;
-  const shiny = Math.random() < PROB_SHINY * boost.shiny;
-  const nivel = Math.min(50, Math.round(nivelWild(elegido.id) * (1 + boost.nivelPct)));
-  const inst = atrapar(elegido.id, { shiny, nivel });                // instancia + vistos + 3 caramelos
-  if (boost.caramelos > 3) addCaramelos(elegido.id, boost.caramelos - 3); // caramelos extra de la ball
-  const cant = pc().filter((m) => m.id === elegido.id).length;
-  set('col:balls', balls);
-  return { pokemon: elegido, cantidad: cant, repetido: cant > 1, shiny, nuevoShiny: shiny, balls, prob, cadaCuantos, nivel: inst.nivel, ball: ballTier, tier: tierDe(elegido.id, pesos), caramelos: caramelos()[familiaDe(elegido.id)] || 0, inst };
+  const elegido = elegirPonderado(pool, pesos);
+  const id = elegido.id;
+  const idn = rolarIdentidad(id, habilidades);
+  // Sincronía: si el compañero la tiene, fija la naturaleza
+  const comp = companero();
+  if (comp) { const ci = identidadCore(comp, _DATOS_ID); const ns = sincronizaNat(ci.hab, ci.nat); if (ns != null) idn.nat = ns; }
+  const alfa = Math.random() < PROB_ALFA;
+  const ivs = alfa ? forzarPerfectos(idn.ivs, 3) : idn.ivs;
+  return {
+    id, nivel: nivelWild(id), ivs, nat: idn.nat, hab: idn.hab, gen: idn.gen,
+    shiny: Math.random() < PROB_SHINY, alfa,
+    rarezaTier: tierDe(id, aparicion).nivel, estrellas: ivEstrellas(ivs),
+    naturalezaNombre: NATURALEZAS[idn.nat].nombre,
+    tiposWild: tipos[String(id)] || [], vistoYa: vistos().has(id),
+    pokemon: elegido,
+  };
+}
+
+// PASO 2: tirás la ball elegida con una calidad de tiro. Consume la ball; en éxito persiste.
+export function capturar(enc, ballKey, calidad = 'Normal', extra = {}) {
+  if (!tieneBall(ballKey)) return { error: 'sin-ball' };
+  consumirBall(ballKey);
+  const ballDef = { key: ballKey, ...ITEMS[ballKey] };
+  const tiroN = extra.tiroN || 1;
+  const ctx = { tiroN, calidad, tiposWild: enc.tiposWild, vistoYa: enc.vistoYa };
+  const prob = probCaptura(enc.rarezaTier, ballDef, ctx);
+  if (Math.random() < prob) {
+    const ivs = pisoIV(enc.ivs, calidad);
+    const inst = atrapar(enc.id, { shiny: enc.shiny, nivel: enc.nivel, alfa: enc.alfa, ivs, nat: enc.nat, hab: enc.hab, gen: enc.gen });
+    return { ok: true, inst, prob, calidad, ball: ballKey };
+  }
+  const huyo = Math.random() < fleeProb(enc.rarezaTier);
+  return { ok: false, huyo, prob, calidad, ball: ballKey };
 }
