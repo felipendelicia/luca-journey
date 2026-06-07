@@ -653,6 +653,11 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       if (pr.caramelos) { const t = Object.values(pr.caramelos).reduce((a, b) => a + b, 0); if (t) m += ' 🍬 +' + t + ' caramelos.'; }
       if (pr.insignias && pr.insignias.length) m += ' 🏅 ¡Insignia nueva: ' + pr.insignias.join(', ') + '!';
       if (pr.rating != null) m += ' 📊 Rating: ' + pr.rating + ' (' + (pr.delta >= 0 ? '+' : '') + pr.delta + ').';
+      if (pr.ev && pr.ev.some((n) => n > 0)) {
+        const EVL = ['PS', 'Atq', 'Def', 'At.Esp', 'Df.Esp', 'Vel'];
+        const evs = pr.ev.map((n, i) => n > 0 ? EVL[i] + '+' + n : null).filter(Boolean);
+        if (evs.length) m += ' 💪 +EVs: ' + evs.join(' · ') + '.';
+      }
       detenerMusica(); musOn = false;
       $('fin-msg').textContent = m; if (gano) sonarEpico(); $('bt-fin').hidden = false;
       try { await refrescarDesdeNube(); } catch {}

@@ -4,6 +4,8 @@
 import { ProgresoService } from '../progreso/progreso.service';
 import { EstadoCombate, JugadorEstado } from './motor';
 import evoData from './data/evoluciones.json';
+import yields from './data/yields.json';
+import { evPorDerrotados, sumarEV } from './combate-core';
 
 const familiaDe = (id: number): number => ((evoData as any)[id] && (evoData as any)[id].familia) || Number(id);
 
@@ -30,6 +32,7 @@ function elo(rG: number, rP: number) {
 export interface Premios {
   gano: boolean; caramelos?: Record<number, number>; balls?: number; insignias?: string[];
   rating?: number; delta?: number;    // ELO nuevo y cuánto cambió
+  ev?: number[];                      // EVs ganados por el equipo (rivales derrotados)
   estado?: Record<string, any>;       // blob actualizado para emitir al cliente (refresca su nube)
 }
 
@@ -109,6 +112,16 @@ async function aplicarUno(
   setObj(estado, 'col:pvp', st);
   setObj(estado, 'col:insignias', [...set]);
   premios.insignias = nuevas;
+
+  // EVs en PvP: yields de los rivales debilitados → al equipo que trajo (los 3). Ambos jugadores.
+  const yv = evPorDerrotados(rival.equipo, yields as any);
+  if (yv.some((n) => n > 0)) {
+    const pcArr = pObj(estado, 'col:pc', []);
+    for (const c of yo.equipo) { const m = pcArr.find((x: any) => x.iid === c.iid); if (m) m.evs = sumarEV(m.evs || [0, 0, 0, 0, 0, 0], yv); }
+    setObj(estado, 'col:pc', pcArr);
+    premios.ev = yv;
+  }
+
   premios.estado = estado;
 
   await progreso.subir(yo.uid, estado);
