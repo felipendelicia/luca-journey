@@ -28,13 +28,15 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
           <img class="bt-sprite bt-sprite-p" id="p-img" src="" alt="vos" />
         </div>
         <div class="bt-rival">
-          <div class="bt-info"><span class="bt-nom" id="r-nom"></span><span class="bt-lv" id="r-lv"></span><span class="bt-tipos" id="r-tipos"></span><span class="bt-estado" id="r-estado"></span></div>
+          <div class="bt-info"><span class="bt-nom" id="r-nom"></span><span class="bt-lv" id="r-lv"></span><span class="bt-estado" id="r-estado"></span></div>
           <div class="bt-hpbar"><div class="bt-hp" id="r-hp"></div></div>
+          <div class="bt-row2"><span class="bt-hpnum" id="r-hpnum"></span><span class="bt-tipos" id="r-tipos"></span></div>
           <div class="bt-equipo" id="r-dots"></div>
         </div>
         <div class="bt-yo">
-          <div class="bt-info"><span class="bt-nom" id="p-nom"></span><span class="bt-lv" id="p-lv"></span><span class="bt-tipos" id="p-tipos"></span><span class="bt-estado" id="p-estado"></span></div>
+          <div class="bt-info"><span class="bt-nom" id="p-nom"></span><span class="bt-lv" id="p-lv"></span><span class="bt-estado" id="p-estado"></span></div>
           <div class="bt-hpbar"><div class="bt-hp" id="p-hp"></div></div>
+          <div class="bt-row2"><span class="bt-hpnum" id="p-hpnum"></span><span class="bt-tipos" id="p-tipos"></span></div>
           <div class="bt-equipo" id="p-dots"></div>
         </div>
       </div>
@@ -95,6 +97,12 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     function cry(idp, vol = 0.4) { try { const a = new Audio(CRY_BASE + idp + '.ogg'); a.volume = vol; a.play().catch(() => {}); } catch {} }
     // color por tipo (para el destello del ataque)
     const TCOLOR = { Normal: '#9099a1', Fuego: '#ff6b2c', Agua: '#4d90d5', Planta: '#56ad4e', 'Eléctrico': '#e0bd2b', Hielo: '#62c4b6', Lucha: '#ce4069', Veneno: '#a85fc4', Tierra: '#d3793f', Volador: '#8aa6df', 'Psíquico': '#f56a72', Bicho: '#88bb26', Roca: '#b3a576', Fantasma: '#5269ac', 'Dragón': '#0a6dc4', Siniestro: '#585761', Acero: '#5a8ea1', Hada: '#e487dd' };
+    // sprites GBA reales (FireRed/LeafGreen) para gen 1-3; el resto usa el sprite por defecto.
+    const FRSPR = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
+    const spriteBatalla = (id, shiny, back) => id <= 386
+      ? FRSPR + 'versions/generation-iii/firered-leafgreen/' + (back ? 'back/' : '') + (shiny ? 'shiny/' : '') + id + '.png'
+      : FRSPR + (back ? 'back/' : '') + (shiny ? 'shiny/' : '') + id + '.png';
+    const chipsTipo = (tipos) => (tipos || []).map((t) => '<span class="bt-tipo" style="background:' + (TCOLOR[t] || '#888') + '">' + t + '</span>').join('');
     function destello(esRival, tipo) {
       const arena = document.querySelector('.bt-arena'); if (!arena) return;
       const fx = document.createElement('div'); fx.className = 'bt-fx';
@@ -178,14 +186,18 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     function render() {
       const p = miAct(), r = rivAct();
       if (!p || !r) return;   // un equipo quedó eliminado → terminar() maneja la UI
-      $('r-nom').textContent = r.nombre; $('r-lv').textContent = 'Nv.' + r.nivel; $('r-tipos').textContent = r.tipos.join('/');
-      $('p-nom').textContent = p.nombre; $('p-lv').textContent = 'Nv.' + p.nivel; $('p-tipos').textContent = p.tipos.join('/');
+      $('r-nom').textContent = r.nombre; $('r-lv').textContent = 'Nv.' + r.nivel; $('r-tipos').innerHTML = chipsTipo(r.tipos);
+      $('p-nom').textContent = p.nombre; $('p-lv').textContent = 'Nv.' + p.nivel; $('p-tipos').innerHTML = chipsTipo(p.tipos);
+      $('r-hpnum').textContent = Math.max(0, r.hp) + '/' + r.hpMax; $('p-hpnum').textContent = Math.max(0, p.hp) + '/' + p.hpMax;
       $('r-estado').innerHTML = estadoChip(r); $('p-estado').innerHTML = estadoChip(p);
-      $('r-img').src = spriteUrl(r.id, r.shiny);
-      // jugador de ESPALDAS (como en los juegos); si la gen no tiene back-sprite, cae al de frente
-      const pImg = $('p-img');
-      pImg.onerror = () => { pImg.onerror = null; pImg.src = spriteUrl(p.id, p.shiny); };
-      pImg.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/' + (p.shiny ? 'shiny/' : '') + p.id + '.png';
+      // sprites GBA reales (FireRed/LeafGreen) para gen 1-3; fallback al sprite por defecto
+      const rImg = $('r-img');
+      rImg.onerror = () => { rImg.onerror = null; rImg.src = spriteUrl(r.id, r.shiny); };
+      rImg.src = spriteBatalla(r.id, r.shiny, false);
+      const pImg = $('p-img');   // jugador DE ESPALDAS
+      pImg.onerror = () => { pImg.onerror = () => { pImg.onerror = null; pImg.src = spriteUrl(p.id, p.shiny); };
+        pImg.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/' + (p.shiny ? 'shiny/' : '') + p.id + '.png'; };
+      pImg.src = spriteBatalla(p.id, p.shiny, true);
       hp('r-hp', r); hp('p-hp', p);
       dots('r-dots', G.rival); dots('p-dots', G.equipo);
       $('bt-carga').style.width = G.carga + '%'; $('bt-carga-txt').textContent = 'Súper: ' + G.carga + '%';

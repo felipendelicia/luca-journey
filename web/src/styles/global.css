@@ -905,7 +905,10 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .bt-info{ display:flex; align-items:baseline; gap:8px; }
 .bt-nom{ font:800 .9rem var(--font-mono); color:var(--gba-ink); text-transform:uppercase; letter-spacing:.02em; }
 .bt-lv{ font:700 .72rem var(--font-mono); color:var(--gba-ink); margin-left:auto; }
-.bt-tipos{ display:none; }                                   /* GBA no muestra tipos en pantalla */
+.bt-row2{ display:flex; align-items:center; gap:6px; margin-top:4px; }
+.bt-hpnum{ font:800 .64rem var(--font-mono); color:var(--gba-ink); }
+.bt-tipos{ display:flex; gap:3px; margin-left:auto; }
+.bt-tipo{ font:800 .54rem var(--font-mono); color:#fff; text-transform:uppercase; letter-spacing:.02em; padding:1px 5px; border-radius:3px; border:1px solid rgba(0,0,0,.35); text-shadow:0 1px 0 rgba(0,0,0,.35); }
 .bt-estado:empty{ display:none; }
 .bt-est{ display:inline-flex; align-items:center; gap:2px; padding:0 5px; border-radius:3px; font:800 .54rem var(--font-mono);
   color:#fff; background:var(--e,#888); border:1px solid rgba(0,0,0,.35); }
