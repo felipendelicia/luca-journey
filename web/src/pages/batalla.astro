@@ -105,6 +105,30 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     const $ = (id) => document.getElementById(id);
     const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
 
+    // narra una línea en el cuadro de texto (#bt-msg) escribiéndola LETRA POR LETRA (estilo FireRed).
+    // Al terminar muestra el cursor ▼ (clase .listo) un instante y resuelve. Un tap saltea al texto completo.
+    // prefers-reduced-motion → texto directo (sin tipeo).
+    let _narrarSkip = null;
+    function narrar(texto) {
+      const box = document.getElementById('bt-msg');
+      return new Promise((resolve) => {
+        texto = String(texto == null ? '' : texto);
+        if (!box || matchMedia('(prefers-reduced-motion: reduce)').matches) { if (box) box.textContent = texto; setTimeout(resolve, 280); return; }
+        let i = 0; _narrarSkip = null;
+        box.classList.add('escribiendo'); box.classList.remove('listo'); box.textContent = '';
+        const fin = () => { box.classList.remove('escribiendo'); box.classList.add('listo'); _narrarSkip = null; setTimeout(() => { box.classList.remove('listo'); resolve(); }, 450); };
+        const tick = () => {
+          if (i >= texto.length) return fin();
+          box.textContent += texto[i++];
+          _narrarSkip = () => { box.textContent = texto; i = texto.length; _narrarSkip = null; fin(); };
+          setTimeout(tick, 24);
+        };
+        tick();
+      });
+    }
+    // tap/click en cualquier parte saltea la línea que se está escribiendo
+    document.addEventListener('pointerdown', () => { if (_narrarSkip) _narrarSkip(); });
+
     // grito (cry) de un Pokémon (PokeAPI, ogg)
     const CRY_BASE = 'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/';
     function cry(idp, vol = 0.4) { try { const a = new Audio(CRY_BASE + idp + '.ogg'); a.volume = vol; a.play().catch(() => {}); } catch {} }
@@ -173,12 +197,12 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       $('bt-sel').hidden = true; $('bt-combate').hidden = false; $('bt-fin').hidden = true;
       $('bt-estado-online').hidden = true; $('bt-timer-online').hidden = true;   // banner/timer online no aplican vs CPU
       musicaBatalla();          // 🎵 música de fondo de la pelea
-      render(); msg('¡Aparece el rival! Elegí tu ataque.');
-      cry(rivAct().id, 0.45); setTimeout(() => cry(miAct().id, 0.4), 550);
       // habilidad AL ENTRAR (Intimidación): ambos activos entran a la vez → cada uno intimida al otro
       G.lock = true; render();
-      { const te = habAlEntrar(rivAct(), miAct()); if (te) { msg(te); render(); await esperar(1000); } }
-      { const te = habAlEntrar(miAct(), rivAct()); if (te) { msg(te); render(); await esperar(1000); } }
+      cry(rivAct().id, 0.45); setTimeout(() => cry(miAct().id, 0.4), 550);
+      await narrar('¡Aparece el rival! Elegí tu ataque.'); await esperar(300);
+      { const te = habAlEntrar(rivAct(), miAct()); if (te) { render(); await narrar(te); await esperar(400); } }
+      { const te = habAlEntrar(miAct(), rivAct()); if (te) { render(); await narrar(te); await esperar(400); } }
       G.lock = false; render(); armarTimer();
     }
     function poolRival() {
@@ -261,9 +285,9 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     async function cambiar(i) {
       if (G.lock || i === G.pa || G.equipo[i].hp <= 0) return;
       cancelarTimer(); G.lock = true; render();
-      G.pa = i; msg('¡Adelante, ' + miAct().nombre + '!'); render(); cry(miAct().id, 0.4);
-      await esperar(750);
-      { const te = habAlEntrar(miAct(), rivAct()); if (te) { msg(te); render(); await esperar(1000); } }
+      G.pa = i; render(); cry(miAct().id, 0.4); await narrar('¡Adelante, ' + miAct().nombre + '!');
+      await esperar(450);
+      { const te = habAlEntrar(miAct(), rivAct()); if (te) { render(); await narrar(te); await esperar(400); } }
       await turnoRival();
       if (fin()) return;
       await tick('r');
@@ -283,9 +307,10 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const def = defLado === 'p' ? miAct() : rivAct();
       if (esEstado(mov)) {
         const txt = aplicarEstado(mov, at, def);
-        msg('¡' + at.nombre + ' usó ' + mov.nombre + '!  ' + txt);
         efectoAtaque(document.querySelector('.bt-arena'), mov, defLado === 'r');   // FX de estado (flechas ↑/↓)
-        render(); await esperar(950);
+        render();
+        await narrar('¡' + at.nombre + ' usó ' + mov.nombre + '!  ' + txt);
+        await esperar(550);
       } else {
         await aplicarGolpe(at, mov, defLado, calcularDano(at, mov, def, Math.random, tiraCritico()));
       }
@@ -295,7 +320,8 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const atImg = defLado === 'p' ? $('r-img') : $('p-img');   // el atacante es el otro lado
       const defImg = defLado === 'p' ? $('p-img') : $('r-img');
       const ef = etiquetaEfec(dmgInfo.efec);
-      msg('¡' + at.nombre + ' usó ' + (mov.nombre || 'su ataque') + '!' + (dmgInfo.crit ? '  ¡Golpe crítico! 💥' : '') + (ef ? '  ' + ef : ''));
+      await narrar('¡' + at.nombre + ' usó ' + (mov.nombre || 'su ataque') + '!' + (dmgInfo.crit ? '  ¡Golpe crítico! 💥' : '') + (ef ? '  ' + ef : ''));
+      await esperar(200);   // beat tras la línea, antes del golpe
       // 1) el atacante embiste
       atImg.classList.add('bt-lunge'); await esperar(190); atImg.classList.remove('bt-lunge');
       // 2) impacto: animación de ataque (por movimiento, o por tipo) + shake si pega fuerte
@@ -304,19 +330,19 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       defImg.classList.add('bt-hit');
       const fuerte = dmgInfo.efec >= 2 || dmgInfo.dmg > def.hpMax * 0.38;
       if (fuerte) document.querySelector('.bt-arena').classList.add('bt-sacude');
-      render(); await esperar(200);
+      render(); await esperar(220);
       defImg.classList.remove('bt-hit'); document.querySelector('.bt-arena').classList.remove('bt-sacude');
-      await esperar(560);
+      await esperar(620);
       if (def.hp <= 0) {
-        cry(def.id, 0.3); msg(def.nombre + ' se debilitó.');
+        cry(def.id, 0.3); await narrar(def.nombre + ' se debilitó.');
         if (defLado === 'r') darEV(miAct().iid, yieldDe(def.id));   // práctica: EVs al activo del jugador
         defImg.classList.add('bt-faint'); await esperar(650); defImg.classList.remove('bt-faint');
         avanzar(defLado);
         if ((defLado === 'p' ? G.pa : G.ra) < 0) return;   // equipo eliminado → el caller corre fin()
-        render(); cry((defLado === 'p' ? miAct() : rivAct()).id, 0.35); await esperar(400);
+        render(); cry((defLado === 'p' ? miAct() : rivAct()).id, 0.35); await esperar(450);
         // habilidad AL ENTRAR del reemplazo (Intimidación) → intimida al activo rival
         { const nuevo = defLado === 'p' ? miAct() : rivAct(), opo = defLado === 'p' ? rivAct() : miAct();
-          const te = habAlEntrar(nuevo, opo); if (te) { msg(te); render(); await esperar(1000); } }
+          const te = habAlEntrar(nuevo, opo); if (te) { render(); await narrar(te); await esperar(400); } }
       }
     }
     function avanzar(lado) {
@@ -338,17 +364,16 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const img = lado === 'p' ? $('p-img') : $('r-img');
       const pa = puedeActuar(at);
       if (pa.texto) {
-        msg(pa.texto);
         if (pa.autogolpe) { img.classList.add('bt-hit'); }
-        render(); await esperar(1000);
+        render(); await narrar(pa.texto); await esperar(350);
         if (pa.autogolpe) { img.classList.remove('bt-hit'); }
       }
       if (!pa.actua) return;                                   // perdió el turno (no gasta PP)
       if (mov.id && mov.pp > 0) mov.pp--;                      // consume PP (Forcejeo id 0 no gasta)
-      if (!acierta(mov, Math.random, at)) { msg('¡' + at.nombre + ' usó ' + mov.nombre + '… pero falló!'); render(); await esperar(950); return; }
+      if (!acierta(mov, Math.random, at)) { render(); await narrar('¡' + at.nombre + ' usó ' + mov.nombre + '… pero falló!'); await esperar(350); return; }
       await usarMov(at, mov, defLado);
-      if (def.hp > 0) { const t = aplicarAilment(mov, at, def); if (t) { msg(t); render(); await esperar(1000); } }
-      if (def.hp > 0) { const tc = habAlContacto(def, at, mov, Math.random); if (tc) { msg(tc); render(); await esperar(1000); } }
+      if (def.hp > 0) { const t = aplicarAilment(mov, at, def); if (t) { render(); await narrar(t); await esperar(400); } }
+      if (def.hp > 0) { const tc = habAlContacto(def, at, mov, Math.random); if (tc) { render(); await narrar(tc); await esperar(400); } }
     }
 
     // daño por turno (veneno/quemadura) del activo del lado, con su posible debilitamiento.
@@ -357,15 +382,15 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const tk = tickEstado(c);
       if (!tk.dmg) return;
       const img = lado === 'p' ? $('p-img') : $('r-img');
-      msg(tk.texto); img.classList.add('bt-hit'); render(); await esperar(230); img.classList.remove('bt-hit'); await esperar(620);
+      img.classList.add('bt-hit'); render(); await narrar(tk.texto); img.classList.remove('bt-hit'); await esperar(450);
       if (c.hp <= 0) {
-        cry(c.id, 0.3); msg(c.nombre + ' se debilitó.');
+        cry(c.id, 0.3); await narrar(c.nombre + ' se debilitó.');
         if (lado === 'r') darEV(miAct().iid, yieldDe(c.id));   // práctica: EVs al activo del jugador
         img.classList.add('bt-faint'); await esperar(650); img.classList.remove('bt-faint');
-        avanzar(lado); render(); await esperar(300);
+        avanzar(lado); render(); await esperar(350);
         // habilidad AL ENTRAR del reemplazo (Intimidación) → intimida al activo rival
         const nuevo = lado === 'p' ? miAct() : rivAct(), opo = lado === 'p' ? rivAct() : miAct();
-        if (nuevo && opo) { const te = habAlEntrar(nuevo, opo); if (te) { msg(te); render(); await esperar(1000); } }
+        if (nuevo && opo) { const te = habAlEntrar(nuevo, opo); if (te) { render(); await narrar(te); await esperar(400); } }
       }
     }
 
@@ -437,11 +462,13 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       else if (it.revive) { if (!G.equipo.some((c) => c.hp <= 0)) { msg('No hay ningún Pokémon debilitado para revivir.'); return; } }
       if (!usarItem(itemId)) return;
       $('mochila-modal').hidden = true; cancelarTimer(); G.lock = true; G.itemsUsados++;
-      if (it.cura) { const c = Math.min(a.hpMax - a.hp, it.cura); a.hp += c; msg('¡Usaste ' + it.nombre + '! ' + a.nombre + ' recuperó ' + c + ' HP.'); }
-      else if (it.curaEstado) { a.estado = null; a.estadoT = 0; msg('¡Usaste ' + it.nombre + '! ' + a.nombre + ' se recuperó.'); }
-      else if (it.revive) { const ko = G.equipo.find((c) => c.hp <= 0); ko.hp = Math.max(1, Math.round(ko.hpMax * it.revive)); ko.estado = null; ko.estadoT = 0; sonarExito(); msg('¡' + ko.nombre + ' revivió con ' + ko.hp + ' HP!'); }
+      let _it = '';
+      if (it.cura) { const c = Math.min(a.hpMax - a.hp, it.cura); a.hp += c; _it = '¡Usaste ' + it.nombre + '! ' + a.nombre + ' recuperó ' + c + ' HP.'; }
+      else if (it.curaEstado) { a.estado = null; a.estadoT = 0; _it = '¡Usaste ' + it.nombre + '! ' + a.nombre + ' se recuperó.'; }
+      else if (it.revive) { const ko = G.equipo.find((c) => c.hp <= 0); ko.hp = Math.max(1, Math.round(ko.hpMax * it.revive)); ko.estado = null; ko.estadoT = 0; sonarExito(); _it = '¡' + ko.nombre + ' revivió con ' + ko.hp + ' HP!'; }
       render();
-      await esperar(900);
+      await narrar(_it);
+      await esperar(500);
       await turnoRival();
       if (fin()) return;
       await tick('r');
@@ -475,12 +502,12 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
         const calidad = Math.max(0, Math.min(1, 1 - seg / 12)); // rápido = mejor
         sonarExito();
         const s = danoSuper(miAct(), rivAct(), calidad);
-        msg('✅ ¡Correcto! ' + miAct().nombre + ' desata un SÚPER con ' + s.mov.nombre + '!');
-        await esperar(500);
+        await narrar('✅ ¡Correcto! ' + miAct().nombre + ' desata un SÚPER con ' + s.mov.nombre + '!');
+        await esperar(350);
         await aplicarGolpe(miAct(), s.mov, 'r', { dmg: s.dmg, efec: s.efec });
       } else {
-        msg('❌ Incorrecto… el súper se apagó.');
-        await esperar(700);
+        await narrar('❌ Incorrecto… el súper se apagó.');
+        await esperar(450);
       }
       if (fin()) return;
       await turnoRival();
@@ -744,7 +771,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     }
     // ── REVEAL + animar la resolución de la ronda ──
     // Estructurado para que Task 6 reemplace `narrarRonda(texto)` por el typewriter `await narrar(...)`.
-    function narrarRonda(texto) { $('bt-msg').textContent = texto; }   // Task 6: → await narrar(texto)
+    function narrarRonda(texto) { return narrar(texto); }   // typewriter FireRed (await en los call-sites)
 
     // refresca HUD (HP, sprites, estado, dots) desde un snapshot — sin re-armar el menú
     function pintarHud(snap) {
@@ -771,8 +798,8 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       if (primero) {
         const mio = primero.uid === myUid;
         marcarPrimero(mio);
-        narrarRonda(mio ? '▶ ¡Vos primero!' : '▶ El rival se adelanta…');
-        await esperar(650);
+        await narrarRonda(mio ? '▶ ¡Vos primero!' : '▶ El rival se adelanta…');
+        await esperar(420);
       }
       // anima cada evento en orden
       for (const ev of evs) {
@@ -782,23 +809,24 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
           // el que recibe es el otro lado
           const atImgId = esMio ? 'p-img' : 'r-img', defImgId = esMio ? 'r-img' : 'p-img';
           const atImg = $(atImgId), defImg = $(defImgId);
-          narrarRonda(ev.texto || '¡Ataque!');
-          if (atImg) { atImg.classList.add('bt-lunge'); await esperar(170); atImg.classList.remove('bt-lunge'); }
+          await narrarRonda(ev.texto || '¡Ataque!');
+          await esperar(220);   // pequeña pausa tras la línea, antes del impacto
+          if (atImg) { atImg.classList.add('bt-lunge'); await esperar(190); atImg.classList.remove('bt-lunge'); }
           // FX por daño: destello sobre el defensor
           if (ev.dmg != null) { destello(!esMio, ev.tipo || ''); if (defImg) { defImg.classList.add('bt-hit'); } if (ev.efec >= 2) document.querySelector('.bt-arena').classList.add('bt-sacude'); }
-          await esperar(220);
+          await esperar(260);
           if (defImg) defImg.classList.remove('bt-hit'); document.querySelector('.bt-arena').classList.remove('bt-sacude');
-          await esperar(420);
+          await esperar(520);
         } else if (ev.t === 'cambio' || ev.t === 'reemplazo' || ev.t === 'entra') {
-          narrarRonda(ev.texto || '¡Adelante!'); const c = actDe(snap, dueno); if (c) cry(c.id, 0.4); await esperar(700);
+          await narrarRonda(ev.texto || '¡Adelante!'); const c = actDe(snap, dueno); if (c) cry(c.id, 0.4); await esperar(560);
         } else if (ev.t === 'debilitado' || ev.t === 'cae') {
           const c = actDe(snap, dueno); if (c) cry(c.id, 0.3);
           const img = esMio ? $('p-img') : $('r-img'); if (img) { img.classList.add('bt-faint'); }
-          narrarRonda(ev.texto || 'se debilitó.'); await esperar(640);
+          await narrarRonda(ev.texto || 'se debilitó.'); await esperar(620);
           if (img) img.classList.remove('bt-faint');
         } else {
           // estado, fallo, pocion, tick, info, etc. — solo narrar
-          narrarRonda(ev.texto || ''); await esperar(750);
+          await narrarRonda(ev.texto || ''); await esperar(480);
         }
       }
       // aplico el snapshot final (HP/sprites/super reales)

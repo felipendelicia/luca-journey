@@ -1365,8 +1365,11 @@ body.dark .id-tam{ color:var(--text); background:color-mix(in srgb, var(--accent
   padding:14px 32px 14px 18px; border:4px solid var(--gba-edge); border-radius:8px; line-height:1.4;
   background:var(--gba-cream); color:var(--gba-ink); font:700 1rem var(--font-mono);
   box-shadow:inset 0 0 0 3px #fff, inset 0 0 0 6px var(--gba-frame), 0 3px 0 rgba(0,0,0,.22); }
-.bt-msg::after{ content:'▼'; position:absolute; right:13px; bottom:8px; font-size:.7rem; color:var(--gba-frame); animation:btBlink 1s steps(1) infinite; }
+/* cursor ▼ tipo FireRed: aparece SOLO cuando la línea terminó de escribirse (.listo) */
+.bt-msg.listo::after{ content:'▼'; position:absolute; right:13px; bottom:8px; font-size:.7rem; color:var(--gba-frame); animation:btBlink .8s steps(1) infinite; }
 @keyframes btBlink{ 50%{ opacity:0 } }
+/* mientras se escribe, un caret parpadeante sutil al final del texto */
+.bt-msg.escribiendo::after{ content:'▍'; margin-left:1px; font-size:.85rem; color:var(--gba-frame); opacity:.55; animation:btBlink .5s steps(1) infinite; }
 
 /* barra de SÚPER (medidor pixel) */
 .bt-carga{ position:relative; height:16px; background:#3a3a46; border:2px solid var(--gba-edge); border-radius:4px; overflow:hidden; margin:.2rem 0 .7rem; }
