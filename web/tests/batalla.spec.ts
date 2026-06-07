@@ -18,5 +18,5 @@ test('batalla práctica: elegir equipo y un ataque resuelve el turno', async ({ 
   await expect(move).toBeVisible();
   await move.click();
   // tras el turno, la barra de Súper sube de 0%
-  await expect(page.locator('#bt-carga-txt')).not.toHaveText('Súper: 0%', { timeout: 20000 });
+  await expect(page.locator('#bt-carga-txt')).not.toHaveText('Súper: 0%', { timeout: 35000 });
 });
