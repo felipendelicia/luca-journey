@@ -116,10 +116,10 @@ function dividir(src) {
   const lines = src.split('\n');
   const esBlanca = (l) => l.trim() === '';
   const esCabecera = (l) => /^#/.test(l) || /^@/.test(l) || esBlanca(l);
-  // anclas = def/class top-level
+  // anclas = def/class top-level + asignaciones-placeholder (ej. lambdas: `doble = None  # TU CÓDIGO ACÁ`)
   const anclas = [];
   for (let i = 0; i < lines.length; i++) {
-    if (/^(def |class )/.test(lines[i])) anclas.push(i);
+    if (/^(def |class )/.test(lines[i]) || /^[A-Za-z_]\w*\s*=.*#\s*TU C[ÓO]DIGO/i.test(lines[i])) anclas.push(i);
   }
   if (!anclas.length) return { preamble: src, ejercicios: [] };
 
@@ -142,10 +142,11 @@ function dividir(src) {
       .map((l) => l.replace(/^#\s?/, '').replace(/\s+$/, ''))
       .filter((l) => !/^[-=~*_·.]{3,}$/.test(l));
     const comentario = lc.join('\n').trim();
-    const m = lines[ancla].match(/^(?:def|class)\s+([A-Za-z_]\w*)/);
+    const m = lines[ancla].match(/^(?:def|class)\s+([A-Za-z_]\w*)/) || lines[ancla].match(/^([A-Za-z_]\w*)\s*=/);
     const name = m ? m[1] : 'ej' + k;
     const starter = lines.slice(ancla, fin).join('\n').replace(/\s+$/, '') + '\n';
-    let titulo = (lc.find((l) => l.trim()) || name).trim();
+    // título: primera línea de comentario que NO sea un banner de sección ('── … ──'); si no, la primera.
+    let titulo = (lc.find((l) => l.trim() && !/^[─—]/.test(l.trim())) || lc.find((l) => l.trim()) || name).trim();
     if (titulo.length > 90) titulo = titulo.slice(0, 88) + '…';
     ejercicios.push({ id: name, name, titulo, prompt: comentario, starter, tests: [] });
   }
