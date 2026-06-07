@@ -60,10 +60,11 @@ const POCION_CURA: Record<string, number> = { pocion: 30, superpocion: 70, pocio
 const CURA_ESTADO: Record<string, EstadoAlt | 'todos'> = { antidoto: 'veneno', antiquemar: 'quemadura', antiparalisis: 'paralisis', despertar: 'sueno', antihielo: 'congelado', curatotal: 'todos' };
 const REVIVE: Record<string, number> = { revivir: 0.5 };
 
-const jugadorDe = (e: EstadoCombate, uid: string) => e.jugadores.find((j) => j.uid === uid)!;
-const rivalDe = (e: EstadoCombate, uid: string) => e.jugadores.find((j) => j.uid !== uid)!;
-const vivos = (j: JugadorEstado) => j.equipo.filter((c) => c.hp > 0).length;
-const activoDe = (j: JugadorEstado) => j.equipo[j.activo];
+// helpers de acceso (exportados: el gateway los usa para armar la acción CPU del timeout)
+export const jugadorDe = (e: EstadoCombate, uid: string) => e.jugadores.find((j) => j.uid === uid)!;
+export const rivalDe = (e: EstadoCombate, uid: string) => e.jugadores.find((j) => j.uid !== uid)!;
+export const vivos = (j: JugadorEstado) => j.equipo.filter((c) => c.hp > 0).length;
+export const activoDe = (j: JugadorEstado) => j.equipo[j.activo];
 
 // crea el combate a partir de los equipos elegidos (instancias). fase = combate.
 export function crearCombate(roomId: string, jugadores: { uid: string; nombre: string; equipo: Inst[] }[], primero?: string): EstadoCombate {
