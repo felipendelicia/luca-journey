@@ -79,7 +79,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     import { pc, sincronizar, spriteUrl, regionesDesbloqueadas, darCaramelos, darBalls, items, usarItem } from '../lib/coleccion.js';
     import { ITEMS } from '../lib/items.js';
     import { itemSvg } from '../lib/sprites.js';
-    import { combatiente, calcularDano, danoSuper, elegirCPU, equipoCPU, esEstado, aplicarEstado, puedeActuar, aplicarAilment, tickEstado, acierta, tiraCritico, sinPP, FORCEJEO, ESTADOS } from '../lib/batalla.js';
+    import { combatiente, calcularDano, danoSuper, elegirCPU, equipoCPU, esEstado, aplicarEstado, puedeActuar, aplicarAilment, tickEstado, acierta, tiraCritico, sinPP, FORCEJEO, ESTADOS, habAlEntrar, habAlContacto } from '../lib/batalla.js';
     import { etiquetaEfec } from '../lib/tipos.js';
     import { efectoAtaque } from '../lib/batalla-fx.js';
     import { retoAlAzar } from '../lib/retos-batalla.js';
@@ -136,7 +136,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     }
 
     // ── Fase 2: combate ──
-    function empezar(iids) {
+    async function empezar(iids) {
       const arr = pc();
       const equipo = iids.map((iid) => combatiente(arr.find((m) => m.iid === iid)));
       const nivelProm = Math.round(equipo.reduce((a, c) => a + c.nivel, 0) / equipo.length);
@@ -146,8 +146,13 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       G = { equipo, rival, pa: 0, ra: 0, carga: 0, lock: false, itemsUsados: 0 };
       $('bt-sel').hidden = true; $('bt-combate').hidden = false; $('bt-fin').hidden = true;
       musicaBatalla();          // 🎵 música de fondo de la pelea
-      render(); msg('¡Aparece el rival! Elegí tu ataque.'); armarTimer();
+      render(); msg('¡Aparece el rival! Elegí tu ataque.');
       cry(rivAct().id, 0.45); setTimeout(() => cry(miAct().id, 0.4), 550);
+      // habilidad AL ENTRAR (Intimidación): ambos activos entran a la vez → cada uno intimida al otro
+      G.lock = true; render();
+      { const te = habAlEntrar(rivAct(), miAct()); if (te) { msg(te); render(); await esperar(1000); } }
+      { const te = habAlEntrar(miAct(), rivAct()); if (te) { msg(te); render(); await esperar(1000); } }
+      G.lock = false; render(); armarTimer();
     }
     function poolRival() {
       // especies “salvajes” simples por región desbloqueada (líderes/starters conocidos)
@@ -230,6 +235,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       cancelarTimer(); G.lock = true; render();
       G.pa = i; msg('¡Adelante, ' + miAct().nombre + '!'); render(); cry(miAct().id, 0.4);
       await esperar(750);
+      { const te = habAlEntrar(miAct(), rivAct()); if (te) { msg(te); render(); await esperar(1000); } }
       await turnoRival();
       if (fin()) return;
       await tick('r');
@@ -279,6 +285,9 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
         avanzar(defLado);
         if ((defLado === 'p' ? G.pa : G.ra) < 0) return;   // equipo eliminado → el caller corre fin()
         render(); cry((defLado === 'p' ? miAct() : rivAct()).id, 0.35); await esperar(400);
+        // habilidad AL ENTRAR del reemplazo (Intimidación) → intimida al activo rival
+        { const nuevo = defLado === 'p' ? miAct() : rivAct(), opo = defLado === 'p' ? rivAct() : miAct();
+          const te = habAlEntrar(nuevo, opo); if (te) { msg(te); render(); await esperar(1000); } }
       }
     }
     function avanzar(lado) {
@@ -307,9 +316,10 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       }
       if (!pa.actua) return;                                   // perdió el turno (no gasta PP)
       if (mov.id && mov.pp > 0) mov.pp--;                      // consume PP (Forcejeo id 0 no gasta)
-      if (!acierta(mov)) { msg('¡' + at.nombre + ' usó ' + mov.nombre + '… pero falló!'); render(); await esperar(950); return; }
+      if (!acierta(mov, Math.random, at)) { msg('¡' + at.nombre + ' usó ' + mov.nombre + '… pero falló!'); render(); await esperar(950); return; }
       await usarMov(at, mov, defLado);
       if (def.hp > 0) { const t = aplicarAilment(mov, at, def); if (t) { msg(t); render(); await esperar(1000); } }
+      if (def.hp > 0) { const tc = habAlContacto(def, at, mov, Math.random); if (tc) { msg(tc); render(); await esperar(1000); } }
     }
 
     // daño por turno (veneno/quemadura) del activo del lado, con su posible debilitamiento.
@@ -322,6 +332,9 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       if (c.hp <= 0) {
         cry(c.id, 0.3); msg(c.nombre + ' se debilitó.'); img.classList.add('bt-faint'); await esperar(650); img.classList.remove('bt-faint');
         avanzar(lado); render(); await esperar(300);
+        // habilidad AL ENTRAR del reemplazo (Intimidación) → intimida al activo rival
+        const nuevo = lado === 'p' ? miAct() : rivAct(), opo = lado === 'p' ? rivAct() : miAct();
+        if (nuevo && opo) { const te = habAlEntrar(nuevo, opo); if (te) { msg(te); render(); await esperar(1000); } }
       }
     }
 
