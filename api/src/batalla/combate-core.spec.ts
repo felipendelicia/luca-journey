@@ -4,6 +4,7 @@ import {
   esEstado, calcularDano, aplicarEstado, danoSuper, elegirCPU, acierta, puedeActuar,
   aplicarAilment, tickEstado, combatiente, movsDe, tiposDe, sinPP, Combatiente, Mov, DatosCombate,
 } from './combate-core';
+import { NATURALEZAS, semilla, identidad, rolarIdentidad } from './combate-core';
 
 // combatiente sintético (no necesita data real): se sobreescribe lo que cada test precise.
 const luchador = (over: Partial<Combatiente> = {}): Combatiente => ({
@@ -471,5 +472,46 @@ describe('movsDe / combatiente (data inyectada)', () => {
   it('respeta el mote por sobre el nombre', () => {
     const c = combatiente({ iid: 'a', id: 4, nivel: 20, mote: 'Chizu' }, datos);
     expect(c.nombre).toBe('Chizu');
+  });
+});
+
+describe('identidad', () => {
+  const HAB = { especies: { '1': [{ key: 'overgrow', hidden: false }, { key: 'chlorophyll', hidden: true }] }, genero: { '1': 1 }, meta: {} };
+  const D: any = { nombres: {}, tipos: {}, learnsets: {}, movimientos: {}, estadisticas: {}, habilidades: HAB };
+
+  test('NATURALEZAS tiene 25 entradas, 5 neutras', () => {
+    expect(NATURALEZAS).toHaveLength(25);
+    expect(NATURALEZAS.filter((n) => n.sube === n.baja)).toHaveLength(5);
+  });
+
+  test('semilla es estable y determinista', () => {
+    expect(semilla('abc123')).toBe(semilla('abc123'));
+    expect(semilla('abc123')).not.toBe(semilla('abc124'));
+  });
+
+  test('identidad deriva valores estables del iid (sin campos explícitos)', () => {
+    const a = identidad({ iid: 'seed0001', id: 1, nivel: 5 }, D);
+    const b = identidad({ iid: 'seed0001', id: 1, nivel: 5 }, D);
+    expect(a).toEqual(b);
+    expect(a.ivs).toHaveLength(6);
+    a.ivs.forEach((v) => { expect(v).toBeGreaterThanOrEqual(0); expect(v).toBeLessThanOrEqual(31); });
+    expect(a.nat).toBeGreaterThanOrEqual(0); expect(a.nat).toBeLessThan(25);
+    expect(['overgrow', 'chlorophyll']).toContain(a.hab);
+    expect(['m', 'f']).toContain(a.gen);
+  });
+
+  test('identidad respeta campos explícitos', () => {
+    const inst = { iid: 'x', id: 1, nivel: 5, ivs: [31, 31, 31, 31, 31, 31], nat: 3, hab: 'overgrow', gen: 'm' as const };
+    expect(identidad(inst, D)).toEqual({ ivs: [31, 31, 31, 31, 31, 31], nat: 3, hab: 'overgrow', gen: 'm' });
+  });
+
+  test('rolarIdentidad produce identidad válida', () => {
+    const r = rolarIdentidad(1, HAB, () => 0.99);   // rng alto → no hidden (0.99>0.05), ♂ (0.99>1/8)
+    expect(r.hab).toBe('overgrow'); expect(r.gen).toBe('m'); expect(r.ivs).toHaveLength(6);
+  });
+
+  test('género genderless cuando gender_rate = -1', () => {
+    const D2: any = { habilidades: { especies: { '100': [] }, genero: { '100': -1 }, meta: {} } };
+    expect(identidad({ iid: 'z', id: 100, nivel: 5 }, D2).gen).toBeNull();
   });
 });

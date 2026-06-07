@@ -9,11 +9,13 @@
 export type Rng = () => number;
 export type EstadoAlt = null | 'veneno' | 'quemadura' | 'paralisis' | 'sueno' | 'congelado' | 'confusion';
 export interface Mov { id: number; nombre: string; tipo: string; poder?: number; categoria?: string; desc?: string; precision?: number | null; ailment?: EstadoAlt; ailmentChance?: number; pp?: number; ppMax?: number; }
-export interface Inst { iid: string; id: number; nivel: number; shiny?: boolean; mote?: string; movs?: number[]; }
+export interface Inst { iid: string; id: number; nivel: number; shiny?: boolean; mote?: string; movs?: number[];
+  ivs?: number[]; nat?: number; hab?: string; gen?: 'm' | 'f' | null; evs?: number[]; }
 export interface Combatiente {
   iid: string; id: number; nombre: string; nivel: number; shiny: boolean; tipos: string[];
   movs: Mov[]; hpMax: number; hp: number; atkMod: number; defMod: number; estado: EstadoAlt; estadoT: number;
   atk: number; def: number; spa: number; spd: number; spe: number;   // stats base por especie (Gen 3)
+  hab?: string | null; gen?: 'm' | 'f' | null;
 }
 // data que cada lado inyecta (con sus propios JSON) para construir combatientes
 export interface DatosCombate {
@@ -22,6 +24,7 @@ export interface DatosCombate {
   learnsets: Record<string, { m: number; n: number }[]>;
   movimientos: Record<string, any>;
   estadisticas?: Record<string, number[]>;   // [hp, atk, def, spa, spd, spe] por id
+  habilidades?: { especies: Record<string, { key: string; hidden: boolean }[]>; genero: Record<string, number>; meta: Record<string, { nombre: string; desc: string; efecto: boolean }> };
 }
 
 // ───────────────────────── tipos / efectividad ─────────────────────────
@@ -60,6 +63,59 @@ export function etiquetaEfec(mult: number): string {
   if (mult >= 2) return '¡Es muy eficaz!';
   if (mult <= 0.5) return 'No es muy eficaz…';
   return '';
+}
+
+// ───────────────────────── identidad: naturalezas / IVs / género / habilidad ─────────────────────────
+// stat index: 1=Atk 2=Def 3=SpA 4=SpD 5=Vel (HP=0 nunca lo afecta la naturaleza).
+export interface Naturaleza { nombre: string; sube: number | null; baja: number | null; }
+export const NATURALEZAS: Naturaleza[] = [
+  { nombre: 'Fuerte',  sube: null, baja: null },      // 0 neutra
+  { nombre: 'Huraña',  sube: 1, baja: 2 }, { nombre: 'Audaz',   sube: 1, baja: 5 },
+  { nombre: 'Firme',   sube: 1, baja: 3 }, { nombre: 'Pícara',  sube: 1, baja: 4 },
+  { nombre: 'Osada',   sube: 2, baja: 1 }, { nombre: 'Dócil',   sube: null, baja: null }, // 6 neutra
+  { nombre: 'Plácida', sube: 2, baja: 5 }, { nombre: 'Agitada', sube: 2, baja: 3 },
+  { nombre: 'Floja',   sube: 2, baja: 4 }, { nombre: 'Miedosa', sube: 5, baja: 1 },
+  { nombre: 'Activa',  sube: 5, baja: 2 }, { nombre: 'Seria',   sube: null, baja: null }, // 12 neutra
+  { nombre: 'Alegre',  sube: 5, baja: 3 }, { nombre: 'Ingenua', sube: 5, baja: 4 },
+  { nombre: 'Modesta', sube: 3, baja: 1 }, { nombre: 'Afable',  sube: 3, baja: 2 },
+  { nombre: 'Mansa',   sube: 3, baja: 5 }, { nombre: 'Cándida', sube: null, baja: null }, // 18 neutra
+  { nombre: 'Alocada', sube: 3, baja: 4 }, { nombre: 'Serena',  sube: 4, baja: 1 },
+  { nombre: 'Amable',  sube: 4, baja: 2 }, { nombre: 'Grosera', sube: 4, baja: 5 },
+  { nombre: 'Cauta',   sube: 4, baja: 3 }, { nombre: 'Rara',    sube: null, baja: null }, // 24 neutra
+];
+
+// hash estable string→uint32 (FNV-1a)
+export function semilla(iid: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < iid.length; i++) { h ^= iid.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+  return h >>> 0;
+}
+// PRNG determinista (mulberry32)
+function prng(seed: number): Rng {
+  let a = seed >>> 0;
+  return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+
+type Ident = { ivs: number[]; nat: number; hab: string | null; gen: 'm' | 'f' | null };
+
+// rolea una identidad nueva (captura). rng por defecto = Math.random.
+export function rolarIdentidad(id: number, habData: DatosCombate['habilidades'], rng: Rng = Math.random): Ident {
+  const ivs = [0, 0, 0, 0, 0, 0].map(() => Math.floor(rng() * 32));
+  const nat = Math.floor(rng() * 25);
+  const pool = (habData?.especies || {})[String(id)] || [];
+  const normals = pool.filter((a) => !a.hidden), hiddens = pool.filter((a) => a.hidden);
+  const hidR = rng();
+  const hab = (hidR < 0.05 && hiddens.length) ? hiddens[0].key
+    : (normals.length ? normals[Math.floor(rng() * normals.length)].key : (pool[0]?.key || null));
+  const rate = (habData?.genero || {})[String(id)];
+  const gen: 'm' | 'f' | null = (rate == null || rate < 0) ? null : (rng() < rate / 8 ? 'f' : 'm');
+  return { ivs, nat, hab, gen };
+}
+
+// identidad de una instancia: campos explícitos si están; si no, derivada del iid (estable, sin migración).
+export function identidad(inst: Inst, d: DatosCombate): Ident {
+  if (inst.ivs && inst.nat != null) return { ivs: inst.ivs, nat: inst.nat, hab: inst.hab ?? null, gen: inst.gen ?? null };
+  return rolarIdentidad(inst.id, d.habilidades, prng(semilla(inst.iid)));
 }
 
 // ───────────────────────── combatientes (data inyectada) ─────────────────────────
