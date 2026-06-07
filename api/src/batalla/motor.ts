@@ -8,10 +8,11 @@ import movimientos from './data/movimientos.json';
 import learnsets from './data/learnsets.json';
 import pokemon from './data/pokemon.json';
 import estadisticas from './data/estadisticas.json';
+import habilidades from './data/habilidades.json';
 import {
   combatiente as coreCombatiente,
   esEstado, calcularDano, aplicarEstado, danoSuper, etiquetaEfec, tiraCritico, sinPP, FORCEJEO,
-  acierta, puedeActuar, aplicarAilment, tickEstado,
+  acierta, puedeActuar, aplicarAilment, tickEstado, habAlEntrar, habAlContacto,
 } from './combate-core';
 import type { Rng, EstadoAlt, Mov, Inst, Combatiente, DatosCombate } from './combate-core';
 
@@ -27,6 +28,7 @@ const DATOS: DatosCombate = {
   nombres: Object.fromEntries((pokemon as any[]).map((p) => [p.id, p.nombre])),
   tipos: tiposData as any, learnsets: learnsets as any, movimientos: movimientos as any,
   estadisticas: estadisticas as any,
+  habilidades: habilidades as any,
 };
 export const combatiente = (inst: Inst): Combatiente => coreCombatiente(inst, DATOS);
 
@@ -61,8 +63,14 @@ export function crearCombate(roomId: string, jugadores: { uid: string; nombre: s
   // el más RÁPIDO pega primero (empate: el indicado, o el 1º)
   const v0 = js[0].equipo[0]?.spe || 0, v1 = js[1].equipo[0]?.spe || 0;
   const turno = v0 > v1 ? js[0].uid : v1 > v0 ? js[1].uid : (primero || js[0].uid);
+  const eventos: Evento[] = [];
+  // habilidad AL ENTRAR (Intimidación): ambos activos entran a la vez → cada uno intimida al otro
+  for (const [a, b] of [[js[0], js[1]], [js[1], js[0]]] as [JugadorEstado, JugadorEstado][]) {
+    const te = habAlEntrar(activoDe(a), activoDe(b));
+    if (te) eventos.push({ t: 'habilidad', uid: a.uid, texto: te });
+  }
   return {
-    roomId, jugadores: js, turno, fase: 'combate', eventos: [], turnoN: 1,
+    roomId, jugadores: js, turno, fase: 'combate', eventos, turnoN: 1,
   };
 }
 
@@ -137,7 +145,7 @@ export function aplicarAccion(
       if (pa.texto) push('estado', pa.texto, pa.autogolpe ? { autogolpe: pa.autogolpe } : {});
       if (pa.actua) {
         if (mov.id && (mov.pp ?? 0) > 0) mov.pp--;            // consume PP (Forcejeo id 0 no gasta)
-        if (!acierta(mov, rng)) {
+        if (!acierta(mov, rng, atk)) {
           push('fallo', `${atk.nombre} usó ${mov.nombre}, ¡pero falló!`, { mov: mov.id });
         } else if (esEstado(mov)) {
           push('estado', `${atk.nombre} usó ${mov.nombre}. ` + aplicarEstado(mov, atk, def), { mov: mov.id });
@@ -152,6 +160,7 @@ export function aplicarAccion(
             : `${atk.nombre} usó ${mov.nombre}: ${r.dmg} de daño.${r.crit ? ' ¡Golpe crítico!' : ''}${ef ? ' ' + ef : ''}`;
           push('mover', msg, { dmg: r.dmg, efec: r.efec, crit: r.crit, mov: mov.id });
           if (def.hp > 0) { const ta = aplicarAilment(mov, atk, def, rng); if (ta) push('ailment', ta); }
+          if (def.hp > 0) { const tc = habAlContacto(def, atk, mov, rng); if (tc) push('habilidad', tc); }
         }
         yo.super = Math.min(SUPER_MAX, yo.super + SUPER_GANANCIA);
       }
@@ -167,6 +176,7 @@ export function aplicarAccion(
       if (yo.equipo[idx].hp <= 0) return err('debilitado');
       yo.activo = idx;
       push('cambiar', `${yo.nombre} cambió a ${activoDe(yo).nombre}.`, { idx });
+      { const te = habAlEntrar(activoDe(yo), activoDe(rival)); if (te) push('habilidad', te); }
       pasarTurno(e, uid);
       return { estado: e, eventos };
     }
@@ -212,6 +222,8 @@ function postGolpe(e: EstadoCombate, rival: JugadorEstado, push: (t: string, tex
     return true;
   }
   push('entra', `${rival.nombre} envió a ${activoDe(rival).nombre}.`);
+  // habilidad AL ENTRAR del reemplazo (Intimidación) → intimida al activo rival
+  { const te = habAlEntrar(activoDe(rival), activoDe(rivalDe(e, rival.uid))); if (te) push('habilidad', te); }
   return false;
 }
 

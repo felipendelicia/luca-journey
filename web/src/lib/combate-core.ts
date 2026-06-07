@@ -7,11 +7,13 @@
 export type Rng = () => number;
 export type EstadoAlt = null | 'veneno' | 'quemadura' | 'paralisis' | 'sueno' | 'congelado' | 'confusion';
 export interface Mov { id: number; nombre: string; tipo: string; poder?: number; categoria?: string; desc?: string; precision?: number | null; ailment?: EstadoAlt; ailmentChance?: number; pp?: number; ppMax?: number; }
-export interface Inst { iid: string; id: number; nivel: number; shiny?: boolean; mote?: string; movs?: number[]; }
+export interface Inst { iid: string; id: number; nivel: number; shiny?: boolean; mote?: string; movs?: number[];
+  ivs?: number[]; nat?: number; hab?: string; gen?: 'm' | 'f' | null; evs?: number[]; }
 export interface Combatiente {
   iid: string; id: number; nombre: string; nivel: number; shiny: boolean; tipos: string[];
   movs: Mov[]; hpMax: number; hp: number; atkMod: number; defMod: number; estado: EstadoAlt; estadoT: number;
-  atk: number; def: number; spa: number; spd: number; spe: number;   // stats base por especie (Gen 3)
+  atk: number; def: number; spa: number; spd: number; spe: number;   // stats EFECTIVAS (con IV/EV/naturaleza)
+  hab?: string | null; gen?: 'm' | 'f' | null;
 }
 // data que cada lado inyecta (con sus propios JSON) para construir combatientes
 export interface DatosCombate {
@@ -20,6 +22,7 @@ export interface DatosCombate {
   learnsets: Record<string, { m: number; n: number }[]>;
   movimientos: Record<string, any>;
   estadisticas?: Record<string, number[]>;   // [hp, atk, def, spa, spd, spe] por id
+  habilidades?: { especies: Record<string, { key: string; hidden: boolean }[]>; genero: Record<string, number>; meta: Record<string, { nombre: string; desc: string; efecto: boolean }> };
 }
 
 // ───────────────────────── tipos / efectividad ─────────────────────────
@@ -60,14 +63,81 @@ export function etiquetaEfec(mult: number): string {
   return '';
 }
 
+// ───────────────────────── identidad: naturalezas / IVs / género / habilidad ─────────────────────────
+// stat index: 1=Atk 2=Def 3=SpA 4=SpD 5=Vel (HP=0 nunca lo afecta la naturaleza).
+export interface Naturaleza { nombre: string; sube: number | null; baja: number | null; }
+export const NATURALEZAS: Naturaleza[] = [
+  { nombre: 'Fuerte',  sube: null, baja: null },      // 0 neutra
+  { nombre: 'Huraña',  sube: 1, baja: 2 }, { nombre: 'Audaz',   sube: 1, baja: 5 },
+  { nombre: 'Firme',   sube: 1, baja: 3 }, { nombre: 'Pícara',  sube: 1, baja: 4 },
+  { nombre: 'Osada',   sube: 2, baja: 1 }, { nombre: 'Dócil',   sube: null, baja: null }, // 6 neutra
+  { nombre: 'Plácida', sube: 2, baja: 5 }, { nombre: 'Agitada', sube: 2, baja: 3 },
+  { nombre: 'Floja',   sube: 2, baja: 4 }, { nombre: 'Miedosa', sube: 5, baja: 1 },
+  { nombre: 'Activa',  sube: 5, baja: 2 }, { nombre: 'Seria',   sube: null, baja: null }, // 12 neutra
+  { nombre: 'Alegre',  sube: 5, baja: 3 }, { nombre: 'Ingenua', sube: 5, baja: 4 },
+  { nombre: 'Modesta', sube: 3, baja: 1 }, { nombre: 'Afable',  sube: 3, baja: 2 },
+  { nombre: 'Mansa',   sube: 3, baja: 5 }, { nombre: 'Cándida', sube: null, baja: null }, // 18 neutra
+  { nombre: 'Alocada', sube: 3, baja: 4 }, { nombre: 'Serena',  sube: 4, baja: 1 },
+  { nombre: 'Amable',  sube: 4, baja: 2 }, { nombre: 'Grosera', sube: 4, baja: 5 },
+  { nombre: 'Cauta',   sube: 4, baja: 3 }, { nombre: 'Rara',    sube: null, baja: null }, // 24 neutra
+];
+
+// hash estable string→uint32 (FNV-1a)
+export function semilla(iid: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < iid.length; i++) { h ^= iid.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+  return h >>> 0;
+}
+// PRNG determinista (mulberry32)
+function prng(seed: number): Rng {
+  let a = seed >>> 0;
+  return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+
+type Ident = { ivs: number[]; nat: number; hab: string | null; gen: 'm' | 'f' | null };
+
+// rolea una identidad nueva (captura). rng por defecto = Math.random.
+export function rolarIdentidad(id: number, habData: DatosCombate['habilidades'], rng: Rng = Math.random): Ident {
+  const ivs = [0, 0, 0, 0, 0, 0].map(() => Math.floor(rng() * 32));
+  const nat = Math.floor(rng() * 25);
+  const pool = (habData?.especies || {})[String(id)] || [];
+  const normals = pool.filter((a) => !a.hidden), hiddens = pool.filter((a) => a.hidden);
+  const hidR = rng();
+  const hab = (hidR < 0.05 && hiddens.length) ? hiddens[0].key
+    : (normals.length ? normals[Math.floor(rng() * normals.length)].key : (pool[0]?.key || null));
+  const rate = (habData?.genero || {})[String(id)];
+  const gen: 'm' | 'f' | null = (rate == null || rate < 0) ? null : (rng() < rate / 8 ? 'f' : 'm');
+  return { ivs, nat, hab, gen };
+}
+
+// suma EVs respetando cap 252 por stat y 510 total. Pura.
+export function sumarEV(evs: number[], yields: number[]): number[] {
+  const out = (evs && evs.length === 6) ? [...evs] : [0, 0, 0, 0, 0, 0];
+  let total = out.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < 6; i++) {
+    const espacioStat = Math.min(252 - out[i], (yields[i] || 0));
+    const inc = Math.max(0, Math.min(espacioStat, 510 - total));
+    out[i] += inc; total += inc;
+  }
+  return out;
+}
+
+// identidad de una instancia: campos explícitos si están; si no, derivada del iid (estable, sin migración).
+export function identidad(inst: Inst, d: DatosCombate): Ident {
+  if (inst.ivs && inst.nat != null) return { ivs: inst.ivs, nat: inst.nat, hab: inst.hab ?? null, gen: inst.gen ?? null };
+  return rolarIdentidad(inst.id, d.habilidades, prng(semilla(inst.iid)));
+}
+
 // ───────────────────────── combatientes (data inyectada) ─────────────────────────
 export const FORCEJEO: Mov = { id: 0, nombre: 'Forcejeo', tipo: 'Normal', poder: 40 };
 export const hpMax = (nivel: number): number => 40 + nivel * 5;   // fallback si no hay stats base
 export const tiposDe = (id: number, tipos: Record<string, string[]>): string[] => tipos[String(id)] || ['Normal'];
 
-// stats efectivas estilo Gen 3 (0 IV/EV, naturaleza neutra)
-export const statEf = (base: number, nivel: number): number => Math.floor(2 * (base || 60) * nivel / 100) + 5;
-export const hpEf = (baseHp: number, nivel: number): number => Math.floor(2 * (baseHp || 60) * nivel / 100) + nivel + 10;
+// stats efectivas estilo Gen 3 con IV (0-31), EV (0-252) y multiplicador de naturaleza (1.1/0.9/1).
+export const statEf = (base: number, nivel: number, iv = 0, ev = 0, natMult = 1): number =>
+  Math.floor((Math.floor((2 * (base || 60) + iv + Math.floor(ev / 4)) * nivel / 100) + 5) * natMult);
+export const hpEf = (baseHp: number, nivel: number, iv = 0, ev = 0): number =>
+  Math.floor((2 * (baseHp || 60) + iv + Math.floor(ev / 4)) * nivel / 100) + nivel + 10;
 // críticos: 1/16 como en Gen 3, daño ×2 (lo tira el orquestador y lo pasa a calcularDano).
 export const CRIT_CHANCE = 1 / 16;
 export const tiraCritico = (rng: Rng = Math.random): boolean => rng() < CRIT_CHANCE;
@@ -97,32 +167,78 @@ export const sinPP = (c: Combatiente): boolean => c.movs.every((m) => (m.pp ?? 1
 
 // combatiente listo para pelear a partir de una instancia del PC + la data inyectada.
 export function combatiente(inst: Inst, d: DatosCombate): Combatiente {
-  const st = (d.estadisticas || {})[String(inst.id)];   // [hp, atk, def, spa, spd, spe]
-  const hpM = st ? hpEf(st[0], inst.nivel) : hpMax(inst.nivel);
+  const st = (d.estadisticas || {})[String(inst.id)];   // [hp, atk, def, spa, spd, spe] base
+  const idn = identidad(inst, d);
+  const ev = inst.evs || [0, 0, 0, 0, 0, 0];
+  const nat = NATURALEZAS[idn.nat] || NATURALEZAS[0];
+  const nm = (k: number) => nat.sube === k ? 1.1 : nat.baja === k ? 0.9 : 1;
+  const hpM = st ? hpEf(st[0], inst.nivel, idn.ivs[0], ev[0]) : hpMax(inst.nivel);
   return {
     iid: inst.iid, id: inst.id, nombre: inst.mote || d.nombres[inst.id] || ('Nº ' + inst.id),
     nivel: inst.nivel, shiny: !!inst.shiny, tipos: tiposDe(inst.id, d.tipos),
     movs: movsDe(inst, d.learnsets, d.movimientos), hpMax: hpM, hp: hpM,
-    atk: st ? st[1] : 60, def: st ? st[2] : 60, spa: st ? st[3] : 60, spd: st ? st[4] : 60, spe: st ? st[5] : 60,
+    atk: st ? statEf(st[1], inst.nivel, idn.ivs[1], ev[1], nm(1)) : 60,
+    def: st ? statEf(st[2], inst.nivel, idn.ivs[2], ev[2], nm(2)) : 60,
+    spa: st ? statEf(st[3], inst.nivel, idn.ivs[3], ev[3], nm(3)) : 60,
+    spd: st ? statEf(st[4], inst.nivel, idn.ivs[4], ev[4], nm(4)) : 60,
+    spe: st ? statEf(st[5], inst.nivel, idn.ivs[5], ev[5], nm(5)) : 60,
     atkMod: 1, defMod: 1, estado: null, estadoT: 0,
+    hab: idn.hab, gen: idn.gen,
   };
+}
+
+// ───────────────────────── habilidades (core-contained) ─────────────────────────
+const BOOST_TIPO: Record<string, string> = { overgrow: 'Planta', blaze: 'Fuego', torrent: 'Agua' };
+const ABSORBE_TIPO: Record<string, string> = { levitate: 'Tierra', 'water-absorb': 'Agua', 'flash-fire': 'Fuego' };
+const NO_ESTADO: Record<string, EstadoAlt> = { immunity: 'veneno', insomnia: 'sueno', 'magma-armor': 'congelado' };
+
+// ¿la habilidad del defensor lo hace inmune a este tipo de movimiento?
+export const habInmuneTipo = (c: Combatiente, tipoMov: string): boolean => !!c.hab && ABSORBE_TIPO[c.hab] === tipoMov;
+// multiplicador de daño por habilidad del ATACANTE (Espesura/Mar Llamas/Torrente, Agallas).
+export function habModDano(atacante: Combatiente, mov: Mov): number {
+  let m = 1;
+  if (atacante.hab && BOOST_TIPO[atacante.hab] === mov.tipo && atacante.hp / atacante.hpMax < 1 / 3) m *= 1.5;
+  if (atacante.hab === 'guts' && atacante.estado && esFisico(mov)) m *= 1.5;
+  return m;
+}
+// ¿la habilidad del defensor bloquea este estado?
+export const habNoEstado = (c: Combatiente, estado: EstadoAlt): boolean => !!c.hab && NO_ESTADO[c.hab] === estado;
+// multiplicador de precisión por habilidad del atacante (Ojo Compuesto).
+export const habModPrecision = (c: Combatiente | undefined): number => (c && c.hab === 'compound-eyes') ? 1.3 : 1;
+
+// AL ENTRAR a pista (Intimidación). Muta al rival. Devuelve texto|''.
+export function habAlEntrar(self: Combatiente, rival: Combatiente): string {
+  if (self.hab !== 'intimidate' || !rival || rival.hp <= 0) return '';
+  rival.atkMod = Math.max(0.4, (rival.atkMod || 1) * 0.7);
+  return '¡Intimidación de ' + self.nombre + '! El Ataque de ' + rival.nombre + ' bajó ↓';
+}
+// AL RECIBIR un golpe de CONTACTO (físico) — Estática/Cuerpo Llama. Muta al atacante. Devuelve texto|''.
+export function habAlContacto(self: Combatiente, atacante: Combatiente, mov: Mov, rng: Rng = Math.random): string {
+  if (!esFisico(mov) || atacante.hp <= 0 || atacante.estado) return '';
+  if (self.hab === 'static' && rng() < 0.3) { atacante.estado = 'paralisis'; return '¡Estática de ' + self.nombre + ' paralizó a ' + atacante.nombre + '!'; }
+  if (self.hab === 'flame-body' && rng() < 0.3 && !atacante.tipos.includes('Fuego')) { atacante.estado = 'quemadura'; return '¡Cuerpo Llama de ' + self.nombre + ' quemó a ' + atacante.nombre + '!'; }
+  return '';
 }
 
 // ───────────────────────── daño ─────────────────────────
 export const esEstado = (mov: Mov): boolean => mov.categoria === 'Estado' || !mov.poder;
 
-export function calcularDano(atacante: Combatiente, mov: Mov, defensor: Combatiente, rng: Rng = Math.random, crit = false) {
+export interface ResultadoDano { dmg: number; efec: number; stab: number; crit: boolean; inmuneHab?: string | null; sturdy?: boolean; }
+export function calcularDano(atacante: Combatiente, mov: Mov, defensor: Combatiente, rng: Rng = Math.random, crit = false): ResultadoDano {
   const efec = efectividad(mov.tipo, defensor.tipos);
+  if (habInmuneTipo(defensor, mov.tipo)) return { dmg: 0, efec: 0, stab: 1, crit: false, inmuneHab: defensor.hab };   // habilidad anula el tipo
   if (efec === 0) return { dmg: 0, efec, stab: 1, crit: false };   // inmune: no afecta
   const fisico = esFisico(mov);
   const stab = atacante.tipos.includes(mov.tipo) ? 1.5 : 1;
-  const A = statEf(fisico ? atacante.atk : atacante.spa, atacante.nivel) * (atacante.atkMod || 1);   // físico→Ataque, especial→At.Esp.
-  const D = statEf(fisico ? defensor.def : defensor.spd, defensor.nivel) * (defensor.defMod || 1);
+  const A = (fisico ? atacante.atk : atacante.spa) * (atacante.atkMod || 1);   // ya efectiva
+  const D = (fisico ? defensor.def : defensor.spd) * (defensor.defMod || 1);
   const baseDmg = Math.floor(Math.floor((2 * atacante.nivel / 5 + 2) * (mov.poder || 40) * A / D) / 50) + 2;   // fórmula estilo Gen 3
   const quema = (atacante.estado === 'quemadura' && fisico) ? 0.5 : 1;   // quemado pega menos físico
   const rand = 0.85 + rng() * 0.15;
-  const dmg = Math.max(1, Math.round(baseDmg * stab * efec * quema * (crit ? 2 : 1) * rand));
-  return { dmg, efec, stab, crit };
+  let dmg = Math.max(1, Math.round(baseDmg * stab * efec * quema * (crit ? 2 : 1) * rand * habModDano(atacante, mov)));
+  let sturdy = false;
+  if (defensor.hab === 'sturdy' && defensor.hp === defensor.hpMax && dmg >= defensor.hp) { dmg = defensor.hp - 1; sturdy = true; }   // Robustez: aguanta a 1 HP desde full
+  return { dmg, efec, stab, crit, sturdy };
 }
 
 // movimiento de ESTADO: lee la descripción y sube/baja Ataque o Defensa. Devuelve texto.
@@ -167,7 +283,8 @@ const TXT_AIL: Record<string, string> = { veneno: 'fue envenenado', quemadura: '
 // inmunidad de estado por tipo (Gen 3): Fuego no se quema, Hielo no se congela, Veneno/Acero no se envenenan.
 const INMUNE_AIL: Record<string, string[]> = { quemadura: ['Fuego'], congelado: ['Hielo'], veneno: ['Veneno', 'Acero'] };
 
-export const acierta = (mov: Mov, rng: Rng = Math.random): boolean => (rng() * 100) < (mov.precision == null ? 100 : mov.precision);
+export const acierta = (mov: Mov, rng: Rng = Math.random, atacante?: Combatiente): boolean =>
+  (rng() * 100) < (mov.precision == null ? 100 : mov.precision * habModPrecision(atacante));
 
 // ¿puede actuar este turno? maneja sueño/congelado/parálisis/confusión (muta c).
 export function puedeActuar(c: Combatiente, rng: Rng = Math.random): { actua: boolean; texto: string; autogolpe?: number } {
@@ -200,6 +317,7 @@ export function aplicarAilment(mov: Mov, atacante: Combatiente, defensor: Combat
   if (mov.tipo === 'Fuego' && defensor.estado === 'congelado') defensor.estado = null;
   if (!mov.ailment || defensor.estado || defensor.hp <= 0) return '';
   if ((INMUNE_AIL[mov.ailment] || []).some((t) => defensor.tipos.includes(t))) return '';   // inmune por tipo
+  if (habNoEstado(defensor, mov.ailment)) return '';   // habilidad bloquea el estado
   const chance = mov.ailmentChance || 100;
   if (rng() * 100 >= chance) return '';
   defensor.estado = mov.ailment;

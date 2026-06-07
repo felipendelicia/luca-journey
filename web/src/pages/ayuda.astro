@@ -73,6 +73,47 @@ const regiones = [
       <h2 class="ayuda-h">⚔️ Batalla</h2>
       <p class="ayuda-p">En <a href={u('/batalla')}>Batalla</a> armás un equipo de hasta <strong>3 Pokémon</strong> y peleás por turnos contra un rival CPU. Cada Pokémon usa hasta <strong>4 ataques</strong> (los elegís en el modal de la Pokédex, o usa los más fuertes que tenga). Los <strong>tipos</strong> deciden el daño (agua le gana a fuego, etc.) y el <strong>nivel</strong> sube el HP y la pegada. A medida que atacás se llena una <strong>barra de carga</strong>: al 100% desatás el <strong>⚡ Súper ataque</strong>, que te pide resolver un <strong>reto de código</strong> de un tema que ya viste — si acertás (y rápido), pegás durísimo. Ganar te da <strong>🍬 caramelos</strong>; perder, unas <strong>Pokéballs</strong> de consuelo.</p>
 
+      <h2 class="ayuda-h">🧬 Cada Pokémon es único</h2>
+      <p class="ayuda-p">Igual que en los juegos, no hay dos Pokémon iguales. Cuando atrapás uno, queda marcado <strong>de por vida</strong> con su identidad, que ves en el modal de la <a href={u('/pokedex')}>Pokédex</a> (tocá un Pokémon → panel <strong>🧬 Identidad</strong>):</p>
+      <ol class="ayuda-pasos">
+        <li><b>IVs</b> (genes): un valor fijo de <b>0 a 31</b> en cada stat (PS, Atq, Def, At.Esp, Def.Esp, Vel). Se sortean al capturar y <b>nunca cambian</b>. Cuanto más altos, más fuerte el Pokémon.</li>
+        <li><b>Naturaleza</b>: una de 25. Sube un stat <b>+10%</b> y baja otro <b>−10%</b> (algunas son neutras). Marca su "personalidad" de combate.</li>
+        <li><b>Género</b> ♂/♀ y <b>Habilidad</b>: lo definen al aparecer. Algunas habilidades tienen efecto real en batalla (ver más abajo); el resto son sabor.</li>
+      </ol>
+
+      <h2 class="ayuda-h">⭐ La tasación (el Juez)</h2>
+      <p class="ayuda-p">El panel de Identidad te <strong>tasa</strong> al Pokémon de un vistazo, como el Juez de los juegos:</p>
+      <ol class="ayuda-pasos">
+        <li><b>% de IVs</b>: qué tan cerca está del máximo (todos los IVs en 31 = <b>100%</b>).</li>
+        <li><b>Estrellas</b> (de 0 a 4 ★): un resumen del %. 4 estrellas = ≥90%, 3 = ≥75%, 2 = ≥50%, 1 = ≥25%.</li>
+        <li><b>Barras por stat</b>: una barra por cada IV, con la frase del <b>Juez</b> al lado — <i>Flojo</i>, <i>Normal</i>, <i>Muy bueno</i>, <i>Fantástico</i> o <b>¡Inmejorable!</b> (cuando el IV es 31, el máximo).</li>
+      </ol>
+
+      <h2 class="ayuda-h">💪 EVs: entrenar a tu Pokémon</h2>
+      <p class="ayuda-p">Los <strong>EVs</strong> (esfuerzo) son la parte que <strong>sí podés mejorar</strong>: suben los stats con el entrenamiento. Hay dos formas de ganarlos:</p>
+      <ol class="ayuda-pasos">
+        <li><b>Ganando combates de práctica</b> en <a href={u('/batalla')}>Batalla</a> (vs CPU): el Pokémon activo gana los EVs que "rinde" la especie que derrotó.</li>
+        <li><b>Vitaminas</b> de la <a href={u('/tienda')}>Tienda</a>: <b>Proteína</b> (Atq), <b>Hierro</b> (Def), <b>Calcio</b> (At.Esp), <b>Zinc</b> (Def.Esp), <b>Carburo</b> (Vel) y <b>Más PS</b> (PS). Cada una da <b>+10 EV</b> y se usa desde el modal de la Pokédex, con los botones por stat.</li>
+      </ol>
+      <p class="ayuda-p">Hay topes, igual que en la saga: <strong>252 EV por stat</strong>, <strong>510 EV en total</strong>, y <strong>100 EV por stat</strong> si los ganás con vitaminas (el resto, entrenando en batalla).</p>
+
+      <h2 class="ayuda-h">✨ Habilidades con efecto</h2>
+      <p class="ayuda-p">La mayoría de las habilidades son sabor, pero un set elegido <strong>cambia el combate de verdad</strong>:</p>
+      <ul class="ayuda-pasos">
+        <li><b>Intimidación</b> — al entrar a combate, baja el Ataque del rival.</li>
+        <li><b>Levitación</b> — inmune a los movimientos de tipo Tierra.</li>
+        <li><b>Robustez</b> — aguanta con 1 PS un golpe letal si tenía los PS al máximo.</li>
+        <li><b>Estática</b> — puede paralizar al rival al recibir un golpe de contacto.</li>
+        <li><b>Cuerpo Llama</b> — puede quemar al rival al recibir un golpe de contacto.</li>
+        <li><b>Espesura / Mar Llamas / Torrente</b> — potencian los movimientos de Planta / Fuego / Agua cuando le quedan pocos PS.</li>
+        <li><b>Agallas</b> — sube el Ataque si tiene un estado alterado.</li>
+        <li><b>Absorbe Agua</b> / <b>Absorbe Fuego</b> — inmune a los movimientos de Agua / Fuego.</li>
+        <li><b>Inmunidad</b> — no puede ser envenenado.</li>
+        <li><b>Insomnio</b> — no puede quedarse dormido.</li>
+        <li><b>Armadura Magma</b> — no puede ser congelado.</li>
+        <li><b>Ojo Compuesto</b> — aumenta la precisión de sus movimientos.</li>
+      </ul>
+
       <h2 class="ayuda-h">💾 Tu progreso</h2>
       <p class="ayuda-p">Todo lo que hacés (ejercicios, medallas, Pokémon) se guarda <strong>en la nube</strong> ligado a tu cuenta de Google. Podés seguir desde cualquier dispositivo. Sin cuenta, la app funciona igual pero el progreso queda solo en este navegador.</p>
 

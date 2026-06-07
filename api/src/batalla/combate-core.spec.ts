@@ -4,6 +4,10 @@ import {
   esEstado, calcularDano, aplicarEstado, danoSuper, elegirCPU, acierta, puedeActuar,
   aplicarAilment, tickEstado, combatiente, movsDe, tiposDe, sinPP, Combatiente, Mov, DatosCombate,
 } from './combate-core';
+import { NATURALEZAS, semilla, identidad, rolarIdentidad } from './combate-core';
+import { sumarEV } from './combate-core';
+import { statEf as statEf3, hpEf as hpEf3 } from './combate-core';
+import { calcularDano as cd, aplicarAilment as aa, acierta as ac } from './combate-core';
 
 // combatiente sintético (no necesita data real): se sobreescribe lo que cada test precise.
 const luchador = (over: Partial<Combatiente> = {}): Combatiente => ({
@@ -471,5 +475,146 @@ describe('movsDe / combatiente (data inyectada)', () => {
   it('respeta el mote por sobre el nombre', () => {
     const c = combatiente({ iid: 'a', id: 4, nivel: 20, mote: 'Chizu' }, datos);
     expect(c.nombre).toBe('Chizu');
+  });
+});
+
+describe('stats con IV/EV/naturaleza', () => {
+  test('statEf suma IV y ⌊EV/4⌋ y aplica multiplicador de naturaleza', () => {
+    expect(statEf3(100, 100, 31, 0, 1.1)).toBe(259);
+    expect(statEf3(100, 100, 31, 252, 1)).toBe(299);
+    expect(statEf3(100, 100)).toBe(205);   // compat vieja
+  });
+  test('hpEf suma IV y ⌊EV/4⌋', () => {
+    expect(hpEf3(100, 100, 31, 0)).toBe(341);
+    expect(hpEf3(100, 100)).toBe(310);     // compat vieja
+  });
+});
+
+describe('identidad', () => {
+  const HAB = { especies: { '1': [{ key: 'overgrow', hidden: false }, { key: 'chlorophyll', hidden: true }] }, genero: { '1': 1 }, meta: {} };
+  const D: any = { nombres: {}, tipos: {}, learnsets: {}, movimientos: {}, estadisticas: {}, habilidades: HAB };
+
+  test('NATURALEZAS tiene 25 entradas, 5 neutras', () => {
+    expect(NATURALEZAS).toHaveLength(25);
+    expect(NATURALEZAS.filter((n) => n.sube === n.baja)).toHaveLength(5);
+  });
+
+  test('semilla es estable y determinista', () => {
+    expect(semilla('abc123')).toBe(semilla('abc123'));
+    expect(semilla('abc123')).not.toBe(semilla('abc124'));
+  });
+
+  test('identidad deriva valores estables del iid (sin campos explícitos)', () => {
+    const a = identidad({ iid: 'seed0001', id: 1, nivel: 5 }, D);
+    const b = identidad({ iid: 'seed0001', id: 1, nivel: 5 }, D);
+    expect(a).toEqual(b);
+    expect(a.ivs).toHaveLength(6);
+    a.ivs.forEach((v) => { expect(v).toBeGreaterThanOrEqual(0); expect(v).toBeLessThanOrEqual(31); });
+    expect(a.nat).toBeGreaterThanOrEqual(0); expect(a.nat).toBeLessThan(25);
+    expect(['overgrow', 'chlorophyll']).toContain(a.hab);
+    expect(['m', 'f']).toContain(a.gen);
+  });
+
+  test('identidad respeta campos explícitos', () => {
+    const inst = { iid: 'x', id: 1, nivel: 5, ivs: [31, 31, 31, 31, 31, 31], nat: 3, hab: 'overgrow', gen: 'm' as const };
+    expect(identidad(inst, D)).toEqual({ ivs: [31, 31, 31, 31, 31, 31], nat: 3, hab: 'overgrow', gen: 'm' });
+  });
+
+  test('rolarIdentidad produce identidad válida', () => {
+    const r = rolarIdentidad(1, HAB, () => 0.99);   // rng alto → no hidden (0.99>0.05), ♂ (0.99>1/8)
+    expect(r.hab).toBe('overgrow'); expect(r.gen).toBe('m'); expect(r.ivs).toHaveLength(6);
+  });
+
+  test('género genderless cuando gender_rate = -1', () => {
+    const D2: any = { habilidades: { especies: { '100': [] }, genero: { '100': -1 }, meta: {} } };
+    expect(identidad({ iid: 'z', id: 100, nivel: 5 }, D2).gen).toBeNull();
+  });
+});
+
+// ───────────────────────── habilidades (core-contained) ─────────────────────────
+const mkC = (over: any): any => ({ iid: 't', id: 1, nombre: 'T', nivel: 50, shiny: false, tipos: ['Normal'],
+  movs: [], hpMax: 100, hp: 100, atk: 100, def: 100, spa: 100, spd: 100, spe: 100,
+  atkMod: 1, defMod: 1, estado: null, estadoT: 0, hab: null, gen: null, ...over });
+
+describe('habilidades — core', () => {
+  test('Levitación anula daño Tierra', () => {
+    const def = mkC({ hab: 'levitate' });
+    const r = cd(mkC({ tipos: ['Tierra'] }), { id: 1, nombre: 'Terremoto', tipo: 'Tierra', poder: 100 } as any, def);
+    expect(r.dmg).toBe(0); expect(r.inmuneHab).toBe('levitate');
+  });
+  test('Absorbe Fuego anula daño Fuego', () => {
+    const r = cd(mkC({ tipos: ['Fuego'] }), { id: 1, nombre: 'Lanzallamas', tipo: 'Fuego', poder: 90 } as any, mkC({ hab: 'flash-fire' }));
+    expect(r.dmg).toBe(0);
+  });
+  test('Espesura potencia Planta con <1/3 HP', () => {
+    const atkBajo = mkC({ tipos: ['Planta'], hab: 'overgrow', hp: 20, hpMax: 100 });
+    const atkFull = mkC({ tipos: ['Planta'], hab: 'overgrow', hp: 100, hpMax: 100 });
+    const mov: any = { id: 1, nombre: 'Latigazo', tipo: 'Planta', poder: 60, categoria: 'Físico' };
+    const rng = () => 0.5;
+    expect(cd(atkBajo, mov, mkC({}), rng).dmg).toBeGreaterThan(cd(atkFull, mov, mkC({}), rng).dmg);
+  });
+  test('Agallas potencia físico con estado', () => {
+    const mov: any = { id: 1, nombre: 'Golpe', tipo: 'Normal', poder: 60, categoria: 'Físico' };
+    const conEstado = mkC({ hab: 'guts', estado: 'paralisis' });   // parálisis no penaliza daño (a diferencia de quemadura)
+    const sano = mkC({ hab: 'guts', estado: null });
+    const rng = () => 0.5;
+    expect(cd(conEstado, mov, mkC({}), rng).dmg).toBeGreaterThan(cd(sano, mov, mkC({}), rng).dmg);
+  });
+  test('Robustez sobrevive a 1 HP desde full', () => {
+    const def = mkC({ hab: 'sturdy', hp: 100, hpMax: 100 });
+    const r = cd(mkC({ tipos: ['Lucha'] }), { id: 1, nombre: 'A Bocajarro', tipo: 'Lucha', poder: 250, categoria: 'Físico' } as any, def, () => 0.99);
+    expect(r.dmg).toBe(99); expect(r.sturdy).toBe(true);
+  });
+  test('Inmunidad bloquea veneno', () => {
+    const def = mkC({ hab: 'immunity' });
+    expect(aa({ id: 1, nombre: 'Tóxico', tipo: 'Veneno', ailment: 'veneno', ailmentChance: 100 } as any, mkC({}), def, () => 0)).toBe('');
+    expect(def.estado).toBeNull();
+  });
+  test('Ojo Compuesto sube precisión', () => {
+    const atk = mkC({ hab: 'compound-eyes' });
+    expect(ac({ id: 1, nombre: 'X', tipo: 'Normal', precision: 70 } as any, () => 0.8, atk)).toBe(true);
+  });
+});
+
+import { habAlEntrar, habAlContacto } from './combate-core';
+describe('habilidades — orquestación', () => {
+  const C = (over: any): any => ({ iid: 't', id: 1, nombre: 'T', nivel: 50, shiny: false, tipos: ['Normal'],
+    movs: [], hpMax: 100, hp: 100, atk: 100, def: 100, spa: 100, spd: 100, spe: 100,
+    atkMod: 1, defMod: 1, estado: null, estadoT: 0, hab: null, gen: null, ...over });
+
+  test('Intimidación baja el Ataque del rival al entrar', () => {
+    const self = C({ hab: 'intimidate', nombre: 'Gyarados' });
+    const rival = C({ atkMod: 1 });
+    const txt = habAlEntrar(self, rival);
+    expect(rival.atkMod).toBeLessThan(1);
+    expect(txt).toMatch(/Intimidaci/);
+  });
+  test('Intimidación no hace nada sin la habilidad', () => {
+    const rival = C({ atkMod: 1 });
+    expect(habAlEntrar(C({ hab: null }), rival)).toBe('');
+    expect(rival.atkMod).toBe(1);
+  });
+  test('Estática paraliza al atacante de contacto (rng bajo)', () => {
+    const def = C({ hab: 'static' });
+    const atk = C({ estado: null });
+    const txt = habAlContacto(def, atk, { id: 1, nombre: 'Placaje', tipo: 'Normal', poder: 40, categoria: 'Físico' } as any, () => 0.01);
+    expect(atk.estado).toBe('paralisis'); expect(txt).toMatch(/paraliz/i);
+  });
+  test('Cuerpo Llama no actúa con movimiento especial (sin contacto)', () => {
+    const def = C({ hab: 'flame-body' });
+    const atk = C({ estado: null });
+    expect(habAlContacto(def, atk, { id: 1, nombre: 'Rayo', tipo: 'Eléctrico', poder: 90, categoria: 'Especial' } as any, () => 0.01)).toBe('');
+    expect(atk.estado).toBeNull();
+  });
+});
+
+describe('EVs', () => {
+  test('sumarEV respeta cap 252 por stat', () => {
+    expect(sumarEV([250, 0, 0, 0, 0, 0], [3, 0, 0, 0, 0, 0])).toEqual([252, 0, 0, 0, 0, 0]);
+  });
+  test('sumarEV respeta cap total 510', () => {
+    const r = sumarEV([252, 252, 0, 0, 0, 0], [0, 0, 10, 0, 0, 0]);
+    expect(r[2]).toBe(6);
+    expect(r.reduce((a, b) => a + b, 0)).toBe(510);
   });
 });

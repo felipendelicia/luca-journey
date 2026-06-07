@@ -45,7 +45,8 @@ const total = pokemon.length;
 
   <script type="application/json" id="safari-data" set:html={JSON.stringify({ temas })}></script>
   <script>
-    import { sincronizar, tirar as lanzar, estado, vistos, reclamarRegalo, regaloDisponible, regionesDesbloqueadas, spriteUrl } from '../lib/coleccion.js';
+    import { sincronizar, tirar as lanzar, estado, vistos, reclamarRegalo, regaloDisponible, regionesDesbloqueadas, spriteUrl,
+      identidadDe, naturalezaDe, habMeta, ivPct } from '../lib/coleccion.js';
     import { sonarCaptura, sonarShiny, sonarEpico } from '../lib/sonidos.js';
     import { TIERS } from '../lib/rareza.js';
     import { ballSvg } from '../lib/sprites.js';
@@ -56,6 +57,17 @@ const total = pokemon.length;
     const meta = JSON.parse(document.getElementById('safari-data').textContent);
     const D = { pokemon, pesos, temas: meta.temas };
     const $ = (id) => document.getElementById(id);
+
+    // resumen de identidad de la captura: género · IVs% · naturaleza · habilidad. Una línea.
+    function capIdentidad(inst) {
+      if (!inst) return '';
+      const idn = identidadDe(inst), nat = naturalezaDe(inst), hm = habMeta(idn.hab);
+      const gen = idn.gen === 'm' ? '<i class="cap-gm">♂</i>' : idn.gen === 'f' ? '<i class="cap-gf">♀</i>' : '';
+      const pct = ivPct(idn.ivs), pctCls = pct >= 90 ? ' cap-iv-top' : pct >= 75 ? ' cap-iv-good' : '';
+      const partes = [gen, '<span class="cap-iv' + pctCls + '">IVs ' + pct + '%</span>', nat.nombre];
+      if (hm) partes.push(hm.nombre);
+      return '<span class="cap-id">✨ ' + partes.filter(Boolean).join(' <i class="cap-dot">·</i> ') + '</span>';
+    }
 
     // modal explicativo de rarezas (poblado desde TIERS)
     (function rarezas() {
@@ -178,7 +190,8 @@ const total = pokemon.length;
       txt.className = 'captura-txt';
       txt.innerHTML = ballTxt + titulo + ' <span class="cap-n">Nº ' + p.id + ' · Nv.' + r.nivel + '</span>' +
         '<span class="cap-tier" style="--tier-color:' + t.color + '">' + (t.ico ? t.ico + ' ' : '') + t.nombre + '</span>' +
-        '<span class="cap-prob">🎲 1 de cada <b>' + r.cadaCuantos + '</b> · 🍬 +' + carGan + ' caramelos</span>';
+        '<span class="cap-prob">🎲 1 de cada <b>' + r.cadaCuantos + '</b> · 🍬 +' + carGan + ' caramelos</span>' +
+        capIdentidad(r.inst);
       escena.appendChild(txt);
       $('msg').textContent = r.shiny
         ? '🌟 ¡INCREÍBLE! Un shiny aparece 1 de cada 100 veces.'

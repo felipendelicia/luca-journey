@@ -128,6 +128,23 @@ function vialBottle(c, size) {
     `<rect x="9.8" y="18" width="12.4" height="4.2" fill="rgba(255,255,255,.85)"/>` + // etiqueta
     gloss(13, 16, 1.6, 2.6));
 }
+// Vitaminas (EV): frasco de cápsulas, fiel a la saga (tarrito + tapa + etiqueta), color por stat.
+// Tinte por stat vía `color`; si no se pasa, gris neutro. Cápsula bicolor (clara/oscura) adentro.
+function vitaminaSvg(size, color) {
+  const c = color || '#9aa0a6';
+  const g = uid(), lo = `color-mix(in srgb, ${c} 72%, #000 28%)`;
+  return svg(size, `<defs>${linGrad(g, `color-mix(in srgb, ${c} 88%, #fff 12%)`, lo)}</defs>` +
+    `<rect x="11" y="5.5" width="10" height="3.4" rx="1.1" fill="#cfd4dd" ${STK}/>` +       // tapa
+    `<rect x="8.4" y="8.4" width="15.2" height="19.4" rx="3.4" fill="url(#${g})" ${STK}/>` + // tarrito
+    `<rect x="8.4" y="14.2" width="15.2" height="8.4" fill="rgba(255,255,255,.9)"/>` +       // etiqueta blanca
+    `<rect x="10.6" y="16.4" width="10.8" height="1.5" rx=".7" fill="${lo}"/>` +              // renglones de la etiqueta
+    `<rect x="10.6" y="19.2" width="7.4" height="1.4" rx=".7" fill="${lo}" opacity=".7"/>` +
+    `<g transform="rotate(-30 16 11.4)">` +                                                   // cápsula bicolor
+      `<rect x="12.4" y="9.4" width="7.2" height="4" rx="2" fill="${c}" stroke="rgba(0,0,0,.32)" stroke-width=".8"/>` +
+      `<path d="M14 9.4a2 2 0 0 0-1.6 .8 2 2 0 0 0 0 2.4 2 2 0 0 0 1.6 .8h2V9.4Z" fill="#f4f6fa"/>` +
+    `</g>` +
+    gloss(11.5, 11.5, 1.4, 2.2));
+}
 // Revivir: cruz amarilla con borde teal (paleta canónica del Revive).
 function reviveSvg(size) {
   const g = uid();
@@ -147,15 +164,22 @@ const CONSUM = {
   curatotal:     { kind: 'vial', c: ['#ffd0e0', '#e0709a'] },  // cura total (rosa)
 };
 
-export function itemSvg(id, size = 22) {
+// color de cada vitamina por índice de stat (0=PS … 5=Vel) — paleta canon de stats.
+const VIT_COLOR = ['#ff5959', '#f5ac78', '#fae078', '#9db7f5', '#a7db8d', '#fa92b2'];
+
+// itemSvg(id, size, color?) — `color` solo lo usa 'vitamina' (tinte por stat). Para los demás se ignora.
+export function itemSvg(id, size = 22, color = null) {
   if (id === 'discoenlace') return discoSvg(size);
   if (id === 'superball' || id === 'ball1') return ballSvg(1, size);
   if (id === 'ultraball' || id === 'ball2') return ballSvg(2, size);
   if (id === 'revivir') return reviveSvg(size);
+  if (id === 'vitamina') return vitaminaSvg(size, color);
   if (CONSUM[id]) return CONSUM[id].kind === 'spray' ? sprayBottle(CONSUM[id].c, size) : vialBottle(CONSUM[id].c, size);
   if (STONES[id]) return gemSvg(STONES[id].c, STONES[id].em, size);
   return gemSvg(STONES.piedra.c, STONES.piedra.em, size);   // comodín
 }
+// índice de stat → color de la vitamina de ese stat (para la tienda, que tinta por `ev`).
+export const vitaminaColor = (statIdx) => VIT_COLOR[statIdx] || VIT_COLOR[0];
 
 // ───────────────────────── pokeballs ─────────────────────────
 // tier 0=Poké(rojo) · 1=Super/Great(azul+arcos rojos) · 2=Ultra(amarillo+negro)
