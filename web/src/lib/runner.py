@@ -31,13 +31,25 @@ def ejecutar(code):
 
 
 def _msg(report):
-    """Saca un mensaje corto del fallo (la última línea útil)."""
+    """Mensaje del fallo. Priorizamos la línea de COMPARACIÓN con valores reales
+    ('assert <lo que devolvió tu función> == <lo esperado>', que pytest arma al reescribir el assert),
+    para que se vea QUÉ devolvió tu función. Si no hay, caemos al mensaje custom / la 1ra línea útil."""
     rep = report.longrepr
     cr = getattr(rep, "reprcrash", None)
-    if cr is not None and getattr(cr, "message", None):
-        return cr.message.strip().splitlines()[0]
-    texto = str(rep).strip()
-    return texto.splitlines()[-1] if texto else "falló"
+    crash = cr.message if (cr is not None and getattr(cr, "message", None)) else ""
+    full = str(rep) if rep is not None else ""
+    # pytest prefija las líneas de detalle con "E"; las limpiamos.
+    lineas = [l.strip().lstrip("E").strip() for l in (crash + "\n" + full).splitlines() if l.strip()]
+    cmp_line = next(
+        (l for l in lineas if l.startswith("assert ") and any(op in l for op in ("==", "!=", " in ", "<", ">"))),
+        None,
+    )
+    if cmp_line:
+        return cmp_line
+    custom = next((l for l in lineas if l.startswith("AssertionError:")), None)
+    if custom:
+        return custom
+    return lineas[0] if lineas else "falló"
 
 
 def correr(slug, ejercicios_code, test_code, extra_json, solo_json="[]"):

@@ -1,4 +1,4 @@
-import{r as l}from"./editor.D60dbama.js";import{p as g,t as _,a as j}from"./errores.d5M1PzV8.js";const h=`# runner.py — corre los tests de una semana en el navegador con pytest real (Pyodide).
+import{r as c}from"./editor.D60dbama.js";import{p as g,t as v,a as _}from"./errores.d5M1PzV8.js";const h=`# runner.py — corre los tests de una semana en el navegador con pytest real (Pyodide).
 # Escribe el código del alumno como ejercicios.py + el test + helpers, con
 # CURSO_MODULO=ejercicios, y ejecuta pytest recolectando el resultado por test.
 import os
@@ -31,13 +31,25 @@ def ejecutar(code):
 
 
 def _msg(report):
-    """Saca un mensaje corto del fallo (la última línea útil)."""
+    """Mensaje del fallo. Priorizamos la línea de COMPARACIÓN con valores reales
+    ('assert <lo que devolvió tu función> == <lo esperado>', que pytest arma al reescribir el assert),
+    para que se vea QUÉ devolvió tu función. Si no hay, caemos al mensaje custom / la 1ra línea útil."""
     rep = report.longrepr
     cr = getattr(rep, "reprcrash", None)
-    if cr is not None and getattr(cr, "message", None):
-        return cr.message.strip().splitlines()[0]
-    texto = str(rep).strip()
-    return texto.splitlines()[-1] if texto else "falló"
+    crash = cr.message if (cr is not None and getattr(cr, "message", None)) else ""
+    full = str(rep) if rep is not None else ""
+    # pytest prefija las líneas de detalle con "E"; las limpiamos.
+    lineas = [l.strip().lstrip("E").strip() for l in (crash + "\\n" + full).splitlines() if l.strip()]
+    cmp_line = next(
+        (l for l in lineas if l.startswith("assert ") and any(op in l for op in ("==", "!=", " in ", "<", ">"))),
+        None,
+    )
+    if cmp_line:
+        return cmp_line
+    custom = next((l for l in lineas if l.startswith("AssertionError:")), None)
+    if custom:
+        return custom
+    return lineas[0] if lineas else "falló"
 
 
 def correr(slug, ejercicios_code, test_code, extra_json, solo_json="[]"):
@@ -102,7 +114,7 @@ def correr(slug, ejercicios_code, test_code, extra_json, solo_json="[]"):
     if carga is None and not rec.res:
         carga = "No se pudieron cargar los tests (revisá errores de sintaxis)."
     return json.dumps({"carga_error": carga, "tests": rec.res})
-`;function v(r){const e=r||[],s=e.includes("flask");return{packages:["pytest",...s?["micropip"]:[],...e.filter(n=>n!=="flask")],flask:s}}function w(r,e,s=1e4){const{packages:n,flask:d}=v(e),i=d?`import micropip
+`;function j(r){const e=r||[],s=e.includes("flask");return{packages:["pytest",...s?["micropip"]:[],...e.filter(t=>t!=="flask")],flask:s}}function w(r,e,s=1e4){const{packages:t,flask:d}=j(e),i=d?`import micropip
 await micropip.install('flask')
 
-`+r:r;let a=null;function c(){return a||(a=l(i,n,"ejecutar",[""],6e4).catch(o=>{throw a=null,o})),a}return{asegurar:c,async correr(o,p,u,m,f){return await c(),l(i,n,"correr",[o,p,u,m,f],s)},async ejecutar(o){return await c(),l(i,n,"ejecutar",[o],s)}}}const t=r=>String(r??"").replace(/[&<>]/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;"})[e]);function y(r){if(/⏱️|tardó demasiado/.test(r))return'<div class="ejer-err">'+t(r)+"</div>";const e=_(r);return e?'<div class="ejer-err err-amigable"><div class="err-tit">'+e.ico+" "+t(e.titulo)+(e.linea?' <span class="err-linea">línea '+e.linea+"</span>":"")+'</div><div class="err-causa">'+t(e.causa)+'</div><div class="err-fix">💡 '+t(e.fix)+'</div><details class="err-raw"><summary>Ver el error técnico</summary><code>'+t(r)+"</code></details></div>":'<div class="ejer-err">⚠️ El código no se pudo ejecutar:<br><code>'+t(r)+"</code></div>"}function k(r){let e='<ul class="ejer-lista">';for(const s of r){if(e+='<li class="'+(s.ok?"ok":"no")+'"><span class="ic">'+(s.ok?"✅":"❌")+"</span><code>"+t(s.name)+"</code>",s.msg){const n=j(s.msg);e+='<div class="m">💡 '+t(n)+"</div>",n!==s.msg&&(e+='<details class="m-raw"><summary>detalle del test</summary><code>'+t(s.msg)+"</code></details>")}s.out&&(e+='<div class="ej-out"><span class="lbl">🖨️ tus prints</span>'+t(s.out)+"</div>"),e+="</li>"}return e+"</ul>"}function E(r){let e='<div class="ejer-run"><span class="lbl">▶ Ejecutar</span>';r.out&&g(r.out)?e+=y(r.out):r.out&&(e+='<pre class="ej-stdout">'+t(r.out)+"</pre>");const s=r.ret!==null&&r.ret!==void 0;return s&&(e+='<div class="ej-ret">↩ devuelve <code>'+t(r.ret)+"</code></div>"),!r.out&&!s&&(e+='<div class="ej-vacio">Sin salida. Agregá <code>print(...)</code> o poné una llamada como última línea para ver qué devuelve.</div>'),e+"</div>"}export{y as b,w as c,k as l,h as r,E as s};
+`+r:r;let a=null;function l(){return a||(a=c(i,t,"ejecutar",[""],6e4).catch(o=>{throw a=null,o})),a}return{asegurar:l,async correr(o,p,u,m,f){return await l(),c(i,t,"correr",[o,p,u,m,f],s)},async ejecutar(o){return await l(),c(i,t,"ejecutar",[o],s)}}}const n=r=>String(r??"").replace(/[&<>]/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;"})[e]);function y(r){if(/⏱️|tardó demasiado/.test(r))return'<div class="ejer-err">'+n(r)+"</div>";const e=v(r);return e?'<div class="ejer-err err-amigable"><div class="err-tit">'+e.ico+" "+n(e.titulo)+(e.linea?' <span class="err-linea">línea '+e.linea+"</span>":"")+'</div><div class="err-causa">'+n(e.causa)+'</div><div class="err-fix">💡 '+n(e.fix)+'</div><details class="err-raw"><summary>Ver el error técnico</summary><code>'+n(r)+"</code></details></div>":'<div class="ejer-err">⚠️ El código no se pudo ejecutar:<br><code>'+n(r)+"</code></div>"}function k(r){let e='<ul class="ejer-lista">';for(const s of r){if(e+='<li class="'+(s.ok?"ok":"no")+'"><span class="ic">'+(s.ok?"✅":"❌")+"</span><code>"+n(s.name)+"</code>",s.msg){const t=_(s.msg);e+='<div class="m">💡 '+n(t)+"</div>",t!==s.msg&&(e+='<details class="m-raw"><summary>detalle del test</summary><code>'+n(s.msg)+"</code></details>")}s.out&&(e+='<div class="ej-out"><span class="lbl">🖨️ tus prints</span>'+n(s.out)+"</div>"),e+="</li>"}return e+"</ul>"}function E(r){let e='<div class="ejer-run"><span class="lbl">▶ Ejecutar</span>';r.out&&g(r.out)?e+=y(r.out):r.out&&(e+='<pre class="ej-stdout">'+n(r.out)+"</pre>");const s=r.ret!==null&&r.ret!==void 0;return s&&(e+='<div class="ej-ret">↩ devuelve <code>'+n(r.ret)+"</code></div>"),!r.out&&!s&&(e+='<div class="ej-vacio">Sin salida. Agregá <code>print(...)</code> o poné una llamada como última línea para ver qué devuelve.</div>'),e+"</div>"}export{y as b,w as c,k as l,h as r,E as s};
