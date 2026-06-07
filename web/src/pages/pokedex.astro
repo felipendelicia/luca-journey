@@ -126,7 +126,12 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
     }
     const $ = (id) => document.getElementById(id);
     const buscar = $('buscar'), sinres = $('sinres');
-    let filtro = 'todos';
+    // prefs de filtros/orden/tab persistidas en localStorage (la searchbar NO se guarda)
+    const PREF = {
+      get: (k, def) => { try { const v = localStorage.getItem('col:dex:' + k); return v == null ? def : v; } catch { return def; } },
+      set: (k, v) => { try { localStorage.setItem('col:dex:' + k, v); } catch {} },
+    };
+    let filtro = PREF.get('filtro', 'todos');
 
     // Pokédex = COMPLETITUD (vistos). Mi PC = los que TENÉS (instancias).
     const REG_COLOR = { kanto: '#e0492f', johto: '#caa94e', hoenn: '#56ad4e', sinnoh: '#4d90d5', unova: '#7a7a86', kalos: '#d3793f', alola: '#e06d9f', galar: '#7b6cd9', paldea: '#e0843a' };
@@ -177,7 +182,7 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
     }
 
     // ordenamientos disponibles para Mi PC
-    let ordenPC = 'pokedex';
+    let ordenPC = PREF.get('orden', 'pokedex');
     function ordenarPC(arr, car) {
       const cmp = {
         pokedex: (a, b) => (a.id - b.id) || (b.nivel - a.nivel),
@@ -497,14 +502,14 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
     // tabs Pokédex / Mi PC
     document.querySelectorAll('.dex-tab').forEach((t) => t.addEventListener('click', () => {
       document.querySelectorAll('.dex-tab').forEach((x) => x.classList.remove('activo'));
-      t.classList.add('activo');
+      t.classList.add('activo'); PREF.set('tab', t.dataset.tab);
       const dex = t.dataset.tab === 'dex';
       $('panel-dex').hidden = !dex; $('panel-pc').hidden = dex;
       if (dex && dexSucio) { grilla(vistos(), pc()); dexSucio = false; }   // armar el grid al abrir la Pokédex
       aplicar();
     }));
 
-    $('pc-orden').addEventListener('change', (e) => { ordenPC = e.target.value; miPC(pc(), caramelos()); aplicar(); });
+    $('pc-orden').addEventListener('change', (e) => { ordenPC = e.target.value; PREF.set('orden', ordenPC); miPC(pc(), caramelos()); aplicar(); });
     buscar.addEventListener('input', aplicar);
 
     // ── limpiador de repetidos por línea evolutiva ──
@@ -556,14 +561,25 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
     $('dup-modal').addEventListener('click', (e) => { if (e.target === $('dup-modal')) $('dup-modal').hidden = true; });
     document.querySelectorAll('.dex-f').forEach((b) => b.addEventListener('click', () => {
       document.querySelectorAll('.dex-f').forEach((x) => x.classList.remove('activo'));
-      b.classList.add('activo'); filtro = b.dataset.f; aplicar();
+      b.classList.add('activo'); filtro = b.dataset.f; PREF.set('filtro', filtro); aplicar();
     }));
+
+    // restaura los filtros/orden/tab guardados (la searchbar arranca siempre vacía)
+    function restaurarPrefs() {
+      if (PREF.get('tab', 'pc') === 'dex') {
+        document.querySelectorAll('.dex-tab').forEach((x) => x.classList.toggle('activo', x.dataset.tab === 'dex'));
+        $('panel-dex').hidden = false; $('panel-pc').hidden = true;
+      }
+      document.querySelectorAll('.dex-f').forEach((x) => x.classList.toggle('activo', x.dataset.f === filtro));
+      const sel = $('pc-orden'); if (sel) sel.value = ordenPC;
+    }
 
     // cerrar el modal: X, click en el fondo, Escape
     $('poke-modal-x').addEventListener('click', cerrarModal);
     $('poke-modal').addEventListener('click', (e) => { if (e.target === $('poke-modal')) cerrarModal(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrarModal(); });
 
+    restaurarPrefs();
     pintar();
     // si la nube cambió por fuera (ej. un intercambio), re-render para no quedar desfasado
     window.addEventListener('nube:sincronizado', pintar);
