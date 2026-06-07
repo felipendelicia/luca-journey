@@ -25,14 +25,17 @@ export const invitar = (uid) => emit('invitar', uid);
 export const aceptar = (roomId) => emit('aceptar', roomId);
 export const crearCodigo = () => emit('crearCodigo');
 export const unirseCodigo = (code) => emit('unirseCodigo', code);
-// selección + combate
+// selección
 export const elegirEquipo = (iids) => emit('elegirEquipo', iids);
-export const mover = (i) => emit('mover', i);
-export const cambiar = (idx) => emit('cambiar', idx);
-export const usarPocion = (id) => emit('pocion', id);
-export const lanzarSuper = () => emit('super');
-export const resolverSuper = (calidad) => emit('superResuelto', calidad);
-export const rendirse = () => emit('rendirse');
+// acción unificada del modelo simultáneo: {tipo, i?, idx?, itemId?, calidad?}
+export const elegir = (accion) => emit('elegir', accion);
+export const elegirReemplazo = (idx) => emit('elegir', { tipo: 'reemplazo', idx });
+// wrappers de conveniencia (construyen la acción)
+export const mover = (i) => elegir({ tipo: 'mover', i });
+export const cambiar = (idx) => elegir({ tipo: 'cambiar', idx });
+export const usarPocion = (itemId) => elegir({ tipo: 'pocion', itemId });
+export const lanzarSuper = (calidad) => elegir({ tipo: 'super', calidad });
+export const rendirse = () => elegir({ tipo: 'rendirse' });
 
 export function desconectarBatalla() { if (socket) { socket.disconnect(); socket = null; } }
 export const miUid = () => (auth.user() || {}).id;
