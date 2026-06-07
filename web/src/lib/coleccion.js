@@ -95,6 +95,16 @@ export function darEV(iid, yieldVec) {
   m.evs = sumarEV(evsDe(m), yieldVec); setPC(arr);
 }
 
+// usa una vitamina sobre una instancia: +10 EV al stat, tope 100 por vía vitamina y caps globales (252/510).
+export function usarVitamina(iid, statIdx) {
+  const arr = pc(); const m = arr.find((x) => x.iid === iid); if (!m) return false;
+  const ev = evsDe(m);
+  if (ev[statIdx] >= 100) return false;        // tope vitamina
+  const yieldVec = [0, 0, 0, 0, 0, 0]; yieldVec[statIdx] = Math.min(10, 100 - ev[statIdx]);
+  m.evs = sumarEV(ev, yieldVec); setPC(arr);
+  return true;
+}
+
 export const BALLS_POR_EJERCICIO = 2;
 export const REGALO_BALLS = 8;                     // Pokéballs por regalo (cada 20 min)
 export const REGALO_COOLDOWN_MS = 20 * 60 * 1000;  // cada 20 minutos

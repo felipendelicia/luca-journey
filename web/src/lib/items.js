@@ -26,6 +26,13 @@ export const ITEMS = {
   antihielo:     { nombre: 'Antihielo',      sprite: 'antihielo',     precio: 18, cat: 'estado', curaEstado: 'congelado', desc: 'Descongela a un Pokémon Congelado en batalla.' },
   curatotal:     { nombre: 'Cura Total',     sprite: 'curatotal',     precio: 45, cat: 'estado', curaEstado: 'todos',     desc: 'Cura CUALQUIER estado alterado (incluida la confusión).' },
   revivir:       { nombre: 'Revivir',        sprite: 'revivir',       precio: 55, cat: 'estado', revive: 0.5,             desc: 'Revive a un Pokémon debilitado con la mitad del HP.' },
+  // ── Vitaminas · entrenamiento (EV) ── (ev = índice de stat: 0=PS,1=Atk,2=Def,3=SpA,4=SpD,5=Vel)
+  proteina: { nombre: 'Proteína', sprite: 'vitamina', precio: 30, cat: 'ev', ev: 1, evMax: 100, desc: '+10 EV de Ataque (hasta 100 por esta vía).' },
+  hierro:   { nombre: 'Hierro',   sprite: 'vitamina', precio: 30, cat: 'ev', ev: 2, evMax: 100, desc: '+10 EV de Defensa (hasta 100).' },
+  calcio:   { nombre: 'Calcio',   sprite: 'vitamina', precio: 30, cat: 'ev', ev: 3, evMax: 100, desc: '+10 EV de Ataque Especial (hasta 100).' },
+  zinc:     { nombre: 'Zinc',     sprite: 'vitamina', precio: 30, cat: 'ev', ev: 4, evMax: 100, desc: '+10 EV de Defensa Especial (hasta 100).' },
+  carburo:  { nombre: 'Carburo',  sprite: 'vitamina', precio: 30, cat: 'ev', ev: 5, evMax: 100, desc: '+10 EV de Velocidad (hasta 100).' },
+  masps:    { nombre: 'Más PS',   sprite: 'vitamina', precio: 30, cat: 'ev', ev: 0, evMax: 100, desc: '+10 EV de PS (hasta 100).' },
   // ── Pokeballs ──
   superball:   { nombre: 'Super Ball',       ico: '🔵', precio: 25, cat: 'ball', tier: 1, sprite: 'ball1', desc: 'Mejor captura: +shiny, +nivel, +rareza y +caramelos (moderado).' },
   ultraball:   { nombre: 'Ultra Ball',       ico: '🟡', precio: 60, cat: 'ball', tier: 2, sprite: 'ball2', desc: 'Captura premium: ++shiny, ++nivel, ++rareza y ++caramelos.' },
