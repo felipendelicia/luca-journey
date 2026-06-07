@@ -175,11 +175,32 @@ export function combatiente(inst: Inst, d: DatosCombate): Combatiente {
   };
 }
 
+// ───────────────────────── habilidades (core-contained) ─────────────────────────
+const BOOST_TIPO: Record<string, string> = { overgrow: 'Planta', blaze: 'Fuego', torrent: 'Agua' };
+const ABSORBE_TIPO: Record<string, string> = { levitate: 'Tierra', 'water-absorb': 'Agua', 'flash-fire': 'Fuego' };
+const NO_ESTADO: Record<string, EstadoAlt> = { immunity: 'veneno', insomnia: 'sueno', 'magma-armor': 'congelado' };
+
+// ¿la habilidad del defensor lo hace inmune a este tipo de movimiento?
+export const habInmuneTipo = (c: Combatiente, tipoMov: string): boolean => !!c.hab && ABSORBE_TIPO[c.hab] === tipoMov;
+// multiplicador de daño por habilidad del ATACANTE (Espesura/Mar Llamas/Torrente, Agallas).
+export function habModDano(atacante: Combatiente, mov: Mov): number {
+  let m = 1;
+  if (atacante.hab && BOOST_TIPO[atacante.hab] === mov.tipo && atacante.hp / atacante.hpMax < 1 / 3) m *= 1.5;
+  if (atacante.hab === 'guts' && atacante.estado && esFisico(mov)) m *= 1.5;
+  return m;
+}
+// ¿la habilidad del defensor bloquea este estado?
+export const habNoEstado = (c: Combatiente, estado: EstadoAlt): boolean => !!c.hab && NO_ESTADO[c.hab] === estado;
+// multiplicador de precisión por habilidad del atacante (Ojo Compuesto).
+export const habModPrecision = (c: Combatiente | undefined): number => (c && c.hab === 'compound-eyes') ? 1.3 : 1;
+
 // ───────────────────────── daño ─────────────────────────
 export const esEstado = (mov: Mov): boolean => mov.categoria === 'Estado' || !mov.poder;
 
-export function calcularDano(atacante: Combatiente, mov: Mov, defensor: Combatiente, rng: Rng = Math.random, crit = false) {
+export interface ResultadoDano { dmg: number; efec: number; stab: number; crit: boolean; inmuneHab?: string | null; sturdy?: boolean; }
+export function calcularDano(atacante: Combatiente, mov: Mov, defensor: Combatiente, rng: Rng = Math.random, crit = false): ResultadoDano {
   const efec = efectividad(mov.tipo, defensor.tipos);
+  if (habInmuneTipo(defensor, mov.tipo)) return { dmg: 0, efec: 0, stab: 1, crit: false, inmuneHab: defensor.hab };   // habilidad anula el tipo
   if (efec === 0) return { dmg: 0, efec, stab: 1, crit: false };   // inmune: no afecta
   const fisico = esFisico(mov);
   const stab = atacante.tipos.includes(mov.tipo) ? 1.5 : 1;
@@ -188,8 +209,10 @@ export function calcularDano(atacante: Combatiente, mov: Mov, defensor: Combatie
   const baseDmg = Math.floor(Math.floor((2 * atacante.nivel / 5 + 2) * (mov.poder || 40) * A / D) / 50) + 2;   // fórmula estilo Gen 3
   const quema = (atacante.estado === 'quemadura' && fisico) ? 0.5 : 1;   // quemado pega menos físico
   const rand = 0.85 + rng() * 0.15;
-  const dmg = Math.max(1, Math.round(baseDmg * stab * efec * quema * (crit ? 2 : 1) * rand));
-  return { dmg, efec, stab, crit };
+  let dmg = Math.max(1, Math.round(baseDmg * stab * efec * quema * (crit ? 2 : 1) * rand * habModDano(atacante, mov)));
+  let sturdy = false;
+  if (defensor.hab === 'sturdy' && defensor.hp === defensor.hpMax && dmg >= defensor.hp) { dmg = defensor.hp - 1; sturdy = true; }   // Robustez: aguanta a 1 HP desde full
+  return { dmg, efec, stab, crit, sturdy };
 }
 
 // movimiento de ESTADO: lee la descripción y sube/baja Ataque o Defensa. Devuelve texto.
@@ -234,7 +257,8 @@ const TXT_AIL: Record<string, string> = { veneno: 'fue envenenado', quemadura: '
 // inmunidad de estado por tipo (Gen 3): Fuego no se quema, Hielo no se congela, Veneno/Acero no se envenenan.
 const INMUNE_AIL: Record<string, string[]> = { quemadura: ['Fuego'], congelado: ['Hielo'], veneno: ['Veneno', 'Acero'] };
 
-export const acierta = (mov: Mov, rng: Rng = Math.random): boolean => (rng() * 100) < (mov.precision == null ? 100 : mov.precision);
+export const acierta = (mov: Mov, rng: Rng = Math.random, atacante?: Combatiente): boolean =>
+  (rng() * 100) < (mov.precision == null ? 100 : mov.precision * habModPrecision(atacante));
 
 // ¿puede actuar este turno? maneja sueño/congelado/parálisis/confusión (muta c).
 export function puedeActuar(c: Combatiente, rng: Rng = Math.random): { actua: boolean; texto: string; autogolpe?: number } {
@@ -267,6 +291,7 @@ export function aplicarAilment(mov: Mov, atacante: Combatiente, defensor: Combat
   if (mov.tipo === 'Fuego' && defensor.estado === 'congelado') defensor.estado = null;
   if (!mov.ailment || defensor.estado || defensor.hp <= 0) return '';
   if ((INMUNE_AIL[mov.ailment] || []).some((t) => defensor.tipos.includes(t))) return '';   // inmune por tipo
+  if (habNoEstado(defensor, mov.ailment)) return '';   // habilidad bloquea el estado
   const chance = mov.ailmentChance || 100;
   if (rng() * 100 >= chance) return '';
   defensor.estado = mov.ailment;

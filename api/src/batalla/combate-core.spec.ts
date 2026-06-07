@@ -6,6 +6,7 @@ import {
 } from './combate-core';
 import { NATURALEZAS, semilla, identidad, rolarIdentidad } from './combate-core';
 import { statEf as statEf3, hpEf as hpEf3 } from './combate-core';
+import { calcularDano as cd, aplicarAilment as aa, acierta as ac } from './combate-core';
 
 // combatiente sintético (no necesita data real): se sobreescribe lo que cada test precise.
 const luchador = (over: Partial<Combatiente> = {}): Combatiente => ({
@@ -526,5 +527,50 @@ describe('identidad', () => {
   test('género genderless cuando gender_rate = -1', () => {
     const D2: any = { habilidades: { especies: { '100': [] }, genero: { '100': -1 }, meta: {} } };
     expect(identidad({ iid: 'z', id: 100, nivel: 5 }, D2).gen).toBeNull();
+  });
+});
+
+// ───────────────────────── habilidades (core-contained) ─────────────────────────
+const mkC = (over: any): any => ({ iid: 't', id: 1, nombre: 'T', nivel: 50, shiny: false, tipos: ['Normal'],
+  movs: [], hpMax: 100, hp: 100, atk: 100, def: 100, spa: 100, spd: 100, spe: 100,
+  atkMod: 1, defMod: 1, estado: null, estadoT: 0, hab: null, gen: null, ...over });
+
+describe('habilidades — core', () => {
+  test('Levitación anula daño Tierra', () => {
+    const def = mkC({ hab: 'levitate' });
+    const r = cd(mkC({ tipos: ['Tierra'] }), { id: 1, nombre: 'Terremoto', tipo: 'Tierra', poder: 100 } as any, def);
+    expect(r.dmg).toBe(0); expect(r.inmuneHab).toBe('levitate');
+  });
+  test('Absorbe Fuego anula daño Fuego', () => {
+    const r = cd(mkC({ tipos: ['Fuego'] }), { id: 1, nombre: 'Lanzallamas', tipo: 'Fuego', poder: 90 } as any, mkC({ hab: 'flash-fire' }));
+    expect(r.dmg).toBe(0);
+  });
+  test('Espesura potencia Planta con <1/3 HP', () => {
+    const atkBajo = mkC({ tipos: ['Planta'], hab: 'overgrow', hp: 20, hpMax: 100 });
+    const atkFull = mkC({ tipos: ['Planta'], hab: 'overgrow', hp: 100, hpMax: 100 });
+    const mov: any = { id: 1, nombre: 'Latigazo', tipo: 'Planta', poder: 60, categoria: 'Físico' };
+    const rng = () => 0.5;
+    expect(cd(atkBajo, mov, mkC({}), rng).dmg).toBeGreaterThan(cd(atkFull, mov, mkC({}), rng).dmg);
+  });
+  test('Agallas potencia físico con estado', () => {
+    const mov: any = { id: 1, nombre: 'Golpe', tipo: 'Normal', poder: 60, categoria: 'Físico' };
+    const conEstado = mkC({ hab: 'guts', estado: 'paralisis' });   // parálisis no penaliza daño (a diferencia de quemadura)
+    const sano = mkC({ hab: 'guts', estado: null });
+    const rng = () => 0.5;
+    expect(cd(conEstado, mov, mkC({}), rng).dmg).toBeGreaterThan(cd(sano, mov, mkC({}), rng).dmg);
+  });
+  test('Robustez sobrevive a 1 HP desde full', () => {
+    const def = mkC({ hab: 'sturdy', hp: 100, hpMax: 100 });
+    const r = cd(mkC({ tipos: ['Lucha'] }), { id: 1, nombre: 'A Bocajarro', tipo: 'Lucha', poder: 250, categoria: 'Físico' } as any, def, () => 0.99);
+    expect(r.dmg).toBe(99); expect(r.sturdy).toBe(true);
+  });
+  test('Inmunidad bloquea veneno', () => {
+    const def = mkC({ hab: 'immunity' });
+    expect(aa({ id: 1, nombre: 'Tóxico', tipo: 'Veneno', ailment: 'veneno', ailmentChance: 100 } as any, mkC({}), def, () => 0)).toBe('');
+    expect(def.estado).toBeNull();
+  });
+  test('Ojo Compuesto sube precisión', () => {
+    const atk = mkC({ hab: 'compound-eyes' });
+    expect(ac({ id: 1, nombre: 'X', tipo: 'Normal', precision: 70 } as any, () => 0.8, atk)).toBe(true);
   });
 });
