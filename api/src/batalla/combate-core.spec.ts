@@ -574,3 +574,35 @@ describe('habilidades — core', () => {
     expect(ac({ id: 1, nombre: 'X', tipo: 'Normal', precision: 70 } as any, () => 0.8, atk)).toBe(true);
   });
 });
+
+import { habAlEntrar, habAlContacto } from './combate-core';
+describe('habilidades — orquestación', () => {
+  const C = (over: any): any => ({ iid: 't', id: 1, nombre: 'T', nivel: 50, shiny: false, tipos: ['Normal'],
+    movs: [], hpMax: 100, hp: 100, atk: 100, def: 100, spa: 100, spd: 100, spe: 100,
+    atkMod: 1, defMod: 1, estado: null, estadoT: 0, hab: null, gen: null, ...over });
+
+  test('Intimidación baja el Ataque del rival al entrar', () => {
+    const self = C({ hab: 'intimidate', nombre: 'Gyarados' });
+    const rival = C({ atkMod: 1 });
+    const txt = habAlEntrar(self, rival);
+    expect(rival.atkMod).toBeLessThan(1);
+    expect(txt).toMatch(/Intimidaci/);
+  });
+  test('Intimidación no hace nada sin la habilidad', () => {
+    const rival = C({ atkMod: 1 });
+    expect(habAlEntrar(C({ hab: null }), rival)).toBe('');
+    expect(rival.atkMod).toBe(1);
+  });
+  test('Estática paraliza al atacante de contacto (rng bajo)', () => {
+    const def = C({ hab: 'static' });
+    const atk = C({ estado: null });
+    const txt = habAlContacto(def, atk, { id: 1, nombre: 'Placaje', tipo: 'Normal', poder: 40, categoria: 'Físico' } as any, () => 0.01);
+    expect(atk.estado).toBe('paralisis'); expect(txt).toMatch(/paraliz/i);
+  });
+  test('Cuerpo Llama no actúa con movimiento especial (sin contacto)', () => {
+    const def = C({ hab: 'flame-body' });
+    const atk = C({ estado: null });
+    expect(habAlContacto(def, atk, { id: 1, nombre: 'Rayo', tipo: 'Eléctrico', poder: 90, categoria: 'Especial' } as any, () => 0.01)).toBe('');
+    expect(atk.estado).toBeNull();
+  });
+});

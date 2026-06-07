@@ -194,6 +194,20 @@ export const habNoEstado = (c: Combatiente, estado: EstadoAlt): boolean => !!c.h
 // multiplicador de precisión por habilidad del atacante (Ojo Compuesto).
 export const habModPrecision = (c: Combatiente | undefined): number => (c && c.hab === 'compound-eyes') ? 1.3 : 1;
 
+// AL ENTRAR a pista (Intimidación). Muta al rival. Devuelve texto|''.
+export function habAlEntrar(self: Combatiente, rival: Combatiente): string {
+  if (self.hab !== 'intimidate' || !rival || rival.hp <= 0) return '';
+  rival.atkMod = Math.max(0.4, (rival.atkMod || 1) * 0.7);
+  return '¡Intimidación de ' + self.nombre + '! El Ataque de ' + rival.nombre + ' bajó ↓';
+}
+// AL RECIBIR un golpe de CONTACTO (físico) — Estática/Cuerpo Llama. Muta al atacante. Devuelve texto|''.
+export function habAlContacto(self: Combatiente, atacante: Combatiente, mov: Mov, rng: Rng = Math.random): string {
+  if (!esFisico(mov) || atacante.hp <= 0 || atacante.estado) return '';
+  if (self.hab === 'static' && rng() < 0.3) { atacante.estado = 'paralisis'; return '¡Estática de ' + self.nombre + ' paralizó a ' + atacante.nombre + '!'; }
+  if (self.hab === 'flame-body' && rng() < 0.3 && !atacante.tipos.includes('Fuego')) { atacante.estado = 'quemadura'; return '¡Cuerpo Llama de ' + self.nombre + ' quemó a ' + atacante.nombre + '!'; }
+  return '';
+}
+
 // ───────────────────────── daño ─────────────────────────
 export const esEstado = (mov: Mov): boolean => mov.categoria === 'Estado' || !mov.poder;
 
