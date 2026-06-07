@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="es"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Primer divisor — Ejercicios</title><meta name="description" content="Aprendé a programar desde cero — Linux y Python — con una aventura Pokémon: ejercicios que se corrigen solos en tu navegador, libro interactivo, Pokédex, batallas y liga. Gratis."><link rel="canonical" href="https://felipendelicia.github.io/luca-journey/ejercicios/control-de-flujo/primer_divisor/"><meta property="og:type" content="website"><meta property="og:site_name" content="Pokédex Codex — Python con Pokémon"><meta property="og:title" content="Primer divisor — Ejercicios"><meta property="og:description" content="Aprendé a programar desde cero — Linux y Python — con una aventura Pokémon: ejercicios que se corrigen solos en tu navegador, libro interactivo, Pokédex, batallas y liga. Gratis."><meta property="og:url" content="https://felipendelicia.github.io/luca-journey/ejercicios/control-de-flujo/primer_divisor/"><meta property="og:image" content="https://felipendelicia.github.io/luca-journey/og.png"><meta property="og:locale" content="es_AR"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Primer divisor — Ejercicios"><meta name="twitter:description" content="Aprendé a programar desde cero — Linux y Python — con una aventura Pokémon: ejercicios que se corrigen solos en tu navegador, libro interactivo, Pokédex, batallas y liga. Gratis."><meta name="twitter:image" content="https://felipendelicia.github.io/luca-journey/og.png"><link rel="icon" type="image/svg+xml" href="/luca-journey/favicon.svg"><link rel="icon" type="image/png" sizes="32x32" href="/luca-journey/favicon-32.png"><link rel="manifest" href="/luca-journey/manifest.webmanifest"><meta name="theme-color" content="#0b150e"><link rel="apple-touch-icon" href="/luca-journey/apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Pokédex Codex"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Press+Start+2P&family=VT323&family=Silkscreen:wght@400;700&display=swap"><link rel="stylesheet" href="/luca-journey/_astro/recursos.B9DMZuFW.css"><script type="module" src="/luca-journey/_astro/hoisted.BHdp_wFB.js"></script></head> <body> <script>/* tema ANTES de pintar (evita el flash de la navbar al navegar) */try{if(localStorage.getItem('tema')==='claro')document.body.classList.add('claro');}catch(e){}</script> <div class="bg-grid" aria-hidden="true"></div>  <div class="boot-overlay" id="boot-overlay"> <div class="boot-box" id="boot-loader"> <div class="boot-spin" aria-hidden="true"></div> <p>Cargando tu progreso…</p> </div> <div class="boot-box" id="boot-login" hidden> <div class="auth-logo">☁️</div> <h2>Entrá para jugar</h2> <p>Tu progreso —ejercicios, Pokémon y medallas— se guarda en la nube. Iniciá sesión con Google para empezar. 🔄</p> <button type="button" class="btn-google" id="boot-google"> <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"></path><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"></path><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"></path></svg>
+<!DOCTYPE html><html lang="es"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Primer divisor — Ejercicios</title><meta name="description" content="Aprendé a programar desde cero — Linux y Python — con una aventura Pokémon: ejercicios que se corrigen solos en tu navegador, libro interactivo, Pokédex, batallas y liga. Gratis."><link rel="canonical" href="https://felipendelicia.github.io/luca-journey/ejercicios/control-de-flujo/primer_divisor/"><meta property="og:type" content="website"><meta property="og:site_name" content="Pokédex Codex — Python con Pokémon"><meta property="og:title" content="Primer divisor — Ejercicios"><meta property="og:description" content="Aprendé a programar desde cero — Linux y Python — con una aventura Pokémon: ejercicios que se corrigen solos en tu navegador, libro interactivo, Pokédex, batallas y liga. Gratis."><meta property="og:url" content="https://felipendelicia.github.io/luca-journey/ejercicios/control-de-flujo/primer_divisor/"><meta property="og:image" content="https://felipendelicia.github.io/luca-journey/og.png"><meta property="og:locale" content="es_AR"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Primer divisor — Ejercicios"><meta name="twitter:description" content="Aprendé a programar desde cero — Linux y Python — con una aventura Pokémon: ejercicios que se corrigen solos en tu navegador, libro interactivo, Pokédex, batallas y liga. Gratis."><meta name="twitter:image" content="https://felipendelicia.github.io/luca-journey/og.png"><link rel="icon" type="image/svg+xml" href="/luca-journey/favicon.svg"><link rel="icon" type="image/png" sizes="32x32" href="/luca-journey/favicon-32.png"><link rel="manifest" href="/luca-journey/manifest.webmanifest"><meta name="theme-color" content="#0b150e"><link rel="apple-touch-icon" href="/luca-journey/apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Pokédex Codex"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Press+Start+2P&family=VT323&family=Silkscreen:wght@400;700&display=swap"><link rel="stylesheet" href="/luca-journey/_astro/recursos.D0IhD7t-.css"><script type="module" src="/luca-journey/_astro/hoisted.HcsI6FS0.js"></script></head> <body> <script>/* tema ANTES de pintar (evita el flash de la navbar al navegar) */try{if(localStorage.getItem('tema')==='claro')document.body.classList.add('claro');}catch(e){}</script> <div class="bg-grid" aria-hidden="true"></div>  <div class="boot-overlay" id="boot-overlay"> <div class="boot-box" id="boot-loader"> <div class="boot-spin" aria-hidden="true"></div> <p>Cargando tu progreso…</p> </div> <div class="boot-box" id="boot-login" hidden> <div class="auth-logo">☁️</div> <h2>Entrá para jugar</h2> <p>Tu progreso —ejercicios, Pokémon y medallas— se guarda en la nube. Iniciá sesión con Google para empezar. 🔄</p> <button type="button" class="btn-google" id="boot-google"> <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"></path><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"></path><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"></path></svg>
 Entrar con Google
 </button> <p class="auth-msg err" id="boot-err" hidden></p> </div> </div> <script>
     // Si ya se hidrató en esta pestaña, revelar al toque (sin pantalla de carga entre páginas).
@@ -57,7 +57,261 @@ window.__BASE = base;})();</script> <script>
       if (localStorage.getItem(a.dataset.key) === '1') a.classList.add('hecho');
     });
   </script> </aside> <main class="book ejer"> <p class="ej-breadcrumb"><a href="/luca-journey/ejercicios/control-de-flujo">Control de Flujo</a> · Ejercicio 15 de 20</p> <h1>Primer divisor</h1> <p class="ej-prompt">Devolvé el divisor más chico de n que sea mayor que 1.
-Ejemplo:  primer_divisor(15)  →  3   ·   primer_divisor(7)  →  7</p> <div class="ejer-acciones"> <button class="btn-corregir" id="corregir" type="button"> ✅ Corregir </button> <button class="btn-sec" id="ejecutar" type="button">▶ Ejecutar</button> <button class="btn-sec" id="reset" type="button">↺ Reiniciar</button> <span class="ejer-estado" id="estado"></span> </div> <div class="cw"> <div class="cw-bar"><span class="dots"><i></i><i></i><i></i></span><span class="cw-lang">python</span><span class="cw-hint">✎ editable</span></div> <div id="editor"></div> </div> <div class="ejer-result" id="result" role="status" aria-live="polite"></div> <nav class="cap-nav"> <a href="/luca-journey/ejercicios/control-de-flujo/es_primo"><span class="dir">← Anterior</span><br>¿Es primo?</a> <a class="next" href="/luca-journey/ejercicios/control-de-flujo/contar_vocales"><span class="dir">Siguiente →</span><br>Contar vocales</a> </nav> </main> </div> </div> <script type="application/json" id="ej-data">{"slug":"control-de-flujo","preamble":"\"\"\"✏️ Ejercicios — Control de Flujo\n\nDecisiones (if/elif/else) y bucles (for/while). Completá cada función y tocá ✅ Corregir.\n\"\"\"","test":"\"\"\"\n🧪 Tests — Semana 04: Control de Flujo\n\nPor defecto prueban soluciones.py. Para probar tu trabajo, cambiá abajo\n_cargar(\"soluciones\") por _cargar(\"ejercicios\").\n\n    pytest semana-04-python-control-de-flujo/ -v\n\"\"\"\n\nimport importlib.util\nimport os\n\n_DIR = os.path.dirname(__file__)\n\n\ndef _cargar(nombre):\n    ruta = os.path.join(_DIR, f\"{nombre}.py\")\n    spec = importlib.util.spec_from_file_location(f\"semana04_{nombre}\", ruta)\n    modulo = importlib.util.module_from_spec(spec)\n    spec.loader.exec_module(modulo)\n    return modulo\n\n\n# Por defecto prueba soluciones.py; la Liga lo corre con CURSO_MODULO=ejercicios.\nmodulo = _cargar(os.environ.get(\"CURSO_MODULO\", \"soluciones\"))\n\n\ndef test_puede_evolucionar():\n    assert modulo.puede_evolucionar(25) is True, \"Nivel 25 debería poder evolucionar\"\n    assert modulo.puede_evolucionar(24) is False, \"Nivel 24 NO debería poder evolucionar\"\n    assert modulo.puede_evolucionar(99) is True\n\n\ndef test_estado_hp():\n    assert modulo.estado_hp(100) == \"sano\", \"HP 100 debería ser 'sano'\"\n    assert modulo.estado_hp(50) == \"herido\", \"HP 50 debería ser 'herido'\"\n    assert modulo.estado_hp(10) == \"grave\", \"HP 10 debería ser 'grave'\"\n    assert modulo.estado_hp(0) == \"debilitado\", \"HP 0 debería ser 'debilitado'\"\n\n\ndef test_ventaja_tipo():\n    assert modulo.ventaja_tipo(\"agua\", \"fuego\") is True, \"Agua gana a Fuego\"\n    assert modulo.ventaja_tipo(\"fuego\", \"planta\") is True, \"Fuego gana a Planta\"\n    assert modulo.ventaja_tipo(\"planta\", \"agua\") is True, \"Planta gana a Agua\"\n    assert modulo.ventaja_tipo(\"electrico\", \"agua\") is True, \"Eléctrico gana a Agua\"\n    assert modulo.ventaja_tipo(\"fuego\", \"agua\") is False, \"Fuego NO gana a Agua\"\n\n\ndef test_el_mas_fuerte():\n    assert modulo.el_mas_fuerte(50, 80) == 80\n    assert modulo.el_mas_fuerte(90, 30) == 90\n    assert modulo.el_mas_fuerte(40, 40) == 40, \"Si empatan, devolver el primero\"\n\n\ndef test_clasificar_nivel():\n    assert modulo.clasificar_nivel(5) == \"novato\"\n    assert modulo.clasificar_nivel(20) == \"intermedio\"\n    assert modulo.clasificar_nivel(50) == \"experto\"\n\n\ndef test_necesita_curarse():\n    assert modulo.necesita_curarse(20) is True\n    assert modulo.necesita_curarse(30) is False\n    assert modulo.necesita_curarse(0) is True\n\n\ndef test_resultado_combate():\n    assert modulo.resultado_combate(100, 50) == \"ganaste\"\n    assert modulo.resultado_combate(20, 80) == \"perdiste\"\n    assert modulo.resultado_combate(60, 60) == \"empate\"\n\n\ndef test_cuenta_regresiva():\n    assert modulo.cuenta_regresiva(3) == \"3,2,1,Ya!\", (\n        \"cuenta_regresiva(3) debería ser '3,2,1,Ya!'\"\n    )\n    assert modulo.cuenta_regresiva(1) == \"1,Ya!\"\n\n\ndef test_suma_1_a_n():\n    assert modulo.suma_1_a_n(5) == 15, \"1+2+3+4+5 = 15\"\n    assert modulo.suma_1_a_n(1) == 1\n    assert modulo.suma_1_a_n(10) == 55\n\n\ndef test_factorial():\n    assert modulo.factorial(0) == 1, \"factorial(0) = 1 por definición\"\n    assert modulo.factorial(1) == 1\n    assert modulo.factorial(5) == 120, \"5! = 120\"\n\n\ndef test_contar_pares():\n    assert modulo.contar_pares(10) == 5, \"Pares hasta 10: 2,4,6,8,10 = 5\"\n    assert modulo.contar_pares(1) == 0\n    assert modulo.contar_pares(2) == 1\n\n\ndef test_cuantos_turnos():\n    assert modulo.cuantos_turnos(100, 30) == 4, \"100 HP con 30 de daño = 4 turnos\"\n    assert modulo.cuantos_turnos(100, 100) == 1\n    assert modulo.cuantos_turnos(50, 10) == 5\n\n\ndef test_potencia():\n    assert modulo.potencia(2, 3) == 8, \"2^3 = 8\"\n    assert modulo.potencia(5, 0) == 1, \"Cualquier cosa^0 = 1\"\n    assert modulo.potencia(10, 2) == 100\n\n\ndef test_es_primo():\n    assert modulo.es_primo(7) is True, \"7 es primo\"\n    assert modulo.es_primo(4) is False, \"4 no es primo\"\n    assert modulo.es_primo(1) is False, \"1 no es primo\"\n    assert modulo.es_primo(2) is True, \"2 es primo\"\n\n\ndef test_primer_divisor():\n    assert modulo.primer_divisor(15) == 3\n    assert modulo.primer_divisor(7) == 7, \"Un primo se divide primero por sí mismo\"\n    assert modulo.primer_divisor(8) == 2\n\n\ndef test_contar_vocales():\n    assert modulo.contar_vocales(\"pikachu\") == 3, \"pikachu tiene i, a, u\"\n    assert modulo.contar_vocales(\"xyz\") == 0\n\n\ndef test_mayor_de_tres():\n    assert modulo.mayor_de_tres(1, 2, 3) == 3\n    assert modulo.mayor_de_tres(9, 2, 5) == 9\n    assert modulo.mayor_de_tres(4, 7, 1) == 7\n\n\ndef test_signo():\n    assert modulo.signo(5) == \"positivo\"\n    assert modulo.signo(-3) == \"negativo\"\n    assert modulo.signo(0) == \"cero\"\n\n\ndef test_esta_en_equipo():\n    equipo = [\"Pikachu\", \"Charizard\", \"Snorlax\"]\n    assert modulo.esta_en_equipo(equipo, \"Charizard\") is True\n    assert modulo.esta_en_equipo(equipo, \"Mewtwo\") is False\n    assert modulo.esta_en_equipo([], \"Pikachu\") is False, \"Equipo vacío: nadie está\"\n\n\ndef test_contar_debilitados():\n    assert modulo.contar_debilitados([100, 0, 50, -10, 0]) == 3\n    assert modulo.contar_debilitados([100, 50]) == 0\n    assert modulo.contar_debilitados([]) == 0, \"Lista vacía: 0 debilitados\"\n","extra":{},"packages":[],"exId":"primer_divisor","exTests":["test_primer_divisor"],"starter":"def primer_divisor(n):\n    \"\"\"Devolvé el divisor más chico de n mayor que 1.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n","ejercicios":[{"id":"puede_evolucionar","starter":"def puede_evolucionar(nivel):\n    \"\"\"Devolvé True si nivel >= 25.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"estado_hp","starter":"def estado_hp(hp):\n    \"\"\"Devolvé 'sano', 'herido', 'grave' o 'debilitado' según el hp.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"ventaja_tipo","starter":"def ventaja_tipo(atacante, defensor):\n    \"\"\"Devolvé True si el atacante tiene ventaja sobre el defensor.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"el_mas_fuerte","starter":"def el_mas_fuerte(ataque_a, ataque_b):\n    \"\"\"Devolvé el mayor; si empatan, ataque_a.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"clasificar_nivel","starter":"def clasificar_nivel(nivel):\n    \"\"\"Devolvé 'novato', 'intermedio' o 'experto'.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"necesita_curarse","starter":"def necesita_curarse(hp):\n    \"\"\"Devolvé True si hp < 30.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"resultado_combate","starter":"def resultado_combate(mi_hp, rival_hp):\n    \"\"\"Devolvé 'ganaste', 'perdiste' o 'empate'.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"cuenta_regresiva","starter":"def cuenta_regresiva(n):\n    \"\"\"Devolvé la cuenta regresiva como '3,2,1,Ya!'.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"suma_1_a_n","starter":"def suma_1_a_n(n):\n    \"\"\"Devolvé 1 + 2 + ... + n.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"factorial","starter":"def factorial(n):\n    \"\"\"Devolvé el factorial de n usando un bucle.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"contar_pares","starter":"def contar_pares(n):\n    \"\"\"Devolvé la cantidad de pares entre 1 y n.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"cuantos_turnos","starter":"def cuantos_turnos(hp_rival, dano):\n    \"\"\"Devolvé cuántos turnos de 'dano' hacen falta para que hp_rival llegue a 0.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"potencia","starter":"def potencia(base, exp):\n    \"\"\"Devolvé base ** exp pero calculado con un bucle.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"es_primo","starter":"def es_primo(n):\n    \"\"\"Devolvé True si n es primo.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"primer_divisor","starter":"def primer_divisor(n):\n    \"\"\"Devolvé el divisor más chico de n mayor que 1.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"contar_vocales","starter":"def contar_vocales(palabra):\n    \"\"\"Devolvé la cantidad de vocales en la palabra.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"mayor_de_tres","starter":"def mayor_de_tres(a, b, c):\n    \"\"\"Devolvé el mayor de a, b y c.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"signo","starter":"def signo(numero):\n    \"\"\"Devolvé 'positivo', 'negativo' o 'cero'.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"esta_en_equipo","starter":"def esta_en_equipo(equipo, nombre):\n    \"\"\"Devolvé True si 'nombre' está en la lista 'equipo'.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"contar_debilitados","starter":"def contar_debilitados(equipo_hp):\n    \"\"\"Devolvé cuántos valores de la lista son <= 0.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"}]}</script>    <script>
+Ejemplo:  primer_divisor(15)  →  3   ·   primer_divisor(7)  →  7</p> <div class="ejer-acciones"> <button class="btn-corregir" id="corregir" type="button"> ✅ Corregir </button> <button class="btn-sec" id="ejecutar" type="button">▶ Ejecutar</button> <button class="btn-sec" id="reset" type="button">↺ Reiniciar</button> <button class="btn-sec btn-teoria" id="abrir-teoria" type="button" aria-haspopup="dialog">📖 Teoría</button> <span class="ejer-estado" id="estado"></span> </div> <div class="cw"> <div class="cw-bar"><span class="dots"><i></i><i></i><i></i></span><span class="cw-lang">python</span><span class="cw-hint">✎ editable</span></div> <div id="editor"></div> </div> <div class="ejer-result" id="result" role="status" aria-live="polite"></div> <nav class="cap-nav"> <a href="/luca-journey/ejercicios/control-de-flujo/es_primo"><span class="dir">← Anterior</span><br>¿Es primo?</a> <a class="next" href="/luca-journey/ejercicios/control-de-flujo/contar_vocales"><span class="dir">Siguiente →</span><br>Contar vocales</a> </nav> </main> </div> </div> <div class="teoria-modal" id="teoria-modal" role="dialog" aria-modal="true" aria-label="Teoría: Python: Control de Flujo" hidden> <div class="teoria-card"> <header class="teoria-head"> <div class="teoria-head-txt"> <span class="teoria-kicker">📖 Teoría · repasá sin salir</span> <h2 class="teoria-title">Python: Control de Flujo</h2> </div> <button class="teoria-x" id="teoria-x" type="button" aria-label="Cerrar y volver al ejercicio">✕</button> </header> <nav class="teoria-toc" id="teoria-toc" aria-label="Secciones del capítulo"></nav> <div class="teoria-cont book" id="teoria-cont"> <div class="callout nota"><span class="et">META</span>
+<p>🎯 <strong>Meta:</strong> que tu programa <strong>tome decisiones</strong> y <strong>repita</strong> cosas. Hasta ahora tu código corría en línea recta. Ahora va a poder elegir caminos y dar vueltas.</p>
+</div>
+<hr>
+<h2 id="-analogía-decisiones-en-batalla">🎮 Analogía: decisiones en batalla</h2>
+<p>En una batalla Pokémon, vos tomás decisiones todo el tiempo: <em>“SI el rival es de tipo Agua, USO un ataque Eléctrico”</em>. Y repetís acciones: <em>“MIENTRAS el rival tenga HP, sigo atacando”</em>.</p>
+<p>Eso es exactamente el <strong>control de flujo</strong>: decirle al programa <strong>cuándo</strong> hacer algo (decisiones) y <strong>cuántas veces</strong> hacerlo (repeticiones).</p>
+<hr>
+<h2 id="-if-tomar-decisiones">🔀 if: tomar decisiones</h2>
+<p><code>if</code> ejecuta un bloque de código <strong>solo si</strong> una condición es verdadera.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#ABB2BF">nivel </span><span style="color:#56B6C2">=</span><span style="color:#D19A66"> 30</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">if</span><span style="color:#ABB2BF"> nivel </span><span style="color:#56B6C2">>=</span><span style="color:#D19A66"> 25</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"¡Tu Pokémon puede evolucionar!"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span></code></pre>
+<div class="callout cuidado"><span class="et">CUIDADO</span>
+<p>⚠️ <strong>La indentación importa.</strong> El código “adentro” del <code>if</code> va con <strong>4 espacios</strong> de sangría. Python usa esa sangría para saber qué está adentro y qué afuera. No es decorativo: es obligatorio.</p>
+</div>
+<hr>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué es lo que hace que el código adentro de un `if` se ejecute?</span></span>
+<span class="line"><span>- Que la línea empiece con cuatro espacios</span></span>
+<span class="line"><span>+ Que la condición sea verdadera (`True`)</span></span>
+<span class="line"><span>- Que la variable no sea `None`</span></span>
+<span class="line"><span>> La indentación le dice a Python qué código está "adentro", pero ese código solo se ejecuta si la condición del `if` es `True`.</span></span>
+<span class="line"><span></span></span></code></pre>
+<hr>
+<h2 id="-operadores-de-comparación">🔢 Operadores de comparación</h2>
+<p>Sirven para construir condiciones. Devuelven <code>True</code> o <code>False</code>:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Operador</th><th>Significa</th><th>Ejemplo</th><th>Resultado</th></tr></thead><tbody><tr><td><code>==</code></td><td>igual a</td><td><code>nivel == 25</code></td><td>True si nivel es 25</td></tr><tr><td><code>!=</code></td><td>distinto de</td><td><code>tipo != "Agua"</code></td><td>True si no es Agua</td></tr><tr><td><code>></code></td><td>mayor que</td><td><code>hp > 0</code></td><td>True si hp es positivo</td></tr><tr><td><code>&#x3C;</code></td><td>menor que</td><td><code>nivel &#x3C; 100</code></td><td></td></tr><tr><td><code>>=</code></td><td>mayor o igual</td><td><code>nivel >= 25</code></td><td></td></tr><tr><td><code>&#x3C;=</code></td><td>menor o igual</td><td><code>hp &#x3C;= 0</code></td><td></td></tr></tbody></table>
+<div class="callout cuidado"><span class="et">CUIDADO</span>
+<p>⚠️ <strong>Ojo:</strong> <code>=</code> asigna (guarda en una variable), <code>==</code> compara. ¡No los confundas!</p>
+</div>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#ABB2BF">nivel </span><span style="color:#56B6C2">=</span><span style="color:#D19A66"> 25</span><span style="color:#7F848E;font-style:italic">      # asignación: guardo 25 en nivel</span></span>
+<span class="line"><span style="color:#ABB2BF">nivel </span><span style="color:#56B6C2">==</span><span style="color:#D19A66"> 25</span><span style="color:#7F848E;font-style:italic">     # comparación: ¿nivel es igual a 25? → True</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-elif-y-else-más-caminos">🪜 elif y else: más caminos</h2>
+<p><code>else</code> es el “si no”. <code>elif</code> (“else if”) agrega más condiciones a chequear.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#ABB2BF">hp </span><span style="color:#56B6C2">=</span><span style="color:#D19A66"> 40</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">if</span><span style="color:#ABB2BF"> hp </span><span style="color:#56B6C2">></span><span style="color:#D19A66"> 70</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Tu Pokémon está sano 💚"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#C678DD">elif</span><span style="color:#ABB2BF"> hp </span><span style="color:#56B6C2">></span><span style="color:#D19A66"> 30</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Tu Pokémon está cansado 💛"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#C678DD">elif</span><span style="color:#ABB2BF"> hp </span><span style="color:#56B6C2">></span><span style="color:#D19A66"> 0</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"¡Tu Pokémon está grave! ❤️"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#C678DD">else</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"Tu Pokémon se debilitó 💀"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span></code></pre>
+<p>Python revisa las condiciones <strong>de arriba hacia abajo</strong> y entra en la <strong>primera</strong> que sea verdadera. Las demás las ignora.</p>
+<hr>
+<h2 id="-operadores-lógicos-and-or-not">🧠 Operadores lógicos: and, or, not</h2>
+<p>Combinan varias condiciones:</p>
+<ul>
+<li><code>and</code> → verdadero si <strong>ambas</strong> son verdaderas.</li>
+<li><code>or</code> → verdadero si <strong>al menos una</strong> es verdadera.</li>
+<li><code>not</code> → invierte (verdadero ↔ falso).</li>
+</ul>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#ABB2BF">nivel </span><span style="color:#56B6C2">=</span><span style="color:#D19A66"> 30</span></span>
+<span class="line"><span style="color:#ABB2BF">tipo </span><span style="color:#56B6C2">=</span><span style="color:#98C379"> "Fuego"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Evoluciona SI tiene nivel suficiente Y es de fuego.</span></span>
+<span class="line"><span style="color:#C678DD">if</span><span style="color:#ABB2BF"> nivel </span><span style="color:#56B6C2">>=</span><span style="color:#D19A66"> 25</span><span style="color:#C678DD"> and</span><span style="color:#ABB2BF"> tipo </span><span style="color:#56B6C2">==</span><span style="color:#98C379"> "Fuego"</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"¡Charmander evoluciona a Charmeleon!"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Es fuerte SI es legendario O tiene nivel 100.</span></span>
+<span class="line"><span style="color:#C678DD">if</span><span style="color:#ABB2BF"> es_legendario </span><span style="color:#C678DD">or</span><span style="color:#ABB2BF"> nivel </span><span style="color:#56B6C2">==</span><span style="color:#D19A66"> 100</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"¡Pokémon poderoso!"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Puede pelear SI NO está debilitado.</span></span>
+<span class="line"><span style="color:#C678DD">if</span><span style="color:#C678DD"> not</span><span style="color:#ABB2BF"> debilitado:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"¡A la batalla!"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-while-repetir-mientras">🔁 while: repetir mientras…</h2>
+<p><code>while</code> repite un bloque <strong>mientras</strong> una condición sea verdadera. Es el bucle de “seguí hasta que…”.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#ABB2BF">hp_rival </span><span style="color:#56B6C2">=</span><span style="color:#D19A66"> 100</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">while</span><span style="color:#ABB2BF"> hp_rival </span><span style="color:#56B6C2">></span><span style="color:#D19A66"> 0</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">f</span><span style="color:#98C379">"Atacás. HP del rival: </span><span style="color:#D19A66">{</span><span style="color:#ABB2BF">hp_rival</span><span style="color:#D19A66">}</span><span style="color:#98C379">"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#ABB2BF">    hp_rival </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> hp_rival </span><span style="color:#56B6C2">-</span><span style="color:#D19A66"> 20</span><span style="color:#7F848E;font-style:italic">   # bajamos el HP en cada vuelta</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#56B6C2">print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"¡Ganaste la batalla! 🏆"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span></code></pre>
+<div class="callout cuidado"><span class="et">CUIDADO</span>
+<p>⚠️ <strong>¡Cuidado con los bucles infinitos!</strong> Si la condición nunca se vuelve falsa, el programa nunca termina. Asegurate de que algo cambie adentro del <code>while</code> (acá, el HP baja).</p>
+</div>
+<hr>
+<h2 id="-for-repetir-una-cantidad-de-veces">🔂 for: repetir una cantidad de veces</h2>
+<p><code>for</code> recorre una secuencia de valores, uno por uno. Es el bucle de “para cada…“.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#7F848E;font-style:italic"># Recorre una lista de Pokémon (las listas las vemos a fondo más adelante).</span></span>
+<span class="line"><span style="color:#ABB2BF">equipo </span><span style="color:#56B6C2">=</span><span style="color:#ABB2BF"> [</span><span style="color:#98C379">"Pikachu"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Charizard"</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"Snorlax"</span><span style="color:#ABB2BF">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">for</span><span style="color:#ABB2BF"> pokemon </span><span style="color:#C678DD">in</span><span style="color:#ABB2BF"> equipo:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">f</span><span style="color:#98C379">"Tengo a </span><span style="color:#D19A66">{</span><span style="color:#ABB2BF">pokemon</span><span style="color:#D19A66">}</span><span style="color:#98C379">"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span></code></pre>
+<h3 id="range-generar-números">range(): generar números</h3>
+<p><code>range()</code> genera una secuencia de números, ideal para repetir N veces.</p>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#7F848E;font-style:italic"># Repite 5 veces (del 0 al 4).</span></span>
+<span class="line"><span style="color:#C678DD">for</span><span style="color:#ABB2BF"> i </span><span style="color:#C678DD">in</span><span style="color:#56B6C2"> range</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">5</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">f</span><span style="color:#98C379">"Lanzamiento de Pokéball número </span><span style="color:#D19A66">{</span><span style="color:#ABB2BF">i </span><span style="color:#56B6C2">+</span><span style="color:#D19A66"> 1}</span><span style="color:#98C379">"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># range(inicio, fin): del 1 al 10 (el 'fin' NO se incluye).</span></span>
+<span class="line"><span style="color:#C678DD">for</span><span style="color:#ABB2BF"> nivel </span><span style="color:#C678DD">in</span><span style="color:#56B6C2"> range</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">1</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">11</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">f</span><span style="color:#98C379">"Nivel </span><span style="color:#D19A66">{</span><span style="color:#ABB2BF">nivel</span><span style="color:#D19A66">}</span><span style="color:#98C379">"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># range(inicio, fin, paso): de 0 a 100 de 10 en 10.</span></span>
+<span class="line"><span style="color:#C678DD">for</span><span style="color:#ABB2BF"> hp </span><span style="color:#C678DD">in</span><span style="color:#56B6C2"> range</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">101</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">10</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(hp)</span></span>
+<span class="line"></span></code></pre>
+<div class="callout tip"><span class="et">TIP</span>
+<p>💡 Recordá: <code>range(5)</code> da <code>0, 1, 2, 3, 4</code> (empieza en 0, termina <strong>antes</strong> del 5).</p>
+</div>
+<hr>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>P: ¿Qué imprime `range(3)` si lo recorrés con `for i in range(3): print(i)`?</span></span>
+<span class="line"><span>- 1, 2, 3</span></span>
+<span class="line"><span>- 0, 1, 2, 3</span></span>
+<span class="line"><span>+ 0, 1, 2</span></span>
+<span class="line"><span>> `range(3)` genera los números del 0 al 2 (tres números). El límite final NO se incluye.</span></span>
+<span class="line"><span></span></span></code></pre>
+<hr>
+<h2 id="️-break-y-continue">⏭️ break y continue</h2>
+<p>Controlan el bucle desde adentro:</p>
+<ul>
+<li><code>break</code> → <strong>corta</strong> el bucle por completo.</li>
+<li><code>continue</code> → <strong>saltea</strong> el resto de esta vuelta y pasa a la siguiente.</li>
+</ul>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#7F848E;font-style:italic"># break: dejamos de buscar al encontrar a Mewtwo.</span></span>
+<span class="line"><span style="color:#C678DD">for</span><span style="color:#ABB2BF"> pokemon </span><span style="color:#C678DD">in</span><span style="color:#ABB2BF"> equipo:</span></span>
+<span class="line"><span style="color:#C678DD">    if</span><span style="color:#ABB2BF"> pokemon </span><span style="color:#56B6C2">==</span><span style="color:#98C379"> "Mewtwo"</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">        print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"¡Encontramos a Mewtwo!"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#C678DD">        break</span><span style="color:#7F848E;font-style:italic">          # salimos del for inmediatamente</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># continue: salteamos a los Pokémon debilitados.</span></span>
+<span class="line"><span style="color:#C678DD">for</span><span style="color:#ABB2BF"> pokemon </span><span style="color:#C678DD">in</span><span style="color:#ABB2BF"> equipo:</span></span>
+<span class="line"><span style="color:#C678DD">    if</span><span style="color:#ABB2BF"> pokemon </span><span style="color:#56B6C2">==</span><span style="color:#98C379"> "debilitado"</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#C678DD">        continue</span><span style="color:#7F848E;font-style:italic">       # saltamos a la próxima vuelta</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">f</span><span style="color:#98C379">"</span><span style="color:#D19A66">{</span><span style="color:#ABB2BF">pokemon</span><span style="color:#D19A66">}</span><span style="color:#98C379"> entra a la batalla"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span></code></pre>
+<hr>
+<h2 id="-resumen">📝 Resumen</h2>
+<pre class="astro-code one-dark-pro" style="background-color:#282c34;color:#abb2bf; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#7F848E;font-style:italic"># if / elif / else: decisiones</span></span>
+<span class="line"><span style="color:#C678DD">if</span><span style="color:#ABB2BF"> hp </span><span style="color:#56B6C2">></span><span style="color:#D19A66"> 50</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"sano"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#C678DD">elif</span><span style="color:#ABB2BF"> hp </span><span style="color:#56B6C2">></span><span style="color:#D19A66"> 0</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"herido"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#C678DD">else</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"debilitado"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Comparadores: ==, !=, >, &#x3C;, >=, &#x3C;=</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># Lógicos: and, or, not</span></span>
+<span class="line"><span style="color:#C678DD">if</span><span style="color:#ABB2BF"> nivel </span><span style="color:#56B6C2">>=</span><span style="color:#D19A66"> 25</span><span style="color:#C678DD"> and</span><span style="color:#ABB2BF"> tipo </span><span style="color:#56B6C2">==</span><span style="color:#98C379"> "Fuego"</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">"evoluciona"</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># while: repetir mientras una condición sea verdadera</span></span>
+<span class="line"><span style="color:#C678DD">while</span><span style="color:#ABB2BF"> hp </span><span style="color:#56B6C2">></span><span style="color:#D19A66"> 0</span><span style="color:#ABB2BF">:</span></span>
+<span class="line"><span style="color:#ABB2BF">    hp </span><span style="color:#56B6C2">-=</span><span style="color:#D19A66"> 20</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># for + range: repetir N veces</span></span>
+<span class="line"><span style="color:#C678DD">for</span><span style="color:#ABB2BF"> i </span><span style="color:#C678DD">in</span><span style="color:#56B6C2"> range</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">5</span><span style="color:#ABB2BF">):</span></span>
+<span class="line"><span style="color:#56B6C2">    print</span><span style="color:#ABB2BF">(i)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic"># break corta el bucle; continue saltea una vuelta</span></span>
+<span class="line"></span></code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Concepto</th><th>Para qué sirve</th></tr></thead><tbody><tr><td><code>if/elif/else</code></td><td>Elegir qué código correr</td></tr><tr><td><code>==, !=, >, &#x3C;</code></td><td>Comparar valores</td></tr><tr><td><code>and, or, not</code></td><td>Combinar condiciones</td></tr><tr><td><code>while</code></td><td>Repetir mientras algo sea cierto</td></tr><tr><td><code>for</code> + <code>range()</code></td><td>Repetir una cantidad de veces</td></tr><tr><td><code>break</code></td><td>Cortar el bucle</td></tr><tr><td><code>continue</code></td><td>Saltar a la próxima vuelta</td></tr></tbody></table>
+<hr>
+<h2 id="️-y-ahora-qué">➡️ ¿Y ahora qué?</h2>
+<p>Ahora <strong>practicá</strong>: andá a los <a href="/luca-journey/ejercicios/control-de-flujo">ejercicios de este tema</a> y resolvelos. Se corrigen al instante con tests reales en tu navegador. 💪</p>
+<div class="callout tip"><span class="et">ÁNIMO</span>
+<p>⚡ <em>“En la batalla y en el código, las buenas decisiones ganan combates.”</em></p>
+</div> </div> <footer class="teoria-foot"> <a href="/luca-journey/libro/control-de-flujo" target="_blank" rel="noopener">Ver capítulo completo en el Libro ↗</a> <span class="teoria-hint">Esc / ✕ para volver al ejercicio</span> </footer> </div> </div><script type="application/json" id="ej-data">{"slug":"control-de-flujo","preamble":"\"\"\"✏️ Ejercicios — Control de Flujo\n\nDecisiones (if/elif/else) y bucles (for/while). Completá cada función y tocá ✅ Corregir.\n\"\"\"","test":"\"\"\"\n🧪 Tests — Semana 04: Control de Flujo\n\nPor defecto prueban soluciones.py. Para probar tu trabajo, cambiá abajo\n_cargar(\"soluciones\") por _cargar(\"ejercicios\").\n\n    pytest semana-04-python-control-de-flujo/ -v\n\"\"\"\n\nimport importlib.util\nimport os\n\n_DIR = os.path.dirname(__file__)\n\n\ndef _cargar(nombre):\n    ruta = os.path.join(_DIR, f\"{nombre}.py\")\n    spec = importlib.util.spec_from_file_location(f\"semana04_{nombre}\", ruta)\n    modulo = importlib.util.module_from_spec(spec)\n    spec.loader.exec_module(modulo)\n    return modulo\n\n\n# Por defecto prueba soluciones.py; la Liga lo corre con CURSO_MODULO=ejercicios.\nmodulo = _cargar(os.environ.get(\"CURSO_MODULO\", \"soluciones\"))\n\n\ndef test_puede_evolucionar():\n    assert modulo.puede_evolucionar(25) is True, \"Nivel 25 debería poder evolucionar\"\n    assert modulo.puede_evolucionar(24) is False, \"Nivel 24 NO debería poder evolucionar\"\n    assert modulo.puede_evolucionar(99) is True\n\n\ndef test_estado_hp():\n    assert modulo.estado_hp(100) == \"sano\", \"HP 100 debería ser 'sano'\"\n    assert modulo.estado_hp(50) == \"herido\", \"HP 50 debería ser 'herido'\"\n    assert modulo.estado_hp(10) == \"grave\", \"HP 10 debería ser 'grave'\"\n    assert modulo.estado_hp(0) == \"debilitado\", \"HP 0 debería ser 'debilitado'\"\n\n\ndef test_ventaja_tipo():\n    assert modulo.ventaja_tipo(\"agua\", \"fuego\") is True, \"Agua gana a Fuego\"\n    assert modulo.ventaja_tipo(\"fuego\", \"planta\") is True, \"Fuego gana a Planta\"\n    assert modulo.ventaja_tipo(\"planta\", \"agua\") is True, \"Planta gana a Agua\"\n    assert modulo.ventaja_tipo(\"electrico\", \"agua\") is True, \"Eléctrico gana a Agua\"\n    assert modulo.ventaja_tipo(\"fuego\", \"agua\") is False, \"Fuego NO gana a Agua\"\n\n\ndef test_el_mas_fuerte():\n    assert modulo.el_mas_fuerte(50, 80) == 80\n    assert modulo.el_mas_fuerte(90, 30) == 90\n    assert modulo.el_mas_fuerte(40, 40) == 40, \"Si empatan, devolver el primero\"\n\n\ndef test_clasificar_nivel():\n    assert modulo.clasificar_nivel(5) == \"novato\"\n    assert modulo.clasificar_nivel(20) == \"intermedio\"\n    assert modulo.clasificar_nivel(50) == \"experto\"\n\n\ndef test_necesita_curarse():\n    assert modulo.necesita_curarse(20) is True\n    assert modulo.necesita_curarse(30) is False\n    assert modulo.necesita_curarse(0) is True\n\n\ndef test_resultado_combate():\n    assert modulo.resultado_combate(100, 50) == \"ganaste\"\n    assert modulo.resultado_combate(20, 80) == \"perdiste\"\n    assert modulo.resultado_combate(60, 60) == \"empate\"\n\n\ndef test_cuenta_regresiva():\n    assert modulo.cuenta_regresiva(3) == \"3,2,1,Ya!\", (\n        \"cuenta_regresiva(3) debería ser '3,2,1,Ya!'\"\n    )\n    assert modulo.cuenta_regresiva(1) == \"1,Ya!\"\n\n\ndef test_suma_1_a_n():\n    assert modulo.suma_1_a_n(5) == 15, \"1+2+3+4+5 = 15\"\n    assert modulo.suma_1_a_n(1) == 1\n    assert modulo.suma_1_a_n(10) == 55\n\n\ndef test_factorial():\n    assert modulo.factorial(0) == 1, \"factorial(0) = 1 por definición\"\n    assert modulo.factorial(1) == 1\n    assert modulo.factorial(5) == 120, \"5! = 120\"\n\n\ndef test_contar_pares():\n    assert modulo.contar_pares(10) == 5, \"Pares hasta 10: 2,4,6,8,10 = 5\"\n    assert modulo.contar_pares(1) == 0\n    assert modulo.contar_pares(2) == 1\n\n\ndef test_cuantos_turnos():\n    assert modulo.cuantos_turnos(100, 30) == 4, \"100 HP con 30 de daño = 4 turnos\"\n    assert modulo.cuantos_turnos(100, 100) == 1\n    assert modulo.cuantos_turnos(50, 10) == 5\n\n\ndef test_potencia():\n    assert modulo.potencia(2, 3) == 8, \"2^3 = 8\"\n    assert modulo.potencia(5, 0) == 1, \"Cualquier cosa^0 = 1\"\n    assert modulo.potencia(10, 2) == 100\n\n\ndef test_es_primo():\n    assert modulo.es_primo(7) is True, \"7 es primo\"\n    assert modulo.es_primo(4) is False, \"4 no es primo\"\n    assert modulo.es_primo(1) is False, \"1 no es primo\"\n    assert modulo.es_primo(2) is True, \"2 es primo\"\n\n\ndef test_primer_divisor():\n    assert modulo.primer_divisor(15) == 3\n    assert modulo.primer_divisor(7) == 7, \"Un primo se divide primero por sí mismo\"\n    assert modulo.primer_divisor(8) == 2\n\n\ndef test_contar_vocales():\n    assert modulo.contar_vocales(\"pikachu\") == 3, \"pikachu tiene i, a, u\"\n    assert modulo.contar_vocales(\"xyz\") == 0\n\n\ndef test_mayor_de_tres():\n    assert modulo.mayor_de_tres(1, 2, 3) == 3\n    assert modulo.mayor_de_tres(9, 2, 5) == 9\n    assert modulo.mayor_de_tres(4, 7, 1) == 7\n\n\ndef test_signo():\n    assert modulo.signo(5) == \"positivo\"\n    assert modulo.signo(-3) == \"negativo\"\n    assert modulo.signo(0) == \"cero\"\n\n\ndef test_esta_en_equipo():\n    equipo = [\"Pikachu\", \"Charizard\", \"Snorlax\"]\n    assert modulo.esta_en_equipo(equipo, \"Charizard\") is True\n    assert modulo.esta_en_equipo(equipo, \"Mewtwo\") is False\n    assert modulo.esta_en_equipo([], \"Pikachu\") is False, \"Equipo vacío: nadie está\"\n\n\ndef test_contar_debilitados():\n    assert modulo.contar_debilitados([100, 0, 50, -10, 0]) == 3\n    assert modulo.contar_debilitados([100, 50]) == 0\n    assert modulo.contar_debilitados([]) == 0, \"Lista vacía: 0 debilitados\"\n","extra":{},"packages":[],"exId":"primer_divisor","exTests":["test_primer_divisor"],"starter":"def primer_divisor(n):\n    \"\"\"Devolvé el divisor más chico de n mayor que 1.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n","ejercicios":[{"id":"puede_evolucionar","starter":"def puede_evolucionar(nivel):\n    \"\"\"Devolvé True si nivel >= 25.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"estado_hp","starter":"def estado_hp(hp):\n    \"\"\"Devolvé 'sano', 'herido', 'grave' o 'debilitado' según el hp.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"ventaja_tipo","starter":"def ventaja_tipo(atacante, defensor):\n    \"\"\"Devolvé True si el atacante tiene ventaja sobre el defensor.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"el_mas_fuerte","starter":"def el_mas_fuerte(ataque_a, ataque_b):\n    \"\"\"Devolvé el mayor; si empatan, ataque_a.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"clasificar_nivel","starter":"def clasificar_nivel(nivel):\n    \"\"\"Devolvé 'novato', 'intermedio' o 'experto'.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"necesita_curarse","starter":"def necesita_curarse(hp):\n    \"\"\"Devolvé True si hp < 30.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"resultado_combate","starter":"def resultado_combate(mi_hp, rival_hp):\n    \"\"\"Devolvé 'ganaste', 'perdiste' o 'empate'.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"cuenta_regresiva","starter":"def cuenta_regresiva(n):\n    \"\"\"Devolvé la cuenta regresiva como '3,2,1,Ya!'.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"suma_1_a_n","starter":"def suma_1_a_n(n):\n    \"\"\"Devolvé 1 + 2 + ... + n.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"factorial","starter":"def factorial(n):\n    \"\"\"Devolvé el factorial de n usando un bucle.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"contar_pares","starter":"def contar_pares(n):\n    \"\"\"Devolvé la cantidad de pares entre 1 y n.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"cuantos_turnos","starter":"def cuantos_turnos(hp_rival, dano):\n    \"\"\"Devolvé cuántos turnos de 'dano' hacen falta para que hp_rival llegue a 0.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"potencia","starter":"def potencia(base, exp):\n    \"\"\"Devolvé base ** exp pero calculado con un bucle.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"es_primo","starter":"def es_primo(n):\n    \"\"\"Devolvé True si n es primo.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"primer_divisor","starter":"def primer_divisor(n):\n    \"\"\"Devolvé el divisor más chico de n mayor que 1.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"contar_vocales","starter":"def contar_vocales(palabra):\n    \"\"\"Devolvé la cantidad de vocales en la palabra.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"mayor_de_tres","starter":"def mayor_de_tres(a, b, c):\n    \"\"\"Devolvé el mayor de a, b y c.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"signo","starter":"def signo(numero):\n    \"\"\"Devolvé 'positivo', 'negativo' o 'cero'.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"esta_en_equipo","starter":"def esta_en_equipo(equipo, nombre):\n    \"\"\"Devolvé True si 'nombre' está en la lista 'equipo'.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"},{"id":"contar_debilitados","starter":"def contar_debilitados(equipo_hp):\n    \"\"\"Devolvé cuántos valores de la lista son <= 0.\"\"\"\n    # TU CÓDIGO ACÁ\n    pass\n"}]}</script>     <script>
     (function () {
       var body = document.body;
       // por defecto: CRT oscuro. 'claro' = modo claro.

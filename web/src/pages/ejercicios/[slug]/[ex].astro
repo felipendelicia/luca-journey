@@ -3,6 +3,7 @@ import Base from '../../../layouts/Base.astro';
 import RailEjercicios from '../../../components/RailEjercicios.astro';
 import datos from '../../../data/ejercicios.json';
 import { u } from '../../../lib/url.ts';
+import { getCollection } from 'astro:content';
 
 export function getStaticPaths() {
   const paths = [];
@@ -17,6 +18,10 @@ export function getStaticPaths() {
 const { w, ex, n } = Astro.props;
 const prev = w.ejercicios[n - 1];
 const next = w.ejercicios[n + 1];
+// teoría del tema = capítulo del libro con el MISMO slug (para repasar sin salir del ejercicio).
+const cap = (await getCollection('libro')).find((c) => c.slug === w.slug);
+const Teoria = cap ? (await cap.render()).Content : null;
+const capTitulo = cap ? cap.data.title : w.titulo;
 const desc = ex.prompt.split('\n').slice(1).join('\n').trim();
 const payload = {
   slug: w.slug, preamble: w.preamble, test: w.test, extra: w.extra,
@@ -41,6 +46,7 @@ const payload = {
           </button>
           <button class="btn-sec" id="ejecutar" type="button">▶ Ejecutar</button>
           <button class="btn-sec" id="reset" type="button">↺ Reiniciar</button>
+          {Teoria && <button class="btn-sec btn-teoria" id="abrir-teoria" type="button" aria-haspopup="dialog">📖 Teoría</button>}
           <span class="ejer-estado" id="estado"></span>
         </div>
 
@@ -62,6 +68,28 @@ const payload = {
       </main>
     </div>
   </div>
+
+  {Teoria && (
+    <div class="teoria-modal" id="teoria-modal" role="dialog" aria-modal="true" aria-label={'Teoría: ' + capTitulo} hidden>
+      <div class="teoria-card">
+        <header class="teoria-head">
+          <div class="teoria-head-txt">
+            <span class="teoria-kicker">📖 Teoría · repasá sin salir</span>
+            <h2 class="teoria-title">{capTitulo}</h2>
+          </div>
+          <button class="teoria-x" id="teoria-x" type="button" aria-label="Cerrar y volver al ejercicio">✕</button>
+        </header>
+        <nav class="teoria-toc" id="teoria-toc" aria-label="Secciones del capítulo"></nav>
+        <div class="teoria-cont book" id="teoria-cont">
+          <Teoria />
+        </div>
+        <footer class="teoria-foot">
+          <a href={u(`/libro/${w.slug}`)} target="_blank" rel="noopener">Ver capítulo completo en el Libro ↗</a>
+          <span class="teoria-hint">Esc / ✕ para volver al ejercicio</span>
+        </footer>
+      </div>
+    </div>
+  )}
 
   <script type="application/json" id="ej-data" set:html={JSON.stringify(payload)}></script>
 
@@ -142,5 +170,45 @@ const payload = {
 
     // precalentar el worker en segundo plano: cuando aprietes Corregir/▶ ya está listo (sin esperar ~15s)
     (window.requestIdleCallback || ((f) => setTimeout(f, 1800)))(() => { R.asegurar().catch(() => {}); });
+  </script>
+
+  <script>
+    // 📖 Teoría: abre el capítulo del libro en una modal SOBRE el ejercicio (no navega → el código no se pierde).
+    (function () {
+      const modal = document.getElementById('teoria-modal');
+      const btn = document.getElementById('abrir-teoria');
+      if (!modal || !btn) return;
+      const cont = document.getElementById('teoria-cont');
+      const toc = document.getElementById('teoria-toc');
+      const xBtn = document.getElementById('teoria-x');
+      let prevFoco = null, armado = false;
+
+      function armar() {
+        if (armado) return; armado = true;
+        // ocultar quizzes (son práctica, no teoría): bloques de código 'quiz' o que arrancan con "P:"
+        cont.querySelectorAll('pre.astro-code').forEach((pre) => {
+          const lang = (pre.getAttribute('data-language') || '').toLowerCase();
+          if (lang === 'quiz' || /^\s*P:\s/.test(pre.textContent || '')) (pre.closest('figure') || pre).style.display = 'none';
+        });
+        // mini-índice: saltos a los h2/h3 del capítulo
+        const hs = cont.querySelectorAll('h2, h3');
+        if (!hs.length) { toc.hidden = true; return; }
+        hs.forEach((h, i) => {
+          if (!h.id) h.id = 'teo-' + i;
+          const a = document.createElement('a');
+          a.href = '#' + h.id; a.className = 'teoria-toc-link' + (h.tagName === 'H3' ? ' sub' : '');
+          a.textContent = h.textContent;
+          a.addEventListener('click', (e) => { e.preventDefault(); h.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+          toc.appendChild(a);
+        });
+      }
+      function abrir() { armar(); prevFoco = document.activeElement; modal.hidden = false; document.body.classList.add('modal-abierto'); cont.scrollTop = 0; xBtn.focus(); }
+      function cerrar() { modal.hidden = true; document.body.classList.remove('modal-abierto'); if (prevFoco && prevFoco.focus) prevFoco.focus(); }
+
+      btn.addEventListener('click', abrir);
+      xBtn.addEventListener('click', cerrar);
+      modal.addEventListener('click', (e) => { if (e.target === modal) cerrar(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) cerrar(); });
+    })();
   </script>
 </Base>
