@@ -63,8 +63,10 @@ export class IntercambiosService {
     const p = await this.prisma.progreso.findUnique({ where: { userId: otro } });
     const est = (p?.estado as any) || {};
     let pc: any[] = []; try { pc = JSON.parse(est['col:pc'] || '[]'); } catch {}
-    // instancias del otro para elegir qué pedir (id/nivel/shiny/mote por iid)
-    return { pc: pc.map((m) => ({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: !!m.shiny, mote: m.mote || '' })) };
+    // vistos = Pokédex del otro (especies que registró alguna vez), para el badge "no lo tiene en su Pokédex"
+    let vistos: number[] = []; try { vistos = JSON.parse(est['col:vistos'] || '[]'); } catch {}
+    // instancias del otro para elegir qué pedir (id/nivel/shiny/mote por iid) + su Pokédex
+    return { pc: pc.map((m) => ({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: !!m.shiny, mote: m.mote || '' })), vistos };
   }
 
   async cancelar(uid: string, id: string) {

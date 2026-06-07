@@ -93,7 +93,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     import { crear, unirse, ponerLote, ponerPedido, coleccionOtro, confirmar, cancelar, leerSala, suscribir, haySupabase } from '../lib/trades.js';
     import { usuario, init as initNube, refrescarDesdeNube } from '../lib/nube.js';
     import { amigos } from '../lib/social.js';
-    import { pc } from '../lib/coleccion.js';
+    import { pc, vistos } from '../lib/coleccion.js';
     import { onPresencia, invitar } from '../lib/presencia.js';
 
     const D = JSON.parse(document.getElementById('tr-data').textContent);
@@ -188,8 +188,8 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
       const grid = $('tr-colec-grid'); if (!otroColeccion) return;
       const inst = otroColeccion.pc || [];
       const q = ($('tr-colec-buscar').value || '').trim().toLowerCase();
-      const especiesMias = new Set(misInst().map((m) => m.id));   // lo que YO ya tengo
-      const esHueco = (m) => !especiesMias.has(m.id);              // me falta esa especie
+      const dexMia = vistos();                                    // mi Pokédex (especies registradas)
+      const esHueco = (m) => !dexMia.has(m.id);                   // no lo tengo en mi Pokédex (nuevo para mí)
       const lista = inst
         .filter((m) => !q || (nombres[m.id] || '').toLowerCase().includes(q) || (m.mote || '').toLowerCase().includes(q))
         .sort((a, b) => (Number(esHueco(b)) - Number(esHueco(a))) || (b.shiny - a.shiny) || (b.nivel - a.nivel) || (a.id - b.id));
@@ -198,7 +198,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
       lista.forEach((m) => {
         const on = miPedido.some((p) => p.iid === m.iid);
         const cell = document.createElement('div'); cell.className = 'tr-cell' + (on ? ' on' : '') + (esHueco(m) ? ' tr-gap' : '');
-        cell.innerHTML = `<img src="${sprite(m.id, m.shiny)}" alt="${esc(nombreInst(m))}" title="${esc(nombreInst(m))}" /><span class="tr-cnt">Nv.${m.nivel}${m.shiny ? ' ✨' : ''}</span>${idMini(m)}` + (esHueco(m) ? '<span class="tr-falta" title="Te falta a vos">⭐</span>' : '');
+        cell.innerHTML = `<img src="${sprite(m.id, m.shiny)}" alt="${esc(nombreInst(m))}" title="${esc(nombreInst(m))}" /><span class="tr-cnt">Nv.${m.nivel}${m.shiny ? ' ✨' : ''}</span>${idMini(m)}` + (esHueco(m) ? '<span class="tr-falta" title="No lo tenés en tu Pokédex (nuevo para vos)">📒</span>' : '');
         const btn = document.createElement('button');
         btn.className = 'tr-pedir' + (on ? ' on' : ''); btn.type = 'button'; btn.textContent = on ? '✓ pedido' : 'Pedir';
         btn.addEventListener('click', async () => {
@@ -262,15 +262,16 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     }
 
     function abrirPicker() {
-      const especiesDeEl = new Set(((otroColeccion && otroColeccion.pc) || []).map((m) => m.id));   // lo que ÉL tiene
-      const esHueco = (m) => otroColeccion && !especiesDeEl.has(m.id);                               // le falta esa especie
+      const dexDeEl = new Set((otroColeccion && otroColeccion.vistos) || []);                        // la Pokédex de ÉL (vistos)
+      // guard: solo si el server mandó `vistos` (post-deploy); si no, no marcamos nada (evita falsos positivos)
+      const esHueco = (m) => !!(otroColeccion && otroColeccion.vistos) && !dexDeEl.has(m.id);         // no lo tiene en su Pokédex
       const inst = misInst().filter((m) => !yaEnLote(m))
         .sort((a, b) => (Number(esHueco(b)) - Number(esHueco(a))) || (b.shiny - a.shiny) || (b.nivel - a.nivel) || (a.id - b.id));
       $('tr-grid').innerHTML = inst.length ? inst.map((m) =>
         `<div class="tr-pick${esHueco(m) ? ' tr-gap' : ''}">
           <img src="${sprite(m.id, m.shiny)}" alt="${esc(nombreInst(m))}" title="${esc(nombreInst(m))}" />
           <span class="tr-cnt">Nv.${m.nivel}${m.shiny ? ' ✨' : ''}</span>
-          ${esHueco(m) ? '<span class="tr-falta" title="Le falta a él">⭐</span>' : ''}
+          ${esHueco(m) ? '<span class="tr-falta" title="No lo tiene en su Pokédex (nuevo para él)">📒</span>' : ''}
           <button class="tr-add" data-iid="${m.iid}" type="button">+ ofrecer</button>
         </div>`).join('') : '<div class="tr-colec-vacio">No tenés Pokémon para ofrecer.</div>';
       $('tr-grid').querySelectorAll('.tr-add').forEach((b) => b.addEventListener('click', () => {
