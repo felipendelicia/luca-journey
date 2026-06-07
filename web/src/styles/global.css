@@ -764,8 +764,10 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 @keyframes ballHaz{ 0%{ filter:brightness(1.5); } 100%{ filter:brightness(1); } }
 .enc-catchball.cae{ animation:ballCae .32s cubic-bezier(.3,1.4,.5,1); }
 @keyframes ballCae{ 0%{ transform:translateX(-50%) translateY(-46px) rotate(-12deg); } 70%{ transform:translateX(-50%) translateY(4px) rotate(6deg); } 100%{ transform:translateX(-50%) translateY(0) rotate(0); } }
+.enc-catchball.posada{ transform:translateX(-50%); transform-origin:bottom center; }   /* apoyada en el piso, sin animación */
 .enc-catchball.sacude{ animation:ballSacude .42s ease; transform-origin:bottom center; }
-@keyframes ballSacude{ 0%,100%{ transform:translateX(-50%) rotate(0); } 20%{ transform:translateX(-55%) rotate(-24deg); } 55%{ transform:translateX(-45%) rotate(22deg); } 80%{ transform:translateX(-50%) rotate(-7deg); } }
+/* pivotea en su base (sin desplazarse): parece apoyada y bamboleándose */
+@keyframes ballSacude{ 0%,100%{ transform:translateX(-50%) rotate(0); } 22%{ transform:translateX(-50%) rotate(-22deg); } 60%{ transform:translateX(-50%) rotate(20deg); } 82%{ transform:translateX(-50%) rotate(-6deg); } }
 .enc-catchball.atrapada{ animation:ballConfirma .55s ease forwards; }
 @keyframes ballConfirma{ 0%{ filter:brightness(1); } 28%{ filter:brightness(1) drop-shadow(0 0 11px var(--yellow)); } 100%{ transform:translateX(-50%) scale(.92); filter:brightness(1) drop-shadow(0 0 5px var(--yellow)); } }
 .enc-catchball.reabre{ animation:ballAbre .2s ease forwards; }

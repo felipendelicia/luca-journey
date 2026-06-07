@@ -351,12 +351,13 @@ const total = pokemon.length;
       await esperar(360);
       sp.style.visibility = 'hidden'; ball.classList.remove('abierta'); ball.classList.add('cae');
       await esperar(330);
+      ball.classList.remove('cae'); ball.classList.add('posada');   // queda APOYADA: sacar .cae evita que la caída se re-dispare al togglear .sacude
       const nShakes = r.ok ? 3 : (r.huyo ? 1 : 2);
       for (let i = 0; i < nShakes; i++) {
         ball.classList.add('sacude'); sonarClick();
         await esperar(440);
         ball.classList.remove('sacude');
-        await esperar(150);
+        await esperar(160);
       }
       if (r.ok) { ball.classList.add('atrapada'); sonarClick(); return { escena, stage, sp, ball }; }
       // falló: la ball se abre, el Pokémon vuelve a salir
