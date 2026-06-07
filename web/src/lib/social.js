@@ -42,6 +42,7 @@ export function snapshotPublico(temas) {
   return {
     atrapados: st.atrapados,
     shiny: [...st.shiny],
+    vistos: ls('col:vistos', []),   // Pokédex (especies vistas) → badge "no lo tiene en su Pokédex" en ofertas async
     // instancias del PC para el intercambio por INSTANCIA (id/nivel/shiny/mote + identidad por iid)
     pcPub: pcArr.map(slim),
     conteos: { unicos: st.unicos, total: st.total, shinies: st.shiny.size, ejercicios: c.ejHechos },

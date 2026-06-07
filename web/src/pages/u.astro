@@ -204,7 +204,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
   <script type="application/json" id="u-data" set:html={JSON.stringify({ nombres, regionDe, temas })}></script>
   <script>
     import { perfilPublico, sonAmigos, solicitar, crearOferta, guardarDescripcion, pcDeUsuario, rankingPvp, actualizarSnapshot, haySupabase } from '../lib/social.js';
-    import { pc as pcCol } from '../lib/coleccion.js';
+    import { pc as pcCol, vistos } from '../lib/coleccion.js';
     import { statsDesafios, desafiosDeUsuario } from '../lib/desafios.js';
     import { usuario, init as initNube } from '../lib/nube.js';
     import { REGION_IDS, REGION_POR_ID } from '../lib/regiones.mjs';
@@ -493,7 +493,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
         const on = () => seleccion.some((x) => x.iid === m.iid);
         const cell = document.createElement('div'); cell.className = 'tr-cell' + (on() ? ' on' : '') + (esHueco(m) ? ' tr-gap' : '');
         cell.innerHTML = `<img src="${sprite(m.id, m.shiny)}" alt="${esc(nombreInst(m))}" title="${esc(nombreInst(m))}" /><span class="tr-cnt">Nv.${m.nivel}${m.shiny ? ' ✨' : ''}</span>`
-          + (esHueco(m) ? `<span class="tr-falta" title="${marcaTxt}">⭐</span>` : '');
+          + (esHueco(m) ? `<span class="tr-falta" title="${marcaTxt}">📒</span>` : '');
         const btn = document.createElement('button'); btn.type = 'button';
         btn.className = 'tr-pedir' + (on() ? ' on' : ''); btn.textContent = on() ? '✓' : '＋';
         btn.addEventListener('click', () => {
@@ -512,10 +512,12 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       let otras = (perfil.publico && perfil.publico.pcPub) || [];
       try { const r = await pcDeUsuario(perfil.user_id); if (r && Array.isArray(r.pc)) otras = r.pc; } catch {}
       const mias = misInst();
-      const especiesDeEl = new Set(otras.map((m) => m.id));
-      const especiesMias = new Set(mias.map((m) => m.id));
-      gridInst($('of-doy'), mias, doy, (m) => !especiesDeEl.has(m.id), 'Le falta a él');
-      gridInst($('of-pido'), otras, pido, (m) => !especiesMias.has(m.id), 'Te falta a vos');
+      // badge por POKÉDEX (vistos), igual que el intercambio en vivo — NO por colección.
+      const elVistos = (perfil.publico && perfil.publico.vistos) || null;
+      const dexDeEl = new Set(elVistos || otras.map((m) => m.id));   // su Pokédex (si el snapshot la trae); si no, su colección (fallback)
+      const dexMia = vistos();                                        // mi Pokédex (live)
+      gridInst($('of-doy'), mias, doy, (m) => !dexDeEl.has(m.id), 'No lo tiene en su Pokédex');
+      gridInst($('of-pido'), otras, pido, (m) => !dexMia.has(m.id), 'No lo tenés en tu Pokédex');
     }
     $('of-x').addEventListener('click', () => { $('of-modal').hidden = true; });
     $('of-modal').addEventListener('click', (e) => { if (e.target === $('of-modal')) $('of-modal').hidden = true; });
