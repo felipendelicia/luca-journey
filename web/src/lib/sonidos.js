@@ -85,7 +85,7 @@ export function musicaEvolucion() {
 
 // Música de fondo de BATALLA: tema HEROICO 8-bit (progresión épica Am–F–C–G), con bajo galopante,
 // hook melódico que resuelve y arpegios brillantes. Loop original que se reagenda solo.
-const PASO = 0.15;          // corchea (~150bpm de corcheas)
+const PASO = 0.13;          // corchea más rápida (~185bpm) → urgencia de battle-vs-trainer
 const COMPASES = 4, PxC = 8; // 4 compases × 8 corcheas
 const PROG_RAIZ = [110.0, 87.31, 130.81, 98.0];   // A2  F2  C3  G2
 const PROG_OCT = [220.0, 174.61, 261.63, 196.0];  // A3  F3  C4  G3

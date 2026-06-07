@@ -15,7 +15,7 @@ class FX {
     c.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4';
     arena.appendChild(c);
     this.c = c; this.ctx = c.getContext('2d');
-    this.P = []; this.O = []; this.run = false;
+    this.P = []; this.O = []; this.E = []; this.run = false;   // E = emisores sostenidos (varios frames)
     this.tick = this.tick.bind(this);
     this.resize();
   }
@@ -28,11 +28,16 @@ class FX {
   }
   add(p) { this.P.push(p); this.start(); }
   addO(o) { o.t = 0; this.O.push(o); this.start(); }
+  emit(n, fn) { this.E.push({ n, fn }); this.start(); }   // emisor sostenido: fn(this) por n frames
   start() { if (!this.run) { this.run = true; requestAnimationFrame(this.tick); } }
   tick() {
     const ctx = this.ctx; ctx.clearRect(0, 0, this.w, this.h);
+    // emisores sostenidos (llamas que ondulan, chorros, etc.)
+    for (const e of this.E) { if (e.n > 0) { e.n--; try { e.fn(this); } catch (er) {} } }
+    this.E = this.E.filter((e) => e.n > 0);
     // partículas
     for (const p of this.P) {
+      if (p.turb) { p.vx += rnd(-p.turb, p.turb); p.vy += rnd(-p.turb, p.turb); }   // turbulencia → movimiento orgánico
       p.vx *= p.drag; p.vy *= p.drag; p.vy += p.g; p.x += p.vx; p.y += p.vy; p.rot += p.spin; p.life--;
       const k = p.life / p.max, a = p.fade ? k : 1;
       if (a <= 0) continue;
@@ -51,7 +56,7 @@ class FX {
     for (const o of this.O) { o.t++; o.draw(ctx, o.t / o.life); }
     this.P = this.P.filter((p) => p.life > 0);
     this.O = this.O.filter((o) => o.t < o.life);
-    if (this.P.length || this.O.length) requestAnimationFrame(this.tick); else this.run = false;
+    if (this.P.length || this.O.length || this.E.length) requestAnimationFrame(this.tick); else this.run = false;
   }
 }
 function estrella(ctx, x, y, r, rot) {
@@ -97,7 +102,7 @@ function bolt(fx, x, y, life = 16) {
 }
 // humo (puffs grises que suben y se expanden)
 function humo(fx, x, y, n = 8) {
-  for (let i = 0; i < n; i++) fx.add({ x: x + rnd(-18, 18), y: y + rnd(-10, 10), vx: rnd(-0.6, 0.6), vy: rnd(-1.6, -0.4), g: -0.01, drag: 0.96, life: rnd(34, 56), max: 50, r: rnd(8, 14), r2: rnd(22, 34), col: 'rgba(80,75,80,.5)', add: false, shape: 'circle', rot: 0, spin: 0, fade: true });
+  for (let i = 0; i < n; i++) fx.add({ x: x + rnd(-18, 18), y: y + rnd(-10, 10), vx: rnd(-0.6, 0.6), vy: rnd(-1.6, -0.4), g: -0.01, drag: 0.96, turb: 0.18, life: rnd(34, 56), max: 50, r: rnd(8, 14), r2: rnd(22, 34), col: 'rgba(80,75,80,.5)', add: false, shape: 'circle', rot: 0, spin: 0, fade: true });
 }
 // onda de choque blanca (impacto universal)
 function choque(fx, x, y) { ring(fx, x, y, 'rgba(255,255,255,.9)', 64, 18, 5); flash(fx, x, y, 'rgba(255,255,255,.7)', 46, 12); }
@@ -106,10 +111,14 @@ function cargar(fx, a, col) { for (let i = 0; i < 10; i++) { const ang = rnd(0, 
 
 // ───────────────────────── efectos por TIPO (base) ─────────────────────────
 const dosCol = (a, b) => () => (Math.random() < 0.5 ? a : b);
+const fuegoCol = () => { const r = Math.random(); return r < 0.22 ? '#fff2b0' : r < 0.58 ? '#ffd24a' : r < 0.85 ? '#ff8a2c' : '#e6431a'; };
+const aguaCol = () => { const r = Math.random(); return r < 0.35 ? '#eafaff' : r < 0.7 ? '#7fd0ff' : '#2f8fd8'; };
 const TYPE_FX = {
   Normal: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(255,255,255,.9)', 60); burst(c.fx, c.d.x, c.d.y, 14, { col: '#fff', add: true, r: 4, r2: 1, spMin: 2, spMax: 6, life: 24 }); },
-  Fuego: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(255,150,50,.9)', 70); burst(c.fx, c.d.x, c.d.y, 26, { col: dosCol('#ffd24a', '#ff7a2c'), add: true, r: 7, r2: 2, spMin: 1.5, spMax: 4.5, vyBias: -1.4, g: -0.04, drag: 0.93, life: 34, jx: 8 }); humo(c.fx, c.d.x, c.d.y - 10, 6); },
-  Agua: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(80,180,255,.8)', 55); ring(c.fx, c.d.x, c.d.y + 8, '#7fd0ff', 60, 22, 4); burst(c.fx, c.d.x, c.d.y, 26, { col: dosCol('#bfe9ff', '#3aa0e6'), add: true, r: 6, r2: 2, spMin: 2, spMax: 6, dir: -1.57, spread: 1.5, g: 0.28, drag: 0.97, life: 38 }); },
+  // llama irregular: emite por 14 frames, partículas que suben con turbulencia, tamaños/colores variados
+  Fuego: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(255,150,50,.9)', 72); c.fx.emit(14, (fx) => { for (let i = 0; i < 3; i++) { const a = rnd(-2.5, -0.6); fx.add({ x: c.d.x + rnd(-18, 18), y: c.d.y + rnd(-4, 12), vx: Math.cos(a) * rnd(0.7, 2.2), vy: Math.sin(a) * rnd(1.4, 3.4), g: -0.03, drag: 0.93, turb: 0.55, life: Math.round(rnd(18, 34)), max: 30, r: rnd(4, 11), r2: 0.5, col: fuegoCol(), add: true, shape: 'circle', rot: 0, spin: 0, fade: true }); } }); humo(c.fx, c.d.x, c.d.y - 12, 7); },
+  // agua irregular: chorro de gotas con gravedad + spray, tamaños/arcos dispares
+  Agua: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(80,180,255,.8)', 55); ring(c.fx, c.d.x, c.d.y + 8, '#7fd0ff', 62, 22, 4); c.fx.emit(9, (fx) => { for (let i = 0; i < 4; i++) { const a = rnd(-2.8, -0.3); fx.add({ x: c.d.x + rnd(-10, 10), y: c.d.y, vx: Math.cos(a) * rnd(1.8, 6), vy: Math.sin(a) * rnd(2, 6), g: 0.3, drag: 0.98, turb: 0.22, life: Math.round(rnd(26, 46)), max: 40, r: rnd(2.5, 6.5), r2: 1, col: aguaCol(), add: true, shape: Math.random() < 0.45 ? 'spark' : 'circle', rot: 0, spin: 0, fade: true }); } }); },
   'Eléctrico': (c) => { screen(c.fx, 'rgba(255,246,160,.55)'); bolt(c.fx, c.d.x, c.d.y); burst(c.fx, c.d.x, c.d.y, 18, { col: '#fff7a0', add: true, r: 4, r2: 0, spMin: 3, spMax: 8, life: 18, shape: 'spark' }); },
   Planta: (c) => { burst(c.fx, c.d.x, c.d.y, 18, { col: dosCol('#bff06a', '#3f9a2e'), r: 8, r2: 5, spMin: 1.5, spMax: 5, g: 0.06, drag: 0.95, life: 40, shape: 'leaf', spin: 0.3 }); },
   Hielo: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(160,240,240,.85)', 64); burst(c.fx, c.d.x, c.d.y, 16, { col: dosCol('#eafcff', '#7fe0e0'), add: true, r: 7, r2: 3, spMin: 2, spMax: 6, life: 30, shape: 'rect', spin: 0.2 }); },
