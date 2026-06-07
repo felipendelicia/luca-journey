@@ -136,11 +136,15 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     const TCOLOR = { Normal: '#9099a1', Fuego: '#ff6b2c', Agua: '#4d90d5', Planta: '#56ad4e', 'Eléctrico': '#e0bd2b', Hielo: '#62c4b6', Lucha: '#ce4069', Veneno: '#a85fc4', Tierra: '#d3793f', Volador: '#8aa6df', 'Psíquico': '#f56a72', Bicho: '#88bb26', Roca: '#b3a576', Fantasma: '#5269ac', 'Dragón': '#0a6dc4', Siniestro: '#585761', Acero: '#5a8ea1', Hada: '#e487dd' };
     // sprites GBA reales (FireRed/LeafGreen) para gen 1-3; el resto usa el sprite por defecto.
     const FRSPR = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
-    // de FRENTE: firered (gen 1-3) o sprite por defecto. DE ESPALDAS: back GBA "media figura"
-    // (firered) para gen 1-3 — pegado al fondo del canvas, sin base de pasto (estética GBA).
-    const spriteBatalla = (id, shiny, back) => id <= 386
-      ? FRSPR + 'versions/generation-iii/firered-leafgreen/' + (back ? 'back/' : '') + (shiny ? 'shiny/' : '') + id + '.png'
-      : FRSPR + (back ? 'back/' : '') + (shiny ? 'shiny/' : '') + id + '.png';
+    // sprites PIXEL/retro por generación (frente y espaldas): gen 1-3 FireRed (GBA), gen 4 HGSS, gen 5 BW.
+    // gen 6+ no tiene sprites pixel (Game Freak pasó a 3D) → render moderno por defecto. onerror → spriteUrl.
+    const spriteBatalla = (id, shiny, back) => {
+      const b = back ? 'back/' : '', s = shiny ? 'shiny/' : '';
+      if (id <= 386) return FRSPR + 'versions/generation-iii/firered-leafgreen/' + b + s + id + '.png';
+      if (id <= 493) return FRSPR + 'versions/generation-iv/heartgold-soulsilver/' + b + s + id + '.png';
+      if (id <= 649) return FRSPR + 'versions/generation-v/black-white/' + b + s + id + '.png';
+      return FRSPR + b + s + id + '.png';
+    };
     // fija el sprite de un combatiente: rival de frente (back=false), jugador DE ESPALDAS (back=true).
     // fallback al sprite por defecto si el de FireRed/back no existe.
     function setSpr(imgId, c, back) {
