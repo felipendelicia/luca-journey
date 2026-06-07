@@ -81,6 +81,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     import { itemSvg } from '../lib/sprites.js';
     import { combatiente, calcularDano, danoSuper, elegirCPU, equipoCPU, esEstado, aplicarEstado, puedeActuar, aplicarAilment, tickEstado, acierta, tiraCritico, sinPP, FORCEJEO, ESTADOS } from '../lib/batalla.js';
     import { etiquetaEfec } from '../lib/tipos.js';
+    import { efectoAtaque } from '../lib/batalla-fx.js';
     import { retoAlAzar } from '../lib/retos-batalla.js';
     import { sonarExito, sonarEpico, musicaBatalla, detenerMusica, toggleSonido, sonidoActivo } from '../lib/sonidos.js';
     import * as online from '../lib/batalla-online.js';
@@ -262,8 +263,8 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       msg('¡' + at.nombre + ' usó ' + (mov.nombre || 'su ataque') + '!' + (dmgInfo.crit ? '  ¡Golpe crítico! 💥' : '') + (ef ? '  ' + ef : ''));
       // 1) el atacante embiste
       atImg.classList.add('bt-lunge'); await esperar(190); atImg.classList.remove('bt-lunge');
-      // 2) impacto: destello del tipo + flash + shake si pega fuerte
-      destello(defLado === 'r', mov.tipo);
+      // 2) impacto: animación de ataque (por movimiento, o por tipo) + shake si pega fuerte
+      efectoAtaque(document.querySelector('.bt-arena'), mov, defLado === 'r');
       def.hp = Math.max(0, def.hp - dmgInfo.dmg);
       defImg.classList.add('bt-hit');
       const fuerte = dmgInfo.efec >= 2 || dmgInfo.dmg > def.hpMax * 0.38;
