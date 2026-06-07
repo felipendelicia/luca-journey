@@ -78,7 +78,10 @@ const nav = [
   </script>
 
   <header class="topbar">
-    <a class="brand-link" href={u('/')}><span class="pb"></span><span class="brand">Pokédex <b>Codex</b></span></a>
+    <a class="brand-link" href={u('/')} aria-label="Inicio — Pokédex Codex">
+      <span class="dex-leds" aria-hidden="true"><span class="dex-lamp"></span><i class="dex-led r"></i><i class="dex-led y"></i><i class="dex-led g"></i></span>
+      <span class="dex-plate"><span class="brand">Pokédex <b>Codex</b></span></span>
+    </a>
     <div class="tools">
       <nav class="navlinks" id="navlinks">
       {nav.map(([t, h]) => (
