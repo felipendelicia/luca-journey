@@ -148,6 +148,36 @@ function ailmentFx(l, d, ail) {
   estallido(l, d.x, d.y, 6, () => ({ css: 'width:9px;height:9px;border-radius:50%;background:' + col + ';opacity:.85;box-shadow:0 0 5px ' + col, vars: { x: rnd(-25, 25) + 'px', y: rnd(-50, -10) + 'px' }, anim: 'rise', dur: 0.7, delay: rnd(0, 0.2) }));
 }
 
+// ───────── plantillas reutilizables + mapeo de ~80 movimientos comunes a su plantilla ─────────
+const C = (c) => TCOLOR[c.mov.tipo] || '#fff';
+const T = {
+  golpe: (c) => { flash(c.l, c.def.x, c.def.y, 'rgba(255,255,255,.8)', 110); estallido(c.l, c.def.x, c.def.y, 10, () => { const a = rnd(0, 6.28), r = rnd(28, 64); return { css: 'width:9px;height:9px;border-radius:50%;background:' + C(c), vars: { x: Math.cos(a) * r + 'px', y: Math.sin(a) * r + 'px' }, dur: 0.4 }; }); },
+  multi: (c) => { for (let k = 0; k < 4; k++) part(c.l, c.def.x + rnd(-20, 20), c.def.y + rnd(-16, 16), 'width:46px;height:46px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.9),transparent 60%)', { s: 0.2 }, 'flash', 0.3, k * 0.11); },
+  cuchillada: (c) => { for (let i = 0; i < 3; i++) part(c.l, c.def.x - 45, c.def.y, 'width:90px;height:7px;border-radius:4px;background:linear-gradient(90deg,transparent,#fff,' + C(c) + ',transparent);box-shadow:0 0 8px ' + C(c), { x: '0px', y: '0px', r: (i % 2 ? 42 : -42) + 'deg', s: 1.2 }, 'fly', 0.32, i * 0.1); },
+  puno: (c) => { flash(c.l, c.def.x, c.def.y, 'rgba(255,255,255,.95)', 130); anillo(c.l, c.def.x, c.def.y, '#ffd84a', 0.4); estallido(c.l, c.def.x, c.def.y, 8, (i) => ({ css: 'width:24px;height:5px;border-radius:3px;background:#ffe06a', vars: { x: '0px', y: '0px', r: (i * 45) + 'deg', s: 1.6 }, dur: 0.32 })); },
+  mordida: (c) => { flash(c.l, c.def.x, c.def.y, 'rgba(255,255,255,.85)', 110); for (const s of [-1, 1]) part(c.l, c.def.x, c.def.y, 'width:38px;height:24px;border:6px solid #fff;border-radius:50%;border-color:#fff transparent transparent transparent', { x: '0px', y: (s * 15) + 'px', s: 0.5 }, 'fly', 0.3); },
+  picotazo: (c) => { rayo(c.l, c.atk, c.def, '#fff', 7, 0.3); flash(c.l, c.def.x, c.def.y, 'rgba(255,255,255,.7)', 70); },
+  haz: (c) => { rayo(c.l, c.atk, c.def, C(c), 16, 0.5); (TYPE_FX[c.mov.tipo] || TYPE_FX.Normal)(c); },
+  proyectil: (c) => { const b = document.createElement('div'); b.className = 'fxp'; b.style.cssText = 'left:' + c.atk.x + 'px;top:' + c.atk.y + 'px;width:24px;height:24px;border-radius:50%;background:radial-gradient(circle,#fff,' + C(c) + ' 70%);box-shadow:0 0 12px ' + C(c); b.style.setProperty('--x', (c.def.x - c.atk.x) + 'px'); b.style.setProperty('--y', (c.def.y - c.atk.y) + 'px'); b.style.animation = 'fx-fly .4s ease-in forwards'; c.l.appendChild(b); setTimeout(() => { try { flash(c.l, c.def.x, c.def.y, C(c), 120); (TYPE_FX[c.mov.tipo] || TYPE_FX.Normal)(c); } catch (e) {} }, 360); },
+  absorber: (c) => { for (let i = 0; i < 12; i++) { const x = c.def.x + rnd(-30, 30), y = c.def.y + rnd(-30, 30); part(c.l, x, y, 'width:9px;height:9px;border-radius:50%;background:#9ee34f;box-shadow:0 0 6px #6cc23c', { x: (c.atk.x - x) + 'px', y: (c.atk.y - y) + 'px', s: 0.3 }, 'fly', 0.6, i * 0.04); } },
+  cura: (c) => { for (let i = 0; i < 10; i++) part(c.l, c.atk.x + rnd(-26, 26), c.atk.y + rnd(-6, 28), 'width:9px;height:9px;border-radius:50%;background:#bfffce;box-shadow:0 0 6px #6cf08c', { x: '0px', s: 0.8 }, 'rise', 0.8, i * 0.06); },
+  danza: (c) => { flechas(c.l, c.atk.x, c.atk.y, true); estallido(c.l, c.atk.x, c.atk.y, 8, () => { const a = rnd(0, 6.28), r = rnd(25, 50); return { css: 'width:8px;height:8px;background:#ffe06a;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)', vars: { x: Math.cos(a) * r + 'px', y: Math.sin(a) * r + 'px', r: rnd(0, 360) + 'deg' }, anim: 'spin', dur: 0.6 }; }); },
+  polvo: (c) => { const col = C(c); for (let i = 0; i < 16; i++) part(c.l, c.def.x + rnd(-40, 40), c.def.y - 50, 'width:8px;height:8px;border-radius:50%;background:' + col + ';opacity:.8', { x: rnd(-15, 15) + 'px', y: rnd(55, 90) + 'px', s: 1 }, 'fly', 0.9, rnd(0, 0.3)); if (c.mov.ailment) ailmentFx(c.l, c.def, c.mov.ailment); },
+  onda: (c) => { anillo(c.l, c.atk.x, c.atk.y, C(c), 0.6); anillo(c.l, c.atk.x, c.atk.y, C(c), 0.85); },
+  clima: (c) => { const agua = c.mov.tipo === 'Agua'; pantallazo(c.l, 'rgba(' + (agua ? '90,150,230' : '200,170,110') + ',.35)', 0.8); const col = C(c); for (let i = 0; i < 24; i++) part(c.l, rnd(0, c.arena.clientWidth), -10, 'width:6px;height:' + (agua ? 14 : 6) + 'px;background:' + col, { x: rnd(-20, 8) + 'px', y: c.arena.clientHeight + 'px', s: 1 }, 'fly', rnd(0.6, 1), rnd(0, 0.45)); },
+};
+const GRUPOS = {
+  golpe: [38, 36, 29, 1, 310, 389, 185, 205, 21, 37, 228, 372, 117, 583, 332, 34, 371, 282, 283, 364, 401, 343, 363, 387, 23, 200, 175],
+  mordida: [242], cuchillada: [10, 163, 400, 210, 232, 403], multi: [154, 31, 458, 24], puno: [370, 68, 276, 249, 179],
+  picotazo: [450, 398, 40], haz: [93, 60, 352, 189, 145, 61, 362, 225, 406, 585, 248, 506, 246], proyectil: [412],
+  absorber: [71, 72, 202], cura: [156, 105, 355, 235], danza: [14, 97, 347], polvo: [78], clima: [240, 201], onda: [48, 253],
+};
+for (const k in GRUPOS) for (const id of GRUPOS[k]) MOVE_FX[id] = T[k];
+for (const id of [435, 209]) MOVE_FX[id] = TYPE_FX['Eléctrico'];   // Chispazo / Chispa
+for (const id of [157]) MOVE_FX[id] = TYPE_FX.Roca;                // Avalancha
+for (const id of [523, 414]) MOVE_FX[id] = TYPE_FX.Tierra;         // Terratemblor / Tierra Viva
+for (const id of [16]) MOVE_FX[id] = TYPE_FX.Volador;             // Tornado
+
 // punto de entrada: TODO movimiento recibe un efecto adecuado.
 export function efectoAtaque(arena, mov, haciaRival) {
   if (!arena || !mov) return;
