@@ -33,14 +33,15 @@ export const ITEMS = {
   zinc:     { nombre: 'Zinc',     sprite: 'vitamina', precio: 30, cat: 'ev', ev: 4, evMax: 100, desc: '+10 EV de Defensa Especial (hasta 100).' },
   carburo:  { nombre: 'Carburo',  sprite: 'vitamina', precio: 30, cat: 'ev', ev: 5, evMax: 100, desc: '+10 EV de Velocidad (hasta 100).' },
   masps:    { nombre: 'Más PS',   sprite: 'vitamina', precio: 30, cat: 'ev', ev: 0, evMax: 100, desc: '+10 EV de PS (hasta 100).' },
-  // ── Pokeballs ──
-  superball:   { nombre: 'Super Ball',       ico: '🔵', precio: 25, cat: 'ball', tier: 1, sprite: 'ball1', desc: 'Mejor captura: +shiny, +nivel, +rareza y +caramelos (moderado).' },
-  ultraball:   { nombre: 'Ultra Ball',       ico: '🟡', precio: 60, cat: 'ball', tier: 2, sprite: 'ball2', desc: 'Captura premium: ++shiny, ++nivel, ++rareza y ++caramelos.' },
-};
-// boosts de captura por tier de ball (0 = Pokéball normal).
-export const BALL_BOOST = {
-  0: { shiny: 1, nivelPct: 0,    rareza: 1,   caramelos: 3 },
-  1: { shiny: 2, nivelPct: 0.20, rareza: 1.4, caramelos: 5 },
-  2: { shiny: 4, nivelPct: 0.45, rareza: 2.0, caramelos: 8 },
+  // ── Pokeballs ── (la captura depende de `catch`/condición; ver safari-core.catchBall)
+  pokeball:   { nombre: 'Poké Ball',  sprite: 'ball0', cat: 'ball', tier: 0, catch: 1,   noVenta: true, desc: 'La de siempre. Se gana resolviendo ejercicios. Captura estándar.' },
+  superball:  { nombre: 'Super Ball', sprite: 'ball1', cat: 'ball', tier: 1, catch: 1.5, precio: 25, desc: 'Captura mejorada (×1.5). Para los que zafan un poco.' },
+  ultraball:  { nombre: 'Ultra Ball', sprite: 'ball2', cat: 'ball', tier: 2, catch: 2,   precio: 60, desc: 'Captura premium (×2). Para los raros.' },
+  veloz:      { nombre: 'Ball Veloz',      sprite: 'ballveloz',   cat: 'ball', cond: 'veloz',      precio: 25, desc: '×4 de captura si la tirás apenas aparece (primer tiro).' },
+  turno:      { nombre: 'Ball Turno',      sprite: 'ballturno',   cat: 'ball', cond: 'turno',      precio: 25, desc: 'Mejora cuantos más tiros llevás en el encuentro.' },
+  red:        { nombre: 'Ball Red',        sprite: 'ballred',     cat: 'ball', cond: 'red',        precio: 30, desc: '×3 de captura contra Pokémon de tipo Bicho o Agua.' },
+  repeticion: { nombre: 'Ball Repetición', sprite: 'ballrepe',    cat: 'ball', cond: 'repeticion', precio: 30, desc: '×3 si ya tenés esa especie en la Pokédex.' },
+  master:     { nombre: 'Master Ball',     sprite: 'ballmaster',  cat: 'ball', catch: 'master',    precio: 5000, desc: 'Captura 100% garantizada. Carísima: guardala para EL Pokémon.' },
+  xeneize:    { nombre: 'Ball Xeneize',    sprite: 'ballxeneize', cat: 'ball', catch: 2, boca: true, precio: 80, desc: '💙💛 Edición Boca. Captura premium (×2) + festejo azul y oro al atrapar.' },
 };
 export const itemsPorCat = (cat) => Object.entries(ITEMS).filter(([, it]) => it.cat === cat).map(([id, it]) => ({ id, ...it }));
