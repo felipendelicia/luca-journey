@@ -1,18 +1,23 @@
 import {
   efectividad, calcularDano, aplicarEstado, danoSuper, combatiente, hpMax,
-  crearCombate, aplicarAccion, chequearFin, EstadoCombate, Combatiente, Mov,
+  crearCombate, elegirAccion, chequearFin, EstadoCombate, Mov,
   acierta, puedeActuar, aplicarAilment, tickEstado,
 } from './motor';
 
 const rng0 = () => 0;          // determinista: rand = 0.85
 const inst = (iid: string, id: number, nivel = 30, movs: number[] = []) => ({ iid, id, nivel, movs });
 
+// helper: arma un combate simultáneo con 2 jugadores A/B
+function combate(eqA: any[], eqB: any[]): EstadoCombate {
+  return crearCombate('r', [
+    { uid: 'A', nombre: 'Ash', equipo: eqA },
+    { uid: 'B', nombre: 'Gary', equipo: eqB },
+  ], 'A');
+}
+
 // Charmander(4)=Fuego, Bulbasaur(1)=Planta/Veneno → Fuego x2 contra Bulbasaur.
 function combateBasico(): EstadoCombate {
-  return crearCombate('r1', [
-    { uid: 'A', nombre: 'Ash', equipo: [inst('a1', 4), inst('a2', 7)] },
-    { uid: 'B', nombre: 'Gary', equipo: [inst('b1', 1), inst('b2', 152)] },
-  ], 'A');
+  return combate([inst('a1', 4), inst('a2', 7)], [inst('b1', 1), inst('b2', 152)]);
 }
 
 describe('efectividad de tipos', () => {
@@ -59,89 +64,136 @@ describe('danoSuper', () => {
   });
 });
 
-describe('máquina de estado de la sala', () => {
-  it('crearCombate arma 2 jugadores con equipos y primer turno', () => {
+describe('combate SIMULTÁNEO', () => {
+  it('crearCombate arma 2 jugadores en fase combate, acciones vacías', () => {
     const e = combateBasico();
     expect(e.fase).toBe('combate');
-    expect(e.turno).toBe('A');
+    expect(e.acciones['A']).toBeNull();
+    expect(e.acciones['B']).toBeNull();
     expect(e.jugadores).toHaveLength(2);
     expect(e.jugadores[0].equipo.length).toBe(2);
-    expect(e.jugadores[0].equipo[0].hp).toBe(e.jugadores[0].equipo[0].hpMax);   // arranca con HP lleno (stat-based)
-    expect(e.jugadores[0].equipo[0].hpMax).toBeGreaterThan(0);
+    expect(e.jugadores[0].equipo[0].hp).toBe(e.jugadores[0].equipo[0].hpMax);
   });
 
-  it('un ataque alterna el turno y carga la barra de súper', () => {
-    const e = combateBasico();
-    const r = aplicarAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0);
+  it('no resuelve hasta que ambos eligen', () => {
+    const e = combate([inst('a1', 25, 50)], [inst('b1', 143, 50)]);   // Pikachu vs Snorlax
+    const r1 = elegirAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0);
+    expect(r1.listo).toBe(true);
+    expect(r1.eventos.length).toBe(0);
+    expect(e.acciones['A']).not.toBeNull();   // A quedó almacenada
+    expect(e.acciones['B']).toBeNull();
+    const r2 = elegirAccion(e, 'B', { tipo: 'mover', i: 0 }, rng0);
+    expect(r2.eventos.length).toBeGreaterThan(0);   // ahora SÍ resuelve
+    expect(e.acciones['A']).toBeNull();             // limpia tras resolver
+    expect(e.acciones['B']).toBeNull();
+  });
+
+  it('re-pick permitido si el rival no eligió', () => {
+    const e = combate([inst('a1', 25, 50)], [inst('b1', 143, 50)]);
+    elegirAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0);
+    const r = elegirAccion(e, 'A', { tipo: 'mover', i: 1 }, rng0);
     expect(r.error).toBeUndefined();
-    expect(r.estado.turno).toBe('B');
-    expect(r.estado.jugadores[0].super).toBeGreaterThan(0);
-    expect(r.estado.jugadores[1].equipo[0].hp).toBeLessThan(hpMax(30));
+    expect(e.acciones['A']!.i).toBe(1);   // sobrescribió la elección anterior
+    expect(e.acciones['B']).toBeNull();   // sigue sin resolver
   });
 
-  it('rechaza una acción fuera de turno', () => {
-    const e = combateBasico();
-    const r = aplicarAccion(e, 'B', { tipo: 'mover', i: 0 }, rng0);
-    expect(r.error).toBe('no-es-tu-turno');
-    expect(e.turno).toBe('A');
+  it('el más rápido (Pikachu) pega primero', () => {
+    const e = combate([inst('a1', 25, 50)], [inst('b1', 143, 50)]);   // Pikachu spe>Snorlax
+    elegirAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0);
+    const r = elegirAccion(e, 'B', { tipo: 'mover', i: 0 }, rng0);
+    const movs = r.eventos.filter((ev: any) => ev.t === 'mover');
+    expect(movs.length).toBeGreaterThan(0);
+    expect(movs[0].uid).toBe('A');   // A (Pikachu, más rápido) pega primero
   });
 
-  it('cambiar de Pokémon cuesta el turno', () => {
-    const e = combateBasico();
-    const r = aplicarAccion(e, 'A', { tipo: 'cambiar', idx: 1 }, rng0);
-    expect(r.error).toBeUndefined();
-    expect(r.estado.jugadores[0].activo).toBe(1);
-    expect(r.estado.turno).toBe('B');
+  it('KO sin banca → fin con el ganador correcto', () => {
+    const e = combate([inst('a1', 150, 90)], [inst('b1', 129, 2)]);   // Mewtwo vs Magikarp lvl2
+    elegirAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0);
+    const r = elegirAccion(e, 'B', { tipo: 'mover', i: 0 }, rng0);
+    expect(e.fase).toBe('fin');         // Mewtwo (rápido) noquea al Magikarp en un golpe
+    expect(e.ganador).toBe('A');
+    expect(chequearFin(e)).toBe('A');
+    expect(r.eventos.some((ev: any) => ev.t === 'fin')).toBe(true);
   });
 
-  it('súper: pausa, solo lo resuelve su dueño, aplica daño grande', () => {
-    const e = combateBasico();
-    e.jugadores[0].super = 100;
-    const reto = aplicarAccion(e, 'A', { tipo: 'super' }, rng0);
-    expect(reto.estado.fase).toBe('super');
-    expect(reto.estado.superDe).toBe('A');
-    // el rival no puede resolver el súper ajeno
-    expect(aplicarAccion(e, 'B', { tipo: 'superResuelto', calidad: 1 }, rng0).error).toBe('no-es-tu-super');
-    const hpAntes = e.jugadores[1].equipo[0].hp;
-    const res = aplicarAccion(e, 'A', { tipo: 'superResuelto', calidad: 1 }, rng0);
-    expect(res.error).toBeUndefined();
-    expect(e.jugadores[1].equipo[0].hp).toBeLessThan(hpAntes);
+  it('acciones quedan limpias tras una ronda resuelta (sin KO)', () => {
+    const e = combate([inst('a1', 25, 50)], [inst('b1', 143, 50)]);
+    elegirAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0);
+    elegirAccion(e, 'B', { tipo: 'mover', i: 0 }, rng0);
     expect(e.fase).toBe('combate');
+    expect(e.acciones['A']).toBeNull();
+    expect(e.acciones['B']).toBeNull();
+    expect(e.turnoN).toBe(2);   // avanzó de ronda
+  });
+
+  it('cambiar de Pokémon se resuelve junto a la ronda', () => {
+    const e = combateBasico();
+    elegirAccion(e, 'A', { tipo: 'cambiar', idx: 1 }, rng0);
+    const r = elegirAccion(e, 'B', { tipo: 'mover', i: 0 }, rng0);
+    expect(r.eventos.some((ev: any) => ev.t === 'cambiar')).toBe(true);
+    expect(e.jugadores[0].activo).toBe(1);
+  });
+
+  it('rechaza cambio inválido (índice debilitado)', () => {
+    const e = combateBasico();
+    e.jugadores[0].equipo[1].hp = 0;
+    const r = elegirAccion(e, 'A', { tipo: 'cambiar', idx: 1 }, rng0);
+    expect(r.error).toBe('debilitado');
+    expect(e.acciones['A']).toBeNull();
+  });
+
+  it('súper en slot: golpe grande, gasta la barra, evento super', () => {
+    const e = combate([inst('a1', 4, 30)], [inst('b1', 1, 30)]);
+    e.jugadores[0].super = 100;
+    const hpAntes = e.jugadores[1].equipo[0].hp;
+    elegirAccion(e, 'A', { tipo: 'super', calidad: 1 }, rng0);
+    const r = elegirAccion(e, 'B', { tipo: 'mover', i: 0 }, rng0);
+    expect(r.eventos.some((ev: any) => ev.t === 'super')).toBe(true);
+    expect(e.jugadores[1].equipo[0].hp).toBeLessThan(hpAntes);
     expect(e.jugadores[0].super).toBe(0);
-    expect(e.turno).toBe('B');
   });
 
-  it('cuando el equipo rival llega a 0, declara ganador (fin)', () => {
-    const e = combateBasico();
-    // dejar a B con un solo Pokémon casi muerto
-    e.jugadores[1].equipo = [e.jugadores[1].equipo[0]];
-    e.jugadores[1].equipo[0].hp = 1;
-    const r = aplicarAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0);
-    expect(r.estado.fase).toBe('fin');
-    expect(r.estado.ganador).toBe('A');
-    expect(chequearFin(r.estado)).toBe('A');
+  it('súper rechazado si la barra no está llena', () => {
+    const e = combate([inst('a1', 4, 30)], [inst('b1', 1, 30)]);
+    e.jugadores[0].super = 50;
+    const r = elegirAccion(e, 'A', { tipo: 'super', calidad: 1 }, rng0);
+    expect(r.error).toBe('super-no-listo');
   });
 
-  it('al debilitar el activo (con otro vivo) hace auto-switch sin terminar', () => {
-    const e = combateBasico();
-    e.jugadores[1].equipo[0].hp = 1;     // el activo de B cae, pero le queda b2
-    const r = aplicarAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0);
-    expect(r.estado.fase).toBe('combate');
-    expect(r.estado.jugadores[1].activo).toBe(1);
-    expect(r.estado.turno).toBe('B');
+  it('reemplazo: tras un KO con banca, pasa a fase reemplazo y luego vuelve a combate', () => {
+    const e = combate([inst('a1', 150, 90)], [inst('b1', 129, 2), inst('b2', 1, 30)]);
+    elegirAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0);
+    const r = elegirAccion(e, 'B', { tipo: 'mover', i: 0 }, rng0);
+    expect(e.fase).toBe('reemplazo');
+    expect(e.reemplazan).toContain('B');
+    const r2 = elegirAccion(e, 'B', { tipo: 'reemplazo', idx: 1 }, rng0);
+    expect(r2.error).toBeUndefined();
+    expect(e.jugadores[1].activo).toBe(1);
+    expect(e.fase).toBe('combate');
+    expect(e.acciones['A']).toBeNull();
+    expect(e.acciones['B']).toBeNull();
   });
 
   it('rendirse hace ganar al rival', () => {
     const e = combateBasico();
-    const r = aplicarAccion(e, 'B', { tipo: 'rendirse' }, rng0);
-    expect(r.estado.fase).toBe('fin');
-    expect(r.estado.ganador).toBe('A');
+    const r = elegirAccion(e, 'B', { tipo: 'rendirse' }, rng0);
+    expect(e.fase).toBe('fin');
+    expect(e.ganador).toBe('A');
+    expect(r.eventos.length).toBeGreaterThan(0);
   });
 
   it('no acepta acciones tras el fin', () => {
     const e = combateBasico();
-    aplicarAccion(e, 'B', { tipo: 'rendirse' }, rng0);
-    expect(aplicarAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0).error).toBe('combate-terminado');
+    elegirAccion(e, 'B', { tipo: 'rendirse' }, rng0);
+    expect(elegirAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0).error).toBe('combate-terminado');
+  });
+
+  it('carga la barra de súper al atacar', () => {
+    const e = combate([inst('a1', 25, 50)], [inst('b1', 143, 50)]);
+    elegirAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0);
+    elegirAccion(e, 'B', { tipo: 'mover', i: 0 }, rng0);
+    // A (Pikachu, más rápido) actúa → su barra carga
+    expect(e.jugadores[0].super).toBeGreaterThan(0);
   });
 });
 
@@ -208,26 +260,23 @@ describe('estados alterados + fallar', () => {
 
   it('un ataque inmune (Normal vs Fantasma) hace 0 daño y avisa "no afecta"', () => {
     // Jolteon(135, rápido) usa un move Normal contra Gengar(94)=Fantasma → Normal x0 Fantasma.
-    // (Jolteon spe 130 > Gengar 110 → ataca primero.)
-    const e = crearCombate('r', [
-      { uid: 'A', nombre: 'A', equipo: [inst('a', 135)] },
-      { uid: 'B', nombre: 'B', equipo: [inst('b', 94)] },
-    ], 'A');
+    const e = combate([inst('a', 135)], [inst('b', 94)]);
     e.jugadores[0].equipo[0].movs = [{ id: 1, nombre: 'Placaje', tipo: 'Normal', poder: 80 } as Mov];
     const hp0 = e.jugadores[1].equipo[0].hp;
-    const r = aplicarAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0);
+    elegirAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0);
+    const r = elegirAccion(e, 'B', { tipo: 'mover', i: 0 }, rng0);
     expect(e.jugadores[1].equipo[0].hp).toBe(hp0);   // sin daño
     expect(r.eventos.some((ev: any) => /no afecta/i.test(ev.texto))).toBe(true);
   });
 
-  it('un ataque que falla (precisión 0) no hace daño y pasa el turno', () => {
+  it('un ataque que falla (precisión 0) no hace daño', () => {
     const e = combateBasico();
     e.jugadores[0].equipo[0].movs = [{ id: 1, nombre: 'Falla', tipo: 'Normal', poder: 80, precision: 0 } as Mov];
     const hp0 = e.jugadores[1].equipo[0].hp;
-    const r = aplicarAccion(e, 'A', { tipo: 'mover', i: 0 }, () => 0.99);
+    elegirAccion(e, 'A', { tipo: 'mover', i: 0 }, () => 0.99);
+    const r = elegirAccion(e, 'B', { tipo: 'mover', i: 0 }, () => 0.99);
     expect(r.error).toBeUndefined();
-    expect(e.jugadores[1].equipo[0].hp).toBe(hp0);   // no daño
-    expect(r.estado.turno).toBe('B');                // pasó el turno
+    expect(e.jugadores[1].equipo[0].hp).toBe(hp0);   // no daño del move fallado de A
   });
 });
 
@@ -235,47 +284,40 @@ describe('items en PvP (cura/estado/revivir)', () => {
   it('antídoto cura el envenenamiento del activo', () => {
     const e = combateBasico();
     e.jugadores[0].equipo[0].estado = 'veneno';
-    const r = aplicarAccion(e, 'A', { tipo: 'pocion', itemId: 'antidoto' }, rng0);
+    elegirAccion(e, 'A', { tipo: 'pocion', itemId: 'antidoto' }, rng0);
+    const r = elegirAccion(e, 'B', { tipo: 'mover', i: 0 }, rng0);
     expect(r.error).toBeUndefined();
     expect(e.jugadores[0].equipo[0].estado).toBeNull();
-    expect(e.turno).toBe('B');
   });
-  it('antídoto sin veneno se rechaza (no gasta turno)', () => {
+  it('antídoto sin veneno se rechaza', () => {
     const e = combateBasico();
-    expect(aplicarAccion(e, 'A', { tipo: 'pocion', itemId: 'antidoto' }, rng0).error).toBe('no-aplica');
-    expect(e.turno).toBe('A');
+    expect(elegirAccion(e, 'A', { tipo: 'pocion', itemId: 'antidoto' }, rng0).error).toBe('no-aplica');
+    expect(e.acciones['A']).toBeNull();
   });
   it('revivir trae de vuelta a un debilitado al 50% HP', () => {
     const e = combateBasico();
     e.jugadores[0].equipo[1].hp = 0;
-    const r = aplicarAccion(e, 'A', { tipo: 'pocion', itemId: 'revivir' }, rng0);
-    expect(r.error).toBeUndefined();
+    elegirAccion(e, 'A', { tipo: 'pocion', itemId: 'revivir' }, rng0);
+    elegirAccion(e, 'B', { tipo: 'mover', i: 0 }, rng0);
     const revivido = e.jugadores[0].equipo[1];
     expect(revivido.hp).toBe(Math.round(revivido.hpMax * 0.5));
   });
 });
 
 describe('velocidad y PP en la sala', () => {
-  it('el más rápido pega primero (turno inicial por velocidad)', () => {
-    // Snorlax(143) spe 30 vs Charmander(4) spe 65 → Charmander primero, aunque primero='A'.
-    const e = crearCombate('r', [
-      { uid: 'A', nombre: 'A', equipo: [inst('a', 143)] },
-      { uid: 'B', nombre: 'B', equipo: [inst('b', 4)] },
-    ], 'A');
-    expect(e.turno).toBe('B');
-  });
   it('un move sin PP recurre a Forcejeo cuando no queda nada', () => {
     const e = combateBasico();
     e.jugadores[0].equipo[0].movs = [{ id: 5, nombre: 'X', tipo: 'Normal', poder: 40, pp: 0, ppMax: 5 } as Mov];
     const hp0 = e.jugadores[1].equipo[0].hp;
-    const r = aplicarAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0);
-    expect(r.error).toBeUndefined();
+    elegirAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0);
+    elegirAccion(e, 'B', { tipo: 'mover', i: 0 }, rng0);
     expect(e.jugadores[1].equipo[0].hp).toBeLessThan(hp0);   // Forcejeo igual pegó
   });
   it('consume PP al usar un movimiento', () => {
     const e = combateBasico();
     e.jugadores[0].equipo[0].movs = [{ id: 5, nombre: 'X', tipo: 'Normal', poder: 40, pp: 3, ppMax: 5 } as Mov];
-    aplicarAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0);
+    elegirAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0);
+    elegirAccion(e, 'B', { tipo: 'mover', i: 0 }, rng0);
     expect(e.jugadores[0].equipo[0].movs[0].pp).toBe(2);
   });
 });
