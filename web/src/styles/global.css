@@ -638,6 +638,29 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .safari-regiones .bloq{ color:var(--ink-mute); }
 .safari-regiones small{ color:var(--ink-mute); }
 
+/* —— racha de capturas (badge en la barra) —— base CRT oscuro; body.claro afina para fondo claro —— */
+.ss-racha{ border-color:color-mix(in srgb,#ff7a18 48%, var(--line));
+  background:linear-gradient(180deg, color-mix(in srgb,#ff8c2a 16%, var(--paper-2)), var(--paper-2)); }
+.ss-racha .ss-ico{ animation:rachaFuego 1.1s ease-in-out infinite; }
+.ss-racha b{ color:#ffb05c; }
+body.claro .ss-racha b{ color:#e0590a; }
+@keyframes rachaFuego{ 0%,100%{ transform:translateY(0) rotate(-3deg) } 50%{ transform:translateY(-2px) rotate(3deg) scale(1.08) } }
+
+/* —— strip de ambiente: bioma + día/noche —— */
+.safari-amb{ display:flex; gap:8px; flex-wrap:wrap; margin:-.4rem 0 .5rem; }
+.amb-chip{ display:inline-flex; align-items:center; gap:5px; font:700 .76rem var(--font-mono); letter-spacing:.01em;
+  border-radius:999px; padding:4px 12px; border:1px solid var(--line); background:var(--paper-2); color:var(--ink-soft); box-shadow:var(--shadow-sm); }
+.amb-hierba{ color:#7fd98c; border-color:color-mix(in srgb,#3fb24f 50%, var(--line)); background:color-mix(in srgb,#3fb24f 12%, var(--paper-2)); }
+.amb-agua{ color:#79b6f5; border-color:color-mix(in srgb,#3b8fe0 50%, var(--line)); background:color-mix(in srgb,#3b8fe0 12%, var(--paper-2)); }
+.amb-cueva{ color:#d2ab73; border-color:color-mix(in srgb,#b08a4f 50%, var(--line)); background:color-mix(in srgb,#b08a4f 14%, var(--paper-2)); }
+.amb-dia{ color:#ffd75e; border-color:color-mix(in srgb,#ffcb05 52%, var(--line)); background:color-mix(in srgb,#ffcb05 14%, var(--paper-2)); }
+.amb-noche{ color:#a7abff; border-color:color-mix(in srgb,#7b80ff 50%, var(--line)); background:color-mix(in srgb,#7b80ff 14%, var(--paper-2)); }
+body.claro .amb-hierba{ color:#2f8a3e; }
+body.claro .amb-agua{ color:#2272c8; }
+body.claro .amb-cueva{ color:#8a6a3a; }
+body.claro .amb-dia{ color:#c08400; }
+body.claro .amb-noche{ color:#5a5fd0; }
+
 /* ════════════ Safari profundo: encuentro en 2 pasos ════════════ */
 /* —— fila del compañero (Sincronía) —— */
 .comp-fila{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:.2rem 0 1rem;
@@ -680,6 +703,10 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .escena.tier-7 .enc-sprite,.escena.tier-8 .enc-sprite{ filter:drop-shadow(0 0 18px var(--tier-color)) drop-shadow(0 0 8px var(--tier-color)); }
 .escena.tier-9 .enc-sprite,.escena.tier-10 .enc-sprite{ filter:drop-shadow(0 0 26px var(--tier-color)) drop-shadow(0 0 50px var(--tier-color)); }
 .enc-sprite.shiny{ animation:emerge .6s cubic-bezier(.2,1.35,.35,1), sway 3s ease-in-out .6s infinite, brilloW 1.1s ease-in-out .6s infinite; }
+/* —— escala por tamaño del ejemplar (vía width/height para no chocar con sway/reaparece) —— */
+.enc-sprite.tam-xl{ width:149px; height:149px; transition:width .5s cubic-bezier(.2,1.35,.4,1), height .5s cubic-bezier(.2,1.35,.4,1); }
+.enc-sprite.tam-xxl{ width:156px; height:156px; transition:width .5s cubic-bezier(.2,1.35,.4,1), height .5s cubic-bezier(.2,1.35,.4,1); }
+.enc-sprite.tam-xxs{ width:103px; height:103px; transition:width .5s cubic-bezier(.2,1.35,.4,1), height .5s cubic-bezier(.2,1.35,.4,1); }
 @keyframes emerge{ 0%{ transform:translateY(56px) scale(.68); opacity:0 } 52%{ opacity:1 } 72%{ transform:translateY(-7px) scale(1.05) } 100%{ transform:none; opacity:1 } }
 @keyframes sway{ 0%,100%{ transform:translateY(0) rotate(-1.3deg) } 50%{ transform:translateY(-5px) rotate(1.3deg) } }
 /* sombra del salvaje sobre el pasto */
@@ -789,6 +816,25 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .cap-gm{ color:#2f7fd1; font-weight:800; } .cap-gf{ color:#d65aa0; font-weight:800; }
 .cap-b{ font:800 .63rem var(--font-mono); border-radius:999px; padding:2px 8px; }
 .cap-b-alfa{ color:#7a3bd0; background:rgba(176,107,255,.18); } .cap-b-shiny{ color:#b08400; background:rgba(255,203,5,.2); }
+.cap-b-tam{ color:#1b6b56; background:rgba(45,180,140,.18); }
+
+/* —— racha en el resumen (intensidad escala con la racha) —— */
+.cap-racha{ display:inline-flex; align-items:center; gap:5px; font:800 .76rem var(--font-mono); letter-spacing:.02em;
+  border-radius:999px; padding:3px 13px; color:#b8470a; background:rgba(255,140,40,.16); border:1px solid rgba(255,140,40,.4); }
+.cap-racha b{ font-weight:900; }
+.cap-racha-fuego{ filter:drop-shadow(0 0 4px rgba(255,120,30,.6)); }
+.cap-racha-2{ color:#c24a08; background:rgba(255,120,30,.2); border-color:rgba(255,120,30,.5); }
+.cap-racha-3{ color:#d23e06; background:rgba(255,90,20,.24); border-color:rgba(255,90,20,.58);
+  box-shadow:0 0 12px -3px rgba(255,90,20,.7); }
+.cap-racha-4{ color:#fff; text-shadow:0 1px 2px rgba(120,30,0,.6);
+  background:linear-gradient(180deg,#ff7a18,#e0440a); border-color:transparent;
+  box-shadow:0 0 16px -2px rgba(255,90,20,.85); animation:rachaFuego 1s ease-in-out infinite; }
+
+/* —— título por tamaño (Coloso / Mini) —— */
+.cap-tam{ font:800 .7rem var(--font-pixel); letter-spacing:.03em; border-radius:999px; padding:3px 12px; }
+.cap-tam-xl{ color:#7a3bd0; background:rgba(176,107,255,.18); border:1px solid rgba(176,107,255,.45);
+  text-shadow:0 0 8px rgba(176,107,255,.4); }
+.cap-tam-xxs{ color:#0b7c78; background:rgba(45,200,180,.16); border:1px solid rgba(45,200,180,.45); }
 .cap-pot{ display:flex; align-items:center; gap:7px; }
 .cap-pot-lbl{ font:700 .63rem var(--font-pixel); letter-spacing:.03em; color:#3f6b4d; }
 .cap-iv{ font:800 .72rem var(--font-mono); color:#3f6b4d; } .cap-iv-good{ color:#0b7c78; } .cap-iv-top{ color:#c08400; }
