@@ -83,28 +83,28 @@ export function musicaEvolucion() {
   } catch {}
 }
 
-// Música de fondo de BATALLA: tema de PERSECUCIÓN (8-bit), rápido y en menor, con bajo galopante
-// relentless + progresión descendente Am–G–F–E (tensión tipo chase). Loop que se reagenda solo. (F4)
-const PASO = 0.15;          // corchea (~150bpm de corcheas, urgente)
+// Música de fondo de BATALLA: tema HEROICO 8-bit (progresión épica Am–F–C–G), con bajo galopante,
+// hook melódico que resuelve y arpegios brillantes. Loop original que se reagenda solo.
+const PASO = 0.15;          // corchea (~150bpm de corcheas)
 const COMPASES = 4, PxC = 8; // 4 compases × 8 corcheas
-const PROG_RAIZ = [110.0, 98.0, 87.31, 82.41];   // A2  G2  F2  E2
-const PROG_OCT = [220.0, 196.0, 174.6, 164.8];   // A3  G3  F3  E3
-const PROG_QNT = [164.8, 146.8, 130.8, 123.5];   // E3  D3  C3  B2
-// galope de corcheas por compás: raíz raíz octava raíz quinta raíz octava raíz (motor de persecución)
-const GALOPE = (b) => [PROG_RAIZ[b], PROG_RAIZ[b], PROG_OCT[b], PROG_RAIZ[b], PROG_QNT[b], PROG_RAIZ[b], PROG_OCT[b], PROG_RAIZ[b]];
-// melodía tensa y sincopada por compás (0 = silencio), notas de la escala sobre cada acorde
+const PROG_RAIZ = [110.0, 87.31, 130.81, 98.0];   // A2  F2  C3  G2
+const PROG_OCT = [220.0, 174.61, 261.63, 196.0];  // A3  F3  C4  G3
+const PROG_QNT = [164.81, 130.81, 196.0, 146.83]; // E3  C3  G3  D3
+// galope de corcheas por compás: raíz raíz octava raíz quinta raíz octava quinta
+const GALOPE = (b) => [PROG_RAIZ[b], PROG_RAIZ[b], PROG_OCT[b], PROG_RAIZ[b], PROG_QNT[b], PROG_RAIZ[b], PROG_OCT[b], PROG_QNT[b]];
+// hook melódico por compás (0 = silencio): frase heroica que sube y resuelve
 const MELODIA = [
-  [440, 659, 0, 587, 523, 0, 440, 392],   // Am
-  [392, 587, 0, 523, 494, 0, 392, 349],   // G
-  [349, 523, 0, 440, 392, 0, 349, 330],   // F
-  [330, 494, 0, 440, 415, 0, 330, 247],   // E (sensible: G#/Ab→ tensión)
+  [659, 0, 587, 523, 0, 659, 523, 440],   // Am: E5 . D5 C5 . E5 C5 A4
+  [523, 0, 440, 349, 0, 523, 440, 349],   // F:  C5 . A4 F4 . C5 A4 F4
+  [523, 587, 659, 0, 784, 0, 659, 523],   // C:  C5 D5 E5 . G5 . E5 C5
+  [587, 0, 494, 392, 494, 587, 0, 392],   // G:  D5 . B4 G4 B4 D5 . G4
 ];
 // arpegios en semicorcheas por acorde — el "shimmer" clásico del battle theme GBA
 const ARP = [
   [440, 523, 659, 523],   // Am: A C E
-  [392, 494, 587, 494],   // G:  G B D
   [349, 440, 523, 440],   // F:  F A C
-  [330, 415, 494, 415],   // E:  E G# B
+  [523, 659, 784, 659],   // C:  C E G
+  [392, 494, 587, 494],   // G:  G B D
 ];
 function loopBatalla() {
   if (muteado()) { musLoop = null; return; }
