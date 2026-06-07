@@ -7,7 +7,7 @@ const features = [
   ['🏋️', 'Ejercicios', 'Resolvés cada ejercicio y tocás <strong>Corregir</strong>: corro los <strong>tests reales</strong> en tu navegador y te digo qué pasa, ejercicio por ejercicio.', '/ejercicios'],
   ['🏆', 'La Liga', 'Tu progreso se vuelve un juego: <strong>EXP</strong>, <strong>niveles</strong>, <strong>medallas</strong> de gimnasio, <strong>logros</strong> y <strong>racha diaria 🔥</strong>. Completá una región para ser su Campeón y descargar tu <strong>📜 diploma</strong>.', '/liga'],
   ['📕', 'Pokédex', 'Tu colección estilo <strong>Pokémon GO</strong>: cada Pokémon es una instancia con su <strong>nivel</strong>. Subís nivel y evolucionás con <strong>🍬 caramelos</strong>. Tocá uno para ver su modal (rareza, línea evolutiva, ataques, mote, liberar).', '/pokedex'],
-  ['🎒', 'Safari', 'Ganás <strong>Pokéballs</strong> resolviendo ejercicios y tirás para atrapar Pokémon salvajes (¡con su <strong>nivel</strong>!), con animación y suspenso.', '/safari'],
+  ['🎒', 'Safari', 'Ves al salvaje y su <strong>tasación ⭐</strong>, elegís la <strong>Pokéball</strong> y jugás el <strong>minijuego de anillo</strong> (mejor timing = mejor captura). Aparecen <strong>shiny ✨</strong> y <strong>alfa 👑</strong>: atrapalos antes de que huyan.', '/safari'],
   ['⚔️', 'Batalla', 'Armá un equipo y peleá por turnos: contra una <strong>CPU</strong> para practicar, o <strong>en vivo (PvP)</strong> contra otro entrenador con <strong>ranking ELO</strong>. Los <strong>tipos</strong> importan y, cuando se llena la barra, desatás el <strong>⚡ Súper</strong>: un reto de código de tu nivel.', '/batalla'],
   ['🛒', 'Tienda', 'Gastá tus <strong>Pokébolas</strong> en <strong>piedras evolutivas por tipo</strong> (Fuego, Agua, Trueno, Hoja, Lunar, Solar, Día, Alba, Noche) y el <strong>Disco de Enlace</strong> (evos por intercambio), más <strong>pociones</strong> (curar en batalla) y <strong>mejores Pokéballs</strong> (Super/Ultra). Cada Pokémon pide la piedra que le corresponde; la evolución se hace en la <strong>Pokédex</strong>.', '/tienda'],
   ['🧩', 'Desafíos de la comunidad', 'Creá o resolvé retos de Python hechos por otros entrenadores. Ganá Pokéballs, votá los mejores y mirá cómo los resolvieron los demás.', '/desafios'],
@@ -64,10 +64,36 @@ const regiones = [
       <h2 class="ayuda-h">🎒 Cómo coleccionás Pokémon</h2>
       <ol class="ayuda-pasos">
         <li><b>Resolvés ejercicios</b> → ganás <b>Pokéballs</b> (+2 cada uno), <b>ganás batallas</b> (+5) y un <b>regalo cada 20 min</b> (+8).</li>
-        <li>Vas al <b>Safari</b> y tirás una Pokéball → atrapás un Pokémon salvaje al azar.</li>
+        <li>Vas al <b>Safari</b>: aparece un salvaje, elegís la ball y jugás el <b>minijuego de anillo</b> para atraparlo (ver más abajo).</li>
         <li>Hacés ejercicios de una región para <b>desbloquear</b> sus Pokémon.</li>
         <li>Completar un tema te da su Pokémon <b>insignia</b>; completar una región, un <b>legendario</b>.</li>
         <li>1% de los salvajes son <b>shiny ✨</b>. Atrapar repetidos da <b>🍬 caramelos</b> para <b>subir de nivel</b> a tus Pokémon (en el PC) y <b>evolucionarlos</b> por nivel.</li>
+      </ol>
+
+      <h2 class="ayuda-h">🎒 El Safari: cómo atrapar bien</h2>
+      <p class="ayuda-p">En el <a href={u('/safari')}>Safari</a> ya no es tirar y listo: cada encuentro es en <strong>dos pasos</strong>, igual que en la saga, y vos decidís cómo jugarlo.</p>
+      <ol class="ayuda-pasos">
+        <li><b>Aparece el salvaje</b>: antes de tirar ves su <b>tasación ⭐</b> (de 0 a 4 estrellas, qué tan buenos pintan sus IVs), su <b>naturaleza</b> y su <b>nivel</b>. Si no te convence, podés <b>Huir</b> y buscar otro.</li>
+        <li><b>Elegís la Pokéball</b> que querés tirar (un selector con las que tengas) y entra el <b>minijuego de anillo</b>: un aro se va achicando y tenés que <b>tocar la pantalla</b> justo cuando llega al blanco. Cuanto mejor el timing, mejor el tiro: <b>Excelente</b> &gt; <b>Genial</b> &gt; <b>Bien</b> &gt; <b>Normal</b>.</li>
+        <li><b>Captura o escape</b>: la chance de atraparlo depende de la <b>rareza</b> del Pokémon, de la <b>ball</b> que usaste y de la <b>calidad del tiro</b>. Si fallás, el salvaje puede <b>zafar</b> (volvés a tirar) o <b>huir</b> (lo perdés).</li>
+        <li><b>Un tiro Excelente</b> no solo sube la captura: además <b>mejora al Pokémon</b>, dejando en <b>31</b> sus <b>dos IVs más bajos</b>. Vale la pena buscar el timing.</li>
+      </ol>
+      <p class="ayuda-p">Las <strong>Pokéballs básicas</strong> las ganás resolviendo ejercicios; en la <a href={u('/tienda')}>Tienda</a> conseguís balls especiales, cada una buena para una situación:</p>
+      <ul class="ayuda-pasos">
+        <li><b>Super Ball</b> — ×1.5 a la captura. La mejora barata de siempre.</li>
+        <li><b>Ultra Ball</b> — ×2. Para los salvajes difíciles.</li>
+        <li><b>Veloz Ball</b> — ×4, pero solo en el <b>primer tiro</b> del encuentro.</li>
+        <li><b>Turno Ball</b> — funciona mejor <b>cuantos más tiros</b> llevás en ese encuentro.</li>
+        <li><b>Red Ball</b> — ×3 contra Pokémon de tipo <b>Bicho</b> o <b>Agua</b>.</li>
+        <li><b>Repetición Ball</b> — ×3 si <b>ya tenés</b> esa especie (ideal para farmear caramelos).</li>
+        <li><b>Master Ball</b> — captura <b>100%</b> garantizada, pero es carísima. Guardala para algo que valga la pena.</li>
+        <li><b>Xeneize Ball 💙💛</b> — ×2 y con festejo de Boca cuando atrapás.</li>
+      </ul>
+      <p class="ayuda-p">Otras cosas que cambian el encuentro:</p>
+      <ol class="ayuda-pasos">
+        <li><b>Compañero</b>: podés elegir un Pokémon como compañero. Si tiene la habilidad <b>Sincronía</b>, los salvajes salen con su <b>misma naturaleza</b> — útil para cazar la naturaleza que querés.</li>
+        <li><b>Shiny ✨</b>: a veces aparece un salvaje <b>brillante</b>. Son rarísimos: atrapalo antes de que <b>huya</b>, porque si zafa lo perdés.</li>
+        <li><b>Alfa 👑</b>: algunos salvajes son <b>alfa</b> y traen <b>IVs altos garantizados</b>. Si ves la corona, no lo dejes escapar.</li>
       </ol>
 
       <h2 class="ayuda-h">⚔️ Batalla</h2>

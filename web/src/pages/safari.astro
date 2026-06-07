@@ -16,7 +16,7 @@ const total = pokemon.length;
       <a class="navlink" href={u('/tienda')}>🛒 Tienda</a>
       <a class="navlink" href={u('/pokedex')}>📕 Ver mi Pokédex</a>
     </div>
-    <p>Tirá Pokéballs para atrapar Pokémon salvajes. Ganás Pokéballs <strong>resolviendo ejercicios</strong> (+2 c/u), <strong>ganando batallas</strong> (+5) y con el <strong>regalo cada 20 min</strong> (+8). ⚡</p>
+    <p>Buscá en el pasto, elegí tu Ball y cerrá el <strong>anillo de captura</strong> en el momento justo. Ganás Pokéballs <strong>resolviendo ejercicios</strong> (+2 c/u), <strong>ganando batallas</strong> (+5) y con el <strong>regalo cada 20 min</strong> (+8). ⚡</p>
 
     <div class="safari-barra">
       <div class="ss-item"><span class="ss-ico" set:html={ballSvg(0, 22)}></span><b id="balls">0</b><span class="ss-lbl">Pokéballs</span></div>
@@ -25,11 +25,14 @@ const total = pokemon.length;
     </div>
     <p class="safari-regiones" id="regiones"></p>
 
+    <!-- compañero (Sincronía) -->
+    <div class="comp-fila" id="comp-fila"></div>
+
     <div class="safari-arena">
       <div class="arena-pasto" id="arena">
-        <div class="arena-vacio" id="vacio">El pasto se mueve… 🌿<br /><small>Tirá una Pokéball para ver qué aparece.</small></div>
+        <div class="arena-vacio" id="vacio">El pasto se mueve… 🌿<br /><small>Buscá para ver qué aparece.</small></div>
       </div>
-      <button class="btn-tirar" id="tirar">¡Tirá la Pokéball! <Fragment set:html={ballSvg(0, 18)} /></button>
+      <button class="btn-tirar" id="buscar">Buscar en el pasto 🌿</button>
       <p class="safari-msg" id="msg"></p>
     </div>
   </div>
@@ -38,18 +41,41 @@ const total = pokemon.length;
     <div class="rar-card">
       <button class="rar-x" id="rar-x" type="button" aria-label="Cerrar">✕</button>
       <h2>✨ Rarezas del Safari</h2>
-      <p>Cada Pokémon tiene una <b>rareza</b>. Cuanto más raro, <b>menos aparece</b> y más épica es su captura (más temblor, brillo y sonido). El <b>🌟 shiny</b> (~1%) puede tocar sobre cualquier rareza.</p>
+      <p>Cada Pokémon tiene una <b>rareza</b>. Cuanto más raro, <b>menos aparece</b> y más difícil es atraparlo. El <b>🌟 shiny</b> (~1%) y el <b>👑 alfa</b> (~4%) pueden tocar sobre cualquier rareza.</p>
       <div class="rar-lista" id="rar-lista"></div>
     </div>
   </div>
 
+  <!-- picker de compañero -->
+  <div class="rar-modal" id="comp-modal" hidden>
+    <div class="rar-card comp-card">
+      <button class="rar-x" id="comp-x" type="button" aria-label="Cerrar">✕</button>
+      <h2>🤝 Elegí tu compañero</h2>
+      <p>Te acompaña en el Safari. Si tiene <b>Sincronía</b>, fija la naturaleza de los salvajes que encontrás. ✨</p>
+      <div class="comp-grid" id="comp-grid"></div>
+    </div>
+  </div>
+
+  <!-- overlay del minijuego de anillo -->
+  <div class="ring-overlay" id="ring-overlay" hidden>
+    <div class="ring-wild" id="ring-wild"></div>
+    <svg class="ring-svg" id="ring-svg" viewBox="0 0 200 200" aria-hidden="true">
+      <circle class="ring-target" cx="100" cy="100" r="42"></circle>
+      <circle class="ring-move" id="ring-move" cx="100" cy="100" r="96"></circle>
+    </svg>
+    <div class="ring-label" id="ring-label"></div>
+    <button class="ring-cta" id="ring-cta" type="button">¡Tirá! 🎯</button>
+    <span class="ring-hint">Tocá la pantalla o el botón cuando el anillo entre al blanco</span>
+  </div>
+
   <script type="application/json" id="safari-data" set:html={JSON.stringify({ temas })}></script>
   <script>
-    import { sincronizar, tirar as lanzar, estado, vistos, reclamarRegalo, regaloDisponible, regionesDesbloqueadas, spriteUrl,
-      identidadDe, naturalezaDe, habMeta, ivPct } from '../lib/coleccion.js';
-    import { sonarCaptura, sonarShiny, sonarEpico } from '../lib/sonidos.js';
+    import { sincronizar, encontrar, capturar, inventarioBalls, tieneBall, companero, setCompanero,
+      identidadDe, naturalezaDe, habMeta, ivPct, ivEstrellas, estado, vistos, reclamarRegalo,
+      regaloDisponible, regionesDesbloqueadas, spriteUrl, pc } from '../lib/coleccion.js';
+    import { sonarCaptura, sonarShiny, sonarEpico, sonarExito, sonarError, sonarClick } from '../lib/sonidos.js';
     import { TIERS } from '../lib/rareza.js';
-    import { ballSvg } from '../lib/sprites.js';
+    import { itemSvg } from '../lib/sprites.js';
     import { REGIONES as REGS, etiqueta } from '../lib/regiones.mjs';
     import pokemon from '../data/pokemon.json';   // módulo → chunk /_astro cacheado (compartido con pokedex/liga)
     import pesos from '../data/aparicion.json';
@@ -57,6 +83,12 @@ const total = pokemon.length;
     const meta = JSON.parse(document.getElementById('safari-data').textContent);
     const D = { pokemon, pesos, temas: meta.temas };
     const $ = (id) => document.getElementById(id);
+    const byId = (id) => D.pokemon.find((p) => p.id === id);
+    const nombreDe = (id) => (byId(id) || {}).nombre || ('Nº ' + id);
+    const esperar = (ms) => new Promise((res) => setTimeout(res, ms));
+
+    // ── estado del encuentro ─────────────────────────────────────────────
+    let enc = null, tiroN = 0, ballSel = null, animando = false;
 
     // resumen de identidad de la captura: género · IVs% · naturaleza · habilidad. Una línea.
     function capIdentidad(inst) {
@@ -69,6 +101,9 @@ const total = pokemon.length;
       return '<span class="cap-id">✨ ' + partes.filter(Boolean).join(' <i class="cap-dot">·</i> ') + '</span>';
     }
 
+    // estrellas de tasación: estrellas llenas vs vacías sobre 4
+    const tasacion = (n) => '★★★★'.slice(0, n) + '☆☆☆☆'.slice(0, 4 - n);
+
     // modal explicativo de rarezas (poblado desde TIERS)
     (function rarezas() {
       const lista = $('rar-lista'), modal = $('rar-modal');
@@ -78,7 +113,7 @@ const total = pokemon.length;
         + '<span class="rar-tasa">' + tasa + '</span></div>';
       lista.innerHTML = TIERS.map((t) =>
         fila(t.color, (t.ico ? t.ico + ' ' : '') + t.nombre, '~' + (t.rate * 100).toFixed(t.rate < 0.01 ? 2 : 1) + '%')
-      ).join('') + fila('#ffd23f', '🌟 Shiny', '~1% · sobre cualquiera');
+      ).join('') + fila('#ffd23f', '🌟 Shiny', '~1%') + fila('#b06bff', '👑 Alfa', '~4%');
       const cerrar = () => { modal.hidden = true; };
       $('btn-rarezas') && $('btn-rarezas').addEventListener('click', () => { modal.hidden = false; });
       $('rar-x') && $('rar-x').addEventListener('click', cerrar);
@@ -89,15 +124,14 @@ const total = pokemon.length;
     function refrescar() {
       const e = estado();
       $('balls').textContent = e.balls;
-      // “de 721” = especies VISTAS (igual que la Pokédex), no solo las que tenés ahora
       const v = vistos();
       $('colN').textContent = D.pokemon.filter((p) => v.has(p.id)).length;
-      $('tirar').disabled = e.balls <= 0;
       $('regalo').style.display = regaloDisponible() ? '' : 'none';
       const d = regionesDesbloqueadas(D.temas);
       $('regiones').innerHTML = 'Aparecen: ' +
         REGS.map((r) => d.has(r.id) ? '<b>' + etiqueta(r) + '</b>' : '<span class="bloq">' + etiqueta(r) + ' 🔒</span>').join(' · ') +
         ' &nbsp;<small>(hacé ejercicios de una región para desbloquearla)</small>';
+      renderComp();
     }
 
     // otorga lo pendiente (balls por ejercicios, capturas por hitos)
@@ -115,10 +149,9 @@ const total = pokemon.length;
       if (n) $('msg').textContent = '🎁 ¡Regalo! +' + n + ' Pokéballs · volvé en 20 min';
       refrescar();
     });
-    // el botón reaparece solo cuando se cumple el cooldown (sin recargar)
     setInterval(() => { if (regaloDisponible() && $('regalo').style.display === 'none') refrescar(); }, 20000);
 
-    const esperar = (ms) => new Promise((res) => setTimeout(res, ms));
+    // ── FX (estrellas) ───────────────────────────────────────────────────
     function estrellas(escena, { n = 16, dorado = false, color = '#ffd23f' } = {}) {
       for (let i = 0; i < n; i++) {
         const s = document.createElement('span');
@@ -132,72 +165,257 @@ const total = pokemon.length;
         setTimeout(() => s.remove(), 1000);
       }
     }
-
-    let animando = false;
-    async function lanzarBall() {
-      if (animando) return;
-      const r = lanzar(D.pokemon, D.temas, D.pesos);
-      if (r.error === 'sin-balls') { $('msg').textContent = 'Te quedaste sin Pokéballs. Resolvé ejercicios o esperá el regalo (cada 20 min). 💪'; return; }
-      if (r.error) { $('msg').textContent = 'Hacé un ejercicio para desbloquear Pokémon salvajes. 💪'; return; }
-      animando = true;
-      const btn = $('tirar'); btn.disabled = true;
-      const p = r.pokemon, arena = $('arena');
-      $('msg').textContent = '¡Un Pokémon salvaje apareció!';
-      arena.innerHTML =
-        '<div class="escena">' +
-        '<img class="wild silueta" src="' + spriteUrl(p.id, r.shiny) + '" alt="?" />' +
-        '<div class="pokeball lanza" id="pb"></div></div>';
-      const wild = arena.querySelector('.wild'), pb = $('pb');
-      // rareza: el drama escala con el tier del Pokémon
-      const escena = arena.querySelector('.escena');
-      const t = r.tier || { nivel: 1, nombre: 'Común', color: '#7d8b79', ico: '' };
-      escena.style.setProperty('--tier-color', t.color);
-      escena.classList.add('tier-' + t.nivel);
-      const tambaleos = t.nivel >= 9 ? 5 : t.nivel >= 7 ? 4 : t.nivel >= 4 ? 3 : 2;
-      const nParticulas = t.nivel >= 9 ? 30 : t.nivel >= 7 ? 22 : t.nivel >= 4 ? 16 : 8;
-      const epico = t.nivel >= 7, legendario = t.nivel >= 9;
-
-      await esperar(650);                 // el salvaje salta en el pasto
-      pb.classList.remove('lanza'); pb.classList.add('vuela');  // tirás la ball (arco)
-      await esperar(480);
-      pb.classList.remove('vuela'); pb.classList.add('piso');
-      wild.classList.add('absorbido'); arena.classList.add('flash');  // lo absorbe
-      await esperar(360); arena.classList.remove('flash');
-      $('msg').textContent = '¿La atrapará?';
-      for (let i = 0; i < tambaleos; i++) {   // tambaleos de suspenso (más en tiers altos)
-        pb.classList.add('tambalea'); await esperar(560); pb.classList.remove('tambalea'); await esperar(150);
+    // confeti azul-oro Xeneize 💙💛
+    function confetiXeneize(escena, n = 34) {
+      for (let i = 0; i < n; i++) {
+        const c = document.createElement('span');
+        c.className = 'confeti';
+        const ang = (Math.PI * 2 * i) / n + Math.random() * 0.4, dist = 90 + Math.random() * 120;
+        c.style.setProperty('--dx', Math.cos(ang) * dist + 'px');
+        c.style.setProperty('--dy', Math.sin(ang) * dist + 'px');
+        c.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+        c.style.background = i % 2 ? '#2f6fcc' : '#ffcb05';
+        c.style.animationDelay = (Math.random() * 0.12) + 's';
+        escena.appendChild(c);
+        setTimeout(() => c.remove(), 1200);
       }
-      // ¡atrapado!
-      pb.classList.add('abre');
-      wild.classList.remove('silueta', 'absorbido');
-      wild.classList.add('revelado'); if (r.shiny) wild.classList.add('shiny');
-      if (epico) escena.classList.add('burst');                          // ráfaga (épico+)
-      estrellas(escena, { n: nParticulas, dorado: r.shiny || legendario, color: t.color });
-      if (legendario || r.shiny) {                                       // pantalla temblando
+    }
+
+    // ── compañero ────────────────────────────────────────────────────────
+    function renderComp() {
+      const fila = $('comp-fila'); if (!fila) return;
+      const comp = companero();
+      let inner = '<span class="comp-tag">Compañero</span>';
+      if (comp) {
+        const sync = identidadDe(comp).hab === 'synchronize';
+        inner += '<img class="comp-mini" src="' + spriteUrl(comp.id, comp.shiny) + '" alt="" />'
+          + '<b class="comp-nom">' + (comp.mote || nombreDe(comp.id)) + '</b>'
+          + (sync ? '<span class="comp-sync">🔗 Sincronía · fija la naturaleza</span>' : '');
+      } else {
+        inner += '<span class="comp-none">ninguno</span>';
+      }
+      inner += '<button class="comp-cambiar" id="comp-cambiar" type="button">' + (comp ? 'Cambiar' : 'Elegir') + '</button>';
+      fila.innerHTML = inner;
+      $('comp-cambiar').addEventListener('click', abrirComp);
+    }
+    function abrirComp() {
+      const grid = $('comp-grid'), modal = $('comp-modal');
+      const mios = pc();
+      const compAct = companero();
+      const cards = mios.map((m) => {
+        const sync = identidadDe(m).hab === 'synchronize';
+        const sel = compAct && compAct.iid === m.iid ? ' sel' : '';
+        return '<button class="comp-pick' + sel + (sync ? ' es-sync' : '') + '" data-iid="' + m.iid + '" type="button">'
+          + '<img src="' + spriteUrl(m.id, m.shiny) + '" alt="" />'
+          + '<span class="comp-pick-nom">' + (m.mote || nombreDe(m.id)) + '</span>'
+          + (sync ? '<span class="comp-pick-sync">🔗 Sincronía</span>' : '<span class="comp-pick-lvl">Nv ' + m.nivel + '</span>')
+          + '</button>';
+      }).join('');
+      const ninguno = '<button class="comp-pick comp-pick-none' + (!compAct ? ' sel' : '') + '" data-iid="" type="button">'
+        + '<span class="comp-pick-x">✕</span><span class="comp-pick-nom">Ninguno</span></button>';
+      grid.innerHTML = ninguno + (cards || '<p class="comp-vacio">Todavía no tenés Pokémon. Atrapá uno primero. 🌿</p>');
+      grid.querySelectorAll('.comp-pick').forEach((b) => b.addEventListener('click', () => {
+        const iid = b.dataset.iid || null;
+        setCompanero(iid); sonarClick(); modal.hidden = true; renderComp();
+      }));
+      modal.hidden = false;
+    }
+    (function compModal() {
+      const modal = $('comp-modal');
+      $('comp-x').addEventListener('click', () => { modal.hidden = true; });
+      modal.addEventListener('click', (e) => { if (e.target === modal) modal.hidden = true; });
+    })();
+
+    // ── PASO 1: buscar y mostrar la carta de encuentro ───────────────────
+    function tier(nivel) {
+      return TIERS.find((t) => t.nivel === nivel) || { nivel: 1, nombre: 'Común', color: '#7d8b79', ico: '' };
+    }
+    function buscar() {
+      if (animando) return;
+      const r = encontrar(D.pokemon, D.temas, D.pesos);
+      if (r.error === 'vacio') { $('msg').textContent = 'Hacé un ejercicio para desbloquear Pokémon salvajes. 💪'; return; }
+      enc = r; tiroN = 0;
+      const balls = inventarioBalls();
+      ballSel = balls[0]?.key ?? null;
+      $('msg').textContent = '¡Un Pokémon salvaje apareció!';
+      renderCarta();
+    }
+
+    function renderCarta() {
+      if (!enc) { $('arena').innerHTML = '<div class="arena-vacio" id="vacio">El pasto se mueve… 🌿<br /><small>Buscá para ver qué aparece.</small></div>'; return; }
+      const t = tier(enc.rarezaTier);
+      const nombre = nombreDe(enc.id);
+      const balls = inventarioBalls();
+      const chips = balls.length
+        ? balls.map((b) => '<button class="ball-chip' + (b.key === ballSel ? ' sel' : '') + '" data-key="' + b.key + '" type="button" title="' + b.nombre + '">'
+            + '<span class="ball-chip-ico">' + itemSvg(b.sprite, 26) + '</span><span class="ball-chip-n">×' + b.n + '</span></button>').join('')
+        : '<span class="ball-vacio">No tenés Pokéballs. Resolvé ejercicios o pasá por la Tienda. 💪</span>';
+      $('arena').innerHTML =
+        '<div class="enc-card escena tier-' + t.nivel + (enc.shiny ? ' es-shiny' : '') + (enc.alfa ? ' es-alfa' : '') + '" style="--tier-color:' + t.color + '">'
+        + '<div class="enc-stage">'
+          + (enc.alfa ? '<span class="enc-aura"></span>' : '')
+          + '<img class="enc-sprite wild revelado' + (enc.shiny ? ' shiny' : '') + '" src="' + spriteUrl(enc.id, enc.shiny) + '" alt="' + nombre + '" />'
+          + (enc.shiny ? '<span class="enc-badge enc-shiny">✨</span>' : '')
+          + (enc.alfa ? '<span class="enc-badge enc-alfa">👑</span>' : '')
+        + '</div>'
+        + '<div class="enc-info">'
+          + '<div class="enc-name">' + nombre + ' <span class="enc-lvl">Nv ' + enc.nivel + '</span></div>'
+          + '<span class="cap-tier" style="--tier-color:' + t.color + '">' + (t.ico ? t.ico + ' ' : '') + t.nombre + '</span>'
+          + '<div class="enc-tasa" title="Tasación de IVs">'
+            + '<span class="enc-tasa-lbl">⭐ Tasación</span>'
+            + '<span class="enc-stars s' + enc.estrellas + '">' + tasacion(enc.estrellas) + '</span>'
+          + '</div>'
+          + '<div class="enc-nat">' + enc.naturalezaNombre + (enc.vistoYa ? ' <i class="enc-visto">· ya visto</i>' : '') + '</div>'
+        + '</div>'
+        + '<div class="ball-selector" id="ball-selector">' + chips + '</div>'
+        + '<div class="enc-acciones">'
+          + '<button class="enc-btn enc-huir" id="enc-huir" type="button">Huir</button>'
+          + '<button class="enc-btn enc-tirar" id="enc-tirar" type="button"' + (ballSel ? '' : ' disabled') + '>Tirar Ball</button>'
+        + '</div>'
+        + '</div>';
+      // listeners de la carta
+      $('ball-selector').querySelectorAll('.ball-chip').forEach((c) => c.addEventListener('click', () => {
+        ballSel = c.dataset.key; sonarClick();
+        $('ball-selector').querySelectorAll('.ball-chip').forEach((x) => x.classList.toggle('sel', x.dataset.key === ballSel));
+        $('enc-tirar').disabled = !ballSel;
+      }));
+      $('enc-huir').addEventListener('click', () => { enc = null; $('msg').textContent = 'Te alejaste sin tirar. 🌿'; renderCarta(); });
+      $('enc-tirar').addEventListener('click', tirar);
+    }
+
+    // ── PASO 2: minijuego de anillo + captura ────────────────────────────
+    async function tirar() {
+      if (animando || !enc || !ballSel) return;
+      const calidad = await jugarAnillo();
+      if (calidad == null) return;   // cancelado
+      tiroN++;
+      const r = capturar(enc, ballSel, calidad, { tiroN });
+      if (r.error === 'sin-ball') {
+        $('msg').textContent = 'No te quedan de esa ball. Elegí otra. 🔴';
+        ballSel = inventarioBalls()[0]?.key ?? null;
+        renderCarta(); return;
+      }
+      if (r.ok) { await animarCaptura(r); return; }
+      if (r.huyo) {
+        $('msg').textContent = '¡Huyó! 🌿';
+        const sp = $('arena').querySelector('.enc-sprite');
+        if (sp) sp.classList.add('huye');
+        await esperar(420);
+        enc = null; renderCarta(); refrescar();
+        return;
+      }
+      // zafó → seguís en la carta (otra ball; tiroN ya subió)
+      $('msg').textContent = '¡Zafó! Probá de nuevo. 🔁';
+      sonarError();
+      const sp = $('arena').querySelector('.enc-sprite');
+      if (sp) { sp.classList.add('zafa'); setTimeout(() => sp.classList.remove('zafa'), 500); }
+      renderCarta();
+    }
+
+    async function animarCaptura(r) {
+      animando = true;
+      const escena = $('arena').querySelector('.enc-card');
+      const sp = escena && escena.querySelector('.enc-sprite');
+      const t = tier(enc.rarezaTier);
+      const xeneize = r.ball === 'xeneize';
+      const especial = enc.shiny || enc.alfa;
+      const nP = especial ? 30 : t.nivel >= 7 ? 24 : t.nivel >= 4 ? 18 : 12;
+      if (escena) escena.classList.add('capturado');
+      if (sp) sp.classList.add('atrapado');
+      escena && escena.classList.add('burst');
+      estrellas(escena, { n: nP, dorado: especial, color: enc.shiny ? '#ffd23f' : enc.alfa ? '#b06bff' : t.color });
+      if (xeneize) confetiXeneize(escena, 38);
+      if (especial) {
         document.body.classList.add('tier-shake');
         setTimeout(() => document.body.classList.remove('tier-shake'), 600);
       }
-      if (r.shiny) { document.body.classList.add('shiny-flash'); setTimeout(() => document.body.classList.remove('shiny-flash'), 700); sonarShiny(); }
-      else if (epico) sonarEpico();
+      if (enc.shiny) { document.body.classList.add('shiny-flash'); setTimeout(() => document.body.classList.remove('shiny-flash'), 700); sonarShiny(); }
+      else if (enc.alfa || t.nivel >= 7) sonarEpico();
       else sonarCaptura();
+      await esperar(520);
 
-      const titulo = r.shiny
-        ? '✨ ¡Un <b>' + p.nombre + '</b> SHINY! ✨'
-        : (r.repetido ? '¡Otro <b>' + p.nombre + '</b>! Ya tenés <b>' + r.cantidad + '</b>' : '¡Atrapaste a <b>' + p.nombre + '</b>!');
-      const ballTxt = r.ball === 2 ? ballSvg(2, 18) + ' <b>¡Ultra Ball!</b> ' : r.ball === 1 ? ballSvg(1, 18) + ' <b>¡Super Ball!</b> ' : '';
-      const carGan = [3, 5, 8][r.ball] || 3;
+      const nombre = nombreDe(enc.id);
+      const titulo = enc.shiny ? '✨ ¡Un <b>' + nombre + '</b> SHINY! ✨'
+        : enc.alfa ? '👑 ¡Un <b>' + nombre + '</b> ALFA!'
+        : '¡Atrapaste a <b>' + nombre + '</b>!';
+      const ballMeta = inventarioBalls().find((b) => b.key === r.ball);
+      const ballIco = ballMeta ? itemSvg(ballMeta.sprite, 18) + ' ' : '';
+      const calCls = { Excelente: 'cal-exc', Genial: 'cal-gen', Bien: 'cal-bien', Normal: 'cal-norm' }[r.calidad] || 'cal-norm';
       const txt = document.createElement('div');
-      txt.className = 'captura-txt';
-      txt.innerHTML = ballTxt + titulo + ' <span class="cap-n">Nº ' + p.id + ' · Nv.' + r.nivel + '</span>' +
-        '<span class="cap-tier" style="--tier-color:' + t.color + '">' + (t.ico ? t.ico + ' ' : '') + t.nombre + '</span>' +
-        '<span class="cap-prob">🎲 1 de cada <b>' + r.cadaCuantos + '</b> · 🍬 +' + carGan + ' caramelos</span>' +
-        capIdentidad(r.inst);
-      escena.appendChild(txt);
-      $('msg').textContent = r.shiny
-        ? '🌟 ¡INCREÍBLE! Un shiny aparece 1 de cada 100 veces.'
-        : (legendario ? '👑 ¡Un ' + t.nombre + '! Rarísimo de ver.' : '');
-      animando = false; refrescar();
+      txt.className = 'captura-txt enc-result';
+      txt.innerHTML = ballIco + titulo
+        + ' <span class="cap-n">Nº ' + enc.id + ' · Nv.' + enc.nivel + '</span>'
+        + '<span class="cap-cal ' + calCls + '">🎯 Tiro ' + r.calidad + '</span>'
+        + '<span class="cap-tier" style="--tier-color:' + t.color + '">' + (t.ico ? t.ico + ' ' : '') + t.nombre + '</span>'
+        + capIdentidad(r.inst);
+      escena.querySelector('.enc-info').replaceWith(txt);
+      const sel = escena.querySelector('.ball-selector'), acc = escena.querySelector('.enc-acciones');
+      sel && sel.remove(); acc && acc.remove();
+      $('msg').textContent = enc.shiny ? '🌟 ¡INCREÍBLE! Un shiny aparece 1 de cada 100 veces.'
+        : enc.alfa ? '👑 ¡Un alfa! Llega con 3 IVs perfectos garantizados.'
+        : '🍬 +3 caramelos · seguí buscando 🌿';
+      enc = null; animando = false; refrescar();
     }
-    $('tirar').addEventListener('click', lanzarBall);
+
+    // ── minijuego de anillo (overlay) ────────────────────────────────────
+    // Devuelve una Promise<calidad|null>. El anillo se contrae de r=96 a r=18 en ~1.1s.
+    function jugarAnillo() {
+      return new Promise((resolve) => {
+        const ov = $('ring-overlay'), move = $('ring-move'), label = $('ring-label'), wild = $('ring-wild');
+        const TARGET = 42, R0 = 96, R1 = 18, DUR = 1100;
+        wild.innerHTML = '<img src="' + spriteUrl(enc.id, enc.shiny) + '" class="' + (enc.shiny ? 'shiny' : '') + '" alt="" />';
+        label.textContent = ''; label.className = 'ring-label';
+        ov.hidden = false; ov.classList.add('abierto');
+        let done = false, start = performance.now(), raf = 0;
+
+        const radioEn = (now) => {
+          const f = Math.min(1, (now - start) / DUR);
+          return R0 + (R1 - R0) * f;
+        };
+        const loop = (now) => {
+          if (done) return;
+          const r = radioEn(now);
+          move.setAttribute('r', r.toFixed(1));
+          if (now - start >= DUR) { resolverTiro(null); return; }   // se pasó: tiro tardío
+          raf = requestAnimationFrame(loop);
+        };
+
+        function calificar(r) {
+          if (r == null) return 'Normal';            // tardío / no tiró
+          const d = Math.abs(r - TARGET);
+          if (d <= 6) return 'Excelente';
+          if (d <= 16) return 'Genial';
+          if (d <= 30) return 'Bien';
+          return 'Normal';
+        }
+        function resolverTiro(now) {
+          if (done) return; done = true;
+          cancelAnimationFrame(raf);
+          const r = now == null ? null : radioEn(now);
+          const cal = calificar(r);
+          const cls = { Excelente: 'cal-exc', Genial: 'cal-gen', Bien: 'cal-bien', Normal: 'cal-norm' }[cal];
+          label.textContent = '¡' + cal + '!'; label.className = 'ring-label show ' + cls;
+          if (cal === 'Excelente') sonarShiny(); else if (cal === 'Genial') sonarExito(); else if (cal === 'Bien') sonarCaptura(); else sonarClick();
+          ov.classList.remove('listo');
+          setTimeout(() => { ov.hidden = true; ov.classList.remove('abierto'); limpiar(); resolve(cal); }, 620);
+        }
+        function tap(e) {
+          if (done) return;
+          e.preventDefault();
+          resolverTiro(performance.now());
+        }
+        function onKey(e) { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); resolverTiro(performance.now()); } }
+        function limpiar() {
+          ov.removeEventListener('pointerdown', tap);
+          document.removeEventListener('keydown', onKey);
+        }
+        // tocar cualquier parte del overlay (incluido el botón "¡Tirá!") cuenta
+        ov.addEventListener('pointerdown', tap);
+        document.addEventListener('keydown', onKey);
+        requestAnimationFrame(loop);
+      });
+    }
+
+    $('buscar').addEventListener('click', buscar);
   </script>
 </Base>

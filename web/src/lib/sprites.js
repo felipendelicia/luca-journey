@@ -170,8 +170,15 @@ const VIT_COLOR = ['#ff5959', '#f5ac78', '#fae078', '#9db7f5', '#a7db8d', '#fa92
 // itemSvg(id, size, color?) — `color` solo lo usa 'vitamina' (tinte por stat). Para los demás se ignora.
 export function itemSvg(id, size = 22, color = null) {
   if (id === 'discoenlace') return discoSvg(size);
+  if (id === 'pokeball' || id === 'ball0') return ballSvg(0, size);
   if (id === 'superball' || id === 'ball1') return ballSvg(1, size);
   if (id === 'ultraball' || id === 'ball2') return ballSvg(2, size);
+  if (id === 'ballveloz') return ballSvg('veloz', size);
+  if (id === 'ballturno') return ballSvg('turno', size);
+  if (id === 'ballred') return ballSvg('red', size);
+  if (id === 'ballrepe') return ballSvg('repeticion', size);
+  if (id === 'ballmaster') return ballSvg('master', size);
+  if (id === 'ballxeneize') return ballSvg('xeneize', size);
   if (id === 'revivir') return reviveSvg(size);
   if (id === 'vitamina') return vitaminaSvg(size, color);
   if (CONSUM[id]) return CONSUM[id].kind === 'spray' ? sprayBottle(CONSUM[id].c, size) : vialBottle(CONSUM[id].c, size);
@@ -182,16 +189,46 @@ export function itemSvg(id, size = 22, color = null) {
 export const vitaminaColor = (statIdx) => VIT_COLOR[statIdx] || VIT_COLOR[0];
 
 // ───────────────────────── pokeballs ─────────────────────────
-// tier 0=Poké(rojo) · 1=Super/Great(azul+arcos rojos) · 2=Ultra(amarillo+negro)
+// Familia de Pokéballs: misma silueta (domo superior + banda negra + botón central) y mismo
+// acabado (gradiente vertical, brillo arriba-izq). Cambian color del domo + `arcs` (marcas del domo).
+// `bot` opcional reemplaza el color de la mitad inferior (default blanco). `extra` dibuja por
+// fuera del cuerpo (p.ej. esferas de la Master).
+//   numéricas: 0=Poké(rojo) · 1=Super/Great(azul+arcos rojos) · 2=Ultra(amarillo+negro)
+//   string:    veloz · turno · red · repeticion · master · xeneize
 const BALLS = {
   0: { top: ['#ff5a4d', '#d11f1f'], arcs: '' },
   1: { top: ['#3a9ae0', '#1f63c4'], arcs: '<path d="M6 11c3-3 6-4 10-4M26 11c-3-3-6-4-10-4" fill="none" stroke="#d11f1f" stroke-width="2.4" stroke-linecap="round"/>' },
   2: { top: ['#f7d24a', '#e0a400'], arcs: '<path d="M16 4v9M8 7l4 5M24 7l-4 5" fill="none" stroke="#222" stroke-width="2.2" stroke-linecap="round"/>' },
+  // Veloz (Quick Ball): domo azul con destellos amarillos radiando del botón.
+  veloz: { top: ['#2f7bd6', '#1b4fa6'], arcs:
+    '<path d="M16 4v9M9 6.5l4.5 6M23 6.5l-4.5 6M5 12l7 2.2M27 12l-7 2.2" fill="none" stroke="#f6d23a" stroke-width="2.1" stroke-linecap="round"/>' },
+  // Turno (Timer Ball): domo blanco con marcas rojas radiales (esfera de reloj).
+  turno: { top: ['#f4f6f8', '#cfd4da'], arcs:
+    '<path d="M16 3.4v3.6M27.8 14H24.2M4.2 14H7.8M24.5 6.4l-2.5 2.5M7.5 6.4l2.5 2.5" fill="none" stroke="#d11f1f" stroke-width="2.1" stroke-linecap="round"/>' +
+    '<path d="M16 14V8.5l3.4 3.4" fill="none" stroke="#d11f1f" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>' },
+  // Red (Net Ball): domo celeste con trama de red.
+  red: { top: ['#2bc6d6', '#1488b0'], arcs:
+    '<path d="M9 6l5 8M16 4.5l0 9.5M23 6l-5 8M5 11l9 2.5M27 11l-9 2.5" fill="none" stroke="#0c5570" stroke-width="1.5" stroke-linecap="round" opacity="0.85"/>' },
+  // Repetición (Repeat Ball): cuerpo Ultra (amarillo) con franja roja y flechas de "repetir".
+  repeticion: { top: ['#f7d24a', '#e0a400'], arcs:
+    '<path d="M3.6 9.5h24.8" fill="none" stroke="#d11f1f" stroke-width="2.6"/>' +
+    '<path d="M11 6.4l-2 1.7 2 1.7M21 6.4l2 1.7-2 1.7" fill="none" stroke="#7a1010" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<path d="M9.5 8.1h13" fill="none" stroke="#7a1010" stroke-width="1.7" stroke-linecap="round"/>' },
+  // Master: domo morado con dos esferas rosas a los lados y "M" blanca.
+  master: { top: ['#9038c8', '#5e1b96'], extra:
+      '<circle cx="9.5" cy="9.5" r="3" fill="#f06fb8"/><circle cx="22.5" cy="9.5" r="3" fill="#f06fb8"/>' +
+      '<circle cx="9.5" cy="9.5" r="3" fill="none" stroke="#c43e87" stroke-width="0.9"/>' +
+      '<circle cx="22.5" cy="9.5" r="3" fill="none" stroke="#c43e87" stroke-width="0.9"/>',
+    arcs: '<path d="M12.5 13.5v-4l3.5 2.4 3.5-2.4v4" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>' },
+  // Xeneize (Boca Juniors): domo azul profundo con banda dorada. Misma silueta de Pokéball.
+  xeneize: { top: ['#103a86', '#0a2e6b'], arcs:
+    '<rect x="3.4" y="9.2" width="25.2" height="3.4" fill="#f2c200"/>' +
+    '<rect x="3.4" y="9.2" width="25.2" height="3.4" fill="none" stroke="#c79a00" stroke-width="0.6"/>' },
 };
 export function ballSvg(tier = 0, size = 22) {
   const b = BALLS[tier] || BALLS[0]; const g = uid(), gb = uid();
   return svg(size,
-    `<defs>${linGrad(g, b.top[0], b.top[1])}${linGrad(gb, '#ffffff', '#d6d9de')}</defs>` +
+    `<defs>${linGrad(g, b.top[0], b.top[1])}${linGrad(gb, b.bot ? b.bot[0] : '#ffffff', b.bot ? b.bot[1] : '#d6d9de')}</defs>` +
     '<circle cx="16" cy="16" r="13" fill="#1c1c1f"/>' +
     `<path d="M3 16a13 13 0 0 1 26 0Z" fill="url(#${g})"/>` +
     `<path d="M3 16a13 13 0 0 0 26 0Z" fill="url(#${gb})"/>` +
@@ -200,7 +237,8 @@ export function ballSvg(tier = 0, size = 22) {
     '<circle cx="16" cy="16" r="4.6" fill="#1c1c1f"/>' +
     '<circle cx="16" cy="16" r="3" fill="#fff"/>' +
     '<circle cx="16" cy="16" r="1.3" fill="#cfd2d8"/>' +
-    '<circle cx="11.5" cy="10.5" r="2.2" fill="rgba(255,255,255,.45)"/>');
+    '<circle cx="11.5" cy="10.5" r="2.2" fill="rgba(255,255,255,.45)"/>' +
+    (b.extra || ''));
 }
 
 // ───────────────────────── medallas (48) ─────────────────────────
