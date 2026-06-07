@@ -95,7 +95,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     import { etiquetaEfec } from '../lib/tipos.js';
     import { efectoAtaque } from '../lib/batalla-fx.js';
     import { retoAlAzar } from '../lib/retos-batalla.js';
-    import { sonarExito, sonarEpico, musicaBatalla, detenerMusica, toggleSonido, sonidoActivo } from '../lib/sonidos.js';
+    import { sonarExito, sonarEpico, musicaBatalla, detenerMusica, toggleSonido, sonidoActivo, volumen } from '../lib/sonidos.js';
     import * as online from '../lib/batalla-online.js';
     import { amigos, rankingPvp } from '../lib/social.js';
     import { refrescarDesdeNube } from '../lib/nube.js';
@@ -131,11 +131,13 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
 
     // grito (cry) de un Pokémon (PokeAPI, ogg)
     const CRY_BASE = 'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/';
-    function cry(idp, vol = 0.4) { try { const a = new Audio(CRY_BASE + idp + '.ogg'); a.volume = vol; a.play().catch(() => {}); } catch {} }
+    function cry(idp, vol = 0.4) { try { const a = new Audio(CRY_BASE + idp + '.ogg'); a.volume = Math.max(0, Math.min(1, vol * volumen())); a.play().catch(() => {}); } catch {} }
     // color por tipo (para el destello del ataque)
     const TCOLOR = { Normal: '#9099a1', Fuego: '#ff6b2c', Agua: '#4d90d5', Planta: '#56ad4e', 'Eléctrico': '#e0bd2b', Hielo: '#62c4b6', Lucha: '#ce4069', Veneno: '#a85fc4', Tierra: '#d3793f', Volador: '#8aa6df', 'Psíquico': '#f56a72', Bicho: '#88bb26', Roca: '#b3a576', Fantasma: '#5269ac', 'Dragón': '#0a6dc4', Siniestro: '#585761', Acero: '#5a8ea1', Hada: '#e487dd' };
     // sprites GBA reales (FireRed/LeafGreen) para gen 1-3; el resto usa el sprite por defecto.
     const FRSPR = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
+    // de FRENTE: firered (gen 1-3) o sprite por defecto. DE ESPALDAS: back GBA "media figura"
+    // (firered) para gen 1-3 — pegado al fondo del canvas, sin base de pasto (estética GBA).
     const spriteBatalla = (id, shiny, back) => id <= 386
       ? FRSPR + 'versions/generation-iii/firered-leafgreen/' + (back ? 'back/' : '') + (shiny ? 'shiny/' : '') + id + '.png'
       : FRSPR + (back ? 'back/' : '') + (shiny ? 'shiny/' : '') + id + '.png';

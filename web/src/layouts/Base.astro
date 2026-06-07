@@ -86,7 +86,14 @@ const nav = [
       </nav>
       <button class="theme-toggle" id="pwa-install" type="button" title="Instalar como app" style="display:none">📲</button>
       <button class="theme-toggle" id="nube-btn" type="button" title="Guardar progreso en la nube" style="display:none">☁️</button>
-      <button class="theme-toggle" id="sonido-toggle" type="button" title="Sonido on/off">🔊</button>
+      <span class="snd-wrap">
+        <button class="theme-toggle" id="sonido-toggle" type="button" title="Volumen" aria-haspopup="true" aria-expanded="false">🔊</button>
+        <div class="snd-pop" id="snd-pop" role="dialog" aria-label="Volumen" hidden>
+          <span class="snd-pop-ico" id="snd-pop-ico">🔊</span>
+          <input class="snd-range" id="snd-range" type="range" min="0" max="100" step="1" value="80" aria-label="Volumen" />
+          <span class="snd-pct" id="snd-pct">80%</span>
+        </div>
+      </span>
       <button class="theme-toggle" id="theme-toggle" type="button" title="Tema claro/oscuro">🌙</button>
       <button class="theme-toggle nav-burger" id="nav-burger" type="button" title="Menú" aria-label="Abrir menú" aria-expanded="false">☰</button>
     </div>
@@ -300,13 +307,19 @@ const nav = [
         localStorage.setItem('tema', body.classList.contains('claro') ? 'claro' : 'oscuro');
         refrescar();
       });
-      var s = document.getElementById('sonido-toggle');
-      function rs() { if (s) s.textContent = localStorage.getItem('sonido:off') === '1' ? '🔇' : '🔊'; }
+      var s = document.getElementById('sonido-toggle'), pop = document.getElementById('snd-pop'),
+          rng = document.getElementById('snd-range'), pico = document.getElementById('snd-pop-ico'), ppct = document.getElementById('snd-pct');
+      function volGet() { try { var v = localStorage.getItem('sonido:vol'); if (v != null) return Math.max(0, Math.min(1, parseFloat(v) || 0)); return localStorage.getItem('sonido:off') === '1' ? 0 : 0.8; } catch (e) { return 0.8; } }
+      function icoDe(v) { return v <= 0 ? '🔇' : v < 0.34 ? '🔈' : v < 0.67 ? '🔉' : '🔊'; }
+      function rs() { var v = volGet(), p = Math.round(v * 100); if (s) s.textContent = icoDe(v); if (rng) rng.value = p; if (pico) pico.textContent = icoDe(v); if (ppct) ppct.textContent = p + '%'; }
       rs();
-      if (s) s.addEventListener('click', function () {
-        localStorage.setItem('sonido:off', localStorage.getItem('sonido:off') === '1' ? '0' : '1');
-        rs();
-      });
+      function volSet(v) { v = Math.max(0, Math.min(1, v)); try { localStorage.setItem('sonido:vol', String(v)); localStorage.setItem('sonido:off', v <= 0 ? '1' : '0'); window.dispatchEvent(new CustomEvent('sonido:cambio', { detail: { vol: v } })); } catch (e) {} rs(); }
+      function abrirPop(ab) { if (!pop) return; pop.hidden = !ab; if (s) s.setAttribute('aria-expanded', ab ? 'true' : 'false'); }
+      if (s) s.addEventListener('click', function (e) { e.stopPropagation(); abrirPop(pop && pop.hidden); });
+      if (rng) rng.addEventListener('input', function () { volSet(rng.value / 100); });
+      document.addEventListener('click', function (e) { if (pop && !pop.hidden && !pop.contains(e.target) && e.target !== s) abrirPop(false); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') abrirPop(false); });
+      window.addEventListener('sonido:cambio', rs);   // sincronizar icono/slider si el volumen cambia desde otra pantalla (ej. mute de batalla)
       // menú mobile (hamburguesa): abre/cierra el panel de navegación
       var burger = document.getElementById('nav-burger'), nlinks = document.getElementById('navlinks');
       if (burger && nlinks) {

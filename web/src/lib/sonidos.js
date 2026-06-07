@@ -5,7 +5,32 @@ function ac() {
   if (ctx.state === 'suspended') ctx.resume();
   return ctx;
 }
-const muteado = () => localStorage.getItem('sonido:off') === '1';
+// ───────── volumen maestro (0..1) — lo controla el slider del botón de la navbar ─────────
+export const volumen = () => {
+  try {
+    const v = localStorage.getItem('sonido:vol');
+    if (v != null) return Math.max(0, Math.min(1, parseFloat(v) || 0));
+    return localStorage.getItem('sonido:off') === '1' ? 0 : 0.8;   // migración del flag viejo
+  } catch { return 0.8; }
+};
+const muteado = () => volumen() <= 0;
+let _master = null;
+// bus maestro: TODO el synth pasa por acá, así el slider escala todo de una.
+function bus() {
+  const c = ac();
+  if (!_master) { _master = c.createGain(); _master.gain.value = volumen(); _master.connect(c.destination); }
+  return _master;
+}
+export function setVolumen(v) {
+  v = Math.max(0, Math.min(1, Number(v) || 0));
+  try { localStorage.setItem('sonido:vol', String(v)); localStorage.setItem('sonido:off', v <= 0 ? '1' : '0'); } catch {}
+  if (_master) _master.gain.value = v;
+  if (v <= 0) detenerMusica();
+  // avisar a la navbar (icono + slider) y a cualquier listener que el volumen cambió.
+  try { window.dispatchEvent(new CustomEvent('sonido:cambio', { detail: { vol: v } })); } catch {}
+}
+// el slider de la navbar (otro script) avisa por evento → actualizamos el bus en vivo.
+if (typeof window !== 'undefined') window.addEventListener('sonido:cambio', () => { if (_master) _master.gain.value = volumen(); if (volumen() <= 0) detenerMusica(); });
 
 function tono(freq, start, dur, tipo = 'square', vol = 0.14) {
   const c = ac();
@@ -17,7 +42,7 @@ function tono(freq, start, dur, tipo = 'square', vol = 0.14) {
   g.gain.setValueAtTime(vol, t0);
   g.gain.exponentialRampToValueAtTime(0.0008, t0 + dur);
   o.connect(g);
-  g.connect(c.destination);
+  g.connect(bus());
   o.start(t0);
   o.stop(t0 + dur);
 }
@@ -36,10 +61,10 @@ export const sonarClick = () => tocar([[880, 0, 0.05]]);
 
 export const sonidoActivo = () => !muteado();
 export function toggleSonido() {
-  const nuevo = muteado();          // si estaba muteado, lo activamos
-  localStorage.setItem('sonido:off', nuevo ? '0' : '1');
-  if (nuevo) sonarClick(); else detenerMusica();   // si se mutea, cortar la música en curso
-  return nuevo;
+  const activar = muteado();        // si estaba en 0, lo activamos al último volumen
+  if (activar) { let prev = parseFloat(localStorage.getItem('sonido:volPrev')); if (!(prev > 0)) prev = 0.8; setVolumen(prev); sonarClick(); }
+  else { try { localStorage.setItem('sonido:volPrev', String(volumen())); } catch {} setVolumen(0); }   // guardamos el nivel y muteamos
+  return activar;                   // true = ahora activo
 }
 
 // ───────── música (osciladores rastreados para poder cortarla) ─────────
@@ -54,7 +79,7 @@ function nota(freq, start, dur, tipo = 'square', vol = 0.12) {
   g.gain.setValueAtTime(0.0001, t0);
   g.gain.exponentialRampToValueAtTime(vol, t0 + 0.02);
   g.gain.exponentialRampToValueAtTime(0.0008, t0 + dur);
-  o.connect(g); g.connect(c.destination);
+  o.connect(g); g.connect(bus());
   o.start(t0); o.stop(t0 + dur);
   musNodos.push(o);
   o.onended = () => { musNodos = musNodos.filter((x) => x !== o); };
@@ -63,9 +88,9 @@ function nota(freq, start, dur, tipo = 'square', vol = 0.12) {
 let _noise;
 function noiseBuf() { const c = ac(); if (!_noise) { _noise = c.createBuffer(1, c.sampleRate * 0.4, c.sampleRate); const d = _noise.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; } return _noise; }
 function track(node) { musNodos.push(node); node.onended = () => { musNodos = musNodos.filter((x) => x !== node); }; }
-function kick(start, vol = 0.34) { const c = ac(); const o = c.createOscillator(), g = c.createGain(); const t0 = c.currentTime + start; o.type = 'sine'; o.frequency.setValueAtTime(128, t0); o.frequency.exponentialRampToValueAtTime(42, t0 + 0.11); g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.17); o.connect(g); g.connect(c.destination); o.start(t0); o.stop(t0 + 0.19); track(o); }
-function snare(start, vol = 0.2) { const c = ac(); const s = c.createBufferSource(); s.buffer = noiseBuf(); const f = c.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 1400; const g = c.createGain(); const t0 = c.currentTime + start; g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.13); s.connect(f); f.connect(g); g.connect(c.destination); s.start(t0); s.stop(t0 + 0.15); track(s); }
-function hihat(start, vol = 0.06) { const c = ac(); const s = c.createBufferSource(); s.buffer = noiseBuf(); const f = c.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 7000; const g = c.createGain(); const t0 = c.currentTime + start; g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.04); s.connect(f); f.connect(g); g.connect(c.destination); s.start(t0); s.stop(t0 + 0.05); track(s); }
+function kick(start, vol = 0.34) { const c = ac(); const o = c.createOscillator(), g = c.createGain(); const t0 = c.currentTime + start; o.type = 'sine'; o.frequency.setValueAtTime(128, t0); o.frequency.exponentialRampToValueAtTime(42, t0 + 0.11); g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.17); o.connect(g); g.connect(bus()); o.start(t0); o.stop(t0 + 0.19); track(o); }
+function snare(start, vol = 0.2) { const c = ac(); const s = c.createBufferSource(); s.buffer = noiseBuf(); const f = c.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 1400; const g = c.createGain(); const t0 = c.currentTime + start; g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.13); s.connect(f); f.connect(g); g.connect(bus()); s.start(t0); s.stop(t0 + 0.15); track(s); }
+function hihat(start, vol = 0.06) { const c = ac(); const s = c.createBufferSource(); s.buffer = noiseBuf(); const f = c.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 7000; const g = c.createGain(); const t0 = c.currentTime + start; g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.04); s.connect(f); f.connect(g); g.connect(bus()); s.start(t0); s.stop(t0 + 0.05); track(s); }
 export function detenerMusica() {
   if (musLoop) { clearTimeout(musLoop); musLoop = null; }
   for (const o of musNodos) { try { o.stop(); } catch {} }

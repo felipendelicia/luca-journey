@@ -79,7 +79,7 @@ const total = pokemon.length;
       regaloDisponible, regionesDesbloqueadas, spriteUrl, pc, renombrar, caramelosDe, CARAMELOS_POR_CAPTURA,
       racha, romperRacha } from '../lib/coleccion.js';
     import { biomaActual, esNoche } from '../lib/safari-core.js';
-    import { sonarCaptura, sonarShiny, sonarEpico, sonarExito, sonarError, sonarClick } from '../lib/sonidos.js';
+    import { sonarCaptura, sonarShiny, sonarEpico, sonarExito, sonarError, sonarClick, volumen } from '../lib/sonidos.js';
     import { TIERS } from '../lib/rareza.js';
     import { itemSvg } from '../lib/sprites.js';
     import { REGIONES as REGS, etiqueta } from '../lib/regiones.mjs';
@@ -98,7 +98,7 @@ const total = pokemon.length;
 
     // grito (cry) del Pokémon — PokeAPI .ogg, igual que en /batalla
     const CRY_BASE = 'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/';
-    function cry(idp, vol = 0.5) { try { const a = new Audio(CRY_BASE + idp + '.ogg'); a.volume = vol; a.play().catch(() => {}); } catch {} }
+    function cry(idp, vol = 0.5) { try { const a = new Audio(CRY_BASE + idp + '.ogg'); a.volume = Math.max(0, Math.min(1, vol * volumen())); a.play().catch(() => {}); } catch {} }
 
     // resumen de identidad de la captura: género · IVs% · naturaleza · habilidad. Una línea.
     function capIdentidad(inst) {

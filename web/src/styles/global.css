@@ -60,6 +60,22 @@ code{font-family:var(--font-mono); font-size:.85em; background:#fbe7e1; color:va
 .theme-toggle{background:var(--paper-2); border:1px solid var(--line); border-radius:50%;
   width:34px; height:34px; cursor:pointer; font-size:15px; line-height:1; flex:0 0 auto;}
 .theme-toggle:hover{border-color:var(--red);}
+/* —— control de volumen (popover bajo el botón de sonido de la navbar) —— */
+.snd-wrap{ position:relative; display:inline-flex; }
+.snd-pop{ position:absolute; top:calc(100% + 9px); right:0; z-index:300; display:flex; align-items:center; gap:9px;
+  padding:9px 12px; border-radius:13px; white-space:nowrap;
+  background:var(--paper, var(--card, #16181f)); border:1px solid var(--line, #333);
+  box-shadow:0 12px 30px -12px rgba(0,0,0,.5); animation:sndIn .15s ease; }
+.snd-pop[hidden]{ display:none; }
+.snd-pop::before{ content:''; position:absolute; top:-6px; right:11px; width:11px; height:11px; transform:rotate(45deg);
+  background:var(--paper, var(--card, #16181f)); border-left:1px solid var(--line, #333); border-top:1px solid var(--line, #333); }
+@keyframes sndIn{ from{ opacity:0; transform:translateY(-6px); } to{ opacity:1; transform:none; } }
+.snd-pop-ico{ font-size:1rem; line-height:1; }
+.snd-pct{ font:800 .68rem var(--font-mono, monospace); color:var(--ink-soft, var(--muted)); min-width:36px; text-align:right; }
+.snd-range{ -webkit-appearance:none; appearance:none; width:118px; height:6px; border-radius:99px; background:var(--line, #444); cursor:pointer; outline:none; }
+.snd-range:focus-visible{ box-shadow:0 0 0 3px color-mix(in srgb, var(--red) 35%, transparent); }
+.snd-range::-webkit-slider-thumb{ -webkit-appearance:none; width:15px; height:15px; border-radius:50%; background:var(--red, #e0492f); border:2px solid var(--paper, var(--card, #16181f)); box-shadow:0 1px 4px rgba(0,0,0,.4); cursor:pointer; }
+.snd-range::-moz-range-thumb{ width:15px; height:15px; border-radius:50%; background:var(--red, #e0492f); border:2px solid var(--paper, var(--card, #16181f)); cursor:pointer; }
 
 /* layout */
 .wrap{max-width:var(--maxw); margin:0 auto; padding:34px 22px 80px;}
@@ -1289,10 +1305,10 @@ body.dark .id-tam{ color:var(--text); background:color-mix(in srgb, var(--accent
 .bt-arena::before,.bt-arena::after{ content:''; position:absolute; pointer-events:none; background:center/contain no-repeat;
   background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 46'><ellipse cx='75' cy='31' rx='72' ry='13' fill='%2384c23c'/><ellipse cx='75' cy='27' rx='62' ry='11' fill='%23a8da5c'/><g stroke='%23679f2a' stroke-width='2.4' stroke-linecap='round' fill='none'><path d='M20 31v-8M20 31l-5-7M20 31l5-7'/><path d='M42 33v-9M42 33l-5-7M42 33l5-7'/><path d='M64 31v-8M64 31l-5-7M64 31l5-7'/><path d='M86 33v-9M86 33l-5-7M86 33l5-7'/><path d='M108 31v-8M108 31l-5-7M108 31l5-7'/><path d='M130 32v-7M130 32l-4-6M130 32l4-6'/></g><g stroke='%23cdeb86' stroke-width='1.6' stroke-linecap='round' fill='none'><path d='M31 29v-6M53 31v-6M75 29v-6M97 31v-6M119 29v-6'/></g></svg>"); }
 .bt-arena::before{ width:176px; height:50px; top:100px; right:2px; }    /* pasto rival */
-.bt-arena::after{ width:238px; height:64px; bottom:8px; left:-10px; }   /* pasto jugador */
+.bt-arena::after{ display:none; }   /* sin base de pasto del jugador: la media figura GBA va pegada al fondo */
 .bt-sprite{ position:absolute; z-index:1; image-rendering:pixelated; filter:drop-shadow(0 3px 0 rgba(0,0,0,.18)); }   /* z-index: el Pokémon va ARRIBA del pasto */
 .bt-sprite-r{ width:124px; height:124px; top:24px; right:30px; }
-.bt-sprite-p{ width:164px; height:164px; bottom:12px; left:18px; }   /* de espaldas: sin flip */
+.bt-sprite-p{ width:176px; height:176px; bottom:0; left:14px; }   /* de espaldas (media figura GBA): pegada al fondo, sin flip */
 
 /* cuadros de datos (FireRed): caja crema, borde oscuro, esquinas redondeadas */
 .bt-rival,.bt-yo{ position:absolute; z-index:2; min-width:170px; padding:6px 13px 8px;
