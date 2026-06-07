@@ -105,6 +105,13 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     const spriteBatalla = (id, shiny, back) => id <= 386
       ? FRSPR + 'versions/generation-iii/firered-leafgreen/' + (back ? 'back/' : '') + (shiny ? 'shiny/' : '') + id + '.png'
       : FRSPR + (back ? 'back/' : '') + (shiny ? 'shiny/' : '') + id + '.png';
+    // fija el sprite de un combatiente: rival de frente (back=false), jugador DE ESPALDAS (back=true).
+    // fallback al sprite por defecto si el de FireRed/back no existe.
+    function setSpr(imgId, c, back) {
+      const img = document.getElementById(imgId); if (!img) return;
+      img.onerror = () => { img.onerror = null; img.src = spriteUrl(c.id, c.shiny); };
+      img.src = spriteBatalla(c.id, c.shiny, back);
+    }
     const chipsTipo = (tipos) => (tipos || []).map((t) => '<span class="bt-tipo" style="background:' + (TCOLOR[t] || '#888') + '">' + t + '</span>').join('');
     // HUD: género (♂/♀) junto al nombre + habilidad debajo. `c` es un Combatiente (.gen / .hab).
     const genHud = (gen) => gen === 'm' ? '<span class="bt-gen-m">♂</span>' : gen === 'f' ? '<span class="bt-gen-f">♀</span>' : '';
@@ -574,8 +581,8 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       if (!me || !rival) return;
       const myAct = me.equipo[me.activo], rivAct = rival.equipo[rival.activo];
       $('bt-online').hidden = true; $('bt-sel').hidden = true; $('bt-modo').hidden = true; $('bt-combate').hidden = false;
-      $('r-nom').textContent = rivAct.nombre; $('r-lv').textContent = 'Nv.' + rivAct.nivel; $('r-tipos').textContent = rivAct.tipos.join(' · '); $('r-estado').innerHTML = estadoChip(rivAct); $('r-img').src = spriteUrl(rivAct.id, rivAct.shiny); hp('r-hp', rivAct); dots('r-dots', rival.equipo);
-      $('p-nom').textContent = myAct.nombre; $('p-lv').textContent = 'Nv.' + myAct.nivel; $('p-tipos').textContent = myAct.tipos.join(' · '); $('p-estado').innerHTML = estadoChip(myAct); $('p-img').src = spriteUrl(myAct.id, myAct.shiny); hp('p-hp', myAct); dots('p-dots', me.equipo);
+      $('r-nom').textContent = rivAct.nombre; $('r-lv').textContent = 'Nv.' + rivAct.nivel; $('r-tipos').textContent = rivAct.tipos.join(' · '); $('r-estado').innerHTML = estadoChip(rivAct); setSpr('r-img', rivAct, false); hp('r-hp', rivAct); dots('r-dots', rival.equipo);
+      $('p-nom').textContent = myAct.nombre; $('p-lv').textContent = 'Nv.' + myAct.nivel; $('p-tipos').textContent = myAct.tipos.join(' · '); $('p-estado').innerHTML = estadoChip(myAct); setSpr('p-img', myAct, true); hp('p-hp', myAct); dots('p-dots', me.equipo);
       hudIdent('r', rivAct); hudIdent('p', myAct);
       $('bt-carga').style.width = me.super + '%'; $('bt-carga-txt').textContent = 'Súper: ' + me.super + '%';
       const miTurno = snap.fase === 'combate' && snap.turno === myUid;
