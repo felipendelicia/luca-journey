@@ -8,6 +8,7 @@ import movimientos from './data/movimientos.json';
 import learnsets from './data/learnsets.json';
 import pokemon from './data/pokemon.json';
 import estadisticas from './data/estadisticas.json';
+import habilidades from './data/habilidades.json';
 import {
   combatiente as coreCombatiente,
   esEstado, calcularDano, aplicarEstado, danoSuper, etiquetaEfec, tiraCritico, sinPP, FORCEJEO,
@@ -27,6 +28,7 @@ const DATOS: DatosCombate = {
   nombres: Object.fromEntries((pokemon as any[]).map((p) => [p.id, p.nombre])),
   tipos: tiposData as any, learnsets: learnsets as any, movimientos: movimientos as any,
   estadisticas: estadisticas as any,
+  habilidades: habilidades as any,
 };
 export const combatiente = (inst: Inst): Combatiente => coreCombatiente(inst, DATOS);
 

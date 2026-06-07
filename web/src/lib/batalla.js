@@ -5,6 +5,7 @@ import learnsets from '../data/learnsets.json' with { type: 'json' };
 import pokemon from '../data/pokemon.json' with { type: 'json' };
 import tipos from '../data/tipos.json' with { type: 'json' };
 import estadisticas from '../data/estadisticas.json' with { type: 'json' };
+import habilidades from '../data/habilidades.json' with { type: 'json' };
 import { combatiente as coreCombatiente } from './combate-core.ts';
 
 // reglas puras: se re-exportan tal cual (única fuente de verdad)
@@ -17,7 +18,7 @@ export {
 // data del front inyectada al core
 const DATOS = {
   nombres: Object.fromEntries(pokemon.map((p) => [p.id, p.nombre])),
-  tipos, learnsets, movimientos, estadisticas,
+  tipos, learnsets, movimientos, estadisticas, habilidades,
 };
 
 // combatiente a partir de una instancia del PC (usa la data del front)
