@@ -884,23 +884,22 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .batalla:has(#bt-combate:not([hidden])) > p,
 .batalla:has(#bt-combate:not([hidden])) > .bt-modo{ display:none; }
 /* campo: cielo + pasto, con marco de "pantalla" y plataformas elípticas */
+/* campo pálido estilo FireRed (verde menta) con bandas horizontales tenues */
 .bt-field{ position:relative; height:300px; margin:6px 0 12px; border-radius:6px; overflow:hidden;
   border:4px solid var(--gba-edge); box-shadow:inset 0 0 0 2px var(--gba-frame), 0 4px 0 rgba(0,0,0,.28);
   image-rendering:pixelated;
-  background:linear-gradient(180deg, #bfe7f2 0 23%, #cfeec9 23% 29%, #b0de88 29% 46%, #99cf66 46% 72%, #8bc457 72% 100%); }
-/* banda de dither tipo GBA en el horizonte (paleta limitada) */
-.bt-field::before{ content:''; position:absolute; left:0; right:0; top:23%; height:20px; pointer-events:none; opacity:.45;
-  background-image:repeating-linear-gradient(90deg, rgba(110,165,85,.7) 0 2px, transparent 2px 4px); }
+  background:linear-gradient(180deg, #cfe6dd 0 18%, #d4e6c6 18% 30%, #cbe3ac 30% 52%, #c0de98 52% 100%); }
+.bt-field::before{ content:''; position:absolute; inset:0; pointer-events:none; opacity:.5;
+  background-image:repeating-linear-gradient(0deg, rgba(255,255,255,.22) 0 1px, transparent 1px 7px); }
 .bt-arena{ position:absolute; inset:0; }
-/* bases circulares estilo FireRed: disco verde con anillos y sombra */
-.bt-arena::before,.bt-arena::after{ content:''; position:absolute; border-radius:50%; pointer-events:none;
-  background:radial-gradient(ellipse at 50% 34%, #c6ea7c 0 36%, #a4d156 36% 58%, #86b840 58% 72%, transparent 73%);
-  box-shadow:0 3px 0 rgba(70,110,40,.22); }
-.bt-arena::before{ width:160px; height:42px; top:102px; right:10px; }   /* base rival */
-.bt-arena::after{ width:212px; height:56px; bottom:16px; left:-4px; }   /* base jugador */
+/* parches de PASTO estilo FireRed (no discos): óvalo verde con matas de césped */
+.bt-arena::before,.bt-arena::after{ content:''; position:absolute; pointer-events:none; background:center/contain no-repeat;
+  background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 46'><ellipse cx='75' cy='31' rx='72' ry='13' fill='%2384c23c'/><ellipse cx='75' cy='27' rx='62' ry='11' fill='%23a8da5c'/><g stroke='%23679f2a' stroke-width='2.4' stroke-linecap='round' fill='none'><path d='M20 31v-8M20 31l-5-7M20 31l5-7'/><path d='M42 33v-9M42 33l-5-7M42 33l5-7'/><path d='M64 31v-8M64 31l-5-7M64 31l5-7'/><path d='M86 33v-9M86 33l-5-7M86 33l5-7'/><path d='M108 31v-8M108 31l-5-7M108 31l5-7'/><path d='M130 32v-7M130 32l-4-6M130 32l4-6'/></g><g stroke='%23cdeb86' stroke-width='1.6' stroke-linecap='round' fill='none'><path d='M31 29v-6M53 31v-6M75 29v-6M97 31v-6M119 29v-6'/></g></svg>"); }
+.bt-arena::before{ width:176px; height:50px; top:100px; right:2px; }    /* pasto rival */
+.bt-arena::after{ width:238px; height:64px; bottom:8px; left:-10px; }   /* pasto jugador */
 .bt-sprite{ position:absolute; image-rendering:pixelated; filter:drop-shadow(0 3px 0 rgba(0,0,0,.18)); }
-.bt-sprite-r{ width:116px; height:116px; top:26px; right:32px; }
-.bt-sprite-p{ width:152px; height:152px; bottom:18px; left:18px; }   /* de espaldas: sin flip */
+.bt-sprite-r{ width:116px; height:116px; top:24px; right:38px; }
+.bt-sprite-p{ width:152px; height:152px; bottom:16px; left:26px; }   /* de espaldas: sin flip */
 
 /* cuadros de datos (FireRed): caja crema, borde oscuro, esquinas redondeadas */
 .bt-rival,.bt-yo{ position:absolute; z-index:2; min-width:170px; padding:6px 13px 8px;
@@ -920,7 +919,7 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
   color:#fff; background:var(--e,#888); border:1px solid rgba(0,0,0,.35); }
 /* barra de HP GBA: tag "HP" + canaleta oscura + relleno verde/amarillo/rojo */
 .bt-hpbar{ position:relative; height:6px; margin:7px 0 2px 22px; background:#3a3a46; border:1px solid #16161c; border-radius:999px; overflow:hidden; }
-.bt-hpbar::before{ content:'HP'; position:absolute; left:-21px; top:-4px; font:800 .6rem var(--font-mono); color:#f2ab18; -webkit-text-stroke:.4px #7a3f00; }
+.bt-hpbar::before{ content:'PS'; position:absolute; left:-21px; top:-4px; font:800 .6rem var(--font-mono); color:#f2ab18; -webkit-text-stroke:.4px #7a3f00; }
 .bt-hp{ height:100%; width:100%; background:#5cd24a; transition:width .5s ease; box-shadow:inset 0 1px 0 rgba(255,255,255,.45); }
 .bt-hp.medio{ background:#f2c624; } .bt-hp.bajo{ background:#f04a38; }
 .bt-equipo{ display:flex; gap:4px; margin-top:5px; }
