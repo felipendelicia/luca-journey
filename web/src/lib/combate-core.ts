@@ -122,6 +122,19 @@ export function sumarEV(evs: number[], yields: number[]): number[] {
   return out;
 }
 
+// baja `n` EV de un stat (floor 0). Devuelve copia. (Bayas Pomeg/Kelpsy/… + Borrón.)
+export function restarEV(evs: number[], idx: number, n: number): number[] {
+  const out = (evs && evs.length === 6) ? [...evs] : [0, 0, 0, 0, 0, 0];
+  out[idx] = Math.max(0, out[idx] - n);
+  return out;
+}
+// suma de yields de los Pokémon de un equipo que quedaron debilitados (hp<=0). Para EVs en PvP.
+export function evPorDerrotados(equipo: { id: number; hp: number }[], yields: Record<string, number[]>): number[] {
+  const out = [0, 0, 0, 0, 0, 0];
+  for (const c of equipo) if (c.hp <= 0) { const y = yields[String(c.id)] || []; for (let i = 0; i < 6; i++) out[i] += (y[i] || 0); }
+  return out;
+}
+
 // identidad de una instancia: campos explícitos si están; si no, derivada del iid (estable, sin migración).
 export function identidad(inst: Inst, d: DatosCombate): Ident {
   if (inst.ivs && inst.nat != null) return { ivs: inst.ivs, nat: inst.nat, hab: inst.hab ?? null, gen: inst.gen ?? null };

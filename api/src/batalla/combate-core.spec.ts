@@ -6,6 +6,7 @@ import {
 } from './combate-core';
 import { NATURALEZAS, semilla, identidad, rolarIdentidad } from './combate-core';
 import { sumarEV } from './combate-core';
+import { restarEV, evPorDerrotados } from './combate-core';
 import { statEf as statEf3, hpEf as hpEf3 } from './combate-core';
 import { calcularDano as cd, aplicarAilment as aa, acierta as ac } from './combate-core';
 
@@ -616,5 +617,19 @@ describe('EVs', () => {
     const r = sumarEV([252, 252, 0, 0, 0, 0], [0, 0, 10, 0, 0, 0]);
     expect(r[2]).toBe(6);
     expect(r.reduce((a, b) => a + b, 0)).toBe(510);
+  });
+});
+
+describe('EVs Fase 3', () => {
+  test('restarEV baja n EV de un stat con floor 0', () => {
+    expect(restarEV([20, 0, 0, 0, 0, 0], 0, 10)).toEqual([10, 0, 0, 0, 0, 0]);
+    expect(restarEV([5, 0, 0, 0, 0, 0], 0, 10)).toEqual([0, 0, 0, 0, 0, 0]);
+    expect(restarEV([0, 0, 0, 0, 0, 0], 3, 10)).toEqual([0, 0, 0, 0, 0, 0]);
+  });
+  test('evPorDerrotados suma yields de los debilitados (hp<=0)', () => {
+    const yields = { '1': [0, 0, 0, 1, 0, 0], '4': [0, 1, 0, 0, 0, 0], '7': [0, 0, 1, 0, 0, 0] };
+    const equipo = [{ id: 1, hp: 0 }, { id: 4, hp: 0 }, { id: 7, hp: 12 }];
+    expect(evPorDerrotados(equipo, yields)).toEqual([0, 1, 0, 1, 0, 0]);
+    expect(evPorDerrotados([{ id: 1, hp: 30 }], yields)).toEqual([0, 0, 0, 0, 0, 0]);
   });
 });
