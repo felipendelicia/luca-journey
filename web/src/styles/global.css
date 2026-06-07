@@ -948,6 +948,14 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .id-gen{ font-weight:800; font-size:.92em; margin-left:6px; vertical-align:baseline; }
 .id-gen-m{ color:#3e7bd6; } .id-gen-f{ color:#e060a0; }
 .pm-name .id-gen{ font-size:.7em; }
+/* marca ALFA: chip dorado (ejemplar raro de IVs altos) */
+.id-alfa{ display:inline-flex; align-items:center; gap:3px; margin-left:7px; vertical-align:middle;
+  padding:1px 8px; border-radius:999px; font:800 .62em var(--font-display); letter-spacing:.02em; text-transform:uppercase;
+  color:#7a5200; background:linear-gradient(135deg, color-mix(in srgb, var(--yellow) 60%, #fff), var(--yellow));
+  border:1px solid color-mix(in srgb, var(--yellow) 55%, #b8860b);
+  box-shadow:0 0 0 1px color-mix(in srgb, var(--yellow) 25%, transparent), 0 1px 4px color-mix(in srgb, var(--yellow) 40%, transparent); }
+body.dark .id-alfa{ color:#1a1205; border-color:color-mix(in srgb, var(--yellow) 50%, #8a6d00); }
+.pm-name .id-alfa{ font-size:.42em; }
 /* header GO: anillo de % + estrellas + veredicto */
 .id-head{ display:flex; align-items:center; gap:14px; padding:11px 13px; margin-bottom:13px; border-radius:13px;
   background:linear-gradient(135deg, color-mix(in srgb,var(--tier-color) 16%, var(--card)), var(--card));
