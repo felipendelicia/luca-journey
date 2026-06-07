@@ -1381,6 +1381,60 @@ body.dark .id-tam{ color:var(--text); background:color-mix(in srgb, var(--accent
 .bt-timer.urgente .bt-timer-txt{ color:var(--red); }
 .bt-timer.urgente .bt-timer-bar i{ background:var(--red); }
 
+/* ── ONLINE (ronda simultánea) ── */
+/* banner de estado de la ronda: tira encima del menú de acciones */
+.bt-estado-online{ display:flex; align-items:center; gap:9px; margin:0 0 9px; padding:9px 14px;
+  border:3px solid var(--gba-edge); border-radius:7px; background:var(--gba-cream); color:var(--gba-ink);
+  font:800 .82rem var(--font-mono); letter-spacing:.01em;
+  box-shadow:inset 0 0 0 2px #fff, 0 2px 0 rgba(0,0,0,.2); transition:border-color .2s, box-shadow .2s; }
+.bt-estado-online[hidden]{ display:none; }
+.bt-eo-ico{ font-size:1.05rem; line-height:1; flex:0 0 auto; }
+.bt-eo-txt{ flex:1; }
+/* fase: elegir = verde (palpita); esperando = ámbar; resolviendo = rojo; reemplazo = azul; super = naranja; fin = neutro */
+.bt-estado-online.elegir{ border-color:#3aa83a; box-shadow:inset 0 0 0 2px #fff, 0 0 0 2px rgba(58,168,58,.25), 0 2px 0 rgba(0,0,0,.2); }
+.bt-estado-online.elegir .bt-eo-ico{ animation:btPulso 1.1s ease-in-out infinite; }
+.bt-estado-online.esperando{ border-color:#e0a32b; }
+.bt-estado-online.resolviendo{ border-color:var(--red); box-shadow:inset 0 0 0 2px #fff, 0 0 0 2px rgba(227,53,13,.22), 0 2px 0 rgba(0,0,0,.2); }
+.bt-estado-online.reemplazo{ border-color:#3a73c8; }
+.bt-estado-online.super{ border-color:#fc4a1a; }
+.bt-estado-online.fin{ border-color:var(--gba-frame); }
+@keyframes btPulso{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.25); } }
+/* timer online: hereda .bt-timer; barra animada por width vía rAF */
+.bt-timer-online .bt-timer-bar i{ transition:none; background:#5cd24a; }
+.bt-timer-online.urgente .bt-timer-bar i{ background:var(--red); }
+
+/* chip de "jugada bloqueada" dentro del slot del menú */
+.bt-lock{ grid-column:1/-1; display:flex; flex-direction:column; align-items:center; gap:8px; padding:12px 10px; text-align:center; }
+.bt-lock-chip{ display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border:2px solid #3aa83a; border-radius:999px;
+  background:#eafce6; color:#1e6b1e; font:800 .82rem var(--font-mono); }
+.bt-lock-chip.super{ border-color:#fc4a1a; background:#fff1ea; color:#b8480f; }
+.bt-lock-chip b{ color:inherit; }
+.bt-lock-sub{ font:700 .68rem var(--font-mono); color:#6a6a72; }
+.bt-repick{ grid-column:auto; margin-top:2px; padding:9px 16px; border:2px solid var(--gba-edge); border-radius:6px;
+  background:#fff; color:var(--gba-ink); font:800 .78rem var(--font-mono); cursor:pointer; }
+.bt-repick:hover:not(:disabled){ background:#fff6cf; border-color:var(--red); }
+.bt-repick:disabled{ opacity:.4; cursor:not-allowed; }
+
+/* "▶ primero": resalta el cuadro de datos de quien actúa primero en la resolución */
+.bt-primero{ animation:btPrimero 1.1s ease-out; }
+.bt-primero::before{ content:'▶ primero'; position:absolute; top:-11px; left:10px; z-index:3;
+  padding:2px 8px; border-radius:999px; background:var(--red); color:#fff;
+  font:800 .58rem var(--font-pixel); letter-spacing:.04em; box-shadow:0 2px 0 rgba(0,0,0,.25); }
+@keyframes btPrimero{ 0%{ box-shadow:inset 0 0 0 2px #fff, 0 0 0 0 rgba(227,53,13,.6), 0 2px 0 rgba(0,0,0,.22); }
+  100%{ box-shadow:inset 0 0 0 2px #fff, 0 0 0 6px rgba(227,53,13,0), 0 2px 0 rgba(0,0,0,.22); } }
+
+/* botón rendirse (online) */
+.bt-rendir{ grid-column:1/-1; align-items:center; text-align:center; font-weight:800; background:#fff; color:var(--red-deep); border-color:#d6a; }
+.bt-rendir:hover:not(:disabled){ background:#ffe9ec; border-color:var(--red); }
+
+/* modal de reemplazo (un Pokémon cayó) */
+.reemplazo-card{ border-color:#3a73c8; }
+.reemplazo-card h2{ color:var(--ink); }
+.reemplazo-lista{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:8px; }
+.reemplazo-m{ background:var(--paper-2); }
+.reemplazo-m:not(:disabled){ border-color:#3a73c8; }
+.reemplazo-m:hover:not(:disabled){ transform:translateY(-2px); border-color:var(--red); box-shadow:0 6px 16px -10px rgba(0,0,0,.4); }
+
 /* menú de ataques (FIGHT): caja crema con slots */
 .bt-moves{ display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:8px; background:var(--gba-cream);
   border:4px solid var(--gba-edge); border-radius:8px; box-shadow:inset 0 0 0 3px #fff, 0 3px 0 rgba(0,0,0,.2); }
