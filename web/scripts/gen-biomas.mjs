@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.resolve(HERE, '..', 'src', 'data', 'biomas.json');
-const MAX = 721;
+const MAX = 1025;
 const get = async (u) => {
   for (let i = 0; i < 4; i++) { try { const r = await fetch(u); if (r.ok) return r.json(); } catch {} await new Promise((s) => setTimeout(s, 400 * (i + 1))); }
   throw new Error('fallo ' + u);

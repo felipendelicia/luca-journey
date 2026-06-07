@@ -1081,6 +1081,15 @@ body.dark .id-alfa{ color:#1a1205; border-color:color-mix(in srgb, var(--yellow)
   box-shadow:0 1px 3px color-mix(in srgb, var(--accent) 14%, transparent); }
 body.dark .id-tam{ color:var(--text); background:color-mix(in srgb, var(--accent) 18%, var(--card)); }
 .pm-name .id-tam{ font-size:.42em; }
+/* mini-chip de identidad en cards de perfil/intercambio (IVs% · ♂/♀ · 👑/⬆⬇).
+   Overlay arriba-derecha (esquina libre en tcard-slot y tr-cell) → no toca el layout. */
+.id-mini{ position:absolute; top:2px; right:2px; z-index:2; display:inline-flex; align-items:center; gap:1px;
+  font:800 .5rem var(--font-mono); line-height:1; padding:1px 4px; border-radius:7px; white-space:nowrap;
+  background:color-mix(in srgb, var(--card,#1a1a1a) 82%, transparent); color:var(--ink-soft,var(--muted));
+  border:1px solid color-mix(in srgb, var(--line,#444) 60%, transparent); }
+.id-mini b{ font-weight:800; color:var(--ink,var(--text)); }
+.id-mini .im-top{ color:var(--yellow-deep,#c08400); } .id-mini .im-good{ color:var(--teal-deep,#0b7c78); }
+.id-mini .im-m{ color:#2f7fd1; font-style:normal; } .id-mini .im-f{ color:#d65aa0; font-style:normal; }
 /* header GO: anillo de % + estrellas + veredicto */
 .id-head{ display:flex; align-items:center; gap:14px; padding:11px 13px; margin-bottom:13px; border-radius:13px;
   background:linear-gradient(135deg, color-mix(in srgb,var(--tier-color) 16%, var(--card)), var(--card));

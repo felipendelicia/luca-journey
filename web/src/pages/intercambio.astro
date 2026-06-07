@@ -104,9 +104,17 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     const panes = ['tr-login', 'tr-inicio', 'tr-espera', 'tr-sala', 'tr-listo'];
     const ver = (cual) => panes.forEach((p) => $(p).hidden = (p !== cual));
 
-    // intercambio por INSTANCIA: mis Pokémon como {iid,id,nivel,shiny,mote}
-    const misInst = () => pc().map((m) => ({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: !!m.shiny, mote: m.mote || '' }));
+    // intercambio por INSTANCIA: mis Pokémon como {iid,id,nivel,shiny,mote} + identidad (IVs/nat/género/tam/alfa)
+    const misInst = () => pc().map((m) => ({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: !!m.shiny, mote: m.mote || '',
+      ...(m.ivs ? { ivs: m.ivs, nat: m.nat, gen: m.gen } : {}), ...(m.tam ? { tam: m.tam } : {}), ...(m.alfa ? { alfa: true } : {}) }));
     const tengoIid = (iid) => misInst().some((m) => m.iid === iid);
+    // mini-chip de identidad (si la instancia trae IVs): IVs% · ♂/♀ · 👑/⬆⬇.
+    const idMini = (m) => {
+      if (!m || !m.ivs) return '';
+      const pct = Math.round(m.ivs.reduce((a, b) => a + b, 0) / 186 * 100);
+      const gen = m.gen === 'm' ? '<i class="im-m">♂</i>' : m.gen === 'f' ? '<i class="im-f">♀</i>' : '';
+      return `<span class="id-mini">${gen}<b class="${pct >= 90 ? 'im-top' : pct >= 75 ? 'im-good' : ''}">${pct}%</b>${m.alfa ? ' 👑' : ''}${m.tam === 'XXL' || m.tam === 'XL' ? ' ⬆' : m.tam === 'XXS' ? ' ⬇' : ''}</span>`;
+    };
 
     let sala = null, salaId = null, miLote = [], miPedido = [], desuscribir = null, entrando = false, poll = null;
     let otroColeccion = null;            // { pc:[instancias] } del otro (cache)
@@ -190,7 +198,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
       lista.forEach((m) => {
         const on = miPedido.some((p) => p.iid === m.iid);
         const cell = document.createElement('div'); cell.className = 'tr-cell' + (on ? ' on' : '') + (esHueco(m) ? ' tr-gap' : '');
-        cell.innerHTML = `<img src="${sprite(m.id, m.shiny)}" alt="${esc(nombreInst(m))}" title="${esc(nombreInst(m))}" /><span class="tr-cnt">Nv.${m.nivel}${m.shiny ? ' ✨' : ''}</span>` + (esHueco(m) ? '<span class="tr-falta" title="Te falta a vos">⭐</span>' : '');
+        cell.innerHTML = `<img src="${sprite(m.id, m.shiny)}" alt="${esc(nombreInst(m))}" title="${esc(nombreInst(m))}" /><span class="tr-cnt">Nv.${m.nivel}${m.shiny ? ' ✨' : ''}</span>${idMini(m)}` + (esHueco(m) ? '<span class="tr-falta" title="Te falta a vos">⭐</span>' : '');
         const btn = document.createElement('button');
         btn.className = 'tr-pedir' + (on ? ' on' : ''); btn.type = 'button'; btn.textContent = on ? '✓ pedido' : 'Pedir';
         btn.addEventListener('click', async () => {

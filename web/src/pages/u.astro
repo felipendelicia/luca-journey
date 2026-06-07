@@ -223,8 +223,16 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     const ls = (k, def) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? def : v; } catch { return def; } };
     const RANGOS = [[0, 'Novato'], [4, 'Aprendiz'], [8, 'Entrenador'], [12, 'Veterano'], [16, 'As'], [24, 'Líder'], [32, 'Maestro']];
 
-    const misInst = () => pcCol().map((m) => ({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: !!m.shiny, mote: m.mote || '' }));
+    const misInst = () => pcCol().map((m) => ({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: !!m.shiny, mote: m.mote || '',
+      ...(m.ivs ? { ivs: m.ivs, nat: m.nat, gen: m.gen } : {}), ...(m.tam ? { tam: m.tam } : {}), ...(m.alfa ? { alfa: true } : {}) }));
     const nombreInst = (x) => (x.mote || nombres[x.id] || ('Nº ' + x.id)) + (x.shiny ? ' ✨' : '') + ' · Nv.' + (x.nivel ?? '?');
+    // mini-chip de identidad para una instancia (si trae IVs): IVs% · ♂/♀ · ✨/👑.
+    const idMini = (m) => {
+      if (!m || !m.ivs) return '';
+      const pct = Math.round(m.ivs.reduce((a, b) => a + b, 0) / 186 * 100);
+      const gen = m.gen === 'm' ? '<i class="im-m">♂</i>' : m.gen === 'f' ? '<i class="im-f">♀</i>' : '';
+      return `<span class="id-mini">${gen}<b class="${pct >= 90 ? 'im-top' : pct >= 75 ? 'im-good' : ''}">${pct}%</b>${m.alfa ? ' 👑' : ''}${m.tam === 'XXL' || m.tam === 'XL' ? ' ⬆' : m.tam === 'XXS' ? ' ⬇' : ''}</span>`;
+    };
 
     let perfil = null, esMio = false, doy = [], pido = [];
 
@@ -245,7 +253,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const eq = equipoData();
       const row = $('u-equipo');
       let slots = eq.slice(0, 6).map((m) =>
-        `<div class="tcard-slot ${m.shiny ? 'shiny' : ''}" title="${esc(nombreInst(m))}"><img src="${sprite(m.id, m.shiny)}" alt="${esc(nombres[m.id] || m.id)}" /><span class="tcard-nv">Nv${m.nivel}</span></div>`).join('');
+        `<div class="tcard-slot ${m.shiny ? 'shiny' : ''}" title="${esc(nombreInst(m))}"><img src="${sprite(m.id, m.shiny)}" alt="${esc(nombres[m.id] || m.id)}" /><span class="tcard-nv">Nv${m.nivel}</span>${idMini(m)}</div>`).join('');
       if (esMio) for (let i = eq.length; i < 6; i++) slots += '<div class="tcard-slot empty">＋</div>';
       row.innerHTML = slots || '<div class="tcard-slot empty" style="width:auto;padding:0 14px;border-style:solid">Sin equipo elegido</div>';
       $('u-equipo-wrap').hidden = !esMio && eq.length === 0;
@@ -271,9 +279,12 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       $('u-av').innerHTML = p.avatar ? `<img src="${sprite(p.avatar)}" alt="avatar" />` : '🎓';
       if (p.descripcion) { $('u-desc').textContent = p.descripcion; $('u-desc').hidden = false; }
 
-      // rango por medallas
+      // rango por medallas. MI perfil = live desde los hitos (mismo conteo que la Liga); el de otros = del snapshot.
+      const meds = esMio
+        ? (() => { try { return (JSON.parse(localStorage.getItem('col:hitos')) || []).filter((h) => String(h).startsWith('tema:')).length; } catch { return 0; } })()
+        : (pub.medallas || 0);
       let rango = 'Novato';
-      for (const [n, x] of RANGOS) if ((pub.medallas || 0) >= n) rango = x;
+      for (const [n, x] of RANGOS) if (meds >= n) rango = x;
       if (pub.titulos && pub.titulos.length === (pub.regiones || []).length && pub.regiones && pub.regiones.length) rango = 'Maestro Pokémon';
       $('u-rango').textContent = rango;
 

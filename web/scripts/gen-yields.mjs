@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.resolve(HERE, '..', 'src', 'data', 'yields.json');
-const MAX = 721;
+const MAX = 1025;
 const ORD = ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'];
 const get = async (u) => {
   for (let intento = 0; intento < 4; intento++) {

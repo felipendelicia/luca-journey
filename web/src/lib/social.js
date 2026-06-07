@@ -15,9 +15,12 @@ export function snapshotPublico(temas) {
   const REGORD = REGION_IDS;
   const porReg = {};
   for (const t of temas) (porReg[t.region] ||= []).push(t);
+  // una MEDALLA = el hito 'tema:slug' otorgado (ejercicios completos + proyecto/hito), igual que la Liga y
+  // coleccion.sincronizar. Antes acá se contaba solo por ejercicios → sobre-contaba y descuadraba el rango.
+  const hitos = (() => { try { return new Set(JSON.parse(localStorage.getItem('col:hitos')) || []); } catch { return new Set(); } })();
   const regiones = REGORD.filter((r) => porReg[r]).map((r) => {
     const ts = porReg[r];
-    const hechas = ts.filter((t) => t.ejercicios.length && t.ejercicios.every((ex) => done(t.slug, ex.id))).length;
+    const hechas = ts.filter((t) => hitos.has('tema:' + t.slug)).length;
     return { region: r, nombre: REGN[r], hechas, total: ts.length, campeon: hechas === ts.length && ts.length > 0 };
   });
   const medallas = regiones.reduce((a, x) => a + x.hechas, 0);
@@ -26,17 +29,21 @@ export function snapshotPublico(temas) {
   // ── campos sociales nuevos (todos viven en localStorage; van en el blob público) ──
   const ls = (k, def) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? def : v; } catch { return def; } };
   const pcArr = pc();
+  // instancia "slim" para publicar: incluye la IDENTIDAD (IVs/nat/hab/género/tamaño/alfa) si la tiene,
+  // así perfil/intercambio pueden mostrarla (no solo nivel/shiny).
+  const slim = (m) => ({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: !!m.shiny, mote: m.mote || '',
+    ...(m.ivs ? { ivs: m.ivs, nat: m.nat, hab: m.hab, gen: m.gen } : {}),
+    ...(m.tam ? { tam: m.tam } : {}), ...(m.alfa ? { alfa: true } : {}) });
   const porIid = Object.fromEntries(pcArr.map((m) => [m.iid, m]));
-  const equipo = (ls('col:equipo', [])).map((iid) => porIid[iid]).filter(Boolean)
-    .map((m) => ({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: !!m.shiny, mote: m.mote || '' }));
+  const equipo = (ls('col:equipo', [])).map((iid) => porIid[iid]).filter(Boolean).map(slim);
   const pvpRaw = ls('col:pvp', {});
   const rachaRaw = ls('col:racha', { dias: 0 });
 
   return {
     atrapados: st.atrapados,
     shiny: [...st.shiny],
-    // instancias del PC para el intercambio por INSTANCIA (id/nivel/shiny/mote por iid)
-    pcPub: pcArr.map((m) => ({ iid: m.iid, id: m.id, nivel: m.nivel, shiny: !!m.shiny, mote: m.mote || '' })),
+    // instancias del PC para el intercambio por INSTANCIA (id/nivel/shiny/mote + identidad por iid)
+    pcPub: pcArr.map(slim),
     conteos: { unicos: st.unicos, total: st.total, shinies: st.shiny.size, ejercicios: c.ejHechos },
     medallas, titulos, regiones, logros,
     equipo,

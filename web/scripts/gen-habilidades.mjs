@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.resolve(HERE, '..', 'src', 'data', 'habilidades.json');
-const MAX = 721;                          // dex actual (gen 1-6), igual que pokemon.json
+const MAX = 1025;
 const API = 'https://pokeapi.co/api/v2';
 
 // set CURADO: key interno → {nombre, desc, efecto:true}. El resto se marca efecto:false.
