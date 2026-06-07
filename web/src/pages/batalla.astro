@@ -171,22 +171,50 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     let G = null; // estado del combate
 
     // ── Fase 1: selección de equipo ──
+    // enriquece la colección con PODER (suma de stats efectivas) + tipos, ordenada por poder desc.
+    function porPoder(arr) {
+      return arr.map((m) => {
+        const c = combatiente(m);
+        return { m, tipos: c.tipos || [], poder: Math.round(c.hpMax + c.atk + c.def + c.spa + c.spd + c.spe) };
+      }).sort((a, b) => b.poder - a.poder || b.m.nivel - a.m.nivel);
+    }
+    // tipos presentes en `lista` (orden canónico de TCOLOR) para los chips de filtro.
+    const tiposPresentes = (lista) => { const s = new Set(); lista.forEach((x) => x.tipos.forEach((t) => s.add(t))); return Object.keys(TCOLOR).filter((t) => s.has(t)); };
+    // chips de filtro por tipo: "Todos" + uno por tipo presente.
+    function chipsFiltroTipo(tipos, activo) {
+      const chip = (t, lbl, on) => '<button type="button" class="bt-ftipo' + (on ? ' on' : '') + '" data-ftipo="' + t + '"' + (t ? ' style="--c:' + TCOLOR[t] + '"' : '') + '>' + lbl + '</button>';
+      return '<div class="bt-filtros" role="group" aria-label="Filtrar por tipo">' + chip('', 'Todos', !activo) + tipos.map((t) => chip(t, t, activo === t)).join('') + '</div>';
+    }
+    // tarjeta de un Pokémon en la selección (muestra el PODER, que es el criterio de orden).
+    const cardPick = (m, poder, elegido) => '<button class="bt-pick' + (elegido ? ' elegido' : '') + '" data-iid="' + m.iid + '"><img src="' + spriteUrl(m.id, m.shiny) + '" alt="" /><span>' + esc(m.mote || ('Nº ' + m.id)) + '</span><small>💪 ' + poder + ' · Nv.' + m.nivel + '</small></button>';
+
     function pintarSeleccion() {
       const arr = pc();
       if (!arr.length) {
         $('bt-sel').innerHTML = '<p class="bt-vacio">No tenés Pokémon todavía. Andá al <b>Safari</b> a atrapar algunos. 🎒</p>';
         return;
       }
-      const cards = [...arr].sort((a, b) => b.nivel - a.nivel).map((m) =>
-        '<button class="bt-pick" data-iid="' + m.iid + '"><img src="' + spriteUrl(m.id, m.shiny) + '" alt="" /><span>' + (m.mote || ('Nº ' + m.id)) + '</span><small>Nv. ' + m.nivel + '</small></button>').join('');
-      $('bt-sel').innerHTML = '<h2 class="liga-h">Elegí tu equipo <small>(hasta 3)</small></h2><div class="bt-picks">' + cards + '</div>' +
-        '<button class="btn-tirar" id="bt-go" disabled>⚔️ ¡Pelear!</button>';
-      const sel = new Set();
-      $('bt-sel').querySelectorAll('.bt-pick').forEach((b) => b.addEventListener('click', () => {
-        const iid = b.dataset.iid;
-        if (sel.has(iid)) { sel.delete(iid); b.classList.remove('elegido'); }
-        else if (sel.size < 3) { sel.add(iid); b.classList.add('elegido'); }
-        $('bt-go').disabled = sel.size === 0;
+      const lista = porPoder(arr), tipos = tiposPresentes(lista), sel = new Set();
+      let filtro = null;
+      $('bt-sel').innerHTML = '<h2 class="liga-h">Elegí tu equipo <small>(hasta 3 · ordenados por poder)</small></h2>'
+        + chipsFiltroTipo(tipos, filtro) + '<div class="bt-picks" id="bt-grid-sel"></div>'
+        + '<button class="btn-tirar" id="bt-go" disabled>⚔️ ¡Pelear!</button>';
+      const grid = $('bt-grid-sel');
+      function pintarGrid() {
+        const vis = filtro ? lista.filter((x) => x.tipos.includes(filtro)) : lista;
+        grid.innerHTML = vis.length ? vis.map((x) => cardPick(x.m, x.poder, sel.has(String(x.m.iid)))).join('') : '<p class="bt-vacio">Ningún Pokémon de ese tipo.</p>';
+        grid.querySelectorAll('.bt-pick').forEach((b) => b.addEventListener('click', () => {
+          const iid = b.dataset.iid;
+          if (sel.has(iid)) { sel.delete(iid); b.classList.remove('elegido'); }
+          else if (sel.size < 3) { sel.add(iid); b.classList.add('elegido'); }
+          $('bt-go').disabled = sel.size === 0;
+        }));
+      }
+      pintarGrid();
+      $('bt-sel').querySelectorAll('.bt-ftipo').forEach((b) => b.addEventListener('click', () => {
+        filtro = b.dataset.ftipo || null;
+        $('bt-sel').querySelectorAll('.bt-ftipo').forEach((x) => x.classList.toggle('on', (x.dataset.ftipo || '') === (filtro || '')));
+        pintarGrid();
       }));
       $('bt-go').addEventListener('click', () => empezar([...sel]));
     }
@@ -603,19 +631,35 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
 
     // ── Selección de equipo (en vivo) ──
     function seleccionOnline(rival) {
-      const arr = [...pc()].sort((a, b) => b.nivel - a.nivel); selOnline = new Set();
+      selOnline = new Set();
+      const arr = pc();
       if (!arr.length) { $('bt-online').innerHTML = '<p class="bt-vacio">No tenés Pokémon. Andá al Safari 🎒</p><button class="bt-volver" id="so-volver">← Volver</button>'; $('bt-online').hidden = false; $('so-volver').onclick = () => { online.rendirse(); volverInicio(); }; return; }
+      const lista = porPoder(arr), tipos = tiposPresentes(lista);
+      let filtro = null;
       $('bt-online').innerHTML =
-        '<h2 class="liga-h">Elegí tu equipo <small>(hasta 3) · rival: ' + esc((rival && rival.nombre) || '?') + '</small></h2>' +
-        '<div class="bt-picks">' + arr.map((m) => '<button class="bt-pick" data-iid="' + m.iid + '"><img src="' + spriteUrl(m.id, m.shiny) + '" alt="" /><span>' + esc(m.mote || ('Nº ' + m.id)) + '</span><small>Nv. ' + m.nivel + '</small></button>').join('') + '</div>' +
+        '<h2 class="liga-h">Elegí tu equipo <small>(hasta 3 · por poder) · rival: ' + esc((rival && rival.nombre) || '?') + '</small></h2>' +
+        chipsFiltroTipo(tipos, filtro) + '<div class="bt-picks" id="so-grid"></div>' +
         '<button class="btn-tirar" id="so-listo" disabled>✅ ¡Listo!</button><p class="bt-msg" id="so-msg"></p>';
       $('bt-online').hidden = false; $('bt-combate').hidden = true;
-      $('bt-online').querySelectorAll('.bt-pick').forEach((b) => b.onclick = () => {
-        const iid = b.dataset.iid;
-        if (selOnline.has(iid)) { selOnline.delete(iid); b.classList.remove('sel'); }
-        else if (selOnline.size < 3) { selOnline.add(iid); b.classList.add('sel'); }
-        $('so-listo').disabled = selOnline.size < 1;
-      });
+      const grid = $('so-grid');
+      function pintarGrid() {
+        const vis = filtro ? lista.filter((x) => x.tipos.includes(filtro)) : lista;
+        grid.innerHTML = vis.length
+          ? vis.map((x) => '<button class="bt-pick' + (selOnline.has(String(x.m.iid)) ? ' sel' : '') + '" data-iid="' + x.m.iid + '"><img src="' + spriteUrl(x.m.id, x.m.shiny) + '" alt="" /><span>' + esc(x.m.mote || ('Nº ' + x.m.id)) + '</span><small>💪 ' + x.poder + ' · Nv.' + x.m.nivel + '</small></button>').join('')
+          : '<p class="bt-vacio">Ningún Pokémon de ese tipo.</p>';
+        grid.querySelectorAll('.bt-pick').forEach((b) => b.onclick = () => {
+          const iid = b.dataset.iid;
+          if (selOnline.has(iid)) { selOnline.delete(iid); b.classList.remove('sel'); }
+          else if (selOnline.size < 3) { selOnline.add(iid); b.classList.add('sel'); }
+          $('so-listo').disabled = selOnline.size < 1;
+        });
+      }
+      pintarGrid();
+      $('bt-online').querySelectorAll('.bt-ftipo').forEach((b) => b.addEventListener('click', () => {
+        filtro = b.dataset.ftipo || null;
+        $('bt-online').querySelectorAll('.bt-ftipo').forEach((x) => x.classList.toggle('on', (x.dataset.ftipo || '') === (filtro || '')));
+        pintarGrid();
+      }));
       $('so-listo').onclick = () => { online.elegirEquipo([...selOnline]); $('so-listo').disabled = true; $('so-msg').textContent = 'Esperando al rival…'; };
     }
 
