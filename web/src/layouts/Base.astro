@@ -48,6 +48,7 @@ const nav = [
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Press+Start+2P&family=VT323&family=Silkscreen:wght@400;700&display=swap" />
 </head>
 <body>
+  <script is:inline>/* tema ANTES de pintar (evita el flash de la navbar al navegar) */try{if(localStorage.getItem('tema')==='claro')document.body.classList.add('claro');}catch(e){}</script>
   <div class="bg-grid" aria-hidden="true"></div>
   <script>
     import { iniciarReporteErrores } from '../lib/reporte-errores.js';
@@ -94,10 +95,11 @@ const nav = [
           <span class="snd-pct" id="snd-pct">80%</span>
         </div>
       </span>
-      <button class="theme-toggle" id="theme-toggle" type="button" title="Tema claro/oscuro">🌙</button>
+      <button class="theme-toggle" id="theme-toggle" type="button" title="Tema claro/oscuro">☀️</button>
       <button class="theme-toggle nav-burger" id="nav-burger" type="button" title="Menú" aria-label="Abrir menú" aria-expanded="false">☰</button>
     </div>
   </header>
+  <script is:inline>/* iconos de tema/sonido en su estado real ANTES de pintar (sin flash al navegar) */try{var _t=document.getElementById('theme-toggle');if(_t)_t.textContent=document.body.classList.contains('claro')?'🌙':'☀️';var _v;try{_v=localStorage.getItem('sonido:vol');_v=_v!=null?Math.max(0,Math.min(1,parseFloat(_v)||0)):(localStorage.getItem('sonido:off')==='1'?0:0.8);}catch(e){_v=0.8;}var _s=document.getElementById('sonido-toggle');if(_s)_s.textContent=_v<=0?'🔇':_v<0.34?'🔈':_v<0.67?'🔉':'🔊';}catch(e){}</script>
 
   <div class="auth-modal" id="auth-modal" hidden>
     <div class="auth-card">
