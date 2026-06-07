@@ -108,32 +108,42 @@ function humo(fx, x, y, n = 8) {
 function choque(fx, x, y) { ring(fx, x, y, 'rgba(255,255,255,.9)', 64, 18, 5); flash(fx, x, y, 'rgba(255,255,255,.7)', 46, 12); }
 // carga previa en el atacante (partículas que convergen + flash) antes de un haz
 function cargar(fx, a, col) { for (let i = 0; i < 10; i++) { const ang = rnd(0, 6.28), d = rnd(28, 46); fx.add({ x: a.x + Math.cos(ang) * d, y: a.y + Math.sin(ang) * d, vx: -Math.cos(ang) * d * 0.18, vy: -Math.sin(ang) * d * 0.18, g: 0, drag: 0.9, life: 14, max: 14, r: 4, r2: 1, col, add: true, shape: 'circle', rot: 0, spin: 0, fade: true }); } flash(fx, a.x, a.y, col, 36, 12); }
+// estrella de impacto (4 púas + glow) — para golpes físicos
+function gleamStar(fx, x, y, col, sz = 30, life = 16) { fx.addO({ life, draw(ctx, k) { const r = sz * (0.35 + k * 1.4), al = 1 - k; ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = al; ctx.strokeStyle = col; ctx.lineWidth = Math.max(1, 5 * (1 - k)); ctx.shadowBlur = 12; ctx.shadowColor = col; for (const [ax, ay] of [[1, 0], [0, 1], [0.6, 0.6], [-0.6, 0.6]]) { const lw = (ax === 0 || ay === 0) ? r : r * 0.5; ctx.beginPath(); ctx.moveTo(x - ax * lw, y - ay * lw); ctx.lineTo(x + ax * lw, y + ay * lw); ctx.stroke(); } ctx.shadowBlur = 0; ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; } }); }
+// X metálica (corte de acero)
+function slashX(fx, x, y, col) { for (let i = 0; i < 2; i++) fx.addO({ life: 14, i, draw(ctx, k) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 1 - k; ctx.strokeStyle = col; ctx.lineWidth = 7 * (1 - k * 0.5); ctx.shadowBlur = 10; ctx.shadowColor = col; const d = this.i ? 1 : -1, ln = 50 * Math.min(1, k * 2.5); ctx.beginPath(); ctx.moveTo(x - ln, y - ln * d); ctx.lineTo(x + ln, y + ln * d); ctx.stroke(); ctx.shadowBlur = 0; ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; } }); }
+// crescientes de viento (volador)
+function crescent(fx, x, y, col) { for (let i = 0; i < 3; i++) fx.addO({ life: 18, i, draw(ctx, k) { const rr = 16 + this.i * 14 + k * 36; ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (1 - k) * 0.9; ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(x, y, rr, -1.2, 1.2); ctx.stroke(); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; } }); }
+// fisura en el suelo (tierra)
+function fisura(fx, x, y, col) { const seed = []; for (let s = 0; s < 7; s++) seed.push([rnd(14, 26), rnd(2, 8)]); fx.addO({ life: 24, draw(ctx, k) { ctx.globalAlpha = Math.min(1, k * 4) * (1 - Math.max(0, (k - 0.6) / 0.4)); ctx.strokeStyle = col; ctx.lineWidth = 4; for (const sgn of [-1, 1]) { let px = x, py = y + 12; ctx.beginPath(); ctx.moveTo(px, py); for (let s = 0; s < 7; s++) { px += sgn * (s % 2 ? 1 : -1) * seed[s][0]; py += seed[s][1]; ctx.lineTo(px, py); } ctx.stroke(); } ctx.globalAlpha = 1; } }); }
+// implosión (siniestro): partículas convergen al centro
+function implode(fx, x, y, col, n = 14) { for (let i = 0; i < n; i++) { const a = rnd(0, 6.28), d = rnd(45, 82); fx.add({ x: x + Math.cos(a) * d, y: y + Math.sin(a) * d, vx: -Math.cos(a) * d * 0.13, vy: -Math.sin(a) * d * 0.13, g: 0, drag: 1, life: 16, max: 16, r: 5, r2: 1, col, add: true, shape: 'circle', rot: 0, spin: 0, fade: true }); } }
 
 // ───────────────────────── efectos por TIPO (base) ─────────────────────────
 const dosCol = (a, b) => () => (Math.random() < 0.5 ? a : b);
 const fuegoCol = () => { const r = Math.random(); return r < 0.22 ? '#fff2b0' : r < 0.58 ? '#ffd24a' : r < 0.85 ? '#ff8a2c' : '#e6431a'; };
 const aguaCol = () => { const r = Math.random(); return r < 0.35 ? '#eafaff' : r < 0.7 ? '#7fd0ff' : '#2f8fd8'; };
 const TYPE_FX = {
-  Normal: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(255,255,255,.9)', 60); burst(c.fx, c.d.x, c.d.y, 14, { col: '#fff', add: true, r: 4, r2: 1, spMin: 2, spMax: 6, life: 24 }); },
+  Normal: (c) => { gleamStar(c.fx, c.d.x, c.d.y, '#fff', 30); burst(c.fx, c.d.x, c.d.y, 8, { col: '#fff', add: true, r: 3, r2: 0, spMin: 4, spMax: 9, life: 14, shape: 'spark' }); },
   // llama irregular: emite por 14 frames, partículas que suben con turbulencia, tamaños/colores variados
   Fuego: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(255,150,50,.9)', 72); c.fx.emit(14, (fx) => { for (let i = 0; i < 3; i++) { const a = rnd(-2.5, -0.6); fx.add({ x: c.d.x + rnd(-18, 18), y: c.d.y + rnd(-4, 12), vx: Math.cos(a) * rnd(0.7, 2.2), vy: Math.sin(a) * rnd(1.4, 3.4), g: -0.03, drag: 0.93, turb: 0.55, life: Math.round(rnd(18, 34)), max: 30, r: rnd(4, 11), r2: 0.5, col: fuegoCol(), add: true, shape: 'circle', rot: 0, spin: 0, fade: true }); } }); humo(c.fx, c.d.x, c.d.y - 12, 7); },
   // agua irregular: chorro de gotas con gravedad + spray, tamaños/arcos dispares
   Agua: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(80,180,255,.8)', 55); ring(c.fx, c.d.x, c.d.y + 8, '#7fd0ff', 62, 22, 4); c.fx.emit(9, (fx) => { for (let i = 0; i < 4; i++) { const a = rnd(-2.8, -0.3); fx.add({ x: c.d.x + rnd(-10, 10), y: c.d.y, vx: Math.cos(a) * rnd(1.8, 6), vy: Math.sin(a) * rnd(2, 6), g: 0.3, drag: 0.98, turb: 0.22, life: Math.round(rnd(26, 46)), max: 40, r: rnd(2.5, 6.5), r2: 1, col: aguaCol(), add: true, shape: Math.random() < 0.45 ? 'spark' : 'circle', rot: 0, spin: 0, fade: true }); } }); },
-  'Eléctrico': (c) => { screen(c.fx, 'rgba(255,246,160,.55)'); bolt(c.fx, c.d.x, c.d.y); burst(c.fx, c.d.x, c.d.y, 18, { col: '#fff7a0', add: true, r: 4, r2: 0, spMin: 3, spMax: 8, life: 18, shape: 'spark' }); },
-  Planta: (c) => { burst(c.fx, c.d.x, c.d.y, 18, { col: dosCol('#bff06a', '#3f9a2e'), r: 8, r2: 5, spMin: 1.5, spMax: 5, g: 0.06, drag: 0.95, life: 40, shape: 'leaf', spin: 0.3 }); },
-  Hielo: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(160,240,240,.85)', 64); burst(c.fx, c.d.x, c.d.y, 16, { col: dosCol('#eafcff', '#7fe0e0'), add: true, r: 7, r2: 3, spMin: 2, spMax: 6, life: 30, shape: 'rect', spin: 0.2 }); },
-  Roca: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(190,170,110,.6)', 50); burst(c.fx, c.d.x, c.d.y, 14, { col: dosCol('#cbb886', '#7a6438'), r: 8, r2: 6, spMin: 2, spMax: 6, g: 0.3, drag: 0.98, life: 36, shape: 'rect', spin: 0.4 }); humo(c.fx, c.d.x, c.d.y, 5); },
-  Tierra: (c) => { sacudir(c.arena); burst(c.fx, c.d.x, c.d.y + 18, 18, { col: dosCol('#d8a85c', '#8a5a28'), r: 8, r2: 5, dir: -1.57, spread: 1, spMin: 3, spMax: 7, g: 0.34, drag: 0.98, life: 40, shape: 'rect', spin: 0.4 }); humo(c.fx, c.d.x, c.d.y + 16, 8); },
-  Veneno: (c) => { burst(c.fx, c.d.x, c.d.y, 16, { col: dosCol('#e7b6ff', '#a23fd0'), add: true, r: 8, r2: 4, vyBias: -1.6, g: -0.02, drag: 0.95, life: 44, jx: 10 }); },
-  'Psíquico': (c) => { ring(c.fx, c.d.x, c.d.y, '#fb6a8e', 70, 24, 6); ring(c.fx, c.d.x, c.d.y, '#ffa6c0', 90, 30, 4); flash(c.fx, c.d.x, c.d.y, 'rgba(251,106,142,.6)', 60); burst(c.fx, c.d.x, c.d.y, 12, { col: '#ffb6cf', add: true, r: 4, r2: 1, spMin: 1, spMax: 3, life: 30 }); },
-  Volador: (c) => { burst(c.fx, c.d.x, c.d.y, 14, { col: '#eef4ff', add: true, r: 5, r2: 1, dir: -2.2, spread: 0.5, spMin: 4, spMax: 8, life: 24, shape: 'spark' }); },
-  Lucha: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(255,255,255,.95)', 60); ring(c.fx, c.d.x, c.d.y, '#ffd84a', 56, 16, 6); burst(c.fx, c.d.x, c.d.y, 10, { col: '#ffe06a', add: true, r: 5, r2: 1, spMin: 3, spMax: 7, life: 20, shape: 'spark' }); },
-  Fantasma: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(120,90,200,.8)', 70); burst(c.fx, c.d.x, c.d.y, 14, { col: dosCol('#9b7fe0', '#3a2a66'), add: true, r: 9, r2: 4, vyBias: -0.8, drag: 0.95, life: 40, jx: 10 }); },
-  Bicho: (c) => { burst(c.fx, c.d.x, c.d.y, 14, { col: dosCol('#b6d63a', '#7a9a1e'), r: 5, r2: 2, spMin: 2, spMax: 6, life: 28 }); },
-  'Dragón': (c) => { beam(c.fx, c.atk, c.d, '#7a8ef0', 18); ring(c.fx, c.d.x, c.d.y, '#9aa6ff', 70, 22, 5); burst(c.fx, c.d.x, c.d.y, 12, { col: '#aab6ff', add: true, r: 5, r2: 2, spMin: 2, spMax: 5, life: 26 }); },
-  Hada: (c) => { burst(c.fx, c.d.x, c.d.y, 16, { col: dosCol('#ffd6f4', '#f29ae6'), add: true, r: 7, r2: 2, spMin: 1.5, spMax: 5, life: 34, shape: 'star', spin: 0.25 }); },
-  Acero: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(230,240,250,.95)', 56); burst(c.fx, c.d.x, c.d.y, 12, { col: '#fff', add: true, r: 4, r2: 1, spMin: 3, spMax: 8, life: 18, shape: 'spark' }); },
-  Siniestro: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(60,40,90,.85)', 80); burst(c.fx, c.d.x, c.d.y, 14, { col: dosCol('#5a4a7a', '#1a1424'), r: 9, r2: 4, spMin: 1.5, spMax: 5, life: 34, jx: 8 }); },
+  'Eléctrico': (c) => { screen(c.fx, 'rgba(255,246,160,.5)'); bolt(c.fx, c.d.x, c.d.y); bolt(c.fx, c.d.x + rnd(-32, 32), c.d.y, 13); burst(c.fx, c.d.x, c.d.y, 16, { col: '#fff7a0', add: true, r: 4, r2: 0, spMin: 4, spMax: 9, life: 16, shape: 'spark' }); },
+  Planta: (c) => { for (let i = 0; i < 18; i++) { const a = i / 18 * 6.28, sp = rnd(2, 3.8); c.fx.add({ x: c.d.x, y: c.d.y, vx: Math.cos(a + 1.5) * sp, vy: Math.sin(a + 1.5) * sp, g: 0.02, drag: 0.97, turb: 0.08, life: Math.round(rnd(30, 46)), max: 42, r: rnd(6, 10), r2: 3, col: dosCol('#bff06a', '#3f9a2e')(), add: false, shape: 'leaf', rot: a, spin: 0.35, fade: true }); } crescent(c.fx, c.d.x, c.d.y, '#8fe24a'); },
+  Hielo: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(170,245,245,.7)', 50); for (let i = 0; i < 14; i++) { const a = rnd(0, 6.28), sp = rnd(1.5, 4); c.fx.add({ x: c.d.x, y: c.d.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, g: 0, drag: 0.9, life: Math.round(rnd(26, 40)), max: 34, r: rnd(5, 10), r2: rnd(3, 6), col: dosCol('#eafcff', '#7fe0e0')(), add: true, shape: 'rect', rot: a, spin: 0, fade: true }); } },
+  Roca: (c) => { for (let i = 0; i < 7; i++) { const a = rnd(-2.4, -0.7), sp = rnd(3, 6); c.fx.add({ x: c.d.x + rnd(-10, 10), y: c.d.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, g: 0.4, drag: 0.99, life: Math.round(rnd(34, 50)), max: 44, r: rnd(8, 15), r2: rnd(7, 13), col: dosCol('#cbb886', '#7a6438')(), add: false, shape: 'rect', rot: rnd(0, 6.28), spin: rnd(-0.3, 0.3), fade: true }); } humo(c.fx, c.d.x, c.d.y + 6, 6); },
+  Tierra: (c) => { sacudir(c.arena); fisura(c.fx, c.d.x, c.d.y, '#6b4a22'); for (let i = 0; i < 12; i++) { const sp = rnd(4, 8); c.fx.add({ x: c.d.x + rnd(-30, 30), y: c.d.y + 14, vx: rnd(-1, 1), vy: -sp, g: 0.45, drag: 1, life: Math.round(rnd(30, 46)), max: 40, r: rnd(7, 13), r2: rnd(6, 11), col: dosCol('#d8a85c', '#8a5a28')(), add: false, shape: 'rect', rot: rnd(0, 6.28), spin: rnd(-0.4, 0.4), fade: true }); } humo(c.fx, c.d.x, c.d.y + 16, 8); },
+  Veneno: (c) => { ring(c.fx, c.d.x, c.d.y, '#c060e0', 50, 22, 4); for (let i = 0; i < 14; i++) c.fx.add({ x: c.d.x + rnd(-26, 26), y: c.d.y + rnd(-6, 14), vx: rnd(-0.6, 0.6), vy: rnd(-2.4, -0.8), g: -0.015, drag: 0.96, turb: 0.4, life: Math.round(rnd(34, 56)), max: 46, r: rnd(5, 12), r2: rnd(3, 8), col: dosCol('#e7b6ff', '#9a30c0')(), add: false, shape: 'circle', rot: 0, spin: 0, fade: true }); },
+  'Psíquico': (c) => { for (let i = 0; i < 3; i++) ring(c.fx, c.d.x, c.d.y, i % 2 ? '#ffa6d0' : '#fb6a8e', 56 + i * 22, 24 + i * 5, 5); for (let i = 0; i < 10; i++) { const a = rnd(0, 6.28), d = rnd(30, 60); c.fx.add({ x: c.d.x + Math.cos(a) * d, y: c.d.y + Math.sin(a) * d, vx: Math.cos(a + 1.57) * 1.6, vy: Math.sin(a + 1.57) * 1.6, g: 0, drag: 0.98, life: 28, max: 28, r: 6, r2: 2, col: '#ffd0e6', add: true, shape: 'rect', rot: a, spin: 0.2, fade: true }); } },
+  Volador: (c) => { crescent(c.fx, c.d.x, c.d.y, '#dfeaff'); burst(c.fx, c.d.x, c.d.y, 10, { col: '#fff', add: true, r: 4, r2: 1, dir: -2.2, spread: 0.7, spMin: 4, spMax: 8, life: 22, shape: 'spark' }); },
+  Lucha: (c) => { sacudir(c.arena); gleamStar(c.fx, c.d.x, c.d.y, '#fff', 46, 18); ring(c.fx, c.d.x, c.d.y, '#ffd84a', 60, 18, 7); burst(c.fx, c.d.x, c.d.y, 8, { col: '#ffe06a', add: true, r: 5, r2: 1, spMin: 4, spMax: 9, life: 18, shape: 'spark' }); },
+  Fantasma: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(110,80,190,.85)', 80, 22); for (let i = 0; i < 14; i++) c.fx.add({ x: c.d.x + rnd(-30, 30), y: c.d.y + rnd(-10, 20), vx: rnd(-1, 1), vy: rnd(-2, -0.4), g: 0, drag: 0.97, turb: 0.45, life: Math.round(rnd(36, 56)), max: 48, r: rnd(7, 14), r2: rnd(2, 6), col: dosCol('#9b7fe0', '#46307a')(), add: true, shape: 'circle', rot: 0, spin: 0, fade: true }); },
+  Bicho: (c) => { for (let i = 0; i < 24; i++) { const a = rnd(0, 6.28), sp = rnd(4, 9); c.fx.add({ x: c.d.x, y: c.d.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, g: 0.05, drag: 0.96, turb: 0.3, life: Math.round(rnd(18, 30)), max: 26, r: rnd(2, 4), r2: 1, col: dosCol('#cde84a', '#7a9a1e')(), add: false, shape: 'spark', rot: 0, spin: 0, fade: true }); } },
+  'Dragón': (c) => { beam(c.fx, c.atk, { x: c.d.x, y: c.d.y - 8 }, '#8fa0ff', 12); beam(c.fx, c.atk, { x: c.d.x, y: c.d.y + 8 }, '#c0a0ff', 12); ring(c.fx, c.d.x, c.d.y, '#9aa6ff', 72, 22, 5); burst(c.fx, c.d.x, c.d.y, 10, { col: '#bcc4ff', add: true, r: 5, r2: 2, spMin: 2, spMax: 5, life: 24 }); },
+  Hada: (c) => { c.fx.emit(10, (fx) => fx.add({ x: c.d.x + rnd(-44, 44), y: c.d.y + rnd(-38, 38), vx: 0, vy: 0, g: 0, drag: 1, life: 18, max: 18, r: rnd(5, 11), r2: 0, col: dosCol('#ffd6f4', '#ff9ae6')(), add: true, shape: 'star', rot: rnd(0, 1), spin: 0.3, fade: true })); flash(c.fx, c.d.x, c.d.y, 'rgba(255,170,230,.5)', 60); },
+  Acero: (c) => { slashX(c.fx, c.d.x, c.d.y, '#eaf2ff'); burst(c.fx, c.d.x, c.d.y, 10, { col: '#fff', add: true, r: 3, r2: 0, spMin: 4, spMax: 9, life: 14, shape: 'spark' }); },
+  Siniestro: (c) => { implode(c.fx, c.d.x, c.d.y, '#9a6ad0', 16); setTimeout(() => { try { flash(c.fx, c.d.x, c.d.y, 'rgba(70,30,100,.9)', 90, 16); burst(c.fx, c.d.x, c.d.y, 14, { col: dosCol('#7a4ad0', '#2a1040')(), add: true, r: 8, r2: 2, spMin: 3, spMax: 7, life: 24 }); } catch (e) {} }, 280); },
 };
 function sacudir(arena) { arena.classList.add('bt-sacude'); setTimeout(() => arena.classList.remove('bt-sacude'), 320); }
 
@@ -181,10 +191,10 @@ function efectoEstado(c) {
 }
 const C = (c) => TCOLOR[c.mov.tipo] || '#fff';
 const T = {
-  golpe: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(255,255,255,.85)', 56); burst(c.fx, c.d.x, c.d.y, 12, { col: C(c), add: true, r: 6, r2: 2, spMin: 2, spMax: 6, life: 24 }); },
+  golpe: (c) => { gleamStar(c.fx, c.d.x, c.d.y, '#fff', 30); burst(c.fx, c.d.x, c.d.y, 9, { col: C(c), add: true, r: 4, r2: 1, spMin: 3, spMax: 8, life: 18, shape: 'spark' }); },
   multi: (c) => { for (let k = 0; k < 4; k++) setTimeout(() => { try { flash(c.fx, c.d.x + rnd(-18, 18), c.d.y + rnd(-16, 16), 'rgba(255,255,255,.9)', 36, 12); } catch (e) {} }, k * 95); },
   cuchillada: (c) => { for (let i = 0; i < 3; i++) c.fx.addO({ life: 14, t0: i, draw(ctx, k) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 1 - k; ctx.strokeStyle = C(c); ctx.lineWidth = 6 * (1 - k * 0.5); ctx.shadowBlur = 8; ctx.shadowColor = C(c); const dir = i % 2 ? 1 : -1; ctx.beginPath(); ctx.moveTo(c.d.x - 48, c.d.y - 28 * dir); ctx.lineTo(c.d.x + 48, c.d.y + 28 * dir); ctx.stroke(); ctx.shadowBlur = 0; ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; } }); },
-  puno: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(255,255,255,.95)', 64); ring(c.fx, c.d.x, c.d.y, '#ffd84a', 54, 16, 6); burst(c.fx, c.d.x, c.d.y, 9, { col: '#ffe06a', add: true, r: 5, r2: 1, spMin: 3, spMax: 7, life: 20, shape: 'spark' }); },
+  puno: (c) => { sacudir(c.arena); gleamStar(c.fx, c.d.x, c.d.y, '#fff', 44, 18); ring(c.fx, c.d.x, c.d.y, '#ffd84a', 58, 18, 7); burst(c.fx, c.d.x, c.d.y, 8, { col: '#ffe06a', add: true, r: 5, r2: 1, spMin: 4, spMax: 9, life: 18, shape: 'spark' }); },
   mordida: MOVE_FX[44], picotazo: (c) => { beam(c.fx, c.atk, c.d, '#fff', 7, 12); flash(c.fx, c.d.x, c.d.y, 'rgba(255,255,255,.7)', 40); },
   haz: (c) => { cargar(c.fx, c.atk, C(c)); beam(c.fx, c.atk, c.d, C(c), 16); (TYPE_FX[c.mov.tipo] || TYPE_FX.Normal)(c); },
   proyectil: (c) => { proyectil(c, C(c)); setTimeout(() => { try { flash(c.fx, c.d.x, c.d.y, C(c), 60); (TYPE_FX[c.mov.tipo] || TYPE_FX.Normal)(c); } catch (e) {} }, 320); },
@@ -216,11 +226,10 @@ export function efectoAtaque(arena, mov, haciaRival) {
   const atk = haciaRival ? { x: w * 0.26, y: h * 0.70 } : { x: w * 0.76, y: h * 0.32 };
   const c = { fx, d: def, def, atk, arena, mov };
   try {
-    if (MOVE_FX[mov.id]) { MOVE_FX[mov.id](c); if (!esEstadoMov(mov)) choque(fx, def.x, def.y); return; }
+    if (MOVE_FX[mov.id]) { MOVE_FX[mov.id](c); return; }
     if (esEstadoMov(mov)) { efectoEstado(c); return; }
     if (mov.categoria === 'Especial') { cargar(fx, atk, C(c)); beam(fx, atk, def, C(c), 14); }
     (TYPE_FX[mov.tipo] || TYPE_FX.Normal)(c);
     if (mov.ailment) ailmentFx(fx, def, mov.ailment);
-    choque(fx, def.x, def.y);
   } catch (e) {}
 }

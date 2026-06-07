@@ -59,6 +59,13 @@ function nota(freq, start, dur, tipo = 'square', vol = 0.12) {
   musNodos.push(o);
   o.onended = () => { musNodos = musNodos.filter((x) => x !== o); };
 }
+// ── batería 8-bit (kick/snare/hihat) — le da pegada de battle theme ──
+let _noise;
+function noiseBuf() { const c = ac(); if (!_noise) { _noise = c.createBuffer(1, c.sampleRate * 0.4, c.sampleRate); const d = _noise.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; } return _noise; }
+function track(node) { musNodos.push(node); node.onended = () => { musNodos = musNodos.filter((x) => x !== node); }; }
+function kick(start, vol = 0.34) { const c = ac(); const o = c.createOscillator(), g = c.createGain(); const t0 = c.currentTime + start; o.type = 'sine'; o.frequency.setValueAtTime(128, t0); o.frequency.exponentialRampToValueAtTime(42, t0 + 0.11); g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.17); o.connect(g); g.connect(c.destination); o.start(t0); o.stop(t0 + 0.19); track(o); }
+function snare(start, vol = 0.2) { const c = ac(); const s = c.createBufferSource(); s.buffer = noiseBuf(); const f = c.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 1400; const g = c.createGain(); const t0 = c.currentTime + start; g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.13); s.connect(f); f.connect(g); g.connect(c.destination); s.start(t0); s.stop(t0 + 0.15); track(s); }
+function hihat(start, vol = 0.06) { const c = ac(); const s = c.createBufferSource(); s.buffer = noiseBuf(); const f = c.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 7000; const g = c.createGain(); const t0 = c.currentTime + start; g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.04); s.connect(f); f.connect(g); g.connect(c.destination); s.start(t0); s.stop(t0 + 0.05); track(s); }
 export function detenerMusica() {
   if (musLoop) { clearTimeout(musLoop); musLoop = null; }
   for (const o of musNodos) { try { o.stop(); } catch {} }
@@ -113,12 +120,17 @@ function loopBatalla() {
     const arp = ARP[b];
     for (let s = 0; s < PxC; s++) {
       const t = (b * PxC + s) * PASO;
-      nota(bajo[s], t, PASO * 0.92, 'triangle', 0.075);                 // bajo galopante
+      // batería: kick en 1 y 3, snare (backbeat) en 2 y 4, hi-hat en cada corchea
+      if (s % 4 === 0) kick(t);
+      if (s % 4 === 2) snare(t);
+      hihat(t, s % 2 ? 0.04 : 0.07);
+      if (s === 7) kick(t, 0.22);                                       // pickup al cierre del compás
+      nota(bajo[s], t, PASO * 0.92, 'triangle', 0.09);                  // bajo galopante
       const mf = MELODIA[b][s];
-      if (mf) { nota(mf, t, PASO * 0.8, 'square', 0.06); nota(mf * 1.006, t, PASO * 0.8, 'square', 0.026); }   // lead doble (detune = más gordo)
+      if (mf) { nota(mf, t, PASO * 0.82, 'square', 0.085); nota(mf * 1.006, t, PASO * 0.82, 'square', 0.035); }   // lead doble (detune = más gordo)
       // arpegio en semicorcheas (octava arriba): acompañamiento brillante estilo GBA
-      nota(arp[(s * 2) % 4] * 2, t, PASO * 0.42, 'square', 0.022);
-      nota(arp[(s * 2 + 1) % 4] * 2, t + PASO * 0.5, PASO * 0.42, 'square', 0.022);
+      nota(arp[(s * 2) % 4] * 2, t, PASO * 0.42, 'square', 0.016);
+      nota(arp[(s * 2 + 1) % 4] * 2, t + PASO * 0.5, PASO * 0.42, 'square', 0.016);
     }
   }
   const LARGO = COMPASES * PxC * PASO;     // 4*8*0.15 = 4.8s
