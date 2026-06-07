@@ -8,6 +8,9 @@ import aparicion from '../data/aparicion.json' with { type: 'json' };
 import learnsets from '../data/learnsets.json' with { type: 'json' };
 import { ITEMS, BALL_BOOST } from './items.js';
 import { migrarPC } from './migracion-pc.js';
+import habilidades from '../data/habilidades.json';
+import yields from '../data/yields.json';
+import { rolarIdentidad, identidad as identidadCore, NATURALEZAS, sumarEV } from './combate-core.ts';
 
 // corre la migración a v2 (conteos→instancias) una vez, antes de tocar el PC.
 let _migrado = false;
@@ -70,10 +73,26 @@ export function nivelWild(id) {
 // crea una instancia nueva (al atrapar) + suma a vistos + caramelos a la familia. Devuelve la instancia.
 export function atrapar(id, { shiny = false, nivel = 1 } = {}) {
   id = Number(id);
-  const inst = { iid: _uid(), id, nivel, exp: 0, shiny, movs: [], creado: Date.now() };
+  const idn = rolarIdentidad(id, habilidades);
+  const inst = { iid: _uid(), id, nivel, exp: 0, shiny, movs: [], creado: Date.now(),
+    ivs: idn.ivs, nat: idn.nat, hab: idn.hab, gen: idn.gen, evs: [0, 0, 0, 0, 0, 0] };
   const arr = pc(); arr.push(inst); setPC(arr);
   addVisto(id); addCaramelos(id, CARAMELOS_POR_CAPTURA);
   return inst;
+}
+
+// data de combate para derivar identidad de una instancia (para UI)
+const _DATOS_ID = { habilidades };
+export const identidadDe = (inst) => identidadCore(inst, _DATOS_ID);
+export const evsDe = (inst) => (inst.evs && inst.evs.length === 6) ? inst.evs : [0, 0, 0, 0, 0, 0];
+export const naturalezaDe = (inst) => NATURALEZAS[identidadDe(inst).nat] || NATURALEZAS[0];
+export const habMeta = (key) => (habilidades.meta || {})[key] || null;
+export const yieldDe = (id) => yields[String(id)] || [0, 0, 0, 0, 0, 0];
+
+// otorga EVs a una instancia (por iid) según un vector yield. Persiste. Respeta caps.
+export function darEV(iid, yieldVec) {
+  const arr = pc(); const m = arr.find((x) => x.iid === iid); if (!m) return;
+  m.evs = sumarEV(evsDe(m), yieldVec); setPC(arr);
 }
 
 export const BALLS_POR_EJERCICIO = 2;

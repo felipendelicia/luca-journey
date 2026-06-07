@@ -110,6 +110,18 @@ export function rolarIdentidad(id: number, habData: DatosCombate['habilidades'],
   return { ivs, nat, hab, gen };
 }
 
+// suma EVs respetando cap 252 por stat y 510 total. Pura.
+export function sumarEV(evs: number[], yields: number[]): number[] {
+  const out = (evs && evs.length === 6) ? [...evs] : [0, 0, 0, 0, 0, 0];
+  let total = out.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < 6; i++) {
+    const espacioStat = Math.min(252 - out[i], (yields[i] || 0));
+    const inc = Math.max(0, Math.min(espacioStat, 510 - total));
+    out[i] += inc; total += inc;
+  }
+  return out;
+}
+
 // identidad de una instancia: campos explícitos si están; si no, derivada del iid (estable, sin migración).
 export function identidad(inst: Inst, d: DatosCombate): Ident {
   if (inst.ivs && inst.nat != null) return { ivs: inst.ivs, nat: inst.nat, hab: inst.hab ?? null, gen: inst.gen ?? null };

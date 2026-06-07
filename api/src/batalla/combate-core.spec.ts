@@ -5,6 +5,7 @@ import {
   aplicarAilment, tickEstado, combatiente, movsDe, tiposDe, sinPP, Combatiente, Mov, DatosCombate,
 } from './combate-core';
 import { NATURALEZAS, semilla, identidad, rolarIdentidad } from './combate-core';
+import { sumarEV } from './combate-core';
 import { statEf as statEf3, hpEf as hpEf3 } from './combate-core';
 import { calcularDano as cd, aplicarAilment as aa, acierta as ac } from './combate-core';
 
@@ -604,5 +605,16 @@ describe('habilidades — orquestación', () => {
     const atk = C({ estado: null });
     expect(habAlContacto(def, atk, { id: 1, nombre: 'Rayo', tipo: 'Eléctrico', poder: 90, categoria: 'Especial' } as any, () => 0.01)).toBe('');
     expect(atk.estado).toBeNull();
+  });
+});
+
+describe('EVs', () => {
+  test('sumarEV respeta cap 252 por stat', () => {
+    expect(sumarEV([250, 0, 0, 0, 0, 0], [3, 0, 0, 0, 0, 0])).toEqual([252, 0, 0, 0, 0, 0]);
+  });
+  test('sumarEV respeta cap total 510', () => {
+    const r = sumarEV([252, 252, 0, 0, 0, 0], [0, 0, 10, 0, 0, 0]);
+    expect(r[2]).toBe(6);
+    expect(r.reduce((a, b) => a + b, 0)).toBe(510);
   });
 });
