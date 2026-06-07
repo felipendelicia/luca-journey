@@ -9,6 +9,8 @@ import { python } from '@codemirror/lang-python';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { indentUnit } from '@codemirror/language';
 import { snippetCompletion as snip, acceptCompletion, completionStatus } from '@codemirror/autocomplete';
+import { linter, lintGutter } from '@codemirror/lint';
+import { checkSintaxis } from './pyrun.js';
 
 const kw = (label, info) => ({ label, type: 'keyword', info });
 const bi = (label, info) => ({ label, type: 'function', info });
@@ -107,6 +109,40 @@ function insertIndent(view) {
   return true;
 }
 
+// mensajes cortos en español para los SyntaxError más comunes (si no matchea, el detalle de Python).
+const TRAD_SINTAXIS = [
+  [/expected ':'/i, "falta el ':' al final (después de if/for/while/def…)"],
+  [/was never closed|unexpected EOF/i, "quedó un ( [ { o una comilla sin cerrar"],
+  [/inconsistent use of tabs/i, 'mezclaste tabs y espacios — usá solo espacios'],
+  [/unexpected indent/i, 'hay espacios de más al principio de la línea'],
+  [/expected an indented block/i, "después de ':' la línea va con 4 espacios de sangría"],
+  [/unindent does not match/i, 'la sangría no coincide con ningún bloque de afuera'],
+  [/invalid syntax/i, 'algo está mal escrito (¿falta : , ) o usaste = en vez de ==?)'],
+];
+const traducirSintaxis = (m) => { for (const [re, es] of TRAD_SINTAXIS) if (re.test(m)) return es; return m || 'revisá esta línea'; };
+
+// linter inline: subraya el SyntaxError exacto (Pyodide compile(), sin ejecutar), estilo VS Code.
+const pyLinter = linter(async (view) => {
+  const code = view.state.doc.toString();
+  if (!code.trim()) return [];
+  let info = null;
+  try { info = await checkSintaxis(code); } catch { info = null; }
+  if (!info || !info.lineno) return [];
+  const doc = view.state.doc;
+  const lineObj = doc.line(Math.min(Math.max(1, info.lineno), doc.lines));
+  let from = lineObj.from + Math.max(0, (info.offset || 1) - 1);
+  let to = lineObj.to;
+  // si end_offset cae en la MISMA línea, ajustamos el final; si no, subrayamos hasta el fin de la línea.
+  if (info.end_lineno === info.lineno && info.end_offset) to = lineObj.from + Math.max(0, info.end_offset - 1);
+  // mantener el rango DENTRO de la línea del error y garantizar ≥1 carácter subrayado (visible).
+  from = Math.max(lineObj.from, Math.min(from, lineObj.to));
+  to = Math.min(Math.max(to, from), lineObj.to);
+  if (to <= from) { from = Math.max(lineObj.from, lineObj.to - 1); to = lineObj.to; }
+  const esIndent = info.type === 'IndentationError' || info.type === 'TabError';
+  return [{ from, to, severity: 'error', source: 'Python',
+    message: (esIndent ? 'Indentación: ' : 'Sintaxis: ') + traducirSintaxis(info.msg || '') }];
+}, { delay: 700 });
+
 const modoOscuro = () => !document.body.classList.contains('claro');
 const esMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || '');
 const fontPx = () => { const n = parseInt(localStorage.getItem('editor:fontPx'), 10); return n >= 12 && n <= 22 ? n : 14; };
@@ -128,6 +164,7 @@ export function editorPython({ doc = '', parent, onRun, onChange, extra = [], ba
     indentUnit.of('    '),
     EditorView.lineWrapping,
     EditorView.contentAttributes.of({ 'aria-label': 'Editor de código Python' }),
+    pyLinter, lintGutter(),   // subrayado de errores de sintaxis (inline, estilo VS Code)
     // Tab: acepta la sugerencia si el popup está abierto; si no, indenta EN EL CURSOR (estilo VS Code).
     // Esc suelta el foco del editor (accesibilidad de teclado). Alta precedencia para ganarle a basicSetup.
     Prec.highest(keymap.of([

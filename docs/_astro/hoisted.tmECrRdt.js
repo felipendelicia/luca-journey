@@ -1,4 +1,4 @@
-import{e as z,r as N,a as _}from"./pyrun.DtBRAunv.js";import{t as A}from"./errores.d5M1PzV8.js";import"./hoisted.pEkn1UYn.js";const S=`# trazador.py — traza la ejecución del código PASO A PASO para el visualizador del libro.
+import{e as z,r as N,a as _}from"./editor.DK0sF4wK.js";import{t as A}from"./errores.d5M1PzV8.js";import"./hoisted.pEkn1UYn.js";const S=`# trazador.py — traza la ejecución del código PASO A PASO para el visualizador del libro.
 # Corre el código bajo sys.settrace y registra, antes de cada línea, el número de línea,
 # las variables y lo impreso hasta ese momento. Devuelve JSON con la lista de pasos.
 import sys

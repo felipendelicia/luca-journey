@@ -40,7 +40,32 @@ async function ensurePackages(packages) {
 const PLOT_B64 = "import io,base64,matplotlib.pyplot as _p\n_b=''\nif _p.get_fignums():\n    _f=io.BytesIO(); _p.gcf().savefig(_f,format='png',bbox_inches='tight',dpi=110); _p.close('all'); _b=base64.b64encode(_f.getvalue()).decode()\n_b";
 
 self.onmessage = async (evt) => {
-  const { id, helperSrc, packages, fn, args, code, stream } = evt.data;
+  const { id, helperSrc, packages, fn, args, code, stream, syntax } = evt.data;
+
+  // Chequeo de SINTAXIS (linter inline): compila sin ejecutar. NO fuerza la carga de Pyodide:
+  // si todavía no está caliente, devuelve null (no marca nada hasta que el warm-up termine).
+  if (syntax) {
+    if (!pyodide) { self.postMessage({ id, ok: true, result: null }); return; }
+    try {
+      pyodide.globals.set('_src_chk', code || '');
+      const r = pyodide.runPython(
+        "import json as _j\n" +
+        "def _chk(s):\n" +
+        "    try:\n" +
+        "        compile(s, '<editor>', 'exec'); return None\n" +
+        "    except SyntaxError as e:\n" +
+        "        return _j.dumps({'lineno': e.lineno, 'offset': e.offset, 'end_lineno': getattr(e,'end_lineno',None), 'end_offset': getattr(e,'end_offset',None), 'msg': e.msg or '', 'type': type(e).__name__})\n" +
+        "    except Exception:\n" +
+        "        return None\n" +
+        "_chk(_src_chk)"
+      );
+      self.postMessage({ id, ok: true, result: r || null });
+    } catch (e) {
+      self.postMessage({ id, ok: true, result: null });
+    }
+    return;
+  }
+
   try {
     await ensurePyodide();
     await ensurePackages(packages);

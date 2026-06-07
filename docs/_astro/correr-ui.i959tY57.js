@@ -1,4 +1,4 @@
-import{r as l}from"./pyrun.DtBRAunv.js";import{p as g,t as _,a as j}from"./errores.d5M1PzV8.js";const h=`# runner.py — corre los tests de una semana en el navegador con pytest real (Pyodide).
+import{r as l}from"./editor.DK0sF4wK.js";import{p as g,t as _,a as j}from"./errores.d5M1PzV8.js";const h=`# runner.py — corre los tests de una semana en el navegador con pytest real (Pyodide).
 # Escribe el código del alumno como ejercicios.py + el test + helpers, con
 # CURSO_MODULO=ejercicios, y ejecuta pytest recolectando el resultado por test.
 import os

@@ -83,3 +83,24 @@ export function runStream(helperSrc, packages, code, onChunk, timeoutMs = 10000)
     w.postMessage({ id, helperSrc, packages, code, stream: true });
   });
 }
+
+/**
+ * Chequeo de SINTAXIS para el linter inline: compila `code` (sin ejecutar) y devuelve el detalle del
+ * SyntaxError (`{lineno, offset, end_lineno, end_offset, msg, type}`) o `null` si compila o si Pyodide
+ * todavía no está caliente. Timeout corto que NO termina el worker (no es un bucle infinito).
+ * @returns {Promise<object|null>}
+ */
+export function checkSintaxis(code) {
+  return new Promise((resolve) => {
+    const id = nextId++;
+    let w;
+    try { w = getWorker(); } catch { return resolve(null); }
+    const timer = setTimeout(() => { pendingMap.delete(id); resolve(null); }, 5000);
+    pendingMap.set(id, {
+      resolve: (r) => { try { resolve(r ? JSON.parse(r) : null); } catch { resolve(null); } },
+      reject: () => resolve(null),
+      timer,
+    });
+    w.postMessage({ id, syntax: true, code });
+  });
+}

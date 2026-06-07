@@ -159,6 +159,12 @@ code{font-family:var(--font-mono); font-size:.85em; background:#fbe7e1; color:va
 .ed-sym:hover, .ed-tool:hover{ border-color:var(--red, #e0492f); }
 .ed-sym:active, .ed-tool:active{ transform:translateY(1px); }
 .ed-sym:focus-visible, .ed-tool:focus-visible{ outline:2px solid var(--red, #e0492f); outline-offset:1px; }
+/* errores de sintaxis inline (linter) — subrayado ondulado rojo estilo VS Code */
+.cm-lintRange-error{ background-image:none; text-decoration:wavy underline #e0492f; text-decoration-skip-ink:none; }
+.cm-tooltip.cm-tooltip-lint{ background:var(--paper, #21252b); color:var(--ink, #e6e8ee);
+  border:1px solid var(--line, rgba(255,255,255,.16)); border-radius:9px; box-shadow:0 8px 22px -10px rgba(0,0,0,.5); }
+.cm-tooltip-lint .cm-diagnostic{ font:600 .82rem var(--font-mono, monospace); padding:5px 9px; }
+.cm-tooltip-lint .cm-diagnostic-error{ border-left:4px solid #e0492f; }
 @media (prefers-reduced-motion: reduce){ .ed-sym, .ed-tool{ transition:none; } }
 @media (max-width:640px){ .ed-sym, .ed-tool{ min-width:34px; height:34px; padding:0 7px; } }
 .pg-out{background:#0b0d14; color:#cdf5d6; font-family:var(--font-mono); font-size:12.5px; line-height:1.5;
