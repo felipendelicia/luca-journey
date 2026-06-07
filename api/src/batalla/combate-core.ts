@@ -235,6 +235,21 @@ export function habAlContacto(self: Combatiente, atacante: Combatiente, mov: Mov
   return '';
 }
 
+// ───────────────────────── orden de turno (PvP simultáneo) ─────────────────────────
+// prioridad de movimiento (mapa curado por NOMBRE ES; default 0). Los positivos pegan antes.
+export const PRIORIDAD_MOV: Record<string, number> = {
+  'Velocidad Extrema': 2,
+  'Ataque Rápido': 1, 'Aqua Jet': 1, 'Sombra Vil': 1, 'Bote': 1, 'As Aéreo': 1, 'Bala Roca': 1, 'Viento Hielo': 1,
+  'Protección': 4, 'Detección': 4, 'Anticipo': 1,
+};
+export const prioridadMov = (mov: Mov): number => PRIORIDAD_MOV[mov?.nombre || ''] ?? 0;
+// orden de dos lanzadores: prioridad desc, luego velocidad desc, luego desempate por rng. <0 = A primero.
+export function ordenLanzadores(a: { prio: number; spe: number }, b: { prio: number; spe: number }, rng: Rng = Math.random): number {
+  if (a.prio !== b.prio) return b.prio - a.prio;
+  if (a.spe !== b.spe) return b.spe - a.spe;
+  return rng() < 0.5 ? -1 : 1;
+}
+
 // ───────────────────────── daño ─────────────────────────
 export const esEstado = (mov: Mov): boolean => mov.categoria === 'Estado' || !mov.poder;
 
