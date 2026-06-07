@@ -13,7 +13,7 @@ import yields from '../data/yields.json';
 import tipos from '../data/tipos.json' with { type: 'json' };
 import biomas from '../data/biomas.json' with { type: 'json' };
 import { probCaptura, pisoIV, fleeProb, sincronizaNat, shinyChance, pisoRacha, esNoche, biomaActual, rolarTam } from './safari-core.js';
-import { rolarIdentidad, identidad as identidadCore, NATURALEZAS, sumarEV } from './combate-core.ts';
+import { rolarIdentidad, identidad as identidadCore, NATURALEZAS, sumarEV, restarEV } from './combate-core.ts';
 
 // corre la migración a v2 (conteos→instancias) una vez, antes de tocar el PC.
 let _migrado = false;
@@ -114,6 +114,19 @@ export function usarVitamina(iid, statIdx) {
   const yieldVec = [0, 0, 0, 0, 0, 0]; yieldVec[statIdx] = Math.min(10, 100 - ev[statIdx]);
   m.evs = sumarEV(ev, yieldVec); setPC(arr);
   return true;
+}
+
+// baja 10 EV de un stat (baya). Devuelve true si bajó algo.
+export function bajarEV(iid, statIdx) {
+  const arr = pc(); const m = arr.find((x) => x.iid === iid); if (!m) return false;
+  const ev = evsDe(m); if (ev[statIdx] <= 0) return false;
+  m.evs = restarEV(ev, statIdx, 10); setPC(arr); return true;
+}
+// pone TODOS los EVs en 0 (Borrón). Devuelve true si había algo que resetear.
+export function resetEV(iid) {
+  const arr = pc(); const m = arr.find((x) => x.iid === iid); if (!m) return false;
+  if (evsDe(m).every((v) => v === 0)) return false;
+  m.evs = [0, 0, 0, 0, 0, 0]; setPC(arr); return true;
 }
 
 export const BALLS_POR_EJERCICIO = 2;

@@ -152,6 +152,33 @@ function reviveSvg(size) {
     `<path d="M13.2 6 H18.8 V13.2 H26 V18.8 H18.8 V26 H13.2 V18.8 H6 V13.2 H13.2 Z" fill="url(#${g})" stroke="#1f7a86" stroke-width="1.4" stroke-linejoin="round"/>` +
     gloss(13, 12, 1.3, 2));
 }
+// Baya (EV-): fruta redonda lustrosa con hojita + tallo, color por stat. Misma familia (contorno + brillo).
+// Cuerpo en radial para volumen; surco vertical sutil tipo baya de la saga.
+function bayaSvg(size, color) {
+  const c = color || '#9aa0a6';
+  const g = uid();
+  const hi = `color-mix(in srgb, ${c} 64%, #fff 36%)`, lo = `color-mix(in srgb, ${c} 78%, #000 22%)`;
+  const stem = `color-mix(in srgb, ${c} 50%, #5a3a1a 50%)`;
+  return svg(size, `<defs>${radGrad(g, hi, lo)}</defs>` +
+    `<path d="M16 8.6 C10.5 8.4 9 6 9 4.2 C12 4.4 14.4 5.6 16 8 C13.8 6 11.4 5.4 10.4 5.6 C12 6.4 14.4 7.4 16 8.6 Z" fill="#5aa84a" stroke="rgba(0,0,0,.32)" stroke-width=".8" stroke-linejoin="round"/>` + // hojita
+    `<path d="M16 8.6 L16.4 4.4" fill="none" stroke="${stem}" stroke-width="1.6" stroke-linecap="round"/>` + // tallo
+    `<circle cx="16" cy="18.5" r="9.5" fill="url(#${g})" stroke="rgba(0,0,0,.42)" stroke-width="1"/>` +     // cuerpo
+    `<path d="M16 9.6 V27" fill="none" stroke="rgba(0,0,0,.16)" stroke-width="1"/>` +                        // surco
+    gloss(12.5, 15, 2, 3));
+}
+// Borrón EV: goma de borrar (cuerpo con franja + manga azul) — neutro, mismo contorno/brillo que la familia.
+function borradorSvg(size) {
+  const g = uid(), gs = uid();
+  return svg(size, `<defs>${linGrad(g, '#ffd9e0', '#e88aa0')}${linGrad(gs, '#7cc4f2', '#2f7bd6')}</defs>` +
+    `<g transform="rotate(-32 16 16)">` +
+      `<rect x="7.5" y="11" width="17" height="11" rx="2.4" fill="url(#${g})" ${STK}/>` +     // cuerpo de goma
+      `<rect x="7.5" y="11" width="17" height="4.4" rx="2.4" fill="url(#${gs})" ${STK}/>` +   // manga azul
+      `<rect x="7.5" y="13.6" width="17" height="1.8" fill="rgba(0,0,0,.22)"/>` +              // borde manga/goma
+      `<path d="M9.2 19.5 H22.8" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="1" stroke-linecap="round"/>` + // brillo inferior
+      gloss(12, 17.5, 2.2, 1.3) +
+    `</g>` +
+    `<path d="M9 24 q1.4 2 3 0 q1.4 2 3 0" fill="none" stroke="rgba(120,90,60,.5)" stroke-width="1" stroke-linecap="round"/>`); // virutas
+}
 const CONSUM = {
   pocion:      { kind: 'spray', c: ['#ff9e5a', '#e0561f'] },   // naranja
   superpocion: { kind: 'spray', c: ['#ff7a8a', '#d62246'] },   // rojo/rosa
@@ -182,12 +209,16 @@ export function itemSvg(id, size = 22, color = null) {
   if (id === 'balldusk') return ballSvg('dusk', size);
   if (id === 'revivir') return reviveSvg(size);
   if (id === 'vitamina') return vitaminaSvg(size, color);
+  if (id === 'baya') return bayaSvg(size, color);
+  if (id === 'borrador') return borradorSvg(size);
   if (CONSUM[id]) return CONSUM[id].kind === 'spray' ? sprayBottle(CONSUM[id].c, size) : vialBottle(CONSUM[id].c, size);
   if (STONES[id]) return gemSvg(STONES[id].c, STONES[id].em, size);
   return gemSvg(STONES.piedra.c, STONES.piedra.em, size);   // comodín
 }
 // índice de stat → color de la vitamina de ese stat (para la tienda, que tinta por `ev`).
 export const vitaminaColor = (statIdx) => VIT_COLOR[statIdx] || VIT_COLOR[0];
+// índice de stat → color de la baya de ese stat (misma paleta canon que las vitaminas).
+export const bayaColor = (statIdx) => VIT_COLOR[statIdx] || VIT_COLOR[0];
 
 // ───────────────────────── pokeballs ─────────────────────────
 // Familia de Pokéballs: misma silueta (domo superior + banda negra + botón central) y mismo
