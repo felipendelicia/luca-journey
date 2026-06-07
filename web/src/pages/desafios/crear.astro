@@ -23,7 +23,7 @@ const REGIONES = [['libre', 'Libre'], ...REGS.map((r) => [r.id, `${r.nombre} · 
         <button class="btn-grande sec" id="d-agregar" type="button">+ Agregar caso</button>
       </div>
       <button class="btn-grande" id="d-publicar" type="button">✅ Validar y publicar</button>
-      <p class="auth-msg err" id="d-err" hidden></p>
+      <p class="auth-msg err" id="d-err" role="alert" aria-live="assertive" hidden></p>
     </div>
   </main>
   <script>

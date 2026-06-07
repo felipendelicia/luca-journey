@@ -3,11 +3,12 @@
 // brackets, y atajo Ctrl/Cmd+Enter para correr.
 import { basicSetup } from 'codemirror';
 import { EditorView, keymap } from '@codemirror/view';
-import { indentWithTab } from '@codemirror/commands';
+import { Prec, Compartment } from '@codemirror/state';
+import { indentMore, indentLess } from '@codemirror/commands';
 import { python } from '@codemirror/lang-python';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { indentUnit } from '@codemirror/language';
-import { snippetCompletion as snip } from '@codemirror/autocomplete';
+import { snippetCompletion as snip, acceptCompletion, completionStatus } from '@codemirror/autocomplete';
 
 const kw = (label, info) => ({ label, type: 'keyword', info });
 const bi = (label, info) => ({ label, type: 'function', info });
@@ -87,19 +88,102 @@ function fuentePython(context) {
   return { from: palabra ? palabra.from : context.pos, options: [...SNIPPETS, ...PALABRAS], validFor: /^\w*$/ };
 }
 
-// Crea el editor. opts: { doc, parent, onRun, onChange, extra }
-export function editorPython({ doc = '', parent, onRun, onChange, extra = [] } = {}) {
+// tema claro del editor (modo claro de la página); en oscuro usamos oneDark.
+const temaClaro = EditorView.theme({
+  '&': { backgroundColor: 'var(--paper-2, #f6f7fb)', color: 'var(--ink, #1c2230)' },
+  '.cm-gutters': { backgroundColor: 'var(--paper-2, #eef0f6)', color: 'var(--ink-soft, #6b7280)', border: 'none' },
+  '.cm-activeLine': { backgroundColor: 'rgba(0,0,0,.045)' },
+  '.cm-activeLineGutter': { backgroundColor: 'rgba(0,0,0,.06)' },
+  '.cm-selectionBackground, &.cm-focused .cm-selectionBackground': { backgroundColor: 'rgba(80,130,255,.22)' },
+  '.cm-cursor': { borderLeftColor: 'var(--ink, #1c2230)' },
+}, { dark: false });
+
+// inserta la indentación (4 espacios = indentUnit) EN EL CURSOR (estilo VS Code);
+// si hay selección multilínea, indenta el bloque. NO inserta un tab literal.
+function insertIndent(view) {
+  const { state } = view;
+  if (state.selection.ranges.some((r) => !r.empty)) return indentMore(view);
+  view.dispatch(state.update(state.replaceSelection(state.facet(indentUnit)), { userEvent: 'input', scrollIntoView: true }));
+  return true;
+}
+
+const modoOscuro = () => !document.body.classList.contains('claro');
+const esMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || '');
+const fontPx = () => { const n = parseInt(localStorage.getItem('editor:fontPx'), 10); return n >= 12 && n <= 22 ? n : 14; };
+
+// registro de editores montados → A−/A+ aplica el tamaño de fuente a TODOS en vivo (CSS var por wrapper).
+const _wraps = new Set();
+function aplicarFont() { const px = fontPx() + 'px'; _wraps.forEach((w) => w.style.setProperty('--cm-font', px)); }
+if (typeof window !== 'undefined') window.addEventListener('editor:font', aplicarFont);
+
+// Crea el editor. opts: { doc, parent, onRun, onChange, extra, barra=true }
+export function editorPython({ doc = '', parent, onRun, onChange, extra = [], barra = true } = {}) {
   const py = python();
+  const temaComp = new Compartment();
   const ext = [
     basicSetup,
     py,
     py.language.data.of({ autocomplete: fuentePython }),
-    oneDark,
+    temaComp.of(modoOscuro() ? oneDark : temaClaro),
     indentUnit.of('    '),
-    keymap.of([indentWithTab]),
+    EditorView.lineWrapping,
+    EditorView.contentAttributes.of({ 'aria-label': 'Editor de código Python' }),
+    // Tab: acepta la sugerencia si el popup está abierto; si no, indenta EN EL CURSOR (estilo VS Code).
+    // Esc suelta el foco del editor (accesibilidad de teclado). Alta precedencia para ganarle a basicSetup.
+    Prec.highest(keymap.of([
+      { key: 'Tab', run: (v) => (completionStatus(v.state) ? acceptCompletion(v) : insertIndent(v)), shift: indentLess },
+      { key: 'Escape', run: (v) => { v.contentDOM.blur(); return true; } },
+    ])),
   ];
   if (onRun) ext.push(keymap.of([{ key: 'Mod-Enter', preventDefault: true, run: () => { onRun(); return true; } }]));
   if (onChange) ext.push(EditorView.updateListener.of((v) => { if (v.docChanged) onChange(v.state.doc.toString()); }));
   ext.push(...extra);
-  return new EditorView({ doc, parent, extensions: ext });
+
+  const view = new EditorView({ doc, parent, extensions: ext });
+  parent.style.setProperty('--cm-font', fontPx() + 'px');   // el .cm-editor hereda font-size: var(--cm-font)
+  _wraps.add(parent);
+
+  // tema reactivo: re-configura al cambiar la página entre claro/oscuro
+  new MutationObserver(() => view.dispatch({ effects: temaComp.reconfigure(modoOscuro() ? oneDark : temaClaro) }))
+    .observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+  if (barra) montarBarra(view, parent);
+  return view;
+}
+
+// barra de herramientas: símbolos (móvil), tamaño de fuente, copiar, atajos.
+function montarBarra(view, parent) {
+  const insertar = (t) => { view.dispatch(view.state.replaceSelection(t)); view.focus(); };
+  const SIM = [':', '(', ')', '[', ']', '"', "'", '='];
+  const q = (s) => (s === '"' ? '&quot;' : s);
+  const simBtns = SIM.map((s) => `<button type="button" class="ed-sym" data-ins="${q(s)}" tabindex="-1" aria-label="Insertar ${s === '"' ? 'comillas' : s}">${q(s)}</button>`).join('');
+  const mod = esMac ? '⌘' : 'Ctrl';
+  const bar = document.createElement('div');
+  bar.className = 'ed-bar';
+  bar.setAttribute('role', 'toolbar');
+  bar.setAttribute('aria-label', 'Herramientas del editor');
+  bar.innerHTML =
+    `<div class="ed-syms">${simBtns}` +
+    `<button type="button" class="ed-sym" data-cmd="indent" tabindex="-1" aria-label="Indentar">⇥</button>` +
+    `<button type="button" class="ed-sym" data-cmd="dedent" tabindex="-1" aria-label="Quitar indentación">⇤</button></div>` +
+    `<div class="ed-tools">` +
+    `<button type="button" class="ed-tool" data-cmd="menos" aria-label="Achicar texto">A−</button>` +
+    `<button type="button" class="ed-tool" data-cmd="mas" aria-label="Agrandar texto">A+</button>` +
+    `<button type="button" class="ed-tool" data-cmd="copiar" aria-label="Copiar código">⧉</button>` +
+    `<button type="button" class="ed-tool ed-chip" data-cmd="atajos" aria-label="Atajos de teclado" title="${mod}+Enter: correr · Tab: sugerencia o indentar · Esc: salir del editor">⌨</button>` +
+    `</div>`;
+  parent.appendChild(bar);
+  bar.addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.ins != null) return insertar(b.dataset.ins);
+    const c = b.dataset.cmd;
+    if (c === 'indent') { insertIndent(view); view.focus(); }
+    else if (c === 'dedent') { indentLess(view); view.focus(); }
+    else if (c === 'mas' || c === 'menos') {
+      const px = Math.max(12, Math.min(22, fontPx() + (c === 'mas' ? 2 : -2)));
+      localStorage.setItem('editor:fontPx', String(px)); window.dispatchEvent(new Event('editor:font'));
+    } else if (c === 'copiar') {
+      try { navigator.clipboard.writeText(view.state.doc.toString()); const t = b.textContent; b.textContent = '✓'; setTimeout(() => { b.textContent = t; }, 1200); } catch {}
+    }
+  });
 }

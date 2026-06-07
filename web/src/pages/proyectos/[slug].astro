@@ -155,7 +155,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
           ? '<button class="btn-corregir" id="btn-' + paso.id + '" type="button">✅ Corregir paso</button>'
           : '<button class="btn-corregir" id="btn-' + paso.id + '" type="button" disabled title="Completá los ejercicios del tema para vencer al líder">🔒 Corregir (bloqueado)</button>';
         html += '<div class="ejer-acciones"><button class="btn-sec" id="run-' + paso.id + '" type="button">▶ Ejecutar</button>' + btnCorregir + '<span class="ejer-estado" id="est-' + paso.id + '"></span></div>';
-        html += '<div class="ejer-result" id="res-' + paso.id + '"></div>';
+        html += '<div class="ejer-result" id="res-' + paso.id + '" role="status" aria-live="polite"></div>';
         div.innerHTML = html;
         area.appendChild(div);
 

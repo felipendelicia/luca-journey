@@ -276,6 +276,7 @@ const grupos = agrupar(caps);
         bar.appendChild(hint);
         const out = document.createElement('div');
         out.className = 'cw-out';
+        out.setAttribute('role', 'status'); out.setAttribute('aria-live', 'polite');   // lectores anuncian la salida
         out.innerHTML = '<span class="lbl">SALIDA</span>';
         const btn = document.createElement('button');
         btn.className = 'cw-run'; btn.type = 'button'; btn.textContent = '▶ ejecutar';

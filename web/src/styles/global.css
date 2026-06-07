@@ -142,8 +142,25 @@ code{font-family:var(--font-mono); font-size:.85em; background:#fbe7e1; color:va
 .pg-run{margin-left:auto; background:#27c93f; color:#06210c; border:none; border-radius:8px;
   font-family:var(--font-pixel); font-size:9px; letter-spacing:.08em; padding:7px 15px; cursor:pointer; text-transform:uppercase;}
 .pg-run[disabled]{opacity:.6; cursor:default;}
-.cm-editor{font-size:13.5px;}
-.cm-editor.cm-focused{outline:none;}
+.cm-editor{font-size:var(--cm-font, 13.5px);}
+.cm-editor.cm-focused{outline:2px solid var(--red, #e0492f); outline-offset:1px;}   /* foco visible (a11y) */
+/* —— barra de herramientas del editor (símbolos móvil · A−/A+ · copiar · atajos) —— */
+.ed-bar{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:6px;
+  padding:6px 8px; background:var(--paper-2, #21252b); border-top:1px solid var(--line, rgba(255,255,255,.08)); }
+.ed-syms{ display:flex; gap:5px; flex-wrap:nowrap; min-width:0; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.ed-tools{ display:flex; gap:5px; align-items:center; flex:0 0 auto; }
+.ed-sym, .ed-tool{ min-width:36px; height:36px; padding:0 9px; border-radius:9px; cursor:pointer; flex:0 0 auto;
+  display:inline-flex; align-items:center; justify-content:center; line-height:1;
+  font:700 .95rem var(--font-mono, monospace); color:var(--ink, var(--text, #e6e8ee));
+  background:var(--paper, var(--card, #2a2f3a)); border:1px solid var(--line, rgba(255,255,255,.14));
+  transition:border-color .12s, transform .06s; }
+.ed-tool{ font-family:var(--font-display, system-ui); font-weight:800; }
+.ed-chip{ font-size:1.05rem; }
+.ed-sym:hover, .ed-tool:hover{ border-color:var(--red, #e0492f); }
+.ed-sym:active, .ed-tool:active{ transform:translateY(1px); }
+.ed-sym:focus-visible, .ed-tool:focus-visible{ outline:2px solid var(--red, #e0492f); outline-offset:1px; }
+@media (prefers-reduced-motion: reduce){ .ed-sym, .ed-tool{ transition:none; } }
+@media (max-width:640px){ .ed-sym, .ed-tool{ min-width:34px; height:34px; padding:0 7px; } }
 .pg-out{background:#0b0d14; color:#cdf5d6; font-family:var(--font-mono); font-size:12.5px; line-height:1.5;
   padding:14px 18px; white-space:pre-wrap; word-break:break-word; min-height:60px; max-height:360px; overflow:auto;}
 .pg-out .err{color:#ff9b9b;}
@@ -293,7 +310,7 @@ pre code, pre.astro-code code, .cw code{
 
 /* editores editables dentro del libro */
 .cw-hint{ font-family:var(--font-pixel); font-size:8px; color:rgba(255,255,255,.42); letter-spacing:.08em; }
-.cw .cm-editor{ font-size:13px; }
+.cw .cm-editor{ font-size:var(--cm-font, 13px); }
 .cw .cm-scroller{ font-family:var(--font-mono); line-height:1.55; padding:6px 0; }
 .cw-edit .cm-editor{ max-height:460px; }
 .cw .cm-focused{ outline:none; }
