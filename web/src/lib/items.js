@@ -43,5 +43,6 @@ export const ITEMS = {
   repeticion: { nombre: 'Ball Repetición', sprite: 'ballrepe',    cat: 'ball', cond: 'repeticion', precio: 30, desc: '×3 si ya tenés esa especie en la Pokédex.' },
   master:     { nombre: 'Master Ball',     sprite: 'ballmaster',  cat: 'ball', catch: 'master',    precio: 5000, desc: 'Captura 100% garantizada. Carísima: guardala para EL Pokémon.' },
   xeneize:    { nombre: 'Ball Xeneize',    sprite: 'ballxeneize', cat: 'ball', catch: 2, boca: true, precio: 80, desc: '💙💛 Edición Boca. Captura premium (×2) + festejo azul y oro al atrapar.' },
+  dusk: { nombre: 'Dusk Ball', sprite: 'balldusk', cat: 'ball', cond: 'dusk', precio: 35, desc: '×3.5 de captura de noche o en cueva.' },
 };
 export const itemsPorCat = (cat) => Object.entries(ITEMS).filter(([, it]) => it.cat === cat).map(([id, it]) => ({ id, ...it }));

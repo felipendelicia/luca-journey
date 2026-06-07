@@ -179,6 +179,7 @@ export function itemSvg(id, size = 22, color = null) {
   if (id === 'ballrepe') return ballSvg('repeticion', size);
   if (id === 'ballmaster') return ballSvg('master', size);
   if (id === 'ballxeneize') return ballSvg('xeneize', size);
+  if (id === 'balldusk') return ballSvg('dusk', size);
   if (id === 'revivir') return reviveSvg(size);
   if (id === 'vitamina') return vitaminaSvg(size, color);
   if (CONSUM[id]) return CONSUM[id].kind === 'spray' ? sprayBottle(CONSUM[id].c, size) : vialBottle(CONSUM[id].c, size);
@@ -224,6 +225,12 @@ const BALLS = {
   xeneize: { top: ['#103a86', '#0a2e6b'], arcs:
     '<rect x="3.4" y="9.2" width="25.2" height="3.4" fill="#f2c200"/>' +
     '<rect x="3.4" y="9.2" width="25.2" height="3.4" fill="none" stroke="#c79a00" stroke-width="0.6"/>' },
+  // Dusk (Dusk Ball): domo verde oscuro casi negro con cresta verde y dos círculos rojo-naranja.
+  dusk: { top: ['#2f5a44', '#0e1c18'], arcs:
+    '<path d="M4 13.4c3-3 6.4-4.4 12-4.4s9 1.4 12 4.4" fill="none" stroke="#3d8f5a" stroke-width="2.2" stroke-linecap="round"/>' +
+    '<circle cx="10" cy="9.6" r="2.3" fill="#ef5a2a"/><circle cx="22" cy="9.6" r="2.3" fill="#ef5a2a"/>' +
+    '<circle cx="10" cy="9.6" r="2.3" fill="none" stroke="#a8331a" stroke-width="0.8"/>' +
+    '<circle cx="22" cy="9.6" r="2.3" fill="none" stroke="#a8331a" stroke-width="0.8"/>' },
 };
 export function ballSvg(tier = 0, size = 22) {
   const b = BALLS[tier] || BALLS[0]; const g = uid(), gb = uid();
