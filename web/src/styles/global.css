@@ -886,15 +886,21 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 /* campo: cielo + pasto, con marco de "pantalla" y plataformas elípticas */
 .bt-field{ position:relative; height:300px; margin:6px 0 12px; border-radius:6px; overflow:hidden;
   border:4px solid var(--gba-edge); box-shadow:inset 0 0 0 2px var(--gba-frame), 0 4px 0 rgba(0,0,0,.28);
-  background:linear-gradient(#a4d6ec 0%, #c4e6ee 36%, #d3ebb2 36%, #8cc468 72%, #7bb95a 100%); image-rendering:pixelated; }
+  image-rendering:pixelated;
+  background:linear-gradient(180deg, #bfe7f2 0 23%, #cfeec9 23% 29%, #b0de88 29% 46%, #99cf66 46% 72%, #8bc457 72% 100%); }
+/* banda de dither tipo GBA en el horizonte (paleta limitada) */
+.bt-field::before{ content:''; position:absolute; left:0; right:0; top:23%; height:20px; pointer-events:none; opacity:.45;
+  background-image:repeating-linear-gradient(90deg, rgba(110,165,85,.7) 0 2px, transparent 2px 4px); }
 .bt-arena{ position:absolute; inset:0; }
-.bt-arena::before,.bt-arena::after{ content:''; position:absolute; height:32px; border-radius:50%; pointer-events:none;
-  background:radial-gradient(ellipse at 50% 38%, rgba(255,255,255,.4), rgba(110,165,80,.5) 58%, transparent 76%); }
-.bt-arena::before{ width:150px; top:108px; right:16px; }     /* plataforma rival */
-.bt-arena::after{ width:200px; bottom:24px; left:2px; }      /* plataforma jugador */
-.bt-sprite{ position:absolute; image-rendering:pixelated; filter:drop-shadow(0 4px 0 rgba(0,0,0,.13)); }
-.bt-sprite-r{ width:112px; height:112px; top:34px; right:34px; }
-.bt-sprite-p{ width:150px; height:150px; bottom:22px; left:22px; }   /* de espaldas: sin flip */
+/* bases circulares estilo FireRed: disco verde con anillos y sombra */
+.bt-arena::before,.bt-arena::after{ content:''; position:absolute; border-radius:50%; pointer-events:none;
+  background:radial-gradient(ellipse at 50% 34%, #c6ea7c 0 36%, #a4d156 36% 58%, #86b840 58% 72%, transparent 73%);
+  box-shadow:0 3px 0 rgba(70,110,40,.22); }
+.bt-arena::before{ width:160px; height:42px; top:102px; right:10px; }   /* base rival */
+.bt-arena::after{ width:212px; height:56px; bottom:16px; left:-4px; }   /* base jugador */
+.bt-sprite{ position:absolute; image-rendering:pixelated; filter:drop-shadow(0 3px 0 rgba(0,0,0,.18)); }
+.bt-sprite-r{ width:116px; height:116px; top:26px; right:32px; }
+.bt-sprite-p{ width:152px; height:152px; bottom:18px; left:18px; }   /* de espaldas: sin flip */
 
 /* cuadros de datos (FireRed): caja crema, borde oscuro, esquinas redondeadas */
 .bt-rival,.bt-yo{ position:absolute; z-index:2; min-width:170px; padding:6px 13px 8px;

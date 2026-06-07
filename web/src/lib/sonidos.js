@@ -99,14 +99,26 @@ const MELODIA = [
   [349, 523, 0, 440, 392, 0, 349, 330],   // F
   [330, 494, 0, 440, 415, 0, 330, 247],   // E (sensible: G#/Ab→ tensión)
 ];
+// arpegios en semicorcheas por acorde — el "shimmer" clásico del battle theme GBA
+const ARP = [
+  [440, 523, 659, 523],   // Am: A C E
+  [392, 494, 587, 494],   // G:  G B D
+  [349, 440, 523, 440],   // F:  F A C
+  [330, 415, 494, 415],   // E:  E G# B
+];
 function loopBatalla() {
   if (muteado()) { musLoop = null; return; }
   for (let b = 0; b < COMPASES; b++) {
     const bajo = GALOPE(b);
+    const arp = ARP[b];
     for (let s = 0; s < PxC; s++) {
       const t = (b * PxC + s) * PASO;
-      nota(bajo[s], t, PASO * 0.92, 'triangle', 0.07);                 // bajo galopante
-      const mf = MELODIA[b][s]; if (mf) nota(mf, t, PASO * 0.8, 'square', 0.055);   // melodía urgente
+      nota(bajo[s], t, PASO * 0.92, 'triangle', 0.075);                 // bajo galopante
+      const mf = MELODIA[b][s];
+      if (mf) { nota(mf, t, PASO * 0.8, 'square', 0.06); nota(mf * 1.006, t, PASO * 0.8, 'square', 0.026); }   // lead doble (detune = más gordo)
+      // arpegio en semicorcheas (octava arriba): acompañamiento brillante estilo GBA
+      nota(arp[(s * 2) % 4] * 2, t, PASO * 0.42, 'square', 0.022);
+      nota(arp[(s * 2 + 1) % 4] * 2, t + PASO * 0.5, PASO * 0.42, 'square', 0.022);
     }
   }
   const LARGO = COMPASES * PxC * PASO;     // 4*8*0.15 = 4.8s
