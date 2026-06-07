@@ -58,11 +58,13 @@ const total = pokemon.length;
 
   <!-- overlay del minijuego de anillo -->
   <div class="ring-overlay" id="ring-overlay" hidden>
-    <div class="ring-wild" id="ring-wild"></div>
-    <svg class="ring-svg" id="ring-svg" viewBox="0 0 200 200" aria-hidden="true">
-      <circle class="ring-target" cx="100" cy="100" r="42"></circle>
-      <circle class="ring-move" id="ring-move" cx="100" cy="100" r="96"></circle>
-    </svg>
+    <div class="ring-stage">
+      <div class="ring-wild" id="ring-wild"></div>
+      <svg class="ring-svg" id="ring-svg" viewBox="0 0 200 200" aria-hidden="true">
+        <circle class="ring-target" cx="100" cy="100" r="42"></circle>
+        <circle class="ring-move" id="ring-move" cx="100" cy="100" r="96"></circle>
+      </svg>
+    </div>
     <div class="ring-label" id="ring-label"></div>
     <button class="ring-cta" id="ring-cta" type="button">¡Tirá! 🎯</button>
     <span class="ring-hint">Tocá la pantalla o el botón cuando el anillo entre al blanco</span>
@@ -72,7 +74,7 @@ const total = pokemon.length;
   <script>
     import { sincronizar, encontrar, capturar, inventarioBalls, tieneBall, companero, setCompanero,
       identidadDe, naturalezaDe, habMeta, ivPct, ivEstrellas, estado, vistos, reclamarRegalo,
-      regaloDisponible, regionesDesbloqueadas, spriteUrl, pc } from '../lib/coleccion.js';
+      regaloDisponible, regionesDesbloqueadas, spriteUrl, pc, renombrar, caramelosDe, CARAMELOS_POR_CAPTURA } from '../lib/coleccion.js';
     import { sonarCaptura, sonarShiny, sonarEpico, sonarExito, sonarError, sonarClick } from '../lib/sonidos.js';
     import { TIERS } from '../lib/rareza.js';
     import { itemSvg } from '../lib/sprites.js';
@@ -277,9 +279,10 @@ const total = pokemon.length;
           + '<div class="enc-info">'
             + '<div class="enc-name">' + nombre + ' <span class="enc-lvl">Nv ' + enc.nivel + '</span></div>'
             + '<span class="cap-tier" style="--tier-color:' + t.color + '">' + (t.ico ? t.ico + ' ' : '') + t.nombre + '</span>'
-            + '<div class="enc-tasa" title="Tasación de IVs">'
-              + '<span class="enc-tasa-lbl">⭐ Tasación</span>'
+            + '<div class="enc-tasa" title="Potencial genético: qué tan buenos son sus genes (IVs). Más estrellas = mejores stats al mismo nivel.">'
+              + '<span class="enc-tasa-lbl">⭐ Potencial</span>'
               + '<span class="enc-stars s' + enc.estrellas + '">' + tasacion(enc.estrellas) + '</span>'
+              + '<i class="enc-tasa-q" aria-hidden="true">?</i>'
             + '</div>'
             + '<div class="enc-nat">' + enc.naturalezaNombre + (enc.vistoYa ? ' <i class="enc-visto">· ya visto</i>' : '') + '</div>'
           + '</div>'
@@ -300,7 +303,7 @@ const total = pokemon.length;
       $('enc-tirar').addEventListener('click', tirar);
     }
 
-    // ── PASO 2: minijuego de anillo + captura ────────────────────────────
+    // ── PASO 2: minijuego de anillo + secuencia de captura ───────────────
     async function tirar() {
       if (animando || !enc || !ballSel) return;
       const calidad = await jugarAnillo();
@@ -312,66 +315,117 @@ const total = pokemon.length;
         ballSel = inventarioBalls()[0]?.key ?? null;
         renderCarta(); return;
       }
-      if (r.ok) { await animarCaptura(r); return; }
+      const ctx = await secuenciaBall(r);   // absorbe + sacude (3 si cae, 1-2 si falla) + abre/confirma
+      if (r.ok) { await resumenCaptura(r, ctx); return; }
       if (r.huyo) {
-        $('msg').textContent = '¡Huyó! 🌿';
-        const sp = $('arena').querySelector('.enc-sprite');
-        if (sp) sp.classList.add('huye');
-        await esperar(420);
-        enc = null; renderCarta(); refrescar();
+        $('msg').textContent = '¡' + nombreDe(enc.id) + ' se escapó! 🌿';
+        sonarError();
+        const sp = ctx && ctx.sp; if (sp) sp.classList.add('huye');
+        await esperar(440);
+        enc = null; animando = false; renderCarta(); refrescar();
         return;
       }
-      // zafó → seguís en la carta (otra ball; tiroN ya subió)
-      $('msg').textContent = '¡Zafó! Probá de nuevo. 🔁';
-      sonarError();
-      const sp = $('arena').querySelector('.enc-sprite');
-      if (sp) { sp.classList.add('zafa'); setTimeout(() => sp.classList.remove('zafa'), 500); }
+      // zafó → se queda; podés volver a tirar (otra oportunidad)
+      $('msg').textContent = '¡Casi! Se soltó. Probá de nuevo. 🔁';
+      animando = false;
       renderCarta();
     }
 
-    async function animarCaptura(r) {
+    // Absorbe al salvaje en la ball, la ball cae y SE SACUDE (3 si cae, 1-2 si falla).
+    // Devuelve {escena, stage, sp, ball}. En éxito deja la ball quieta; en fallo la abre y saca al Pokémon.
+    async function secuenciaBall(r) {
       animando = true;
       const escena = $('arena').querySelector('.enc-card');
-      const sp = escena && escena.querySelector('.enc-sprite');
-      const t = tier(enc.rarezaTier);
-      const xeneize = r.ball === 'xeneize';
-      const especial = enc.shiny || enc.alfa;
-      const nP = especial ? 30 : t.nivel >= 7 ? 24 : t.nivel >= 4 ? 18 : 12;
-      if (escena) escena.classList.add('capturado');
-      if (sp) sp.classList.add('atrapado');
-      escena && escena.classList.add('burst');
-      estrellas(escena, { n: nP, dorado: especial, color: enc.shiny ? '#ffd23f' : enc.alfa ? '#b06bff' : t.color });
-      if (xeneize) confetiXeneize(escena, 38);
-      if (especial) {
-        document.body.classList.add('tier-shake');
-        setTimeout(() => document.body.classList.remove('tier-shake'), 600);
+      const stage = escena && escena.querySelector('.enc-stage');
+      const sp = stage && stage.querySelector('.enc-sprite');
+      if (!stage || !sp) { animando = false; return {}; }
+      const panel = escena.querySelector('.enc-panel'); if (panel) panel.classList.add('resolviendo');
+      const ballMeta = inventarioBalls().find((b) => b.key === r.ball);
+      const ball = document.createElement('div');
+      ball.className = 'enc-catchball';
+      ball.innerHTML = itemSvg((ballMeta && ballMeta.sprite) || 'ball0', 48);
+      stage.appendChild(ball);
+      sonarClick();
+      await esperar(120);
+      sp.classList.add('absorbido'); ball.classList.add('abierta');     // haz de luz: absorbe
+      await esperar(360);
+      sp.style.visibility = 'hidden'; ball.classList.remove('abierta'); ball.classList.add('cae');
+      await esperar(330);
+      const nShakes = r.ok ? 3 : (r.huyo ? 1 : 2);
+      for (let i = 0; i < nShakes; i++) {
+        ball.classList.add('sacude'); sonarClick();
+        await esperar(440);
+        ball.classList.remove('sacude');
+        await esperar(150);
       }
+      if (r.ok) { ball.classList.add('atrapada'); sonarClick(); return { escena, stage, sp, ball }; }
+      // falló: la ball se abre, el Pokémon vuelve a salir
+      ball.classList.add('reabre'); await esperar(170);
+      ball.remove();
+      sp.style.visibility = ''; sp.classList.remove('absorbido'); sp.classList.add('reaparece');
+      await esperar(380); sp.classList.remove('reaparece');
+      return { escena, stage, sp };
+    }
+
+    // Tarjeta de RESUMEN tras una captura exitosa: badges, potencial ⭐+IV%, naturaleza/habilidad,
+    // caramelos, "¡nuevo en la Pokédex!" y acciones (Buscar otro · Ver en Pokédex · Apodar).
+    async function resumenCaptura(r, ctx) {
+      animando = true;
+      const escena = (ctx && ctx.escena) || $('arena').querySelector('.enc-card');
+      const ball = ctx && ctx.ball, sp = ctx && ctx.sp;
+      const t = tier(enc.rarezaTier);
+      const especial = enc.shiny || enc.alfa;
+      const nuevo = !enc.vistoYa;
+      escena.classList.add('capturado');
+      const nP = especial ? 30 : t.nivel >= 7 ? 24 : t.nivel >= 4 ? 18 : 12;
+      estrellas(escena, { n: nP, dorado: especial, color: enc.shiny ? '#ffd23f' : enc.alfa ? '#b06bff' : t.color });
+      if (r.ball === 'xeneize') confetiXeneize(escena, 38);
+      if (especial) { document.body.classList.add('tier-shake'); setTimeout(() => document.body.classList.remove('tier-shake'), 600); }
       if (enc.shiny) { document.body.classList.add('shiny-flash'); setTimeout(() => document.body.classList.remove('shiny-flash'), 700); sonarShiny(); }
-      else if (enc.alfa || t.nivel >= 7) sonarEpico();
-      else sonarCaptura();
-      await esperar(520);
+      else if (enc.alfa || t.nivel >= 7) sonarEpico(); else sonarCaptura();
+      await esperar(340);
+      if (ball) ball.remove();
+      if (sp) { sp.style.visibility = ''; sp.classList.remove('absorbido'); sp.classList.add('reaparece'); setTimeout(() => sp.classList.remove('reaparece'), 420); }
 
       const nombre = nombreDe(enc.id);
-      const titulo = enc.shiny ? '✨ ¡Un <b>' + nombre + '</b> SHINY! ✨'
-        : enc.alfa ? '👑 ¡Un <b>' + nombre + '</b> ALFA!'
-        : '¡Atrapaste a <b>' + nombre + '</b>!';
-      const ballMeta = inventarioBalls().find((b) => b.key === r.ball);
-      const ballIco = ballMeta ? itemSvg(ballMeta.sprite, 18) + ' ' : '';
+      const idn = identidadDe(r.inst), nat = naturalezaDe(r.inst), hm = habMeta(idn.hab);
+      const pct = ivPct(idn.ivs), est = ivEstrellas(idn.ivs);
+      const gen = idn.gen === 'm' ? '<span class="cap-gm">♂</span>' : idn.gen === 'f' ? '<span class="cap-gf">♀</span>' : '';
+      const titulo = enc.shiny ? '✨ ¡<b>' + nombre + '</b> SHINY!' : enc.alfa ? '👑 ¡<b>' + nombre + '</b> ALFA!' : '¡Atrapaste a <b>' + nombre + '</b>!';
+      const carTot = caramelosDe(enc.id);
       const calCls = { Excelente: 'cal-exc', Genial: 'cal-gen', Bien: 'cal-bien', Normal: 'cal-norm' }[r.calidad] || 'cal-norm';
-      const txt = document.createElement('div');
-      txt.className = 'captura-txt enc-result';
-      txt.innerHTML = ballIco + titulo
-        + ' <span class="cap-n">Nº ' + enc.id + ' · Nv.' + enc.nivel + '</span>'
-        + '<span class="cap-cal ' + calCls + '">🎯 Tiro ' + r.calidad + '</span>'
-        + '<span class="cap-tier" style="--tier-color:' + t.color + '">' + (t.ico ? t.ico + ' ' : '') + t.nombre + '</span>'
-        + capIdentidad(r.inst);
-      escena.querySelector('.enc-info').replaceWith(txt);
-      const sel = escena.querySelector('.ball-selector'), acc = escena.querySelector('.enc-acciones');
-      sel && sel.remove(); acc && acc.remove();
-      $('msg').textContent = enc.shiny ? '🌟 ¡INCREÍBLE! Un shiny aparece 1 de cada 100 veces.'
+      const hrefPokedex = (window.__BASE || '') + '/pokedex';
+      const html =
+        '<div class="cap-resumen">' +
+          '<div class="cap-r-titulo">' + titulo + '</div>' +
+          (nuevo ? '<div class="cap-nuevo">📒 ¡Nuevo en la Pokédex!</div>' : '') +
+          '<div class="cap-r-linea"><span class="cap-r-nv">Nv ' + enc.nivel + '</span>' + gen +
+            (enc.alfa ? '<span class="cap-b cap-b-alfa">👑 Alfa</span>' : '') +
+            (enc.shiny ? '<span class="cap-b cap-b-shiny">✨ Shiny</span>' : '') + '</div>' +
+          '<div class="cap-pot" title="Potencial genético: qué tan buenos son sus IVs (genes)."><span class="cap-pot-lbl">⭐ Potencial</span>' +
+            '<span class="enc-stars s' + est + '">' + tasacion(est) + '</span>' +
+            '<span class="cap-iv' + (pct >= 90 ? ' cap-iv-top' : pct >= 75 ? ' cap-iv-good' : '') + '">IVs ' + pct + '%</span></div>' +
+          '<div class="cap-r-meta"><span>' + nat.nombre + '</span>' + (hm ? '<i class="cap-dot">·</i><span>' + hm.nombre + '</span>' : '') +
+            '<i class="cap-dot">·</i><span class="cap-car">🍬 +' + CARAMELOS_POR_CAPTURA + ' <small>(' + carTot + ')</small></span></div>' +
+          '<div class="cap-cal ' + calCls + '">🎯 Tiro ' + r.calidad + '</div>' +
+          '<div class="cap-acciones">' +
+            '<button class="cap-act cap-act-main" id="cap-otro" type="button">🌿 Buscar otro</button>' +
+            '<a class="cap-act" href="' + hrefPokedex + '">📒 Ver en Pokédex</a>' +
+            '<button class="cap-act" id="cap-apodar" type="button">✏️ Apodar</button>' +
+          '</div>' +
+        '</div>';
+      const panel = escena.querySelector('.enc-panel');
+      if (panel) panel.outerHTML = html; else escena.insertAdjacentHTML('beforeend', html);
+      $('msg').textContent = enc.shiny ? '🌟 ¡INCREÍBLE! Un shiny aparece 1 de cada 100.'
         : enc.alfa ? '👑 ¡Un alfa! Llega con 3 IVs perfectos garantizados.'
-        : '🍬 +3 caramelos · seguí buscando 🌿';
+        : '🍬 ¡Capturado! Seguí buscando 🌿';
+      const inst = r.inst;
       enc = null; animando = false; refrescar();
+      const bo = $('cap-otro'); if (bo) bo.addEventListener('click', buscar);
+      const ap = $('cap-apodar'); if (ap) ap.addEventListener('click', () => {
+        const nv = prompt('Apodá a ' + nombre + ':', inst.mote || nombre);
+        if (nv != null && nv.trim()) { renombrar(inst.iid, nv.trim()); ap.textContent = '✏️ ' + nv.trim(); ap.disabled = true; }
+      });
     }
 
     // ── minijuego de anillo (overlay) ────────────────────────────────────

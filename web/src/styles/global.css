@@ -751,6 +751,53 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .enc-tirar[disabled]{ opacity:.42; cursor:not-allowed; }
 .enc-huir{ background:rgba(255,255,255,.82); color:#16331e; border:1px solid color-mix(in srgb,#16331e 18%, transparent); }
 .enc-huir:hover{ transform:translateY(-1px); }
+.enc-tasa-q{ display:inline-flex; align-items:center; justify-content:center; width:14px; height:14px; border-radius:50%; font:800 .56rem var(--font-mono); font-style:normal; color:#3f6b4d; background:rgba(63,107,77,.16); cursor:help; }
+
+/* —— secuencia de captura: la ball cae y SE SACUDE (3 si cae, 1-2 si falla) —— */
+.enc-sprite.absorbido{ animation:encAbsorber .36s ease forwards; }
+@keyframes encAbsorber{ 0%{ filter:brightness(1); } 35%{ transform:scale(1.06); filter:brightness(2.6); } 100%{ transform:translateY(8px) scale(.05); opacity:0; filter:brightness(4); } }
+.enc-sprite.reaparece{ animation:encReaparece .42s cubic-bezier(.2,1.4,.4,1); }
+@keyframes encReaparece{ 0%{ transform:scale(.2); opacity:0; filter:brightness(3); } 60%{ transform:scale(1.08); } 100%{ transform:none; opacity:1; } }
+.enc-catchball{ position:absolute; left:50%; bottom:32px; transform:translateX(-50%); z-index:3; line-height:0; filter:drop-shadow(0 4px 6px rgba(0,0,0,.4)); }
+.enc-catchball svg{ display:block; }
+.enc-catchball.abierta{ animation:ballHaz .34s ease; }
+@keyframes ballHaz{ 0%{ filter:brightness(1.5); } 100%{ filter:brightness(1); } }
+.enc-catchball.cae{ animation:ballCae .32s cubic-bezier(.3,1.4,.5,1); }
+@keyframes ballCae{ 0%{ transform:translateX(-50%) translateY(-46px) rotate(-12deg); } 70%{ transform:translateX(-50%) translateY(4px) rotate(6deg); } 100%{ transform:translateX(-50%) translateY(0) rotate(0); } }
+.enc-catchball.sacude{ animation:ballSacude .42s ease; transform-origin:bottom center; }
+@keyframes ballSacude{ 0%,100%{ transform:translateX(-50%) rotate(0); } 20%{ transform:translateX(-55%) rotate(-24deg); } 55%{ transform:translateX(-45%) rotate(22deg); } 80%{ transform:translateX(-50%) rotate(-7deg); } }
+.enc-catchball.atrapada{ animation:ballConfirma .55s ease forwards; }
+@keyframes ballConfirma{ 0%{ filter:brightness(1); } 28%{ filter:brightness(1) drop-shadow(0 0 11px var(--yellow)); } 100%{ transform:translateX(-50%) scale(.92); filter:brightness(1) drop-shadow(0 0 5px var(--yellow)); } }
+.enc-catchball.reabre{ animation:ballAbre .2s ease forwards; }
+@keyframes ballAbre{ 0%{ filter:brightness(1); } 100%{ filter:brightness(2.4); transform:translateX(-50%) scale(1.18); opacity:0; } }
+.enc-panel.resolviendo{ opacity:.32; pointer-events:none; filter:saturate(.6); animation:none; transition:opacity .2s; }
+
+/* —— tarjeta de RESUMEN post-captura (sobre el pasto, look claro fijo) —— */
+.cap-resumen{ position:relative; z-index:3; width:min(384px,94%); margin:-8px auto 0; padding:13px 16px 15px; display:flex; flex-direction:column; align-items:center; gap:7px; text-align:center;
+  background:linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.84));
+  border:1px solid color-mix(in srgb,var(--tier-color) 55%, rgba(22,51,30,.22)); border-radius:16px;
+  box-shadow:0 14px 34px -15px rgba(22,51,30,.55), 0 0 0 3px color-mix(in srgb,var(--tier-color) 26%, transparent);
+  animation:capIn .42s cubic-bezier(.2,1.35,.4,1); }
+@keyframes capIn{ 0%{ transform:translateY(14px) scale(.94); opacity:0; } 100%{ transform:none; opacity:1; } }
+.cap-r-titulo{ font:800 1.2rem var(--font-display); letter-spacing:-.02em; color:#16331e; }
+.cap-r-titulo b{ color:#0a7a2e; }
+.cap-nuevo{ font:800 .68rem var(--font-pixel); letter-spacing:.03em; color:#b06b00; background:rgba(255,203,5,.2); border:1px solid rgba(255,203,5,.5); border-radius:999px; padding:2px 11px; animation:pmBlink 1.3s ease-in-out infinite; }
+.cap-r-linea{ display:flex; align-items:center; gap:7px; flex-wrap:wrap; justify-content:center; }
+.cap-r-nv{ font:700 .76rem var(--font-mono); color:#3f6b4d; }
+.cap-gm{ color:#2f7fd1; font-weight:800; } .cap-gf{ color:#d65aa0; font-weight:800; }
+.cap-b{ font:800 .63rem var(--font-mono); border-radius:999px; padding:2px 8px; }
+.cap-b-alfa{ color:#7a3bd0; background:rgba(176,107,255,.18); } .cap-b-shiny{ color:#b08400; background:rgba(255,203,5,.2); }
+.cap-pot{ display:flex; align-items:center; gap:7px; }
+.cap-pot-lbl{ font:700 .63rem var(--font-pixel); letter-spacing:.03em; color:#3f6b4d; }
+.cap-iv{ font:800 .72rem var(--font-mono); color:#3f6b4d; } .cap-iv-good{ color:#0b7c78; } .cap-iv-top{ color:#c08400; }
+.cap-r-meta{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:center; font:600 .8rem var(--font-mono); color:#1d4b2c; }
+.cap-r-meta .cap-dot{ color:#9bb3a3; font-style:normal; }
+.cap-car small{ opacity:.6; }
+.cap-acciones{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:5px; }
+.cap-act{ font:800 .8rem var(--font-display); padding:8px 15px; border-radius:999px; cursor:pointer; text-decoration:none; border:1px solid color-mix(in srgb,#16331e 18%, transparent); background:rgba(255,255,255,.85); color:#16331e; transition:transform .1s, box-shadow .12s; display:inline-flex; align-items:center; gap:4px; }
+.cap-act:hover{ transform:translateY(-2px); box-shadow:0 5px 12px -6px rgba(22,51,30,.5); }
+.cap-act-main{ background:var(--red); color:#fff; border-color:transparent; box-shadow:0 6px 14px -7px var(--red); }
+.cap-act[disabled]{ opacity:.6; cursor:default; transform:none; }
 
 /* —— resultado de la captura (reemplaza enc-info) —— */
 .enc-card.capturado{ box-shadow:0 14px 38px -14px color-mix(in srgb,var(--tier-color) 60%, rgba(22,51,30,.5)), 0 0 0 3px color-mix(in srgb,var(--tier-color) 40%, transparent); }
@@ -774,10 +821,11 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .ring-overlay[hidden]{ display:none; }
 .ring-overlay.abierto{ animation:ringFade .2s ease; }
 @keyframes ringFade{ from{ opacity:0 } to{ opacity:1 } }
-.ring-wild{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none; }
+.ring-stage{ position:relative; width:min(78vw,320px); height:min(78vw,320px); display:flex; align-items:center; justify-content:center; }
+.ring-wild{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none; z-index:1; }
 .ring-wild img{ width:128px; height:128px; image-rendering:pixelated; filter:drop-shadow(0 8px 14px rgba(0,0,0,.55)); animation:flota 1.8s ease-in-out infinite; }
 .ring-wild img.shiny{ filter:drop-shadow(0 0 16px gold) drop-shadow(0 8px 14px rgba(0,0,0,.55)); }
-.ring-svg{ position:relative; width:min(78vw,320px); height:min(78vw,320px); pointer-events:none; z-index:2; }
+.ring-svg{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:2; }
 .ring-target{ fill:none; stroke:rgba(255,255,255,.5); stroke-width:2; stroke-dasharray:5 7; }
 .ring-move{ fill:none; stroke:var(--yellow); stroke-width:4.5; filter:drop-shadow(0 0 8px var(--yellow)); }
 .ring-label{ position:relative; z-index:3; min-height:1.6em; font:800 1.6rem var(--font-display); letter-spacing:-.01em; color:#fff; opacity:0; transform:scale(.7); }

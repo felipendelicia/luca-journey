@@ -29,6 +29,7 @@ const _uid = () => Math.random().toString(36).slice(2, 10);
 
 export const pc = () => { asegurarMigrado(); return get('col:pc', []); };              // instancias
 export const caramelos = () => { asegurarMigrado(); return get('col:caramelos', {}); }; // {familiaId: cantidad}
+export const caramelosDe = (id) => caramelos()[familiaDe(id)] || 0;                     // caramelos de la familia evolutiva
 export const vistos = () => { asegurarMigrado(); return new Set(get('col:vistos', [])); };
 
 // deriva col:atrapados (conteos) y col:shiny (especies) desde el PC → compat.
