@@ -36,6 +36,8 @@ export const cambiar = (idx) => elegir({ tipo: 'cambiar', idx });
 export const usarPocion = (itemId) => elegir({ tipo: 'pocion', itemId });
 export const lanzarSuper = (calidad) => elegir({ tipo: 'super', calidad });
 export const rendirse = () => elegir({ tipo: 'rendirse' });
+// aviso al server de que terminé de animar la resolución (sincroniza el arranque de la próxima ronda).
+export const ackRonda = () => emit('listoRonda');
 
 export function desconectarBatalla() { if (socket) { socket.disconnect(); socket = null; } }
 export const miUid = () => (auth.user() || {}).id;

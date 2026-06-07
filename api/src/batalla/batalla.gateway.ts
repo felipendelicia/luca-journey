@@ -70,4 +70,7 @@ export class BatallaGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   onReemplazo(@ConnectedSocket() c: Socket, @MessageBody() idx: number) { this.salas.elegir(c, this.uid(c), { tipo: 'reemplazo', idx }); }
   @SubscribeMessage('rendirse')
   onRendirse(@ConnectedSocket() c: Socket) { this.salas.elegir(c, this.uid(c), { tipo: 'rendirse' }); }
+  // el cliente terminó de animar la resolución → cuando avisan los dos, el server arranca la próxima ronda.
+  @SubscribeMessage('listoRonda')
+  onListoRonda(@ConnectedSocket() c: Socket) { this.salas.ackRonda(this.uid(c)); }
 }

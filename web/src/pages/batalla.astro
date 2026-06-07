@@ -839,9 +839,11 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       OS = { snap, prev: OS && OS.snap }; pintarHud(snap);
       quitarPrimero();
       ONL.animando = false;
-      // si seguimos en combate, el server mandará `ronda` y se reabrirá la selección;
-      // si es reemplazo, llega `reemplazo`; si es fin, llega `fin`.
-      if (snap.fase === 'fin') { bannerOnline('🏁', '¡Fin del combate!', 'fin'); }
+      if (snap.fase === 'fin') { bannerOnline('🏁', '¡Fin del combate!', 'fin'); return; }
+      // aviso al server que terminé de animar; espera al rival antes de la próxima ronda/reemplazo (anti-desync).
+      // Recién cuando llegue `ronda`/`reemplazo` se reabre la selección, sincronizado con el otro cliente.
+      online.ackRonda();
+      bannerOnline('⌛', 'Esperando al rival…', 'resolviendo');
     }
 
     function marcarPrimero(mio) {

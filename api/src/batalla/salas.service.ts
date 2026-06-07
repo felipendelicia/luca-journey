@@ -16,6 +16,9 @@ interface Sala {
   jugadores: JugadorSala[]; estado?: EstadoCombate;
   graciaTimer?: ReturnType<typeof setTimeout>; graciaDe?: string;
   rondaTimer?: ReturnType<typeof setTimeout>;   // timer 30s de la ronda simultánea / reemplazo
+  // sincronización: tras una resolución, esperamos que AMBOS clientes terminen de animar (ack) antes
+  // del próximo paso (ronda/reemplazo). Si no, el próximo turno le gana a la animación → desync.
+  ackRonda?: Set<string>; siguiente?: () => void; ackTimer?: ReturnType<typeof setTimeout>;
 }
 interface EnCola { uid: string; nombre: string; socketId: string; rating: number; }
 
@@ -186,13 +189,37 @@ export class SalasService {
     if (sala.rondaTimer) { clearTimeout(sala.rondaTimer); sala.rondaTimer = undefined; }
     this.emitSala(sala.id, 'resolucion', { snap: snapshot(e), eventos });
     if (e.fase === 'fin') return void this.finalizar(sala);
-    if (e.fase === 'reemplazo') {
-      this.emitSala(sala.id, 'reemplazo', { uids: e.reemplazan });
-      this.armarTimerReemplazo(sala);
-      return;
-    }
-    // fase combate, ronda avanzó → nueva ronda
-    this.nuevaRonda(sala);
+    // esperar a que AMBOS clientes terminen de animar (ack 'listoRonda') antes del próximo paso → sin desync.
+    const reemplazo = e.fase === 'reemplazo';
+    const reemplazan = reemplazo ? [...(e.reemplazan || [])] : [];
+    this.esperarAck(sala, () => {
+      if (!sala.estado) return;
+      if (reemplazo) { this.emitSala(sala.id, 'reemplazo', { uids: reemplazan }); this.armarTimerReemplazo(sala); }
+      else this.nuevaRonda(sala);
+    });
+  }
+
+  // espera el ack de animación de ambos jugadores; fallback a los 12s si alguno no avisa (lag/animación colgada).
+  private esperarAck(sala: Sala, siguiente: () => void) {
+    sala.ackRonda = new Set();
+    sala.siguiente = siguiente;
+    if (sala.ackTimer) clearTimeout(sala.ackTimer);
+    sala.ackTimer = setTimeout(() => this.dispararSiguiente(sala), 12000);
+  }
+
+  // un cliente terminó de animar la resolución (evento 'listoRonda'): cuando avisan los dos, avanzamos.
+  ackRonda(uid: string) {
+    const sala = this.salaDeUid(uid);
+    if (!sala || !sala.ackRonda || !sala.siguiente) return;
+    sala.ackRonda.add(uid);
+    if (sala.jugadores.every((j) => sala.ackRonda!.has(j.uid))) this.dispararSiguiente(sala);
+  }
+
+  private dispararSiguiente(sala: Sala) {
+    if (sala.ackTimer) { clearTimeout(sala.ackTimer); sala.ackTimer = undefined; }
+    const sig = sala.siguiente;
+    sala.siguiente = undefined; sala.ackRonda = undefined;
+    if (sig) sig();
   }
 
   // timeout de la ronda: auto-elige (CPU) por cada uid que no eligió; si acumula 3 timeouts, pierde.
