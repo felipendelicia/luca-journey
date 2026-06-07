@@ -878,7 +878,7 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .bt-rank-ol .r-v{ margin-left:auto; color:var(--ink-soft); }
 .bt-rendir{ border-color:var(--red) !important; color:var(--red); }
 /* ════════ COMBATE estilo GBA / Pokémon Rojo Fuego ════════ */
-#bt-combate{ position:relative; --gba-cream:#f7f0df; --gba-ink:#37373f; --gba-edge:#23232b; --gba-frame:#5d6b8f; }
+#bt-combate{ position:relative; max-width:560px; margin-inline:auto; --gba-cream:#f7f0df; --gba-ink:#37373f; --gba-edge:#23232b; --gba-frame:#5d6b8f; }
 /* en combate, ocultar el intro + selector de modo (inmersión "pantalla de juego") */
 .batalla:has(#bt-combate:not([hidden])) > .safari-head,
 .batalla:has(#bt-combate:not([hidden])) > p,
@@ -897,9 +897,9 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
   background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 46'><ellipse cx='75' cy='31' rx='72' ry='13' fill='%2384c23c'/><ellipse cx='75' cy='27' rx='62' ry='11' fill='%23a8da5c'/><g stroke='%23679f2a' stroke-width='2.4' stroke-linecap='round' fill='none'><path d='M20 31v-8M20 31l-5-7M20 31l5-7'/><path d='M42 33v-9M42 33l-5-7M42 33l5-7'/><path d='M64 31v-8M64 31l-5-7M64 31l5-7'/><path d='M86 33v-9M86 33l-5-7M86 33l5-7'/><path d='M108 31v-8M108 31l-5-7M108 31l5-7'/><path d='M130 32v-7M130 32l-4-6M130 32l4-6'/></g><g stroke='%23cdeb86' stroke-width='1.6' stroke-linecap='round' fill='none'><path d='M31 29v-6M53 31v-6M75 29v-6M97 31v-6M119 29v-6'/></g></svg>"); }
 .bt-arena::before{ width:176px; height:50px; top:100px; right:2px; }    /* pasto rival */
 .bt-arena::after{ width:238px; height:64px; bottom:8px; left:-10px; }   /* pasto jugador */
-.bt-sprite{ position:absolute; image-rendering:pixelated; filter:drop-shadow(0 3px 0 rgba(0,0,0,.18)); }
-.bt-sprite-r{ width:116px; height:116px; top:24px; right:38px; }
-.bt-sprite-p{ width:152px; height:152px; bottom:16px; left:26px; }   /* de espaldas: sin flip */
+.bt-sprite{ position:absolute; z-index:1; image-rendering:pixelated; filter:drop-shadow(0 3px 0 rgba(0,0,0,.18)); }   /* z-index: el Pokémon va ARRIBA del pasto */
+.bt-sprite-r{ width:124px; height:124px; top:24px; right:30px; }
+.bt-sprite-p{ width:164px; height:164px; bottom:12px; left:18px; }   /* de espaldas: sin flip */
 
 /* cuadros de datos (FireRed): caja crema, borde oscuro, esquinas redondeadas */
 .bt-rival,.bt-yo{ position:absolute; z-index:2; min-width:170px; padding:6px 13px 8px;
