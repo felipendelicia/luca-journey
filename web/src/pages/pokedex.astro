@@ -95,7 +95,7 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
   <script type="application/json" id="dex-data" set:html={JSON.stringify({ temas, regiones: REGIONES })}></script>
   <script>
     import { sincronizar, spriteUrl, pc, caramelos, vistos, subirNivel, opcionesEvo, evolucionarInst, renombrar, liberar, learnsetDe, setMovs, tieneItem, costoSubir, NIVEL_MAX,
-      identidadDe, evsDe, naturalezaDe, habMeta, ivPct, ivEstrellas, juezIV, usarVitamina, usarItem } from '../lib/coleccion.js';
+      identidadDe, evsDe, naturalezaDe, habMeta, ivPct, ivEstrellas, juezIV, usarVitamina, usarItem, bajarEV, resetEV } from '../lib/coleccion.js';
     import { ITEMS, itemsPorCat } from '../lib/items.js';
     import { itemSvg } from '../lib/sprites.js';
     import { sonarExito, sonarEpico, musicaEvolucion, detenerMusica } from '../lib/sonidos.js';
@@ -310,6 +310,10 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
         const btn = (vit && tieneItem(vit) && !evMax)
           ? '<button class="id-vit" data-vit-stat="' + i + '" title="' + ITEMS[vit].nombre + ': +10 EV de ' + lbl + '">' + itemSvg('vitamina', 15, ID_STAT[i]) + '<span>+10</span></button>'
           : (vit && tieneItem(vit) && evMax ? '<span class="id-vit id-vit-max" title="Tope de vitamina (100)">MÁX</span>' : '');
+        const baja = BAJA_POR_STAT[i];
+        const btnBaja = (baja && tieneItem(baja) && ev > 0)
+          ? '<button class="id-vit id-baja" data-baja-stat="' + i + '" title="' + ITEMS[baja].nombre + ': −10 EV de ' + lbl + '">' + itemSvg('baya', 15, ID_STAT[i]) + '<span>−10</span></button>'
+          : '';
         return '<div class="es-row' + cls + '">' +
           '<div class="es-head"><span class="es-lbl">' + lbl + arr + '</span>' +
             '<span class="es-bar"><i style="width:' + valW + '%;background:' + ID_STAT[i] + '"></i></span>' +
@@ -319,7 +323,7 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
             '<span class="es-chip es-iv" title="IV · genética, fija al capturar"><span class="es-mtrack"><i style="width:' + ivPctW + '%"></i></span>IV ' + iv + '<small>/31</small></span>' +
             '<span class="es-chip es-ev" title="EV · entrenamiento"><span class="es-mtrack"><i style="width:' + evPctW + '%;background:' + ID_STAT[i] + '"></i></span>EV ' + ev + '<small>/252</small></span>' +
             (arrUp ? '<span class="es-chip es-nat up">nat ×1.1</span>' : arrDown ? '<span class="es-chip es-nat down">nat ×0.9</span>' : '') +
-            btn +
+            btn + btnBaja +
           '</div></div>';
       }).join('');
       const natTxt = (nat.sube == null)
@@ -331,7 +335,8 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
             (hm.desc ? '<div class="id-hab-desc">' + hm.desc + '</div>' : '')
         : '<div class="id-hab-nom"><span class="id-na">—</span></div>';
       return '<div class="pm-panel id-panel"><div class="pm-h">📊 Estadísticas ' + generoChip(idn.gen) + alfaChip(m) + tamChip(m) +
-          '<small>Nv. ' + L + ' · EV ' + evTotal + '/510</small></div>' +
+          '<small>Nv. ' + L + ' · EV ' + evTotal + '/510</small>' +
+          (BORRADOR && tieneItem(BORRADOR) && evTotal > 0 ? '<button class="id-reset-ev" data-reset-ev title="Borrón EV: pone todos los EVs en 0">♻️ Reset EVs</button>' : '') + '</div>' +
         header +
         '<div class="es-formula">Cada número = <b class="es-k-base">base</b> de la especie + <b class="es-k-iv">IV</b> (genes, fijos) + <b class="es-k-ev">EV</b> (entrenás), y la <b>naturaleza</b> sube/baja un 10%.</div>' +
         '<div class="es-rows">' + filas + '</div>' +
@@ -352,6 +357,9 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
     const ID_STAT = ['#ff5959', '#f5ac78', '#fae078', '#9db7f5', '#a7db8d', '#fa92b2'];   // tinte de stat
     // mapa stat-idx → vitamina (para los botones), desde el catálogo (cat:'ev').
     const VIT_POR_STAT = {}; for (const it of itemsPorCat('ev')) VIT_POR_STAT[it.ev] = it.id;
+    // mapa stat-idx → baya (−10 EV) + el id del Borrón EV (reset total), del mismo catálogo.
+    const BAJA_POR_STAT = {}; for (const it of itemsPorCat('ev')) if (it.baja != null) BAJA_POR_STAT[it.baja] = it.id;
+    const BORRADOR = (itemsPorCat('ev').find((it) => it.reset) || {}).id;   // 'borrador'
 
     function abrirModal(iid, enLugar) {
       const m = pc().find((x) => x.iid === iid); if (!m) return;
@@ -412,6 +420,15 @@ const REGIONES = REGS.map((r) => [r.id, etiqueta(r)]);
         if (!vit || !tieneItem(vit)) return;
         if (usarVitamina(iid, stat)) { usarItem(vit); sonarExito(); abrirModal(iid, true); }   // gasta la vitamina + +10 EV; re-render
       }));
+      $('poke-modal-cuerpo').querySelectorAll('[data-baja-stat]').forEach((b) => b.addEventListener('click', () => {
+        const stat = Number(b.dataset.bajaStat); const baya = BAJA_POR_STAT[stat];
+        if (!baya || !tieneItem(baya)) return;
+        if (bajarEV(iid, stat)) { usarItem(baya); sonarExito(); abrirModal(iid, true); }   // gasta la baya + −10 EV; re-render
+      }));
+      const bReset = $('poke-modal-cuerpo').querySelector('[data-reset-ev]');
+      if (bReset) bReset.addEventListener('click', () => {
+        if (BORRADOR && tieneItem(BORRADOR) && resetEV(iid)) { usarItem(BORRADOR); sonarExito(); abrirModal(iid, true); }
+      });
       $('pm-mote').addEventListener('click', () => {
         const nv = prompt('Mote para tu ' + esp + ' (vacío = sin mote):', m.mote || '');
         if (nv !== null) { renombrar(iid, nv); abrirModal(iid, true); pintar(); }

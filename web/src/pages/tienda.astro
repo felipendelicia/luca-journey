@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { ITEMS } from '../lib/items.js';
-import { itemSvg, ballSvg, vitaminaColor } from '../lib/sprites.js';
+import { itemSvg, ballSvg, vitaminaColor, bayaColor } from '../lib/sprites.js';
 import { u } from '../lib/url.ts';
 
 const CATS = [['evo', '🧬 Evolución'], ['cura', '❤️ Curación · batalla'], ['estado', '💊 Estados y revivir · batalla'], ['ev', '🧪 Vitaminas (entrenamiento)'], ['ball', '🎯 Pokéballs']];
@@ -33,7 +33,7 @@ const porCat = (c) => Object.entries(ITEMS).filter(([, it]) => it.cat === c && !
         <div class="ti-grid">
           {porCat(c).map(([id, it]) => (
             <div class="ti-card" data-id={id} data-precio={it.precio}>
-              <div class="ti-ico">{it.sprite ? <Fragment set:html={itemSvg(it.sprite, 36, it.sprite === 'vitamina' ? vitaminaColor(it.ev) : null)} /> : it.ico}<span class="ti-tengo" id={'tengo-' + id}></span></div>
+              <div class="ti-ico">{it.sprite ? <Fragment set:html={itemSvg(it.sprite, 36, it.sprite === 'vitamina' ? vitaminaColor(it.ev) : it.sprite === 'baya' ? bayaColor(it.baja) : null)} /> : it.ico}<span class="ti-tengo" id={'tengo-' + id}></span></div>
               <div class="ti-info">
                 <div class="ti-nom">{it.nombre}</div>
                 <div class="ti-desc">{it.desc}</div>
