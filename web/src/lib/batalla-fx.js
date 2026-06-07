@@ -1,170 +1,190 @@
-// batalla-fx.js — animaciones de ataque estilo GBA. Cada movimiento anima según su id (override) o,
-// si no hay override, según su TIPO (base). Todo es DOM + CSS (keyframes en global.css), sin libs.
-// API: efectoAtaque(arena, mov, haciaRival)  → haciaRival = true si el que recibe es el rival.
+// batalla-fx.js — motor de animaciones de ataque en CANVAS: partículas con física (velocidad,
+// gravedad, fricción), glow aditivo, trails, haces y coreografía por movimiento. Cada ataque anima
+// según su MOVIMIENTO (override) o, si no, según su TIPO/categoría. API estable para el combate:
+//   efectoAtaque(arena, mov, haciaRival)   → haciaRival = true si el que recibe es el rival.
 
 const rnd = (a, b) => a + Math.random() * (b - a);
 const TCOLOR = { Normal: '#c8c8d0', Fuego: '#ff7a2c', Agua: '#3aa0e6', Planta: '#5cc23c', 'Eléctrico': '#f2d022', Hielo: '#7fe0e0', Lucha: '#e0506a', Veneno: '#b35fd6', Tierra: '#d39b4f', Volador: '#a8c0ee', 'Psíquico': '#fb6a8e', Bicho: '#a4c41e', Roca: '#bcaa70', Fantasma: '#7763c0', 'Dragón': '#5a78e0', Siniestro: '#5a5566', Acero: '#9fb6c4', Hada: '#f29ae6' };
 
-// capa de efectos sobre la arena (se autodestruye)
-function capa(arena) {
-  const l = document.createElement('div'); l.className = 'fx-layer';
-  arena.appendChild(l); setTimeout(() => l.remove(), 1500);
-  return l;
-}
-// posición (px) del centro de cada combatiente dentro de la arena
-function puntos(arena, haciaRival) {
-  const w = arena.clientWidth, h = arena.clientHeight;
-  const def = haciaRival ? { x: w * 0.76, y: h * 0.30 } : { x: w * 0.26, y: h * 0.70 };
-  const atk = haciaRival ? { x: w * 0.26, y: h * 0.70 } : { x: w * 0.76, y: h * 0.30 };
-  return { def, atk, w, h };
-}
-// una partícula con animación parametrizada por custom props
-function part(layer, x, y, css, vars, anim, dur, delay = 0, ease = 'ease-out') {
-  const p = document.createElement('div'); p.className = 'fxp';
-  p.style.cssText = 'left:' + x + 'px;top:' + y + 'px;' + css;
-  for (const k in vars) p.style.setProperty('--' + k, vars[k]);
-  p.style.animation = 'fx-' + anim + ' ' + dur + 's ' + ease + ' ' + delay + 's forwards';
-  layer.appendChild(p);
-}
-// estallido radial de n partículas desde (cx,cy)
-function estallido(layer, cx, cy, n, make) {
-  for (let i = 0; i < n; i++) { const o = make(i, n); part(layer, cx, cy, o.css, o.vars, o.anim || 'fly', o.dur || 0.55, o.delay || 0, o.ease); }
-}
-// flash radial
-function flash(layer, cx, cy, color, size = 150, dur = 0.4) {
-  part(layer, cx, cy, 'width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:radial-gradient(circle,' + color + ' 0%,transparent 65%)', { s: 1.7 }, 'flash', dur);
-}
-// anillo expansivo
-function anillo(layer, cx, cy, color, dur = 0.5) {
-  part(layer, cx, cy, 'width:60px;height:60px;border-radius:50%;border:4px solid ' + color, { s: 2.4 }, 'ring', dur);
-}
-// rayo de energía de atacante→defensor (bar rotado)
-function rayo(layer, a, d, color, grosor = 14, dur = 0.5) {
-  const dx = d.x - a.x, dy = d.y - a.y; const len = Math.hypot(dx, dy); const ang = Math.atan2(dy, dx) * 180 / Math.PI;
-  const b = document.createElement('div'); b.className = 'fxp';
-  b.style.cssText = 'left:' + a.x + 'px;top:' + (a.y - grosor / 2) + 'px;width:' + len + 'px;height:' + grosor + 'px;transform-origin:0 50%;border-radius:' + grosor + 'px;'
-    + 'background:linear-gradient(90deg,transparent,' + color + ' 18%,#fff 50%,' + color + ' 82%,transparent);box-shadow:0 0 14px ' + color;
-  b.style.setProperty('--rot', ang + 'deg');
-  b.style.animation = 'fx-beam ' + dur + 's ease-out forwards';
-  layer.appendChild(b);
-}
-// destello de pantalla completa (rayos eléctricos, híper rayo)
-function pantallazo(layer, color, dur = 0.32) {
-  const f = document.createElement('div'); f.className = 'fxp fx-screen';
-  f.style.cssText = 'left:0;top:0;width:100%;height:100%;background:' + color;
-  f.style.animation = 'fx-shock ' + dur + 's steps(3) forwards';
-  layer.appendChild(f);
-}
-// rayo SVG zigzag cayendo sobre el defensor
-function bolt(layer, d) {
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('width', '120'); svg.setAttribute('height', '170'); svg.classList.add('fxp', 'fx-bolt');
-  svg.style.cssText = 'left:' + (d.x - 60) + 'px;top:' + (d.y - 150) + 'px';
-  svg.innerHTML = "<polyline points='60,0 42,52 72,58 36,118 66,124 30,170' fill='none' stroke='#fff14a' stroke-width='7' stroke-linejoin='round' style='filter:drop-shadow(0 0 6px #ffe23a)'/>";
-  svg.style.animation = 'fx-shock .4s steps(3) forwards';
-  layer.appendChild(svg);
-}
-
-// ───────── efectos por TIPO (base, cubren TODOS los movimientos) ─────────
-const TYPE_FX = {
-  Normal: ({ l, d }) => { flash(l, d.x, d.y, 'rgba(255,255,255,.85)', 130); estallido(l, d.x, d.y, 10, () => { const a = rnd(0, 6.28), r = rnd(34, 70); return { css: 'width:8px;height:8px;border-radius:50%;background:#fff', vars: { x: Math.cos(a) * r + 'px', y: Math.sin(a) * r + 'px' }, dur: 0.45 }; }); },
-  Fuego: ({ l, d }) => { flash(l, d.x, d.y, 'rgba(255,140,40,.9)', 150); estallido(l, d.x, d.y, 18, () => ({ css: 'width:14px;height:14px;border-radius:50% 50% 50% 0;background:radial-gradient(circle at 40% 35%,#ffe07a,#ff8a2c 55%,#e63a16)', vars: { x: rnd(-30, 30) + 'px', y: rnd(-90, -30) + 'px', s: rnd(0.8, 1.3) }, anim: 'rise', dur: rnd(0.5, 0.75), delay: rnd(0, 0.14) })); },
-  Agua: ({ l, d }) => { flash(l, d.x, d.y, 'rgba(80,170,240,.8)', 130); anillo(l, d.x, d.y, '#6fc0ff', 0.5); estallido(l, d.x, d.y, 20, () => { const a = rnd(-3.14, 0), r = rnd(45, 95); return { css: 'width:11px;height:11px;border-radius:50%;background:radial-gradient(circle at 38% 30%,#bfe9ff,#3aa0e6 60%,#1f6fc0);box-shadow:0 0 6px #6fc0ff', vars: { x: Math.cos(a) * r + 'px', y: (Math.sin(a) * r + rnd(20, 55)) + 'px' }, dur: 0.6, delay: rnd(0, 0.1) }; }); },
-  'Eléctrico': ({ l, d }) => { pantallazo(l, '#fff6b0'); bolt(l, d); estallido(l, d.x, d.y, 12, () => { const a = rnd(0, 6.28), r = rnd(30, 70); return { css: 'width:5px;height:5px;background:#fff3a0;box-shadow:0 0 8px 2px #ffe23a', vars: { x: Math.cos(a) * r + 'px', y: Math.sin(a) * r + 'px', s: 0 }, dur: 0.4, delay: rnd(0, 0.08) }; }); },
-  Planta: ({ l, d }) => { estallido(l, d.x, d.y, 16, () => { const a = rnd(0, 6.28), r = rnd(40, 90); return { css: 'width:16px;height:10px;border-radius:0 100% 0 100%;background:linear-gradient(135deg,#bff06a,#3f9a2e)', vars: { x: Math.cos(a) * r + 'px', y: Math.sin(a) * r + 'px', r: rnd(180, 540) + 'deg' }, anim: 'spin', dur: rnd(0.6, 0.85), delay: rnd(0, 0.12) }; }); },
-  Hielo: ({ l, d }) => { flash(l, d.x, d.y, 'rgba(150,230,230,.85)', 140); estallido(l, d.x, d.y, 14, () => { const a = rnd(0, 6.28), r = rnd(35, 80); return { css: 'width:9px;height:18px;background:linear-gradient(#eafcff,#7fe0e0);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)', vars: { x: Math.cos(a) * r + 'px', y: Math.sin(a) * r + 'px', r: rnd(-60, 60) + 'deg', s: rnd(0.7, 1.2) }, dur: 0.55, delay: rnd(0, 0.1) }; }); },
-  Roca: ({ l, d }) => { flash(l, d.x, d.y, 'rgba(190,170,110,.7)', 120); estallido(l, d.x, d.y, 13, () => { const a = rnd(0, 6.28), r = rnd(35, 80); return { css: 'width:' + rnd(10, 18) + 'px;height:' + rnd(10, 16) + 'px;border-radius:3px;background:linear-gradient(135deg,#cbb886,#7a6438)', vars: { x: Math.cos(a) * r + 'px', y: Math.sin(a) * r + 'px', r: rnd(-180, 180) + 'deg' }, anim: 'spin', dur: 0.55, delay: rnd(0, 0.08) }; }); },
-  Tierra: ({ l, d, arena }) => { arena.classList.add('bt-sacude'); setTimeout(() => arena.classList.remove('bt-sacude'), 320); estallido(l, d.x, d.y + 20, 16, () => ({ css: 'width:' + rnd(8, 16) + 'px;height:' + rnd(8, 14) + 'px;border-radius:3px;background:linear-gradient(135deg,#d8a85c,#8a5a28)', vars: { x: rnd(-50, 50) + 'px', y: rnd(-70, -20) + 'px', r: rnd(-180, 180) + 'deg' }, anim: 'spin', dur: 0.6, delay: rnd(0, 0.1) })); },
-  Veneno: ({ l, d }) => { estallido(l, d.x, d.y, 14, () => ({ css: 'width:' + rnd(8, 16) + 'px;height:' + rnd(8, 16) + 'px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e7b6ff,#a23fd0 70%);opacity:.85', vars: { x: rnd(-35, 35) + 'px', y: rnd(-80, -20) + 'px', s: rnd(0.8, 1.4) }, anim: 'rise', dur: rnd(0.6, 0.9), delay: rnd(0, 0.15) })); },
-  'Psíquico': ({ l, d }) => { anillo(l, d.x, d.y, '#fb6a8e', 0.55); anillo(l, d.x, d.y, '#ffa6c0', 0.7); flash(l, d.x, d.y, 'rgba(251,106,142,.6)', 150); },
-  Volador: ({ l, d }) => { estallido(l, d.x, d.y, 12, (i) => { const a = -2.4 + i * 0.18, r = rnd(50, 95); return { css: 'width:20px;height:7px;border-radius:50%;background:linear-gradient(90deg,transparent,#eef4ff,#a8c0ee)', vars: { x: Math.cos(a) * r + 'px', y: Math.sin(a) * r + 'px', r: (a * 57) + 'deg' }, dur: 0.5, delay: rnd(0, 0.12) }; }); },
-  Lucha: ({ l, d }) => { flash(l, d.x, d.y, 'rgba(255,255,255,.9)', 120); estallido(l, d.x, d.y, 8, (i) => ({ css: 'width:26px;height:5px;border-radius:3px;background:#ffd84a', vars: { x: '0px', y: '0px', r: (i * 45) + 'deg', s: 1.6 }, dur: 0.35 })); },
-  Fantasma: ({ l, d }) => { flash(l, d.x, d.y, 'rgba(120,90,200,.8)', 150); estallido(l, d.x, d.y, 12, () => ({ css: 'width:16px;height:16px;border-radius:50%;background:radial-gradient(circle,#9b7fe0,#3a2a66 75%);opacity:.8', vars: { x: rnd(-45, 45) + 'px', y: rnd(-55, 25) + 'px', s: rnd(0.6, 1.3) }, anim: 'rise', dur: rnd(0.6, 0.85), delay: rnd(0, 0.14) })); },
-  Bicho: ({ l, d }) => { estallido(l, d.x, d.y, 14, () => { const a = rnd(0, 6.28), r = rnd(35, 80); return { css: 'width:8px;height:8px;border-radius:50%;background:#b6d63a', vars: { x: Math.cos(a) * r + 'px', y: Math.sin(a) * r + 'px' }, dur: 0.5, delay: rnd(0, 0.1) }; }); },
-  'Dragón': ({ l, d, atk }) => { rayo(l, atk, d, '#7a8ef0', 18, 0.5); anillo(l, d.x, d.y, '#9aa6ff', 0.55); },
-  Hada: ({ l, d }) => { estallido(l, d.x, d.y, 16, () => { const a = rnd(0, 6.28), r = rnd(30, 80); return { css: 'width:12px;height:12px;background:#ffb6ee;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)', vars: { x: Math.cos(a) * r + 'px', y: Math.sin(a) * r + 'px', r: rnd(0, 360) + 'deg', s: rnd(0.5, 1.1) }, anim: 'spin', dur: 0.6, delay: rnd(0, 0.14) }; }); },
-  Acero: ({ l, d }) => { flash(l, d.x, d.y, 'rgba(220,235,245,.9)', 120); estallido(l, d.x, d.y, 10, (i) => ({ css: 'width:22px;height:4px;border-radius:3px;background:linear-gradient(90deg,transparent,#fff,transparent)', vars: { x: '0px', y: '0px', r: (i * 36) + 'deg', s: 1.5 }, dur: 0.3 })); },
-  Siniestro: ({ l, d }) => { flash(l, d.x, d.y, 'rgba(40,30,60,.8)', 160, 0.5); estallido(l, d.x, d.y, 12, () => ({ css: 'width:14px;height:14px;border-radius:50%;background:radial-gradient(circle,#5a4a7a,#1a1424 75%)', vars: { x: rnd(-40, 40) + 'px', y: rnd(-40, 40) + 'px', s: rnd(0.5, 1.2) }, dur: 0.55, delay: rnd(0, 0.12) })); },
-};
-
-// ───────── overrides por MOVIMIENTO (los icónicos) ─────────
-const llamas = (ctx, n) => { rayo(ctx.l, ctx.atk, ctx.def, '#ff8a2c', 16, 0.45); flash(ctx.l, ctx.def.x, ctx.def.y, 'rgba(255,140,40,.9)', 150); TYPE_FX.Fuego(ctx); };
-const chorro = (ctx, grosor) => { rayo(ctx.l, ctx.atk, ctx.def, '#3aa0e6', grosor, 0.5); flash(ctx.l, ctx.def.x, ctx.def.y, 'rgba(80,170,240,.8)', 130); TYPE_FX.Agua(ctx); };
-const trueno = (ctx) => { pantallazo(ctx.l, '#fff6b0', 0.36); bolt(ctx.l, ctx.def); bolt(ctx.l, { x: ctx.def.x - 22, y: ctx.def.y }); TYPE_FX['Eléctrico'](ctx); };
-const haz = (ctx, color) => { rayo(ctx.l, ctx.atk, ctx.def, color, 18, 0.55); flash(ctx.l, ctx.def.x, ctx.def.y, color, 150); };
-
-const MOVE_FX = {
-  52: (c) => llamas(c),                          // Ascuas
-  53: (c) => llamas(c),                          // Lanzallamas
-  126: (c) => { llamas(c); estallido(c.l, c.def.x, c.def.y, 6, (i) => ({ css: 'width:30px;height:8px;background:#ff7a2c;border-radius:4px', vars: { x: '0px', y: '0px', r: (i * 72) + 'deg', s: 1.8 }, dur: 0.4 })); },   // Llamarada (estrella)
-  55: (c) => chorro(c, 12),                       // Pistola Agua
-  56: (c) => chorro(c, 22),                       // Hidrobomba
-  57: (c) => { chorro(c, 26); anillo(c.l, c.def.x, c.def.y, '#6fc0ff', 0.6); },   // Surf
-  84: trueno, 85: trueno, 87: trueno,             // Impactrueno / Rayo / Trueno
-  75: (c) => { estallido(c.l, c.def.x, c.def.y, 8, (i) => ({ css: 'width:30px;height:6px;border-radius:3px;background:linear-gradient(90deg,transparent,#bff06a,#3f9a2e)', vars: { x: '0px', y: '0px', r: (i % 2 ? 35 : -35) + 'deg', s: 1.6 }, dur: 0.4, delay: i * 0.04 })); TYPE_FX.Planta(c); },   // Hoja Afilada (cuchilladas)
-  22: (c) => { rayo(c.l, c.atk, c.def, '#5cc23c', 10, 0.4); TYPE_FX.Planta(c); },   // Látigo Cepa
-  76: (c) => haz(c, '#9ee34f'),                   // Rayo Solar
-  89: (c) => TYPE_FX.Tierra(c),                   // Terremoto (sacude + rocas)
-  91: (c) => TYPE_FX.Tierra(c),                   // Excavar
-  63: (c) => { pantallazo(c.l, 'rgba(255,255,255,.5)', 0.4); haz(c, '#ffd84a'); flash(c.l, c.def.x, c.def.y, 'rgba(255,216,74,.9)', 200, 0.5); },   // Hiperrayo
-  129: (c) => estallido(c.l, c.def.x, c.def.y, 14, () => { const a = rnd(0, 6.28), r = rnd(30, 80); return { css: 'width:14px;height:14px;background:#fff7a0;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)', vars: { x: Math.cos(a) * r + 'px', y: Math.sin(a) * r + 'px', r: rnd(0, 360) + 'deg' }, anim: 'spin', dur: 0.5, delay: rnd(0, 0.1) }; }),   // Rapidez (estrellas)
-  58: (c) => haz(c, '#9ff0f0'),                   // Rayo Hielo
-  59: (c) => { TYPE_FX.Hielo(c); estallido(c.l, c.def.x - 40, c.def.y - 30, 16, () => ({ css: 'width:8px;height:8px;border-radius:50%;background:#eafcff', vars: { x: rnd(50, 110) + 'px', y: rnd(20, 70) + 'px' }, dur: 0.6, delay: rnd(0, 0.2) })); },   // Ventisca
-  247: (c) => { const b = document.createElement('div'); b.className = 'fxp'; b.style.cssText = 'left:' + c.atk.x + 'px;top:' + c.atk.y + 'px;width:26px;height:26px;border-radius:50%;background:radial-gradient(circle,#9b7fe0,#2a1a4a 80%);box-shadow:0 0 14px #6a4ac0'; b.style.setProperty('--x', (c.def.x - c.atk.x) + 'px'); b.style.setProperty('--y', (c.def.y - c.atk.y) + 'px'); b.style.animation = 'fx-fly .4s ease-in forwards'; c.l.appendChild(b); setTimeout(() => TYPE_FX.Fantasma(c), 360); },   // Bola Sombra (orbe viaja)
-  44: (c) => { flash(c.l, c.def.x, c.def.y, 'rgba(255,255,255,.9)', 120); estallido(c.l, c.def.x, c.def.y, 2, (i) => ({ css: 'width:34px;height:22px;border:5px solid #fff;border-radius:50%;border-color:#fff transparent transparent transparent', vars: { x: '0px', y: (i ? 14 : -14) + 'px', s: 0.5 }, dur: 0.3 })); },   // Mordisco (mandíbulas)
-  64: (c) => { rayo(c.l, c.atk, c.def, '#fff', 8, 0.3); TYPE_FX.Volador(c); },   // Picotazo
-  17: (c) => TYPE_FX.Volador(c),                  // Ataque Ala
-  88: (c) => TYPE_FX.Roca(c),                     // Lanzarrocas
-  5: (c) => { flash(c.l, c.def.x, c.def.y, 'rgba(255,255,255,.95)', 130); TYPE_FX.Lucha(c); },   // Megapuño
-  33: (c) => { flash(c.l, c.def.x, c.def.y, 'rgba(255,255,255,.85)', 110); TYPE_FX.Normal(c); },   // Placaje
-  98: (c) => { estallido(c.l, c.def.x, c.def.y, 6, (i) => ({ css: 'width:40px;height:5px;background:linear-gradient(90deg,transparent,#fff)', vars: { x: '0px', y: '0px', r: (i * 30 - 75) + 'deg', s: 1.5 }, dur: 0.25 })); TYPE_FX.Normal(c); },   // Ataque Rápido (rayas)
-};
-
-// ───────── fallback inteligente por CATEGORÍA (cubre TODOS los movimientos) ─────────
-const esEstadoMov = (m) => !m || m.categoria === 'Estado' || !m.poder;
-const AIL_COL = { veneno: '#b35fd6', quemadura: '#ff7a2c', paralisis: '#f2d022', sueno: '#8aa6df', congelado: '#7fe0e0', confusion: '#c060b0' };
-// flechas ↑/↓ que suben/bajan sobre un combatiente (cambios de stat)
-function flechas(l, x, y, sube) {
-  const col = sube ? '#5cd24a' : '#ff5a5a', ch = sube ? '▲' : '▼';
-  for (let i = 0; i < 5; i++) {
-    const p = document.createElement('div'); p.className = 'fxp'; p.textContent = ch;
-    p.style.cssText = 'left:' + (x + rnd(-22, 22)) + 'px;top:' + (y + 8) + 'px;font:800 22px monospace;color:' + col + ';text-shadow:0 0 5px ' + col;
-    p.style.setProperty('--x', '0px'); p.style.setProperty('--y', (sube ? -70 : 70) + 'px'); p.style.setProperty('--s', 1);
-    p.style.animation = 'fx-fly .75s ease-out ' + (i * 0.07) + 's forwards';
-    l.appendChild(p);
+// ───────────────────────── motor de partículas (canvas) ─────────────────────────
+class FX {
+  constructor(arena) {
+    this.arena = arena;
+    const c = document.createElement('canvas');
+    c.className = 'fx-canvas';
+    c.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4';
+    arena.appendChild(c);
+    this.c = c; this.ctx = c.getContext('2d');
+    this.P = []; this.O = []; this.run = false;
+    this.tick = this.tick.bind(this);
+    this.resize();
+  }
+  resize() {
+    const r = this.arena.getBoundingClientRect();
+    this.w = r.width || 1; this.h = r.height || 1;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    this.c.width = Math.round(this.w * dpr); this.c.height = Math.round(this.h * dpr);
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  add(p) { this.P.push(p); this.start(); }
+  addO(o) { o.t = 0; this.O.push(o); this.start(); }
+  start() { if (!this.run) { this.run = true; requestAnimationFrame(this.tick); } }
+  tick() {
+    const ctx = this.ctx; ctx.clearRect(0, 0, this.w, this.h);
+    // partículas
+    for (const p of this.P) {
+      p.vx *= p.drag; p.vy *= p.drag; p.vy += p.g; p.x += p.vx; p.y += p.vy; p.rot += p.spin; p.life--;
+      const k = p.life / p.max, a = p.fade ? k : 1;
+      if (a <= 0) continue;
+      ctx.globalAlpha = Math.max(0, Math.min(1, a));
+      ctx.globalCompositeOperation = p.add ? 'lighter' : 'source-over';
+      const r = p.r + (p.r2 - p.r) * (1 - k);
+      ctx.fillStyle = p.col;
+      if (p.shape === 'spark') { ctx.strokeStyle = p.col; ctx.lineWidth = Math.max(1, r * 0.6); ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - p.vx * 2.6, p.y - p.vy * 2.6); ctx.stroke(); }
+      else if (p.shape === 'rect' || p.shape === 'leaf') { ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.beginPath(); if (p.shape === 'leaf') { ctx.ellipse(0, 0, r * 1.3, r * 0.6, 0, 0, 6.2832); ctx.fill(); } else ctx.fillRect(-r, -r * 0.5, r * 2, r); ctx.restore(); }
+      else if (p.shape === 'star') { estrella(ctx, p.x, p.y, r, p.rot); }
+      else if (p.shape === 'triUp' || p.shape === 'triDn') { const dy = p.shape === 'triUp' ? -1 : 1; ctx.beginPath(); ctx.moveTo(p.x, p.y + dy * r); ctx.lineTo(p.x - r, p.y - dy * r * 0.7); ctx.lineTo(p.x + r, p.y - dy * r * 0.7); ctx.closePath(); ctx.fill(); }
+      else { ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, 6.2832); ctx.fill(); }
+    }
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    // overlays (haces, flashes, anillos, rayos, pantallazos)
+    for (const o of this.O) { o.t++; o.draw(ctx, o.t / o.life); }
+    this.P = this.P.filter((p) => p.life > 0);
+    this.O = this.O.filter((o) => o.t < o.life);
+    if (this.P.length || this.O.length) requestAnimationFrame(this.tick); else this.run = false;
   }
 }
-// efecto para movimientos de ESTADO (suben/bajan stats, o aplican un estado)
-function efectoEstado(l, ctx) {
-  const d = ctx.mov.desc || '';
-  if (/\b(sube|aumenta|increment|refuerza|eleva|crece)/i.test(d)) flechas(l, ctx.atk.x, ctx.atk.y, true);
-  else if (/\b(baja|reduce|disminu|debilita)/i.test(d)) flechas(l, ctx.def.x, ctx.def.y, false);
-  else { flash(l, ctx.def.x, ctx.def.y, 'rgba(255,255,255,.6)', 110); estallido(l, ctx.def.x, ctx.def.y, 8, () => { const a = rnd(0, 6.28), r = rnd(25, 55); return { css: 'width:7px;height:7px;border-radius:50%;background:#fff', vars: { x: Math.cos(a) * r + 'px', y: Math.sin(a) * r + 'px' }, dur: 0.5 }; }); }
-  if (ctx.mov.ailment) ailmentFx(l, ctx.def, ctx.mov.ailment);
+function estrella(ctx, x, y, r, rot) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot || 0); ctx.beginPath();
+  for (let i = 0; i < 10; i++) { const ra = i % 2 ? r * 0.45 : r; const a = Math.PI / 5 * i - Math.PI / 2; ctx[i ? 'lineTo' : 'moveTo'](Math.cos(a) * ra, Math.sin(a) * ra); }
+  ctx.closePath(); ctx.fill(); ctx.restore();
 }
-// partículas del estado que un golpe puede infligir (veneno, quemadura…)
-function ailmentFx(l, d, ail) {
-  const col = AIL_COL[ail] || '#fff';
-  estallido(l, d.x, d.y, 6, () => ({ css: 'width:9px;height:9px;border-radius:50%;background:' + col + ';opacity:.85;box-shadow:0 0 5px ' + col, vars: { x: rnd(-25, 25) + 'px', y: rnd(-50, -10) + 'px' }, anim: 'rise', dur: 0.7, delay: rnd(0, 0.2) }));
+function getFX(arena) {
+  if (!arena.__fx || !arena.contains(arena.__fx.c)) arena.__fx = new FX(arena);
+  else arena.__fx.resize();
+  return arena.__fx;
 }
 
-// ───────── plantillas reutilizables + mapeo de ~80 movimientos comunes a su plantilla ─────────
+// ───────────────────────── emisores (helpers) ─────────────────────────
+// estallido radial / cono
+function burst(fx, x, y, n, o) {
+  for (let i = 0; i < n; i++) {
+    const a = o.dir != null ? o.dir + rnd(-(o.spread || 0.5), o.spread || 0.5) : rnd(0, 6.2832);
+    const sp = rnd(o.spMin != null ? o.spMin : 1.5, o.spMax != null ? o.spMax : 4.5);
+    const r = (o.r != null ? o.r : 4) * rnd(0.7, 1.3);
+    fx.add({ x: x + (o.jx ? rnd(-o.jx, o.jx) : 0), y: y + (o.jy ? rnd(-o.jy, o.jy) : 0), vx: Math.cos(a) * sp, vy: Math.sin(a) * sp + (o.vyBias || 0), g: o.g || 0, drag: o.drag != null ? o.drag : 0.94, life: Math.round((o.life || 30) * rnd(0.8, 1.1)), max: o.life || 30, r, r2: o.r2 != null ? o.r2 : r, col: typeof o.col === 'function' ? o.col() : o.col, add: !!o.add, shape: o.shape || 'circle', rot: rnd(0, 6.28), spin: o.spin != null ? o.spin : 0, fade: o.fade !== false });
+  }
+}
+// haz de energía atacante→defensor (overlay animado)
+function beam(fx, a, b, col, wid, life = 26) {
+  fx.addO({ life, draw(ctx, k) { const grow = Math.min(1, k * 1.7), al = k < 0.6 ? 1 : 1 - (k - 0.6) / 0.4; const ex = a.x + (b.x - a.x) * grow, ey = a.y + (b.y - a.y) * grow; const g = ctx.createLinearGradient(a.x, a.y, ex, ey); g.addColorStop(0, 'transparent'); g.addColorStop(0.5, col); g.addColorStop(0.5, '#fff'); g.addColorStop(1, col); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = al; ctx.strokeStyle = g; ctx.lineCap = 'round'; ctx.lineWidth = wid * (1 + Math.sin(k * 9) * 0.12); ctx.shadowBlur = wid; ctx.shadowColor = col; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(ex, ey); ctx.stroke(); ctx.shadowBlur = 0; ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; } });
+}
+// flash radial
+function flash(fx, x, y, col, r = 70, life = 18) {
+  fx.addO({ life, draw(ctx, k) { const rr = r * (0.3 + k * 1.5), al = 1 - k; const g = ctx.createRadialGradient(x, y, 0, x, y, rr); g.addColorStop(0, col); g.addColorStop(1, 'transparent'); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = al; ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, rr, 0, 6.2832); ctx.fill(); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; } });
+}
+// anillo expansivo (onda de choque)
+function ring(fx, x, y, col, r = 70, life = 20, wid = 5) {
+  fx.addO({ life, draw(ctx, k) { const rr = r * (0.15 + k * 1.1), al = 1 - k; ctx.globalAlpha = al; ctx.strokeStyle = col; ctx.lineWidth = wid * (1 - k * 0.6); ctx.beginPath(); ctx.arc(x, y, rr, 0, 6.2832); ctx.stroke(); ctx.globalAlpha = 1; } });
+}
+// pantallazo (flicker de color a pantalla completa)
+function screen(fx, col, life = 14) {
+  fx.addO({ life, draw(ctx, k) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (1 - k) * (0.5 + 0.5 * Math.abs(Math.sin(k * 12))); ctx.fillStyle = col; ctx.fillRect(0, 0, fx.w, fx.h); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; } });
+}
+// rayo eléctrico zigzag cayendo sobre el defensor (se redibuja con jitter)
+function bolt(fx, x, y, life = 16) {
+  fx.addO({ life, draw(ctx, k) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = k < 0.8 ? 1 : 1 - (k - 0.8) / 0.2; ctx.strokeStyle = '#fff14a'; ctx.lineWidth = 5; ctx.shadowBlur = 12; ctx.shadowColor = '#ffe23a'; ctx.lineJoin = 'round'; ctx.beginPath(); let py = y - 150; ctx.moveTo(x, py); while (py < y) { py += rnd(20, 34); ctx.lineTo(x + rnd(-22, 22), Math.min(y, py)); } ctx.stroke(); ctx.shadowBlur = 0; ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; } });
+}
+// humo (puffs grises que suben y se expanden)
+function humo(fx, x, y, n = 8) {
+  for (let i = 0; i < n; i++) fx.add({ x: x + rnd(-18, 18), y: y + rnd(-10, 10), vx: rnd(-0.6, 0.6), vy: rnd(-1.6, -0.4), g: -0.01, drag: 0.96, life: rnd(34, 56), max: 50, r: rnd(8, 14), r2: rnd(22, 34), col: 'rgba(80,75,80,.5)', add: false, shape: 'circle', rot: 0, spin: 0, fade: true });
+}
+// onda de choque blanca (impacto universal)
+function choque(fx, x, y) { ring(fx, x, y, 'rgba(255,255,255,.9)', 64, 18, 5); flash(fx, x, y, 'rgba(255,255,255,.7)', 46, 12); }
+// carga previa en el atacante (partículas que convergen + flash) antes de un haz
+function cargar(fx, a, col) { for (let i = 0; i < 10; i++) { const ang = rnd(0, 6.28), d = rnd(28, 46); fx.add({ x: a.x + Math.cos(ang) * d, y: a.y + Math.sin(ang) * d, vx: -Math.cos(ang) * d * 0.18, vy: -Math.sin(ang) * d * 0.18, g: 0, drag: 0.9, life: 14, max: 14, r: 4, r2: 1, col, add: true, shape: 'circle', rot: 0, spin: 0, fade: true }); } flash(fx, a.x, a.y, col, 36, 12); }
+
+// ───────────────────────── efectos por TIPO (base) ─────────────────────────
+const dosCol = (a, b) => () => (Math.random() < 0.5 ? a : b);
+const TYPE_FX = {
+  Normal: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(255,255,255,.9)', 60); burst(c.fx, c.d.x, c.d.y, 14, { col: '#fff', add: true, r: 4, r2: 1, spMin: 2, spMax: 6, life: 24 }); },
+  Fuego: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(255,150,50,.9)', 70); burst(c.fx, c.d.x, c.d.y, 26, { col: dosCol('#ffd24a', '#ff7a2c'), add: true, r: 7, r2: 2, spMin: 1.5, spMax: 4.5, vyBias: -1.4, g: -0.04, drag: 0.93, life: 34, jx: 8 }); humo(c.fx, c.d.x, c.d.y - 10, 6); },
+  Agua: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(80,180,255,.8)', 55); ring(c.fx, c.d.x, c.d.y + 8, '#7fd0ff', 60, 22, 4); burst(c.fx, c.d.x, c.d.y, 26, { col: dosCol('#bfe9ff', '#3aa0e6'), add: true, r: 6, r2: 2, spMin: 2, spMax: 6, dir: -1.57, spread: 1.5, g: 0.28, drag: 0.97, life: 38 }); },
+  'Eléctrico': (c) => { screen(c.fx, 'rgba(255,246,160,.55)'); bolt(c.fx, c.d.x, c.d.y); burst(c.fx, c.d.x, c.d.y, 18, { col: '#fff7a0', add: true, r: 4, r2: 0, spMin: 3, spMax: 8, life: 18, shape: 'spark' }); },
+  Planta: (c) => { burst(c.fx, c.d.x, c.d.y, 18, { col: dosCol('#bff06a', '#3f9a2e'), r: 8, r2: 5, spMin: 1.5, spMax: 5, g: 0.06, drag: 0.95, life: 40, shape: 'leaf', spin: 0.3 }); },
+  Hielo: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(160,240,240,.85)', 64); burst(c.fx, c.d.x, c.d.y, 16, { col: dosCol('#eafcff', '#7fe0e0'), add: true, r: 7, r2: 3, spMin: 2, spMax: 6, life: 30, shape: 'rect', spin: 0.2 }); },
+  Roca: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(190,170,110,.6)', 50); burst(c.fx, c.d.x, c.d.y, 14, { col: dosCol('#cbb886', '#7a6438'), r: 8, r2: 6, spMin: 2, spMax: 6, g: 0.3, drag: 0.98, life: 36, shape: 'rect', spin: 0.4 }); humo(c.fx, c.d.x, c.d.y, 5); },
+  Tierra: (c) => { sacudir(c.arena); burst(c.fx, c.d.x, c.d.y + 18, 18, { col: dosCol('#d8a85c', '#8a5a28'), r: 8, r2: 5, dir: -1.57, spread: 1, spMin: 3, spMax: 7, g: 0.34, drag: 0.98, life: 40, shape: 'rect', spin: 0.4 }); humo(c.fx, c.d.x, c.d.y + 16, 8); },
+  Veneno: (c) => { burst(c.fx, c.d.x, c.d.y, 16, { col: dosCol('#e7b6ff', '#a23fd0'), add: true, r: 8, r2: 4, vyBias: -1.6, g: -0.02, drag: 0.95, life: 44, jx: 10 }); },
+  'Psíquico': (c) => { ring(c.fx, c.d.x, c.d.y, '#fb6a8e', 70, 24, 6); ring(c.fx, c.d.x, c.d.y, '#ffa6c0', 90, 30, 4); flash(c.fx, c.d.x, c.d.y, 'rgba(251,106,142,.6)', 60); burst(c.fx, c.d.x, c.d.y, 12, { col: '#ffb6cf', add: true, r: 4, r2: 1, spMin: 1, spMax: 3, life: 30 }); },
+  Volador: (c) => { burst(c.fx, c.d.x, c.d.y, 14, { col: '#eef4ff', add: true, r: 5, r2: 1, dir: -2.2, spread: 0.5, spMin: 4, spMax: 8, life: 24, shape: 'spark' }); },
+  Lucha: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(255,255,255,.95)', 60); ring(c.fx, c.d.x, c.d.y, '#ffd84a', 56, 16, 6); burst(c.fx, c.d.x, c.d.y, 10, { col: '#ffe06a', add: true, r: 5, r2: 1, spMin: 3, spMax: 7, life: 20, shape: 'spark' }); },
+  Fantasma: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(120,90,200,.8)', 70); burst(c.fx, c.d.x, c.d.y, 14, { col: dosCol('#9b7fe0', '#3a2a66'), add: true, r: 9, r2: 4, vyBias: -0.8, drag: 0.95, life: 40, jx: 10 }); },
+  Bicho: (c) => { burst(c.fx, c.d.x, c.d.y, 14, { col: dosCol('#b6d63a', '#7a9a1e'), r: 5, r2: 2, spMin: 2, spMax: 6, life: 28 }); },
+  'Dragón': (c) => { beam(c.fx, c.atk, c.d, '#7a8ef0', 18); ring(c.fx, c.d.x, c.d.y, '#9aa6ff', 70, 22, 5); burst(c.fx, c.d.x, c.d.y, 12, { col: '#aab6ff', add: true, r: 5, r2: 2, spMin: 2, spMax: 5, life: 26 }); },
+  Hada: (c) => { burst(c.fx, c.d.x, c.d.y, 16, { col: dosCol('#ffd6f4', '#f29ae6'), add: true, r: 7, r2: 2, spMin: 1.5, spMax: 5, life: 34, shape: 'star', spin: 0.25 }); },
+  Acero: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(230,240,250,.95)', 56); burst(c.fx, c.d.x, c.d.y, 12, { col: '#fff', add: true, r: 4, r2: 1, spMin: 3, spMax: 8, life: 18, shape: 'spark' }); },
+  Siniestro: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(60,40,90,.85)', 80); burst(c.fx, c.d.x, c.d.y, 14, { col: dosCol('#5a4a7a', '#1a1424'), r: 9, r2: 4, spMin: 1.5, spMax: 5, life: 34, jx: 8 }); },
+};
+function sacudir(arena) { arena.classList.add('bt-sacude'); setTimeout(() => arena.classList.remove('bt-sacude'), 320); }
+
+// ───────────────────────── overrides por MOVIMIENTO (icónicos) ─────────────────────────
+const llamas = (c) => { cargar(c.fx, c.atk, '#ff8a2c'); beam(c.fx, c.atk, c.d, '#ff7a2c', 16); TYPE_FX.Fuego(c); };
+const chorro = (c, w) => { cargar(c.fx, c.atk, '#3aa0e6'); beam(c.fx, c.atk, c.d, '#3aa0e6', w); TYPE_FX.Agua(c); };
+const truenoFx = (c) => { screen(c.fx, 'rgba(255,246,160,.6)'); bolt(c.fx, c.d.x, c.d.y); bolt(c.fx, c.d.x - 24, c.d.y, 14); TYPE_FX['Eléctrico'](c); };
+const hazCol = (c, col) => { cargar(c.fx, c.atk, col); beam(c.fx, c.atk, c.d, col, 18); flash(c.fx, c.d.x, c.d.y, col, 64); };
+const MOVE_FX = {
+  52: llamas, 53: llamas,
+  126: (c) => { llamas(c); burst(c.fx, c.d.x, c.d.y, 7, { col: '#ff7a2c', add: true, r: 10, r2: 4, spMin: 4, spMax: 8, life: 26, shape: 'star' }); },   // Llamarada
+  55: (c) => chorro(c, 12), 56: (c) => chorro(c, 22), 57: (c) => { chorro(c, 26); ring(c.fx, c.d.x, c.d.y, '#7fd0ff', 90, 26, 5); },
+  84: truenoFx, 85: truenoFx, 87: truenoFx,
+  75: (c) => { for (let i = 0; i < 3; i++) burst(c.fx, c.d.x, c.d.y, 6, { col: '#bff06a', add: true, r: 8, r2: 3, dir: i % 2 ? -0.6 : -2.5, spread: 0.3, spMin: 5, spMax: 9, life: 18, shape: 'rect' }); TYPE_FX.Planta(c); },   // Hoja Afilada
+  22: (c) => { beam(c.fx, c.atk, c.d, '#5cc23c', 10); TYPE_FX.Planta(c); },
+  76: (c) => hazCol(c, '#9ee34f'),
+  89: (c) => TYPE_FX.Tierra(c), 91: (c) => TYPE_FX.Tierra(c),
+  63: (c) => { screen(c.fx, 'rgba(255,255,255,.6)'); hazCol(c, '#ffd84a'); flash(c.fx, c.d.x, c.d.y, '#ffd84a', 100, 22); },   // Hiperrayo
+  129: (c) => burst(c.fx, c.d.x, c.d.y, 14, { col: '#fff7a0', add: true, r: 8, r2: 3, spMin: 2, spMax: 6, life: 30, shape: 'star', spin: 0.3 }),   // Rapidez
+  58: (c) => hazCol(c, '#9ff0f0'),
+  59: (c) => { TYPE_FX.Hielo(c); burst(c.fx, c.d.x - 60, c.d.y - 40, 18, { col: '#eafcff', add: true, r: 5, r2: 2, dir: 0.5, spread: 0.4, spMin: 5, spMax: 9, life: 30, shape: 'rect' }); },   // Ventisca
+  247: (c) => { proyectil(c, '#7a4ad0'); setTimeout(() => { try { TYPE_FX.Fantasma(c); } catch (e) {} }, 320); },   // Bola Sombra
+  44: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(255,255,255,.9)', 60); for (const s of [-1, 1]) c.fx.addO({ life: 16, draw(ctx, k) { ctx.globalAlpha = 1 - k; ctx.strokeStyle = '#fff'; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(c.d.x, c.d.y, 22, s > 0 ? 0.2 : 3.34, s > 0 ? 1.1 : 4.24); ctx.stroke(); ctx.globalAlpha = 1; } }); },   // Mordisco
+  64: (c) => { beam(c.fx, c.atk, c.d, '#fff', 7, 14); TYPE_FX.Volador(c); }, 17: (c) => TYPE_FX.Volador(c),
+  88: (c) => TYPE_FX.Roca(c),
+  5: (c) => { TYPE_FX.Lucha(c); }, 33: (c) => TYPE_FX.Normal(c),
+  98: (c) => burst(c.fx, c.d.x, c.d.y, 8, { col: '#fff', add: true, r: 4, r2: 1, dir: 3.14, spread: 0.6, spMin: 6, spMax: 10, life: 14, shape: 'spark' }),   // Ataque Rápido
+};
+function proyectil(c, col) { const a = c.atk, b = c.d, life = 20; c.fx.addO({ life, draw(ctx, k) { const x = a.x + (b.x - a.x) * k, y = a.y + (b.y - a.y) * k; ctx.globalCompositeOperation = 'lighter'; ctx.shadowBlur = 16; ctx.shadowColor = col; ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, 13, 0, 6.28); ctx.fill(); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x, y, 6, 0, 6.28); ctx.fill(); ctx.shadowBlur = 0; ctx.globalCompositeOperation = 'source-over'; } }); }
+
+// ───────────────────────── estado + ailment + plantillas ─────────────────────────
+const esEstadoMov = (m) => !m || m.categoria === 'Estado' || !m.poder;
+const AIL_COL = { veneno: '#b35fd6', quemadura: '#ff7a2c', paralisis: '#f2d022', sueno: '#8aa6df', congelado: '#7fe0e0', confusion: '#c060b0' };
+function flechas(fx, x, y, sube) {
+  const col = sube ? '#5cd24a' : '#ff5a5a';
+  for (let i = 0; i < 5; i++) fx.add({ x: x + rnd(-22, 22), y: y + 8, vx: 0, vy: sube ? -2.2 : 2.2, g: 0, drag: 1, life: 40, max: 40, r: 9, r2: 9, col, add: false, shape: sube ? 'triUp' : 'triDn', rot: 0, spin: 0, fade: true });
+}
+function ailmentFx(fx, d, ail) { burst(fx, d.x, d.y, 7, { col: AIL_COL[ail] || '#fff', add: true, r: 6, r2: 2, vyBias: -1.4, drag: 0.95, life: 40, jx: 14 }); }
+function efectoEstado(c) {
+  const d = c.mov.desc || '';
+  if (/\b(sube|aumenta|increment|refuerza|eleva|crece)/i.test(d)) flechas(c.fx, c.atk.x, c.atk.y, true);
+  else if (/\b(baja|reduce|disminu|debilita)/i.test(d)) flechas(c.fx, c.d.x, c.d.y, false);
+  else flash(c.fx, c.d.x, c.d.y, 'rgba(255,255,255,.6)', 50);
+  if (c.mov.ailment) ailmentFx(c.fx, c.d, c.mov.ailment);
+}
 const C = (c) => TCOLOR[c.mov.tipo] || '#fff';
 const T = {
-  golpe: (c) => { flash(c.l, c.def.x, c.def.y, 'rgba(255,255,255,.8)', 110); estallido(c.l, c.def.x, c.def.y, 10, () => { const a = rnd(0, 6.28), r = rnd(28, 64); return { css: 'width:9px;height:9px;border-radius:50%;background:' + C(c), vars: { x: Math.cos(a) * r + 'px', y: Math.sin(a) * r + 'px' }, dur: 0.4 }; }); },
-  multi: (c) => { for (let k = 0; k < 4; k++) part(c.l, c.def.x + rnd(-20, 20), c.def.y + rnd(-16, 16), 'width:46px;height:46px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.9),transparent 60%)', { s: 0.2 }, 'flash', 0.3, k * 0.11); },
-  cuchillada: (c) => { for (let i = 0; i < 3; i++) part(c.l, c.def.x - 45, c.def.y, 'width:90px;height:7px;border-radius:4px;background:linear-gradient(90deg,transparent,#fff,' + C(c) + ',transparent);box-shadow:0 0 8px ' + C(c), { x: '0px', y: '0px', r: (i % 2 ? 42 : -42) + 'deg', s: 1.2 }, 'fly', 0.32, i * 0.1); },
-  puno: (c) => { flash(c.l, c.def.x, c.def.y, 'rgba(255,255,255,.95)', 130); anillo(c.l, c.def.x, c.def.y, '#ffd84a', 0.4); estallido(c.l, c.def.x, c.def.y, 8, (i) => ({ css: 'width:24px;height:5px;border-radius:3px;background:#ffe06a', vars: { x: '0px', y: '0px', r: (i * 45) + 'deg', s: 1.6 }, dur: 0.32 })); },
-  mordida: (c) => { flash(c.l, c.def.x, c.def.y, 'rgba(255,255,255,.85)', 110); for (const s of [-1, 1]) part(c.l, c.def.x, c.def.y, 'width:38px;height:24px;border:6px solid #fff;border-radius:50%;border-color:#fff transparent transparent transparent', { x: '0px', y: (s * 15) + 'px', s: 0.5 }, 'fly', 0.3); },
-  picotazo: (c) => { rayo(c.l, c.atk, c.def, '#fff', 7, 0.3); flash(c.l, c.def.x, c.def.y, 'rgba(255,255,255,.7)', 70); },
-  haz: (c) => { rayo(c.l, c.atk, c.def, C(c), 16, 0.5); (TYPE_FX[c.mov.tipo] || TYPE_FX.Normal)(c); },
-  proyectil: (c) => { const b = document.createElement('div'); b.className = 'fxp'; b.style.cssText = 'left:' + c.atk.x + 'px;top:' + c.atk.y + 'px;width:24px;height:24px;border-radius:50%;background:radial-gradient(circle,#fff,' + C(c) + ' 70%);box-shadow:0 0 12px ' + C(c); b.style.setProperty('--x', (c.def.x - c.atk.x) + 'px'); b.style.setProperty('--y', (c.def.y - c.atk.y) + 'px'); b.style.animation = 'fx-fly .4s ease-in forwards'; c.l.appendChild(b); setTimeout(() => { try { flash(c.l, c.def.x, c.def.y, C(c), 120); (TYPE_FX[c.mov.tipo] || TYPE_FX.Normal)(c); } catch (e) {} }, 360); },
-  absorber: (c) => { for (let i = 0; i < 12; i++) { const x = c.def.x + rnd(-30, 30), y = c.def.y + rnd(-30, 30); part(c.l, x, y, 'width:9px;height:9px;border-radius:50%;background:#9ee34f;box-shadow:0 0 6px #6cc23c', { x: (c.atk.x - x) + 'px', y: (c.atk.y - y) + 'px', s: 0.3 }, 'fly', 0.6, i * 0.04); } },
-  cura: (c) => { for (let i = 0; i < 10; i++) part(c.l, c.atk.x + rnd(-26, 26), c.atk.y + rnd(-6, 28), 'width:9px;height:9px;border-radius:50%;background:#bfffce;box-shadow:0 0 6px #6cf08c', { x: '0px', s: 0.8 }, 'rise', 0.8, i * 0.06); },
-  danza: (c) => { flechas(c.l, c.atk.x, c.atk.y, true); estallido(c.l, c.atk.x, c.atk.y, 8, () => { const a = rnd(0, 6.28), r = rnd(25, 50); return { css: 'width:8px;height:8px;background:#ffe06a;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)', vars: { x: Math.cos(a) * r + 'px', y: Math.sin(a) * r + 'px', r: rnd(0, 360) + 'deg' }, anim: 'spin', dur: 0.6 }; }); },
-  polvo: (c) => { const col = C(c); for (let i = 0; i < 16; i++) part(c.l, c.def.x + rnd(-40, 40), c.def.y - 50, 'width:8px;height:8px;border-radius:50%;background:' + col + ';opacity:.8', { x: rnd(-15, 15) + 'px', y: rnd(55, 90) + 'px', s: 1 }, 'fly', 0.9, rnd(0, 0.3)); if (c.mov.ailment) ailmentFx(c.l, c.def, c.mov.ailment); },
-  onda: (c) => { anillo(c.l, c.atk.x, c.atk.y, C(c), 0.6); anillo(c.l, c.atk.x, c.atk.y, C(c), 0.85); },
-  clima: (c) => { const agua = c.mov.tipo === 'Agua'; pantallazo(c.l, 'rgba(' + (agua ? '90,150,230' : '200,170,110') + ',.35)', 0.8); const col = C(c); for (let i = 0; i < 24; i++) part(c.l, rnd(0, c.arena.clientWidth), -10, 'width:6px;height:' + (agua ? 14 : 6) + 'px;background:' + col, { x: rnd(-20, 8) + 'px', y: c.arena.clientHeight + 'px', s: 1 }, 'fly', rnd(0.6, 1), rnd(0, 0.45)); },
+  golpe: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(255,255,255,.85)', 56); burst(c.fx, c.d.x, c.d.y, 12, { col: C(c), add: true, r: 6, r2: 2, spMin: 2, spMax: 6, life: 24 }); },
+  multi: (c) => { for (let k = 0; k < 4; k++) setTimeout(() => { try { flash(c.fx, c.d.x + rnd(-18, 18), c.d.y + rnd(-16, 16), 'rgba(255,255,255,.9)', 36, 12); } catch (e) {} }, k * 95); },
+  cuchillada: (c) => { for (let i = 0; i < 3; i++) c.fx.addO({ life: 14, t0: i, draw(ctx, k) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 1 - k; ctx.strokeStyle = C(c); ctx.lineWidth = 6 * (1 - k * 0.5); ctx.shadowBlur = 8; ctx.shadowColor = C(c); const dir = i % 2 ? 1 : -1; ctx.beginPath(); ctx.moveTo(c.d.x - 48, c.d.y - 28 * dir); ctx.lineTo(c.d.x + 48, c.d.y + 28 * dir); ctx.stroke(); ctx.shadowBlur = 0; ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; } }); },
+  puno: (c) => { flash(c.fx, c.d.x, c.d.y, 'rgba(255,255,255,.95)', 64); ring(c.fx, c.d.x, c.d.y, '#ffd84a', 54, 16, 6); burst(c.fx, c.d.x, c.d.y, 9, { col: '#ffe06a', add: true, r: 5, r2: 1, spMin: 3, spMax: 7, life: 20, shape: 'spark' }); },
+  mordida: MOVE_FX[44], picotazo: (c) => { beam(c.fx, c.atk, c.d, '#fff', 7, 12); flash(c.fx, c.d.x, c.d.y, 'rgba(255,255,255,.7)', 40); },
+  haz: (c) => { cargar(c.fx, c.atk, C(c)); beam(c.fx, c.atk, c.d, C(c), 16); (TYPE_FX[c.mov.tipo] || TYPE_FX.Normal)(c); },
+  proyectil: (c) => { proyectil(c, C(c)); setTimeout(() => { try { flash(c.fx, c.d.x, c.d.y, C(c), 60); (TYPE_FX[c.mov.tipo] || TYPE_FX.Normal)(c); } catch (e) {} }, 320); },
+  absorber: (c) => { for (let i = 0; i < 14; i++) { const x = c.d.x + rnd(-30, 30), y = c.d.y + rnd(-30, 30); c.fx.add({ x, y, vx: (c.atk.x - x) * 0.06, vy: (c.atk.y - y) * 0.06, g: 0, drag: 1, life: 26, max: 26, r: 5, r2: 2, col: '#9ee34f', add: true, shape: 'circle', rot: 0, spin: 0, fade: true }); } },
+  cura: (c) => { for (let i = 0; i < 12; i++) c.fx.add({ x: c.atk.x + rnd(-26, 26), y: c.atk.y + rnd(0, 26), vx: 0, vy: rnd(-1.6, -0.8), g: 0, drag: 1, life: 44, max: 44, r: 5, r2: 2, col: '#bfffce', add: true, shape: 'circle', rot: 0, spin: 0, fade: true }); },
+  danza: (c) => { flechas(c.fx, c.atk.x, c.atk.y, true); burst(c.fx, c.atk.x, c.atk.y, 8, { col: '#ffe06a', add: true, r: 6, r2: 2, spMin: 1, spMax: 3, life: 36, shape: 'star', spin: 0.3 }); },
+  polvo: (c) => { for (let i = 0; i < 16; i++) c.fx.add({ x: c.d.x + rnd(-40, 40), y: c.d.y - 50, vx: rnd(-0.4, 0.4), vy: rnd(0.8, 1.6), g: 0, drag: 1, life: 50, max: 50, r: 5, r2: 5, col: C(c), add: false, shape: 'circle', rot: 0, spin: 0, fade: true }); if (c.mov.ailment) ailmentFx(c.fx, c.d, c.mov.ailment); },
+  onda: (c) => { ring(c.fx, c.atk.x, c.atk.y, C(c), 80, 26, 4); ring(c.fx, c.atk.x, c.atk.y, C(c), 110, 32, 3); },
+  clima: (c) => { const agua = c.mov.tipo === 'Agua'; screen(c.fx, 'rgba(' + (agua ? '90,150,230' : '200,170,110') + ',.3)', 30); for (let i = 0; i < 26; i++) c.fx.add({ x: rnd(0, c.fx.w), y: -10, vx: rnd(-1.5, 0), vy: rnd(3, 6), g: 0, drag: 1, life: 50, max: 50, r: agua ? 2 : 3, r2: agua ? 2 : 3, col: C(c), add: false, shape: agua ? 'rect' : 'circle', rot: 1.4, spin: 0, fade: true }); },
 };
 const GRUPOS = {
   golpe: [38, 36, 29, 1, 310, 389, 185, 205, 21, 37, 228, 372, 117, 583, 332, 34, 371, 282, 283, 364, 401, 343, 363, 387, 23, 200, 175],
@@ -173,23 +193,25 @@ const GRUPOS = {
   absorber: [71, 72, 202], cura: [156, 105, 355, 235], danza: [14, 97, 347], polvo: [78], clima: [240, 201], onda: [48, 253],
 };
 for (const k in GRUPOS) for (const id of GRUPOS[k]) MOVE_FX[id] = T[k];
-for (const id of [435, 209]) MOVE_FX[id] = TYPE_FX['Eléctrico'];   // Chispazo / Chispa
-for (const id of [157]) MOVE_FX[id] = TYPE_FX.Roca;                // Avalancha
-for (const id of [523, 414]) MOVE_FX[id] = TYPE_FX.Tierra;         // Terratemblor / Tierra Viva
-for (const id of [16]) MOVE_FX[id] = TYPE_FX.Volador;             // Tornado
+for (const id of [435, 209]) MOVE_FX[id] = TYPE_FX['Eléctrico'];
+for (const id of [157]) MOVE_FX[id] = TYPE_FX.Roca;
+for (const id of [523, 414]) MOVE_FX[id] = TYPE_FX.Tierra;
+for (const id of [16]) MOVE_FX[id] = TYPE_FX.Volador;
 
-// punto de entrada: TODO movimiento recibe un efecto adecuado.
+// punto de entrada
 export function efectoAtaque(arena, mov, haciaRival) {
   if (!arena || !mov) return;
-  const l = capa(arena);
-  const { def, atk } = puntos(arena, haciaRival);
-  const ctx = { l, d: def, def, atk, arena, mov };
+  let fx; try { fx = getFX(arena); } catch (e) { return; }
+  const w = fx.w, h = fx.h;
+  const def = haciaRival ? { x: w * 0.76, y: h * 0.32 } : { x: w * 0.26, y: h * 0.70 };
+  const atk = haciaRival ? { x: w * 0.26, y: h * 0.70 } : { x: w * 0.76, y: h * 0.32 };
+  const c = { fx, d: def, def, atk, arena, mov };
   try {
-    if (MOVE_FX[mov.id]) { MOVE_FX[mov.id](ctx); return; }   // icónico: override propio
-    if (esEstadoMov(mov)) { efectoEstado(l, ctx); return; }  // estado: flechas/estado
-    // daño sin override: especial = haz dirigido (color del tipo); siempre el estallido del tipo
-    if (mov.categoria === 'Especial') rayo(l, atk, def, TCOLOR[mov.tipo] || '#fff', 14, 0.5);
-    (TYPE_FX[mov.tipo] || TYPE_FX.Normal)(ctx);
-    if (mov.ailment) ailmentFx(l, def, mov.ailment);        // + estado que inflige
+    if (MOVE_FX[mov.id]) { MOVE_FX[mov.id](c); if (!esEstadoMov(mov)) choque(fx, def.x, def.y); return; }
+    if (esEstadoMov(mov)) { efectoEstado(c); return; }
+    if (mov.categoria === 'Especial') { cargar(fx, atk, C(c)); beam(fx, atk, def, C(c), 14); }
+    (TYPE_FX[mov.tipo] || TYPE_FX.Normal)(c);
+    if (mov.ailment) ailmentFx(fx, def, mov.ailment);
+    choque(fx, def.x, def.y);
   } catch (e) {}
 }
