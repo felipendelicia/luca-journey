@@ -793,6 +793,18 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
 
     // anima los `eventos` de una ronda en orden: narra cada texto, FX/cry de impacto, actualiza HUD desde snap.
     // Estructura pensada para Task 6: cada `narrarRonda(...)` será `await narrar(...)`.
+    // id de la barra de HP del lado de `uid` (mío = 'p-hp', rival = 'r-hp')
+    const barraDe = (uid) => (uid === online.miUid() ? 'p-hp' : 'r-hp');
+    // refleja un CAMBIO/entrada al instante: sprite + nombre/nivel/tipos/estado del lado + barra al HP del momento.
+    function mostrarLado(snap, uid, hpRest, hpMax) {
+      const c = actDe(snap, uid); if (!c) return;
+      const esMio = uid === online.miUid(), pre = esMio ? 'p' : 'r';
+      $(pre + '-nom').textContent = c.nombre; $(pre + '-lv').textContent = 'Nv.' + c.nivel;
+      $(pre + '-tipos').textContent = (c.tipos || []).join(' · '); $(pre + '-estado').innerHTML = estadoChip(c);
+      setSpr(pre + '-img', c, esMio);
+      hp(pre + '-hp', { hp: hpRest != null ? hpRest : c.hp, hpMax: hpMax != null ? hpMax : c.hpMax });
+    }
+
     async function animarRonda(snap, eventos) {
       ONL.animando = true; ONL.bloqueado = true; ONL.rivalListo = false; ONL.miEleccion = null;
       cancelarTimerOnline();
@@ -818,21 +830,27 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
           await narrarRonda(ev.texto || '¡Ataque!');
           await esperar(220);   // pequeña pausa tras la línea, antes del impacto
           if (atImg) { atImg.classList.add('bt-lunge'); await esperar(190); atImg.classList.remove('bt-lunge'); }
-          // FX por daño: destello sobre el defensor
+          // FX por daño: destello sobre el defensor + la barra de HP baja AL IMPACTO (no al final del turno)
           if (ev.dmg != null) { destello(!esMio, ev.tipo || ''); if (defImg) { defImg.classList.add('bt-hit'); } if (ev.efec >= 2) document.querySelector('.bt-arena').classList.add('bt-sacude'); }
+          if (ev.hpRest != null) hp(barraDe(ev.objetivo), { hp: ev.hpRest, hpMax: ev.hpMax });
           await esperar(260);
           if (defImg) defImg.classList.remove('bt-hit'); document.querySelector('.bt-arena').classList.remove('bt-sacude');
           await esperar(520);
         } else if (ev.t === 'cambio' || ev.t === 'reemplazo' || ev.t === 'entra') {
-          await narrarRonda(ev.texto || '¡Adelante!'); const c = actDe(snap, dueno); if (c) cry(c.id, 0.4); await esperar(560);
+          await narrarRonda(ev.texto || '¡Adelante!');
+          mostrarLado(snap, dueno, ev.hpRest, ev.hpMax);   // cambia el sprite/HUD al nuevo Pokémon EN EL MOMENTO
+          const c = actDe(snap, dueno); if (c) cry(c.id, 0.4); await esperar(560);
         } else if (ev.t === 'debilitado' || ev.t === 'cae') {
           const c = actDe(snap, dueno); if (c) cry(c.id, 0.3);
           const img = esMio ? $('p-img') : $('r-img'); if (img) { img.classList.add('bt-faint'); }
+          if (barraDe(dueno)) hp(barraDe(dueno), { hp: 0, hpMax: (c && c.hpMax) || 1 });   // KO → barra a 0
           await narrarRonda(ev.texto || 'se debilitó.'); await esperar(620);
           if (img) img.classList.remove('bt-faint');
         } else {
-          // estado, fallo, pocion, tick, info, etc. — solo narrar
-          await narrarRonda(ev.texto || ''); await esperar(480);
+          // estado, fallo, pocion, tick, info, etc. — solo narrar (+ HP si es daño por veneno/quemadura)
+          await narrarRonda(ev.texto || '');
+          if (ev.t === 'dot' && ev.hpRest != null) hp(barraDe(ev.objetivo || ev.uid), { hp: ev.hpRest, hpMax: ev.hpMax });
+          await esperar(480);
         }
       }
       // aplico el snapshot final (HP/sprites/super reales)

@@ -103,7 +103,7 @@ function ejecutarAtaque(e: EstadoCombate, yo: JugadorEstado, rival: JugadorEstad
     const r = danoSuper(atk, def, cal, rng);
     def.hp = Math.max(0, def.hp - r.dmg);
     yo.super = 0;
-    push('super', `⚡ ¡SÚPER de ${atk.nombre}! ${r.mov.nombre} causa ${r.dmg} de daño.`, { uid: yo.uid, dmg: r.dmg });
+    push('super', `⚡ ¡SÚPER de ${atk.nombre}! ${r.mov.nombre} causa ${r.dmg} de daño.`, { uid: yo.uid, dmg: r.dmg, objetivo: rival.uid, hpRest: def.hp, hpMax: def.hpMax });
     return;
   }
 
@@ -130,7 +130,7 @@ function ejecutarAtaque(e: EstadoCombate, yo: JugadorEstado, rival: JugadorEstad
       const msg = r.efec === 0
         ? `${atk.nombre} usó ${mov.nombre}… ¡pero no afecta a ${def.nombre}!`
         : `${atk.nombre} usó ${mov.nombre}: ${r.dmg} de daño.${r.crit ? ' ¡Golpe crítico!' : ''}${ef ? ' ' + ef : ''}`;
-      push('mover', msg, { uid: yo.uid, dmg: r.dmg, efec: r.efec, crit: r.crit, mov: mov.id });
+      push('mover', msg, { uid: yo.uid, dmg: r.dmg, efec: r.efec, crit: r.crit, mov: mov.id, objetivo: rival.uid, hpRest: def.hp, hpMax: def.hpMax });
       if (def.hp > 0) { const ta = aplicarAilment(mov, atk, def, rng); if (ta) push('ailment', ta, { uid: yo.uid }); }
       if (def.hp > 0) { const tc = habAlContacto(def, atk, mov, rng); if (tc) push('habilidad', tc, { uid: yo.uid }); }
     }
@@ -167,7 +167,7 @@ export function elegirAccion(
     if (idx < 0 || idx >= yo.equipo.length || idx === yo.activo) return err('reemplazo-invalido');
     if (yo.equipo[idx].hp <= 0) return err('debilitado');
     yo.activo = idx;
-    push('entra', `${yo.nombre} envió a ${activoDe(yo).nombre}.`, { idx });
+    push('entra', `${yo.nombre} envió a ${activoDe(yo).nombre}.`, { uid: yo.uid, idx, hpRest: activoDe(yo).hp, hpMax: activoDe(yo).hpMax });
     { const te = habAlEntrar(activoDe(yo), activoDe(rival)); if (te) push('habilidad', te); }
     e.reemplazan = e.reemplazan.filter((u) => u !== uid);
     if (e.reemplazan.length === 0) {
@@ -237,7 +237,7 @@ function resolverRonda(e: EstadoCombate, rng: Rng): AccionRes {
     if (acc.tipo !== 'cambiar') continue;
     const idx = acc.idx!;
     j.activo = idx;
-    push('cambiar', `${j.nombre} cambió a ${activoDe(j).nombre}.`, { uid: j.uid, idx });
+    push('cambiar', `${j.nombre} cambió a ${activoDe(j).nombre}.`, { uid: j.uid, idx, hpRest: activoDe(j).hp, hpMax: activoDe(j).hpMax });
     const te = habAlEntrar(activoDe(j), activoDe(rivalDe(e, j.uid))); if (te) push('habilidad', te, { uid: j.uid });
   }
 
@@ -282,7 +282,7 @@ function resolverRonda(e: EstadoCombate, rng: Rng): AccionRes {
     if (a.hp <= 0) continue;
     const tk = tickEstado(a);
     if (tk.dmg) {
-      push('dot', tk.texto, { uid: j.uid, dmg: tk.dmg });
+      push('dot', tk.texto, { uid: j.uid, dmg: tk.dmg, objetivo: j.uid, hpRest: a.hp, hpMax: a.hpMax });
       if (a.hp <= 0) push('debilitado', `¡${a.nombre} se debilitó!`, { uid: j.uid });
     }
   }
