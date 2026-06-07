@@ -11,6 +11,7 @@ import { combatiente as coreCombatiente } from './combate-core.ts';
 export {
   hpMax, esEstado, calcularDano, aplicarEstado, danoSuper, elegirCPU, tiraCritico,
   ESTADOS, acierta, puedeActuar, aplicarAilment, tickEstado, efectividad, etiquetaEfec,
+  FORCEJEO, sinPP,
 } from './combate-core.ts';
 
 // data del front inyectada al core

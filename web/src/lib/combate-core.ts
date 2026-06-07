@@ -6,7 +6,7 @@
 
 export type Rng = () => number;
 export type EstadoAlt = null | 'veneno' | 'quemadura' | 'paralisis' | 'sueno' | 'congelado' | 'confusion';
-export interface Mov { id: number; nombre: string; tipo: string; poder?: number; categoria?: string; desc?: string; precision?: number | null; ailment?: EstadoAlt; ailmentChance?: number; }
+export interface Mov { id: number; nombre: string; tipo: string; poder?: number; categoria?: string; desc?: string; precision?: number | null; ailment?: EstadoAlt; ailmentChance?: number; pp?: number; ppMax?: number; }
 export interface Inst { iid: string; id: number; nivel: number; shiny?: boolean; mote?: string; movs?: number[]; }
 export interface Combatiente {
   iid: string; id: number; nombre: string; nivel: number; shiny: boolean; tipos: string[];
@@ -84,9 +84,16 @@ export function movsDe(inst: Inst, learnsets: DatosCombate['learnsets'], movimie
       .map((x: any) => ({ m: x.m, p: ((movimientos as any)[x.m] || {}).poder || 0 }))
       .sort((a: any, b: any) => b.p - a.p).slice(0, 4).map((x: any) => x.m);
   }
-  const movs = ids.map((mid: number) => ({ id: mid, ...((movimientos as any)[mid] || FORCEJEO) } as Mov));
-  return movs.length ? movs : [FORCEJEO];
+  const movs = ids.map((mid: number) => {
+    const base = (movimientos as any)[mid] || FORCEJEO;
+    const ppm = base.pp || 20;                                   // PP máximo del move (Gen 3)
+    return { id: mid, ...base, pp: ppm, ppMax: ppm } as Mov;     // pp = usos restantes (arranca lleno)
+  });
+  return movs.length ? movs : [{ ...FORCEJEO }];
 }
+
+// ¿se quedó sin PP en todos los movimientos? (entonces solo le queda Forcejeo)
+export const sinPP = (c: Combatiente): boolean => c.movs.every((m) => (m.pp ?? 1) <= 0);
 
 // combatiente listo para pelear a partir de una instancia del PC + la data inyectada.
 export function combatiente(inst: Inst, d: DatosCombate): Combatiente {
@@ -140,7 +147,9 @@ export function danoSuper(atacante: Combatiente, defensor: Combatiente, calidad 
 
 // IA: elige el movimiento de mayor daño esperado.
 export function elegirCPU(atacante: Combatiente, defensor: Combatiente): Mov {
-  return [...atacante.movs]
+  const usables = atacante.movs.filter((m) => (m.pp ?? 1) > 0);
+  const pool = usables.length ? usables : [{ ...FORCEJEO }];   // sin PP → Forcejeo
+  return [...pool]
     .map((mv) => ({ mv, e: efectividad(mv.tipo, defensor.tipos) * (mv.poder || 0) }))
     .sort((a, b) => b.e - a.e)[0].mv;
 }

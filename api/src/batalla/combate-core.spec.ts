@@ -2,7 +2,7 @@
 import {
   efectividad, etiquetaEfec, hpMax, hpEf, statEf, esFisico, tiraCritico, CRIT_CHANCE, FORCEJEO,
   esEstado, calcularDano, aplicarEstado, danoSuper, elegirCPU, acierta, puedeActuar,
-  aplicarAilment, tickEstado, combatiente, movsDe, tiposDe, Combatiente, Mov, DatosCombate,
+  aplicarAilment, tickEstado, combatiente, movsDe, tiposDe, sinPP, Combatiente, Mov, DatosCombate,
 } from './combate-core';
 
 // combatiente sintético (no necesita data real): se sobreescribe lo que cada test precise.
@@ -406,6 +406,28 @@ describe('inmunidad de estado por tipo (Gen 3)', () => {
     const def = luchador({ tipos: ['Agua'] });
     aplicarAilment(mov({ ailment: 'quemadura', ailmentChance: 100 }), luchador(), def, rng(0));
     expect(def.estado).toBe('quemadura');
+  });
+});
+
+// ───────────────────────── PP (puntos de poder) ─────────────────────────
+describe('PP', () => {
+  it('cada move arranca con pp = ppMax (del dato), o 20 por defecto', () => {
+    const conPP = movsDe({ iid: 'a', id: 4, nivel: 10, movs: [10] }, { '4': [] }, { '10': { nombre: 'Ascuas', tipo: 'Fuego', poder: 40, pp: 25 } });
+    expect(conPP[0].pp).toBe(25); expect(conPP[0].ppMax).toBe(25);
+    const sinDato = movsDe({ iid: 'a', id: 4, nivel: 10, movs: [10] }, { '4': [] }, { '10': { nombre: 'X', tipo: 'Normal', poder: 50 } });
+    expect(sinDato[0].ppMax).toBe(20);
+  });
+  it('sinPP: true solo si TODOS los movs están en 0', () => {
+    const c = luchador({ movs: [mov({ pp: 0 }), mov({ pp: 3 })] });
+    expect(sinPP(c)).toBe(false);
+    c.movs.forEach((m) => { m.pp = 0; });
+    expect(sinPP(c)).toBe(true);
+  });
+  it('elegirCPU evita movs sin PP; si todos en 0 → Forcejeo (id 0)', () => {
+    const atk = luchador({ movs: [mov({ id: 1, tipo: 'Normal', poder: 100, pp: 0 }), mov({ id: 2, tipo: 'Normal', poder: 40, pp: 5 })] });
+    expect(elegirCPU(atk, luchador()).id).toBe(2);   // el de 100 no tiene PP
+    atk.movs.forEach((m) => { m.pp = 0; });
+    expect(elegirCPU(atk, luchador()).id).toBe(0);   // Forcejeo
   });
 });
 

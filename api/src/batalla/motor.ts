@@ -10,7 +10,7 @@ import pokemon from './data/pokemon.json';
 import estadisticas from './data/estadisticas.json';
 import {
   combatiente as coreCombatiente,
-  esEstado, calcularDano, aplicarEstado, danoSuper, etiquetaEfec, tiraCritico,
+  esEstado, calcularDano, aplicarEstado, danoSuper, etiquetaEfec, tiraCritico, sinPP, FORCEJEO,
   acierta, puedeActuar, aplicarAilment, tickEstado,
 } from './combate-core';
 import type { Rng, EstadoAlt, Mov, Inst, Combatiente, DatosCombate } from './combate-core';
@@ -58,8 +58,11 @@ export function crearCombate(roomId: string, jugadores: { uid: string; nombre: s
   const js = jugadores.map((j) => ({
     uid: j.uid, nombre: j.nombre, equipo: j.equipo.slice(0, 3).map((inst) => combatiente(inst)), activo: 0, super: 0, listo: true,
   })) as [JugadorEstado, JugadorEstado];
+  // el más RÁPIDO pega primero (empate: el indicado, o el 1º)
+  const v0 = js[0].equipo[0]?.spe || 0, v1 = js[1].equipo[0]?.spe || 0;
+  const turno = v0 > v1 ? js[0].uid : v1 > v0 ? js[1].uid : (primero || js[0].uid);
   return {
-    roomId, jugadores: js, turno: primero || js[0].uid, fase: 'combate', eventos: [], turnoN: 1,
+    roomId, jugadores: js, turno, fase: 'combate', eventos: [], turnoN: 1,
   };
 }
 
@@ -125,10 +128,15 @@ export function aplicarAccion(
 
   switch (accion.tipo) {
     case 'mover': {
-      const mov = atk.movs[accion.i ?? 0]; if (!mov) return err('mov-invalido');
+      let mov = atk.movs[accion.i ?? 0]; if (!mov) return err('mov-invalido');
+      if ((mov.pp ?? 1) <= 0) {                               // sin PP en ese move
+        if (sinPP(atk)) mov = { ...FORCEJEO, pp: 1, ppMax: 1 };   // sin PP en ninguno → Forcejeo
+        else return err('sin-pp');
+      }
       const pa = puedeActuar(atk, rng);                       // sueño/cong/para/confusión
       if (pa.texto) push('estado', pa.texto, pa.autogolpe ? { autogolpe: pa.autogolpe } : {});
       if (pa.actua) {
+        if (mov.id && (mov.pp ?? 0) > 0) mov.pp--;            // consume PP (Forcejeo id 0 no gasta)
         if (!acierta(mov, rng)) {
           push('fallo', `${atk.nombre} usó ${mov.nombre}, ¡pero falló!`, { mov: mov.id });
         } else if (esEstado(mov)) {

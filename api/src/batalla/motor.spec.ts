@@ -207,9 +207,10 @@ describe('estados alterados + fallar', () => {
   });
 
   it('un ataque inmune (Normal vs Fantasma) hace 0 daño y avisa "no afecta"', () => {
-    // Rattata(19)=Normal ataca a Gengar(94)=Fantasma/Veneno → Normal x0 Fantasma.
+    // Jolteon(135, rápido) usa un move Normal contra Gengar(94)=Fantasma → Normal x0 Fantasma.
+    // (Jolteon spe 130 > Gengar 110 → ataca primero.)
     const e = crearCombate('r', [
-      { uid: 'A', nombre: 'A', equipo: [inst('a', 19)] },
+      { uid: 'A', nombre: 'A', equipo: [inst('a', 135)] },
       { uid: 'B', nombre: 'B', equipo: [inst('b', 94)] },
     ], 'A');
     e.jugadores[0].equipo[0].movs = [{ id: 1, nombre: 'Placaje', tipo: 'Normal', poder: 80 } as Mov];
@@ -251,5 +252,30 @@ describe('items en PvP (cura/estado/revivir)', () => {
     expect(r.error).toBeUndefined();
     const revivido = e.jugadores[0].equipo[1];
     expect(revivido.hp).toBe(Math.round(revivido.hpMax * 0.5));
+  });
+});
+
+describe('velocidad y PP en la sala', () => {
+  it('el más rápido pega primero (turno inicial por velocidad)', () => {
+    // Snorlax(143) spe 30 vs Charmander(4) spe 65 → Charmander primero, aunque primero='A'.
+    const e = crearCombate('r', [
+      { uid: 'A', nombre: 'A', equipo: [inst('a', 143)] },
+      { uid: 'B', nombre: 'B', equipo: [inst('b', 4)] },
+    ], 'A');
+    expect(e.turno).toBe('B');
+  });
+  it('un move sin PP recurre a Forcejeo cuando no queda nada', () => {
+    const e = combateBasico();
+    e.jugadores[0].equipo[0].movs = [{ id: 5, nombre: 'X', tipo: 'Normal', poder: 40, pp: 0, ppMax: 5 } as Mov];
+    const hp0 = e.jugadores[1].equipo[0].hp;
+    const r = aplicarAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0);
+    expect(r.error).toBeUndefined();
+    expect(e.jugadores[1].equipo[0].hp).toBeLessThan(hp0);   // Forcejeo igual pegó
+  });
+  it('consume PP al usar un movimiento', () => {
+    const e = combateBasico();
+    e.jugadores[0].equipo[0].movs = [{ id: 5, nombre: 'X', tipo: 'Normal', poder: 40, pp: 3, ppMax: 5 } as Mov];
+    aplicarAccion(e, 'A', { tipo: 'mover', i: 0 }, rng0);
+    expect(e.jugadores[0].equipo[0].movs[0].pp).toBe(2);
   });
 });

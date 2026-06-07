@@ -75,7 +75,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     import { pc, sincronizar, spriteUrl, regionesDesbloqueadas, darCaramelos, darBalls, items, usarItem } from '../lib/coleccion.js';
     import { ITEMS } from '../lib/items.js';
     import { itemSvg } from '../lib/sprites.js';
-    import { combatiente, calcularDano, danoSuper, elegirCPU, equipoCPU, esEstado, aplicarEstado, puedeActuar, aplicarAilment, tickEstado, acierta, tiraCritico, ESTADOS } from '../lib/batalla.js';
+    import { combatiente, calcularDano, danoSuper, elegirCPU, equipoCPU, esEstado, aplicarEstado, puedeActuar, aplicarAilment, tickEstado, acierta, tiraCritico, sinPP, FORCEJEO, ESTADOS } from '../lib/batalla.js';
     import { etiquetaEfec } from '../lib/tipos.js';
     import { retoAlAzar } from '../lib/retos-batalla.js';
     import { sonarExito, sonarEpico, musicaBatalla, detenerMusica, toggleSonido, sonidoActivo } from '../lib/sonidos.js';
@@ -183,11 +183,15 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       hp('r-hp', r); hp('p-hp', p);
       dots('r-dots', G.rival); dots('p-dots', G.equipo);
       $('bt-carga').style.width = G.carga + '%'; $('bt-carga-txt').textContent = 'Súper: ' + G.carga + '%';
-      $('bt-moves').innerHTML = p.movs.map((mv, i) =>
-        '<button class="bt-move" data-i="' + i + '"' + (G.lock ? ' disabled' : '') + '><b>' + mv.nombre + '</b><small>' + mv.tipo + (mv.poder ? ' · ⚔️' + mv.poder : '') + '</small></button>').join('') +
+      const movesHtml = sinPP(p)
+        ? '<button class="bt-move" id="bt-forcejeo"' + (G.lock ? ' disabled' : '') + '><b>Forcejeo</b><small>Sin PP · ataque desesperado</small></button>'
+        : p.movs.map((mv, i) =>
+            '<button class="bt-move" data-i="' + i + '"' + ((G.lock || mv.pp <= 0) ? ' disabled' : '') + '><b>' + mv.nombre + '</b><small>' + mv.tipo + (mv.poder ? ' · ⚔️' + mv.poder : '') + ' · PP ' + mv.pp + '/' + mv.ppMax + '</small></button>').join('');
+      $('bt-moves').innerHTML = movesHtml +
         '<button class="bt-move bt-super" id="bt-super"' + (G.carga < 100 || G.lock ? ' disabled' : '') + '>⚡ SÚPER</button>' +
         '<button class="bt-move bt-mochila" id="bt-mochila"' + (G.lock || G.itemsUsados >= 2 ? ' disabled' : '') + '>🎒 Mochila (' + (2 - G.itemsUsados) + ')</button>';
-      $('bt-moves').querySelectorAll('.bt-move[data-i]').forEach((b) => b.addEventListener('click', () => turno(p.movs[+b.dataset.i])));
+      if (sinPP(p)) { const fb = $('bt-forcejeo'); if (fb) fb.addEventListener('click', () => turno({ ...FORCEJEO, pp: 1, ppMax: 1 })); }
+      else $('bt-moves').querySelectorAll('.bt-move[data-i]').forEach((b) => b.addEventListener('click', () => turno(p.movs[+b.dataset.i])));
       $('bt-super').addEventListener('click', abrirReto);
       $('bt-mochila').addEventListener('click', abrirMochila);
       // banca: tu equipo (tocá un suplente vivo para cambiarlo)
@@ -281,7 +285,8 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
         render(); await esperar(1000);
         if (pa.autogolpe) { img.classList.remove('bt-hit'); }
       }
-      if (!pa.actua) return;                                   // perdió el turno
+      if (!pa.actua) return;                                   // perdió el turno (no gasta PP)
+      if (mov.id && mov.pp > 0) mov.pp--;                      // consume PP (Forcejeo id 0 no gasta)
       if (!acierta(mov)) { msg('¡' + at.nombre + ' usó ' + mov.nombre + '… pero falló!'); render(); await esperar(950); return; }
       await usarMov(at, mov, defLado);
       if (def.hp > 0) { const t = aplicarAilment(mov, at, def); if (t) { msg(t); render(); await esperar(1000); } }
@@ -302,14 +307,20 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
 
     async function turno(mov) {
       if (G.lock) return; cancelarTimer(); G.lock = true; render();
-      await accion('p', mov);
-      if (fin()) return;
-      await tick('p');
-      if (fin()) return;
-      await turnoRival();
-      if (fin()) return;
-      await tick('r');
-      if (fin()) return;
+      const movR = elegirCPU(rivAct(), miAct());
+      // orden por VELOCIDAD (empate: jugador). Guardo los activos del inicio: el que cae este turno
+      // no ataca (su reemplazo entra pero no actúa, como en los juegos).
+      const pAct0 = miAct(), rAct0 = rivAct();
+      const pasos = (pAct0.spe || 0) >= (rAct0.spe || 0)
+        ? [['p', mov, pAct0], ['r', movR, rAct0]]
+        : [['r', movR, rAct0], ['p', mov, pAct0]];
+      for (const [lado, mv, actor] of pasos) {
+        if (actor.hp <= 0) continue;       // cayó por el golpe del que fue más rápido → no contraataca
+        await accion(lado, mv);
+        if (fin()) return;
+        await tick(lado);
+        if (fin()) return;
+      }
       G.carga = Math.min(100, G.carga + 34);
       G.lock = false; render(); armarTimer();
     }
