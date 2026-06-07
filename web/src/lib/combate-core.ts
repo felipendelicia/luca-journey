@@ -11,6 +11,7 @@ export interface Inst { iid: string; id: number; nivel: number; shiny?: boolean;
 export interface Combatiente {
   iid: string; id: number; nombre: string; nivel: number; shiny: boolean; tipos: string[];
   movs: Mov[]; hpMax: number; hp: number; atkMod: number; defMod: number; estado: EstadoAlt; estadoT: number;
+  atk: number; def: number; spa: number; spd: number; spe: number;   // stats base por especie (Gen 3)
 }
 // data que cada lado inyecta (con sus propios JSON) para construir combatientes
 export interface DatosCombate {
@@ -18,6 +19,7 @@ export interface DatosCombate {
   tipos: Record<string, string[]>;
   learnsets: Record<string, { m: number; n: number }[]>;
   movimientos: Record<string, any>;
+  estadisticas?: Record<string, number[]>;   // [hp, atk, def, spa, spd, spe] por id
 }
 
 // ───────────────────────── tipos / efectividad ─────────────────────────
@@ -60,8 +62,18 @@ export function etiquetaEfec(mult: number): string {
 
 // ───────────────────────── combatientes (data inyectada) ─────────────────────────
 export const FORCEJEO: Mov = { id: 0, nombre: 'Forcejeo', tipo: 'Normal', poder: 40 };
-export const hpMax = (nivel: number): number => 40 + nivel * 5;
+export const hpMax = (nivel: number): number => 40 + nivel * 5;   // fallback si no hay stats base
 export const tiposDe = (id: number, tipos: Record<string, string[]>): string[] => tipos[String(id)] || ['Normal'];
+
+// stats efectivas estilo Gen 3 (0 IV/EV, naturaleza neutra)
+export const statEf = (base: number, nivel: number): number => Math.floor(2 * (base || 60) * nivel / 100) + 5;
+export const hpEf = (baseHp: number, nivel: number): number => Math.floor(2 * (baseHp || 60) * nivel / 100) + nivel + 10;
+// críticos: 1/16 como en Gen 3, daño ×2 (lo tira el orquestador y lo pasa a calcularDano).
+export const CRIT_CHANCE = 1 / 16;
+export const tiraCritico = (rng: Rng = Math.random): boolean => rng() < CRIT_CHANCE;
+// split físico/especial: usa la categoría del move; si falta, por tipo (como en Gen 3).
+const TIPOS_FISICOS = ['Normal', 'Lucha', 'Volador', 'Tierra', 'Roca', 'Bicho', 'Fantasma', 'Veneno', 'Acero'];
+export const esFisico = (mov: Mov): boolean => mov.categoria ? mov.categoria === 'Físico' : TIPOS_FISICOS.includes(mov.tipo);
 
 // 4 movimientos de combate de una instancia: sus activos; si no eligió, los 4 de mayor poder desbloqueados.
 export function movsDe(inst: Inst, learnsets: DatosCombate['learnsets'], movimientos: DatosCombate['movimientos']): Mov[] {
@@ -78,10 +90,13 @@ export function movsDe(inst: Inst, learnsets: DatosCombate['learnsets'], movimie
 
 // combatiente listo para pelear a partir de una instancia del PC + la data inyectada.
 export function combatiente(inst: Inst, d: DatosCombate): Combatiente {
+  const st = (d.estadisticas || {})[String(inst.id)];   // [hp, atk, def, spa, spd, spe]
+  const hpM = st ? hpEf(st[0], inst.nivel) : hpMax(inst.nivel);
   return {
     iid: inst.iid, id: inst.id, nombre: inst.mote || d.nombres[inst.id] || ('Nº ' + inst.id),
     nivel: inst.nivel, shiny: !!inst.shiny, tipos: tiposDe(inst.id, d.tipos),
-    movs: movsDe(inst, d.learnsets, d.movimientos), hpMax: hpMax(inst.nivel), hp: hpMax(inst.nivel),
+    movs: movsDe(inst, d.learnsets, d.movimientos), hpMax: hpM, hp: hpM,
+    atk: st ? st[1] : 60, def: st ? st[2] : 60, spa: st ? st[3] : 60, spd: st ? st[4] : 60, spe: st ? st[5] : 60,
     atkMod: 1, defMod: 1, estado: null, estadoT: 0,
   };
 }
@@ -89,15 +104,18 @@ export function combatiente(inst: Inst, d: DatosCombate): Combatiente {
 // ───────────────────────── daño ─────────────────────────
 export const esEstado = (mov: Mov): boolean => mov.categoria === 'Estado' || !mov.poder;
 
-export function calcularDano(atacante: Combatiente, mov: Mov, defensor: Combatiente, rng: Rng = Math.random) {
+export function calcularDano(atacante: Combatiente, mov: Mov, defensor: Combatiente, rng: Rng = Math.random, crit = false) {
   const efec = efectividad(mov.tipo, defensor.tipos);
+  if (efec === 0) return { dmg: 0, efec, stab: 1, crit: false };   // inmune: no afecta
+  const fisico = esFisico(mov);
   const stab = atacante.tipos.includes(mov.tipo) ? 1.5 : 1;
-  const base = (mov.poder || 40) * 0.18 * (1 + atacante.nivel * 0.03);
-  const mod = (atacante.atkMod || 1) / (defensor.defMod || 1);
-  const quema = (atacante.estado === 'quemadura' && mov.categoria === 'Físico') ? 0.5 : 1;   // quemado pega menos físico
+  const A = statEf(fisico ? atacante.atk : atacante.spa, atacante.nivel) * (atacante.atkMod || 1);   // físico→Ataque, especial→At.Esp.
+  const D = statEf(fisico ? defensor.def : defensor.spd, defensor.nivel) * (defensor.defMod || 1);
+  const baseDmg = Math.floor(Math.floor((2 * atacante.nivel / 5 + 2) * (mov.poder || 40) * A / D) / 50) + 2;   // fórmula estilo Gen 3
+  const quema = (atacante.estado === 'quemadura' && fisico) ? 0.5 : 1;   // quemado pega menos físico
   const rand = 0.85 + rng() * 0.15;
-  // inmune (efec 0) = 0 de daño; si pega, mínimo 1.
-  return { dmg: efec === 0 ? 0 : Math.max(1, Math.round(base * efec * stab * mod * quema * rand)), efec, stab };
+  const dmg = Math.max(1, Math.round(baseDmg * stab * efec * quema * (crit ? 2 : 1) * rand));
+  return { dmg, efec, stab, crit };
 }
 
 // movimiento de ESTADO: lee la descripción y sube/baja Ataque o Defensa. Devuelve texto.
@@ -137,6 +155,8 @@ export const ESTADOS: Record<string, { ico: string; sigla: string; color: string
   confusion: { ico: '💫', sigla: 'CNF', color: '#c060b0', nombre: 'Confuso' },
 };
 const TXT_AIL: Record<string, string> = { veneno: 'fue envenenado', quemadura: 'sufrió una quemadura', paralisis: 'fue paralizado', sueno: 'se durmió', congelado: 'se congeló', confusion: 'se confundió' };
+// inmunidad de estado por tipo (Gen 3): Fuego no se quema, Hielo no se congela, Veneno/Acero no se envenenan.
+const INMUNE_AIL: Record<string, string[]> = { quemadura: ['Fuego'], congelado: ['Hielo'], veneno: ['Veneno', 'Acero'] };
 
 export const acierta = (mov: Mov, rng: Rng = Math.random): boolean => (rng() * 100) < (mov.precision == null ? 100 : mov.precision);
 
@@ -170,6 +190,7 @@ export function puedeActuar(c: Combatiente, rng: Rng = Math.random): { actua: bo
 export function aplicarAilment(mov: Mov, atacante: Combatiente, defensor: Combatiente, rng: Rng = Math.random): string {
   if (mov.tipo === 'Fuego' && defensor.estado === 'congelado') defensor.estado = null;
   if (!mov.ailment || defensor.estado || defensor.hp <= 0) return '';
+  if ((INMUNE_AIL[mov.ailment] || []).some((t) => defensor.tipos.includes(t))) return '';   // inmune por tipo
   const chance = mov.ailmentChance || 100;
   if (rng() * 100 >= chance) return '';
   defensor.estado = mov.ailment;

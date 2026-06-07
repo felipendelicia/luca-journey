@@ -75,7 +75,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     import { pc, sincronizar, spriteUrl, regionesDesbloqueadas, darCaramelos, darBalls, items, usarItem } from '../lib/coleccion.js';
     import { ITEMS } from '../lib/items.js';
     import { itemSvg } from '../lib/sprites.js';
-    import { combatiente, calcularDano, danoSuper, elegirCPU, equipoCPU, esEstado, aplicarEstado, puedeActuar, aplicarAilment, tickEstado, acierta, ESTADOS } from '../lib/batalla.js';
+    import { combatiente, calcularDano, danoSuper, elegirCPU, equipoCPU, esEstado, aplicarEstado, puedeActuar, aplicarAilment, tickEstado, acierta, tiraCritico, ESTADOS } from '../lib/batalla.js';
     import { etiquetaEfec } from '../lib/tipos.js';
     import { retoAlAzar } from '../lib/retos-batalla.js';
     import { sonarExito, sonarEpico, musicaBatalla, detenerMusica, toggleSonido, sonidoActivo } from '../lib/sonidos.js';
@@ -229,7 +229,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
         msg('¡' + at.nombre + ' usó ' + mov.nombre + '!  ' + txt);
         render(); await esperar(950);
       } else {
-        await aplicarGolpe(at, mov, defLado, calcularDano(at, mov, def));
+        await aplicarGolpe(at, mov, defLado, calcularDano(at, mov, def, Math.random, tiraCritico()));
       }
     }
     async function aplicarGolpe(at, mov, defLado, dmgInfo) {
@@ -237,7 +237,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const atImg = defLado === 'p' ? $('r-img') : $('p-img');   // el atacante es el otro lado
       const defImg = defLado === 'p' ? $('p-img') : $('r-img');
       const ef = etiquetaEfec(dmgInfo.efec);
-      msg('¡' + at.nombre + ' usó ' + (mov.nombre || 'su ataque') + '!' + (ef ? '  ' + ef : ''));
+      msg('¡' + at.nombre + ' usó ' + (mov.nombre || 'su ataque') + '!' + (dmgInfo.crit ? '  ¡Golpe crítico! 💥' : '') + (ef ? '  ' + ef : ''));
       // 1) el atacante embiste
       atImg.classList.add('bt-lunge'); await esperar(190); atImg.classList.remove('bt-lunge');
       // 2) impacto: destello del tipo + flash + shake si pega fuerte

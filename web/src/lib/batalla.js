@@ -4,18 +4,19 @@ import movimientos from '../data/movimientos.json' with { type: 'json' };
 import learnsets from '../data/learnsets.json' with { type: 'json' };
 import pokemon from '../data/pokemon.json' with { type: 'json' };
 import tipos from '../data/tipos.json' with { type: 'json' };
+import estadisticas from '../data/estadisticas.json' with { type: 'json' };
 import { combatiente as coreCombatiente } from './combate-core.ts';
 
 // reglas puras: se re-exportan tal cual (única fuente de verdad)
 export {
-  hpMax, esEstado, calcularDano, aplicarEstado, danoSuper, elegirCPU,
+  hpMax, esEstado, calcularDano, aplicarEstado, danoSuper, elegirCPU, tiraCritico,
   ESTADOS, acierta, puedeActuar, aplicarAilment, tickEstado, efectividad, etiquetaEfec,
 } from './combate-core.ts';
 
 // data del front inyectada al core
 const DATOS = {
   nombres: Object.fromEntries(pokemon.map((p) => [p.id, p.nombre])),
-  tipos, learnsets, movimientos,
+  tipos, learnsets, movimientos, estadisticas,
 };
 
 // combatiente a partir de una instancia del PC (usa la data del front)

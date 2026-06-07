@@ -1,14 +1,15 @@
 // Pruebas finas del NÚCLEO de combate (reglas puras, sin red ni estado de sala).
 import {
-  efectividad, etiquetaEfec, hpMax, FORCEJEO, esEstado, calcularDano, aplicarEstado,
-  danoSuper, elegirCPU, acierta, puedeActuar, aplicarAilment, tickEstado,
-  combatiente, movsDe, tiposDe, Combatiente, Mov, DatosCombate,
+  efectividad, etiquetaEfec, hpMax, hpEf, statEf, esFisico, tiraCritico, CRIT_CHANCE, FORCEJEO,
+  esEstado, calcularDano, aplicarEstado, danoSuper, elegirCPU, acierta, puedeActuar,
+  aplicarAilment, tickEstado, combatiente, movsDe, tiposDe, Combatiente, Mov, DatosCombate,
 } from './combate-core';
 
 // combatiente sintético (no necesita data real): se sobreescribe lo que cada test precise.
 const luchador = (over: Partial<Combatiente> = {}): Combatiente => ({
   iid: 'x', id: 1, nombre: 'Test', nivel: 30, shiny: false, tipos: ['Normal'],
-  movs: [], hpMax: hpMax(30), hp: hpMax(30), atkMod: 1, defMod: 1, estado: null, estadoT: 0, ...over,
+  movs: [], hpMax: hpEf(60, 30), hp: hpEf(60, 30), atkMod: 1, defMod: 1, estado: null, estadoT: 0,
+  atk: 60, def: 60, spa: 60, spd: 60, spe: 60, ...over,
 });
 const mov = (o: Partial<Mov> = {}): Mov => ({ id: 1, nombre: 'M', tipo: 'Normal', poder: 50, ...o });
 const rng = (v: number) => () => v;       // rng determinista
@@ -323,6 +324,88 @@ describe('tickEstado (veneno/quemadura por turno)', () => {
     const c = luchador({ estado: 'veneno', hp: 1 });
     tickEstado(c);
     expect(c.hp).toBe(0);
+  });
+});
+
+// ───────────────────────── stats base + críticos (Gen 3) ─────────────────────────
+describe('stats efectivas (Gen 3)', () => {
+  it('statEf = floor(2*base*L/100)+5', () => {
+    expect(statEf(100, 50)).toBe(105);
+    expect(statEf(60, 30)).toBe(41);
+    expect(statEf(undefined as any, 30)).toBe(statEf(60, 30));   // default 60
+  });
+  it('hpEf = floor(2*base*L/100)+L+10', () => {
+    expect(hpEf(160, 30)).toBe(136);   // Snorlax
+    expect(hpEf(45, 30)).toBe(67);     // Caterpie
+  });
+  it('esFisico: categoría manda; si falta, por tipo (como Gen 3)', () => {
+    expect(esFisico(mov({ tipo: 'Fuego', categoria: 'Físico' }))).toBe(true);
+    expect(esFisico(mov({ tipo: 'Normal', categoria: 'Especial' }))).toBe(false);
+    expect(esFisico(mov({ tipo: 'Normal' }))).toBe(true);    // Normal = físico por tipo
+    expect(esFisico(mov({ tipo: 'Fuego' }))).toBe(false);    // Fuego = especial por tipo
+  });
+});
+
+describe('golpes críticos', () => {
+  it('CRIT_CHANCE = 1/16 y tiraCritico respeta el umbral', () => {
+    expect(CRIT_CHANCE).toBeCloseTo(1 / 16, 6);
+    expect(tiraCritico(rng(0))).toBe(true);        // 0 < 0.0625
+    expect(tiraCritico(rng(0.5))).toBe(false);
+  });
+  it('un crítico pega ~2× (mismo rng) y marca crit', () => {
+    const atk = luchador(), m = mov({ poder: 80 }), def = luchador();
+    const normal = calcularDano(atk, m, def, rng0, false).dmg;
+    const cr = calcularDano(atk, m, def, rng0, true);
+    expect(cr.dmg).toBeGreaterThanOrEqual(normal * 2 - 1);
+    expect(cr.dmg).toBeLessThanOrEqual(normal * 2 + 1);
+    expect(cr.crit).toBe(true);
+  });
+});
+
+describe('stats base en el daño', () => {
+  it('mayor Ataque → más daño físico (Snorlax > Caterpie)', () => {
+    const m = mov({ tipo: 'Normal', categoria: 'Físico', poder: 80 });
+    const dS = calcularDano(luchador({ atk: 110 }), m, luchador(), rng0).dmg;
+    const dC = calcularDano(luchador({ atk: 30 }), m, luchador(), rng0).dmg;
+    expect(dS).toBeGreaterThan(dC);
+  });
+  it('mayor Defensa → recibe menos', () => {
+    const m = mov({ categoria: 'Físico', poder: 80 });
+    const blando = calcularDano(luchador(), m, luchador({ def: 30 }), rng0).dmg;
+    const duro = calcularDano(luchador(), m, luchador({ def: 160 }), rng0).dmg;
+    expect(duro).toBeLessThan(blando);
+  });
+  it('físico usa Atk/Def; especial usa At.Esp/Def.Esp', () => {
+    const atk = luchador({ atk: 130, spa: 30 });   // fuerte físico, flojo especial
+    const def = luchador();
+    const fis = calcularDano(atk, mov({ tipo: 'Normal', categoria: 'Físico', poder: 80 }), def, rng0).dmg;
+    const esp = calcularDano(atk, mov({ tipo: 'Normal', categoria: 'Especial', poder: 80 }), def, rng0).dmg;
+    expect(fis).toBeGreaterThan(esp);
+  });
+});
+
+describe('inmunidad de estado por tipo (Gen 3)', () => {
+  it('Fuego no se quema', () => {
+    const def = luchador({ tipos: ['Fuego'] });
+    aplicarAilment(mov({ ailment: 'quemadura', ailmentChance: 100 }), luchador(), def, rng(0));
+    expect(def.estado).toBeNull();
+  });
+  it('Hielo no se congela', () => {
+    const def = luchador({ tipos: ['Hielo'] });
+    aplicarAilment(mov({ tipo: 'Agua', ailment: 'congelado', ailmentChance: 100 }), luchador(), def, rng(0));
+    expect(def.estado).toBeNull();
+  });
+  it('Veneno y Acero no se envenenan', () => {
+    for (const t of ['Veneno', 'Acero']) {
+      const def = luchador({ tipos: [t] });
+      aplicarAilment(mov({ ailment: 'veneno', ailmentChance: 100 }), luchador(), def, rng(0));
+      expect(def.estado).toBeNull();
+    }
+  });
+  it('un tipo NO inmune sí recibe el estado', () => {
+    const def = luchador({ tipos: ['Agua'] });
+    aplicarAilment(mov({ ailment: 'quemadura', ailmentChance: 100 }), luchador(), def, rng(0));
+    expect(def.estado).toBe('quemadura');
   });
 });
 

@@ -66,7 +66,8 @@ describe('máquina de estado de la sala', () => {
     expect(e.turno).toBe('A');
     expect(e.jugadores).toHaveLength(2);
     expect(e.jugadores[0].equipo.length).toBe(2);
-    expect(e.jugadores[0].equipo[0].hp).toBe(hpMax(30));
+    expect(e.jugadores[0].equipo[0].hp).toBe(e.jugadores[0].equipo[0].hpMax);   // arranca con HP lleno (stat-based)
+    expect(e.jugadores[0].equipo[0].hpMax).toBeGreaterThan(0);
   });
 
   it('un ataque alterna el turno y carga la barra de súper', () => {
@@ -195,7 +196,7 @@ describe('estados alterados + fallar', () => {
   });
 
   it('aplicarAilment respeta la chance y un solo estado a la vez', () => {
-    const atk = c(); const def = combatiente(inst('y', 1, 30));
+    const atk = c(); const def = combatiente(inst('y', 19, 30));   // Rattata (Normal): no es inmune al veneno
     const tox: Mov = { id: 92, nombre: 'Tóxico', tipo: 'Veneno', categoria: 'Estado', ailment: 'veneno', ailmentChance: 0 };  // 0 = garantizado
     expect(aplicarAilment(tox, atk, def, () => 0.5)).toContain('envenenado');
     expect(def.estado).toBe('veneno');

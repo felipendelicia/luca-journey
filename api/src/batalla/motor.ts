@@ -7,9 +7,10 @@ import tiposData from './data/tipos.json';
 import movimientos from './data/movimientos.json';
 import learnsets from './data/learnsets.json';
 import pokemon from './data/pokemon.json';
+import estadisticas from './data/estadisticas.json';
 import {
   combatiente as coreCombatiente,
-  esEstado, calcularDano, aplicarEstado, danoSuper, etiquetaEfec,
+  esEstado, calcularDano, aplicarEstado, danoSuper, etiquetaEfec, tiraCritico,
   acierta, puedeActuar, aplicarAilment, tickEstado,
 } from './combate-core';
 import type { Rng, EstadoAlt, Mov, Inst, Combatiente, DatosCombate } from './combate-core';
@@ -25,6 +26,7 @@ export type { Rng, EstadoAlt, Mov, Inst, Combatiente } from './combate-core';
 const DATOS: DatosCombate = {
   nombres: Object.fromEntries((pokemon as any[]).map((p) => [p.id, p.nombre])),
   tipos: tiposData as any, learnsets: learnsets as any, movimientos: movimientos as any,
+  estadisticas: estadisticas as any,
 };
 export const combatiente = (inst: Inst): Combatiente => coreCombatiente(inst, DATOS);
 
@@ -133,13 +135,14 @@ export function aplicarAccion(
           push('estado', `${atk.nombre} usó ${mov.nombre}. ` + aplicarEstado(mov, atk, def), { mov: mov.id });
           const ta = aplicarAilment(mov, atk, def, rng); if (ta) push('ailment', ta);
         } else {
-          const r = calcularDano(atk, mov, def, rng);
+          const crit = tiraCritico(rng);
+          const r = calcularDano(atk, mov, def, rng, crit);
           def.hp = Math.max(0, def.hp - r.dmg);
           const ef = etiquetaEfec(r.efec);
           const msg = r.efec === 0
             ? `${atk.nombre} usó ${mov.nombre}… ¡pero no afecta a ${def.nombre}!`
-            : `${atk.nombre} usó ${mov.nombre}: ${r.dmg} de daño.${ef ? ' ' + ef : ''}`;
-          push('mover', msg, { dmg: r.dmg, efec: r.efec, mov: mov.id });
+            : `${atk.nombre} usó ${mov.nombre}: ${r.dmg} de daño.${r.crit ? ' ¡Golpe crítico!' : ''}${ef ? ' ' + ef : ''}`;
+          push('mover', msg, { dmg: r.dmg, efec: r.efec, crit: r.crit, mov: mov.id });
           if (def.hp > 0) { const ta = aplicarAilment(mov, atk, def, rng); if (ta) push('ailment', ta); }
         }
         yo.super = Math.min(SUPER_MAX, yo.super + SUPER_GANANCIA);
