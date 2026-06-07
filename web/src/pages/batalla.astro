@@ -42,9 +42,11 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
           <div class="bt-equipo" id="p-dots"></div>
         </div>
       </div>
+      <div class="bt-estado-online" id="bt-estado-online" hidden><span class="bt-eo-ico" id="bt-eo-ico">🟢</span><span class="bt-eo-txt" id="bt-eo-txt">Elegí tu acción</span></div>
       <p class="bt-msg" id="bt-msg">¡Que empiece la batalla!</p>
       <div class="bt-carga"><div class="bt-carga-fill" id="bt-carga"></div><span id="bt-carga-txt">Súper: 0%</span></div>
       <div class="bt-timer" id="bt-timer" hidden><span class="bt-timer-txt" id="bt-timer-txt"></span><div class="bt-timer-bar"><i id="bt-timer-bar"></i></div></div>
+      <div class="bt-timer bt-timer-online" id="bt-timer-online" hidden><span class="bt-timer-txt" id="bt-timer-online-txt"></span><div class="bt-timer-bar"><i id="bt-timer-online-bar"></i></div></div>
       <div class="bt-moves" id="bt-moves"></div>
       <div class="bt-banca-wrap"><span class="bt-banca-lbl">Tu equipo <small>(tocá para cambiar)</small></span><div class="bt-banca" id="bt-banca"></div></div>
     </div>
@@ -65,6 +67,14 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       <h2>🎒 Mochila — usar poción</h2>
       <p class="bt-mochila-nota">Cura a tu Pokémon activo. Usarla <b>gasta tu turno</b>.</p>
       <div class="mochila-lista" id="mochila-lista"></div>
+    </div>
+  </div>
+
+  <div class="reto-modal reemplazo-modal" id="reemplazo-modal" hidden>
+    <div class="reto-card reemplazo-card">
+      <h2>🔄 Tu Pokémon cayó</h2>
+      <p class="bt-mochila-nota" id="reemplazo-nota">Elegí el próximo que entra al combate.</p>
+      <div class="reemplazo-lista" id="reemplazo-lista"></div>
     </div>
   </div>
 
@@ -94,6 +104,30 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     sincronizar(D.temas);
     const $ = (id) => document.getElementById(id);
     const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    // narra una línea en el cuadro de texto (#bt-msg) escribiéndola LETRA POR LETRA (estilo FireRed).
+    // Al terminar muestra el cursor ▼ (clase .listo) un instante y resuelve. Un tap saltea al texto completo.
+    // prefers-reduced-motion → texto directo (sin tipeo).
+    let _narrarSkip = null;
+    function narrar(texto) {
+      const box = document.getElementById('bt-msg');
+      return new Promise((resolve) => {
+        texto = String(texto == null ? '' : texto);
+        if (!box || matchMedia('(prefers-reduced-motion: reduce)').matches) { if (box) box.textContent = texto; setTimeout(resolve, 280); return; }
+        let i = 0; _narrarSkip = null;
+        box.classList.add('escribiendo'); box.classList.remove('listo'); box.textContent = '';
+        const fin = () => { box.classList.remove('escribiendo'); box.classList.add('listo'); _narrarSkip = null; setTimeout(() => { box.classList.remove('listo'); resolve(); }, 450); };
+        const tick = () => {
+          if (i >= texto.length) return fin();
+          box.textContent += texto[i++];
+          _narrarSkip = () => { box.textContent = texto; i = texto.length; _narrarSkip = null; fin(); };
+          setTimeout(tick, 24);
+        };
+        tick();
+      });
+    }
+    // tap/click en cualquier parte saltea la línea que se está escribiendo
+    document.addEventListener('pointerdown', () => { if (_narrarSkip) _narrarSkip(); });
 
     // grito (cry) de un Pokémon (PokeAPI, ogg)
     const CRY_BASE = 'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/';
@@ -161,13 +195,14 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const rival = equipoCPU(pool, Math.min(3, equipo.length), Math.max(2, nivelProm + (Math.random() < 0.5 ? -2 : 2)));
       G = { equipo, rival, pa: 0, ra: 0, carga: 0, lock: false, itemsUsados: 0 };
       $('bt-sel').hidden = true; $('bt-combate').hidden = false; $('bt-fin').hidden = true;
+      $('bt-estado-online').hidden = true; $('bt-timer-online').hidden = true;   // banner/timer online no aplican vs CPU
       musicaBatalla();          // 🎵 música de fondo de la pelea
-      render(); msg('¡Aparece el rival! Elegí tu ataque.');
-      cry(rivAct().id, 0.45); setTimeout(() => cry(miAct().id, 0.4), 550);
       // habilidad AL ENTRAR (Intimidación): ambos activos entran a la vez → cada uno intimida al otro
       G.lock = true; render();
-      { const te = habAlEntrar(rivAct(), miAct()); if (te) { msg(te); render(); await esperar(1000); } }
-      { const te = habAlEntrar(miAct(), rivAct()); if (te) { msg(te); render(); await esperar(1000); } }
+      cry(rivAct().id, 0.45); setTimeout(() => cry(miAct().id, 0.4), 550);
+      await narrar('¡Aparece el rival! Elegí tu ataque.'); await esperar(300);
+      { const te = habAlEntrar(rivAct(), miAct()); if (te) { render(); await narrar(te); await esperar(400); } }
+      { const te = habAlEntrar(miAct(), rivAct()); if (te) { render(); await narrar(te); await esperar(400); } }
       G.lock = false; render(); armarTimer();
     }
     function poolRival() {
@@ -250,9 +285,9 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     async function cambiar(i) {
       if (G.lock || i === G.pa || G.equipo[i].hp <= 0) return;
       cancelarTimer(); G.lock = true; render();
-      G.pa = i; msg('¡Adelante, ' + miAct().nombre + '!'); render(); cry(miAct().id, 0.4);
-      await esperar(750);
-      { const te = habAlEntrar(miAct(), rivAct()); if (te) { msg(te); render(); await esperar(1000); } }
+      G.pa = i; render(); cry(miAct().id, 0.4); await narrar('¡Adelante, ' + miAct().nombre + '!');
+      await esperar(450);
+      { const te = habAlEntrar(miAct(), rivAct()); if (te) { render(); await narrar(te); await esperar(400); } }
       await turnoRival();
       if (fin()) return;
       await tick('r');
@@ -272,9 +307,10 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const def = defLado === 'p' ? miAct() : rivAct();
       if (esEstado(mov)) {
         const txt = aplicarEstado(mov, at, def);
-        msg('¡' + at.nombre + ' usó ' + mov.nombre + '!  ' + txt);
         efectoAtaque(document.querySelector('.bt-arena'), mov, defLado === 'r');   // FX de estado (flechas ↑/↓)
-        render(); await esperar(950);
+        render();
+        await narrar('¡' + at.nombre + ' usó ' + mov.nombre + '!  ' + txt);
+        await esperar(550);
       } else {
         await aplicarGolpe(at, mov, defLado, calcularDano(at, mov, def, Math.random, tiraCritico()));
       }
@@ -284,7 +320,8 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const atImg = defLado === 'p' ? $('r-img') : $('p-img');   // el atacante es el otro lado
       const defImg = defLado === 'p' ? $('p-img') : $('r-img');
       const ef = etiquetaEfec(dmgInfo.efec);
-      msg('¡' + at.nombre + ' usó ' + (mov.nombre || 'su ataque') + '!' + (dmgInfo.crit ? '  ¡Golpe crítico! 💥' : '') + (ef ? '  ' + ef : ''));
+      await narrar('¡' + at.nombre + ' usó ' + (mov.nombre || 'su ataque') + '!' + (dmgInfo.crit ? '  ¡Golpe crítico! 💥' : '') + (ef ? '  ' + ef : ''));
+      await esperar(200);   // beat tras la línea, antes del golpe
       // 1) el atacante embiste
       atImg.classList.add('bt-lunge'); await esperar(190); atImg.classList.remove('bt-lunge');
       // 2) impacto: animación de ataque (por movimiento, o por tipo) + shake si pega fuerte
@@ -293,19 +330,19 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       defImg.classList.add('bt-hit');
       const fuerte = dmgInfo.efec >= 2 || dmgInfo.dmg > def.hpMax * 0.38;
       if (fuerte) document.querySelector('.bt-arena').classList.add('bt-sacude');
-      render(); await esperar(200);
+      render(); await esperar(220);
       defImg.classList.remove('bt-hit'); document.querySelector('.bt-arena').classList.remove('bt-sacude');
-      await esperar(560);
+      await esperar(620);
       if (def.hp <= 0) {
-        cry(def.id, 0.3); msg(def.nombre + ' se debilitó.');
+        cry(def.id, 0.3); await narrar(def.nombre + ' se debilitó.');
         if (defLado === 'r') darEV(miAct().iid, yieldDe(def.id));   // práctica: EVs al activo del jugador
         defImg.classList.add('bt-faint'); await esperar(650); defImg.classList.remove('bt-faint');
         avanzar(defLado);
         if ((defLado === 'p' ? G.pa : G.ra) < 0) return;   // equipo eliminado → el caller corre fin()
-        render(); cry((defLado === 'p' ? miAct() : rivAct()).id, 0.35); await esperar(400);
+        render(); cry((defLado === 'p' ? miAct() : rivAct()).id, 0.35); await esperar(450);
         // habilidad AL ENTRAR del reemplazo (Intimidación) → intimida al activo rival
         { const nuevo = defLado === 'p' ? miAct() : rivAct(), opo = defLado === 'p' ? rivAct() : miAct();
-          const te = habAlEntrar(nuevo, opo); if (te) { msg(te); render(); await esperar(1000); } }
+          const te = habAlEntrar(nuevo, opo); if (te) { render(); await narrar(te); await esperar(400); } }
       }
     }
     function avanzar(lado) {
@@ -327,17 +364,16 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const img = lado === 'p' ? $('p-img') : $('r-img');
       const pa = puedeActuar(at);
       if (pa.texto) {
-        msg(pa.texto);
         if (pa.autogolpe) { img.classList.add('bt-hit'); }
-        render(); await esperar(1000);
+        render(); await narrar(pa.texto); await esperar(350);
         if (pa.autogolpe) { img.classList.remove('bt-hit'); }
       }
       if (!pa.actua) return;                                   // perdió el turno (no gasta PP)
       if (mov.id && mov.pp > 0) mov.pp--;                      // consume PP (Forcejeo id 0 no gasta)
-      if (!acierta(mov, Math.random, at)) { msg('¡' + at.nombre + ' usó ' + mov.nombre + '… pero falló!'); render(); await esperar(950); return; }
+      if (!acierta(mov, Math.random, at)) { render(); await narrar('¡' + at.nombre + ' usó ' + mov.nombre + '… pero falló!'); await esperar(350); return; }
       await usarMov(at, mov, defLado);
-      if (def.hp > 0) { const t = aplicarAilment(mov, at, def); if (t) { msg(t); render(); await esperar(1000); } }
-      if (def.hp > 0) { const tc = habAlContacto(def, at, mov, Math.random); if (tc) { msg(tc); render(); await esperar(1000); } }
+      if (def.hp > 0) { const t = aplicarAilment(mov, at, def); if (t) { render(); await narrar(t); await esperar(400); } }
+      if (def.hp > 0) { const tc = habAlContacto(def, at, mov, Math.random); if (tc) { render(); await narrar(tc); await esperar(400); } }
     }
 
     // daño por turno (veneno/quemadura) del activo del lado, con su posible debilitamiento.
@@ -346,15 +382,15 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const tk = tickEstado(c);
       if (!tk.dmg) return;
       const img = lado === 'p' ? $('p-img') : $('r-img');
-      msg(tk.texto); img.classList.add('bt-hit'); render(); await esperar(230); img.classList.remove('bt-hit'); await esperar(620);
+      img.classList.add('bt-hit'); render(); await narrar(tk.texto); img.classList.remove('bt-hit'); await esperar(450);
       if (c.hp <= 0) {
-        cry(c.id, 0.3); msg(c.nombre + ' se debilitó.');
+        cry(c.id, 0.3); await narrar(c.nombre + ' se debilitó.');
         if (lado === 'r') darEV(miAct().iid, yieldDe(c.id));   // práctica: EVs al activo del jugador
         img.classList.add('bt-faint'); await esperar(650); img.classList.remove('bt-faint');
-        avanzar(lado); render(); await esperar(300);
+        avanzar(lado); render(); await esperar(350);
         // habilidad AL ENTRAR del reemplazo (Intimidación) → intimida al activo rival
         const nuevo = lado === 'p' ? miAct() : rivAct(), opo = lado === 'p' ? rivAct() : miAct();
-        if (nuevo && opo) { const te = habAlEntrar(nuevo, opo); if (te) { msg(te); render(); await esperar(1000); } }
+        if (nuevo && opo) { const te = habAlEntrar(nuevo, opo); if (te) { render(); await narrar(te); await esperar(400); } }
       }
     }
 
@@ -426,11 +462,13 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       else if (it.revive) { if (!G.equipo.some((c) => c.hp <= 0)) { msg('No hay ningún Pokémon debilitado para revivir.'); return; } }
       if (!usarItem(itemId)) return;
       $('mochila-modal').hidden = true; cancelarTimer(); G.lock = true; G.itemsUsados++;
-      if (it.cura) { const c = Math.min(a.hpMax - a.hp, it.cura); a.hp += c; msg('¡Usaste ' + it.nombre + '! ' + a.nombre + ' recuperó ' + c + ' HP.'); }
-      else if (it.curaEstado) { a.estado = null; a.estadoT = 0; msg('¡Usaste ' + it.nombre + '! ' + a.nombre + ' se recuperó.'); }
-      else if (it.revive) { const ko = G.equipo.find((c) => c.hp <= 0); ko.hp = Math.max(1, Math.round(ko.hpMax * it.revive)); ko.estado = null; ko.estadoT = 0; sonarExito(); msg('¡' + ko.nombre + ' revivió con ' + ko.hp + ' HP!'); }
+      let _it = '';
+      if (it.cura) { const c = Math.min(a.hpMax - a.hp, it.cura); a.hp += c; _it = '¡Usaste ' + it.nombre + '! ' + a.nombre + ' recuperó ' + c + ' HP.'; }
+      else if (it.curaEstado) { a.estado = null; a.estadoT = 0; _it = '¡Usaste ' + it.nombre + '! ' + a.nombre + ' se recuperó.'; }
+      else if (it.revive) { const ko = G.equipo.find((c) => c.hp <= 0); ko.hp = Math.max(1, Math.round(ko.hpMax * it.revive)); ko.estado = null; ko.estadoT = 0; sonarExito(); _it = '¡' + ko.nombre + ' revivió con ' + ko.hp + ' HP!'; }
       render();
-      await esperar(900);
+      await narrar(_it);
+      await esperar(500);
       await turnoRival();
       if (fin()) return;
       await tick('r');
@@ -464,12 +502,12 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
         const calidad = Math.max(0, Math.min(1, 1 - seg / 12)); // rápido = mejor
         sonarExito();
         const s = danoSuper(miAct(), rivAct(), calidad);
-        msg('✅ ¡Correcto! ' + miAct().nombre + ' desata un SÚPER con ' + s.mov.nombre + '!');
-        await esperar(500);
+        await narrar('✅ ¡Correcto! ' + miAct().nombre + ' desata un SÚPER con ' + s.mov.nombre + '!');
+        await esperar(350);
         await aplicarGolpe(miAct(), s.mov, 'r', { dmg: s.dmg, efec: s.efec });
       } else {
-        msg('❌ Incorrecto… el súper se apagó.');
-        await esperar(700);
+        await narrar('❌ Incorrecto… el súper se apagó.');
+        await esperar(450);
       }
       if (fin()) return;
       await turnoRival();
@@ -502,8 +540,10 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
 
     function volverInicio() {
       detenerMusica(); musOn = false;
+      if (typeof limpiarOnline === 'function') limpiarOnline();
+      $('bt-estado-online').hidden = true; $('bt-timer-online').hidden = true;
       $('bt-fin').hidden = true; $('bt-combate').hidden = true; $('bt-sel').hidden = true; $('bt-online').hidden = true;
-      $('reto-modal').hidden = true; $('mochila-modal').hidden = true; $('bt-modo').hidden = false;
+      $('reto-modal').hidden = true; $('mochila-modal').hidden = true; $('reemplazo-modal').hidden = true; $('bt-modo').hidden = false;
     }
 
     // ── Lobby ──
@@ -573,7 +613,42 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       $('so-listo').onclick = () => { online.elegirEquipo([...selOnline]); $('so-listo').disabled = true; $('so-msg').textContent = 'Esperando al rival…'; };
     }
 
+    // ── estado de la ronda simultánea (cliente) ──
+    // OS = { snap, prev }. ONL = estado de UI de la ronda en curso.
+    let ONL = { deadline: 0, miEleccion: null, bloqueado: false, rivalListo: false, animando: false, fase: 'combate' };
+    let timerOnH = null;
+    function cancelarTimerOnline() { if (timerOnH) { cancelAnimationFrame(timerOnH); timerOnH = null; } $('bt-timer-online').hidden = true; }
+
+    // Banner de estado: 🟢 elegir / ⏳ esperando / ⚔️ resolviendo / 🔄 reemplazo / 🏁 fin
+    function bannerOnline(ico, txt, mod) {
+      const cont = $('bt-estado-online'); if (!cont) return;
+      cont.hidden = false;
+      $('bt-eo-ico').textContent = ico; $('bt-eo-txt').textContent = txt;
+      cont.className = 'bt-estado-online' + (mod ? ' ' + mod : '');
+    }
+
+    // Timer que drena hacia ronda.deadline (epoch ms). Animado con requestAnimationFrame.
+    function armarTimerOnline(deadline) {
+      cancelarTimerOnline();
+      ONL.deadline = deadline || 0;
+      if (!deadline) return;
+      const cont = $('bt-timer-online'), txt = $('bt-timer-online-txt'), bar = $('bt-timer-online-bar');
+      const total = Math.max(1, deadline - Date.now());
+      cont.hidden = false;
+      const tick = () => {
+        const restante = deadline - Date.now();
+        if (restante <= 0) { txt.textContent = '⏱ 0s'; bar.style.width = '0%'; cont.classList.add('urgente'); timerOnH = null; return; }
+        const seg = Math.ceil(restante / 1000);
+        txt.textContent = '⏱ ' + seg + 's para elegir';
+        bar.style.width = Math.max(0, Math.min(100, (restante / total) * 100)) + '%';
+        cont.classList.toggle('urgente', seg <= 5);
+        timerOnH = requestAnimationFrame(tick);
+      };
+      tick();
+    }
+
     // ── Combate (render desde el snapshot del server) ──
+    // selección: durante la fase de combate el jugador elige UNA acción; el server resuelve.
     function renderOnline() {
       if (!OS || !OS.snap) return;
       const snap = OS.snap, myUid = online.miUid();
@@ -581,42 +656,83 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       if (!me || !rival) return;
       const myAct = me.equipo[me.activo], rivAct = rival.equipo[rival.activo];
       $('bt-online').hidden = true; $('bt-sel').hidden = true; $('bt-modo').hidden = true; $('bt-combate').hidden = false;
+      $('bt-timer').hidden = true;   // el timer "vs CPU" no se usa en vivo
       $('r-nom').textContent = rivAct.nombre; $('r-lv').textContent = 'Nv.' + rivAct.nivel; $('r-tipos').textContent = rivAct.tipos.join(' · '); $('r-estado').innerHTML = estadoChip(rivAct); setSpr('r-img', rivAct, false); hp('r-hp', rivAct); dots('r-dots', rival.equipo);
       $('p-nom').textContent = myAct.nombre; $('p-lv').textContent = 'Nv.' + myAct.nivel; $('p-tipos').textContent = myAct.tipos.join(' · '); $('p-estado').innerHTML = estadoChip(myAct); setSpr('p-img', myAct, true); hp('p-hp', myAct); dots('p-dots', me.equipo);
       hudIdent('r', rivAct); hudIdent('p', myAct);
       $('bt-carga').style.width = me.super + '%'; $('bt-carga-txt').textContent = 'Súper: ' + me.super + '%';
-      const miTurno = snap.fase === 'combate' && snap.turno === myUid;
-      const ev = (snap.eventos || [])[snap.eventos.length - 1];
-      $('bt-msg').textContent = snap.fase === 'super'
-        ? (snap.superDe === myUid ? '⚡ Resolvé tu reto…' : 'El rival está resolviendo su súper…')
-        : (ev ? ev.texto : (miTurno ? '¡Tu turno!' : 'Turno del rival…'));
+      const enCombate = snap.fase === 'combate';
+      // mientras animo la resolución o ya elegí, el menú queda bloqueado (salvo re-pick)
+      const puedeElegir = enCombate && !ONL.animando && !ONL.bloqueado;
+      const superListo = me.super >= 100;
       $('bt-moves').innerHTML = myAct.movs.map((mv, i) =>
-        '<button class="bt-move" data-i="' + i + '"' + (miTurno ? '' : ' disabled') + '><b>' + esc(mv.nombre) + '</b><small>' + esc(mv.tipo) + (mv.poder ? ' · ⚔️' + mv.poder : '') + '</small></button>').join('') +
-        '<button class="bt-move bt-super" id="bt-super"' + (miTurno && me.super >= 100 ? '' : ' disabled') + '>⚡ SÚPER</button>' +
-        '<button class="bt-move bt-mochila" id="bt-mochila"' + (miTurno ? '' : ' disabled') + '>🎒 Mochila</button>' +
-        '<button class="bt-move bt-rendir" id="bt-rendir">🏳️ Rendirse</button>';
-      $('bt-moves').querySelectorAll('.bt-move[data-i]').forEach((b) => b.onclick = () => { if (miTurno) online.mover(+b.dataset.i); });
-      $('bt-super').onclick = () => { if (miTurno && me.super >= 100) online.lanzarSuper(); };
-      $('bt-mochila').onclick = () => { if (miTurno) abrirMochilaOnline(); };
-      $('bt-rendir').onclick = () => { if (confirm('¿Rendirte? Cuenta como derrota.')) online.rendirse(); };
+        '<button class="bt-move" data-i="' + i + '"' + (puedeElegir ? '' : ' disabled') + '><b>' + esc(mv.nombre) + '</b><small>' + esc(mv.tipo) + (mv.poder ? ' · ⚔️' + mv.poder : '') + '</small></button>').join('') +
+        '<button class="bt-move bt-super" id="bt-super"' + (puedeElegir && superListo ? '' : ' disabled') + '>⚡ SÚPER</button>' +
+        '<button class="bt-move bt-mochila" id="bt-mochila"' + (puedeElegir ? '' : ' disabled') + '>🎒 Mochila</button>' +
+        '<button class="bt-move bt-rendir" id="bt-rendir"' + (ONL.animando ? ' disabled' : '') + '>🏳️ Rendirse</button>';
+      $('bt-moves').querySelectorAll('.bt-move[data-i]').forEach((b) => b.onclick = () => { if (puedeElegir) elegirAccionOnline({ tipo: 'mover', i: +b.dataset.i }, esc(myAct.movs[+b.dataset.i].nombre)); });
+      $('bt-super').onclick = () => { if (puedeElegir && superListo) lanzarSuperOnline(); };
+      $('bt-mochila').onclick = () => { if (puedeElegir) abrirMochilaOnline(); };
+      $('bt-rendir').onclick = () => { if (!ONL.animando && confirm('¿Rendirte? Cuenta como derrota.')) online.rendirse(); };
       $('bt-banca').innerHTML = me.equipo.map((c, i) => {
-        const ko = c.hp <= 0, act = i === me.activo, dis = act || ko || !miTurno, pct = Math.max(0, Math.round((c.hp / c.hpMax) * 100));
+        const ko = c.hp <= 0, act = i === me.activo, dis = act || ko || !puedeElegir, pct = Math.max(0, Math.round((c.hp / c.hpMax) * 100));
         return '<button class="bt-banca-m' + (act ? ' activo' : '') + (ko ? ' ko' : '') + '" data-sw="' + i + '"' + (dis ? ' disabled' : '') + '><img src="' + spriteUrl(c.id, c.shiny) + '" alt="" /><span class="bm-nom">' + esc(c.nombre) + '</span><span class="bm-hp"><i style="width:' + pct + '%"></i></span><small>' + (ko ? '💀 Debilitado' : act ? '● En combate' : 'Nv.' + c.nivel) + '</small></button>';
       }).join('');
-      $('bt-banca').querySelectorAll('[data-sw]').forEach((b) => b.onclick = () => { if (miTurno) online.cambiar(+b.dataset.sw); });
-    }
-    // animación ligera al recibir estado: flash del que recibió daño
-    function animarOnline(snap, prev) {
-      if (!prev) return; const myUid = online.miUid();
-      const flash = (jN, jO, imgId, esRival) => {
-        const a = jN && jN.equipo[jN.activo], o = jO && jO.equipo[jO.activo];
-        if (a && o && a.iid === o.iid && a.hp < o.hp) { const img = $(imgId); destello(esRival, ''); img.classList.add('bt-hit'); setTimeout(() => img.classList.remove('bt-hit'), 220); if (a.hp <= 0) cry(a.id, 0.3); }
-      };
-      flash(snap.jugadores.find((j) => j.uid === myUid), prev.jugadores.find((j) => j.uid === myUid), 'p-img', false);
-      flash(snap.jugadores.find((j) => j.uid !== myUid), prev.jugadores.find((j) => j.uid !== myUid), 'r-img', true);
+      $('bt-banca').querySelectorAll('[data-sw]').forEach((b) => b.onclick = () => { if (puedeElegir) elegirAccionOnline({ tipo: 'cambiar', idx: +b.dataset.sw }, 'cambiar a ' + esc(me.equipo[+b.dataset.sw].nombre)); });
     }
 
-    // súper por código (pausa): abrís TU reto; al resolver mandás la calidad al server
+    // helper: nombre del activo del lado (para FX/cries durante la resolución)
+    function actDe(snap, uid) { const j = snap.jugadores.find((x) => x.uid === uid); return j ? j.equipo[j.activo] : null; }
+
+    // etiqueta legible de la acción elegida (para el chip "✓ Elegiste: …")
+    function etiquetaAccion(accion) {
+      if (!accion) return '—';
+      const me = OS && OS.snap && OS.snap.jugadores.find((j) => j.uid === online.miUid());
+      const act = me && me.equipo[me.activo];
+      if (accion.tipo === 'mover') return act && act.movs[accion.i] ? esc(act.movs[accion.i].nombre) : 'ataque';
+      if (accion.tipo === 'cambiar') { const c = me && me.equipo[accion.idx]; return 'cambiar a ' + esc((c && c.nombre) || '?'); }
+      if (accion.tipo === 'pocion') { const it = ITEMS[accion.itemId]; return esc((it && it.nombre) || 'poción'); }
+      if (accion.tipo === 'super') return 'Súper ⚡';
+      if (accion.tipo === 'rendirse') return 'rendirse';
+      return '—';
+    }
+
+    // elegir una acción de la ronda: la manda al server, bloquea el menú y deja re-elegir
+    // hasta que el rival bloquee (rivalListo) o se acabe el timer.
+    function elegirAccionOnline(accion, etiqueta) {
+      ONL.miEleccion = accion; ONL.bloqueado = true;
+      online.elegir(accion);
+      pintarEspera(etiqueta);
+    }
+    // chip "✓ Elegiste: X" + ⏳ esperando + botón Cambiar (re-pick) habilitado hasta rivalListo/timeout
+    function pintarEspera(etiqueta) {
+      bannerOnline('⏳', 'Esperando al rival…', 'esperando');
+      const puedeRepick = !ONL.rivalListo;
+      $('bt-moves').innerHTML =
+        '<div class="bt-lock">' +
+          '<div class="bt-lock-chip">✓ Elegiste: <b>' + (etiqueta || '—') + '</b></div>' +
+          '<div class="bt-lock-sub">' + (ONL.rivalListo ? '⚔️ El rival ya eligió — resolviendo…' : '⏳ Esperando que el rival elija…') + '</div>' +
+          '<button class="bt-move bt-repick"' + (puedeRepick ? '' : ' disabled') + ' id="bt-repick">↩️ Cambiar mi acción</button>' +
+        '</div>';
+      const rb = $('bt-repick'); if (rb) rb.onclick = () => { if (!ONL.rivalListo) { ONL.bloqueado = false; ONL.miEleccion = null; renderOnline(); } };
+    }
+
+    // ── Súper inline: abrir TU reto; mientras tanto el rival sigue eligiendo. Al resolver, mando la calidad. ──
+    function lanzarSuperOnline() {
+      // marco que ya "elegí" (bloquea el menú); el reto corre en paralelo a la elección del rival
+      ONL.miEleccion = { tipo: 'super', pendiente: true }; ONL.bloqueado = true;
+      pintarEsperaSuper();
+      abrirRetoOnline();
+    }
+    function pintarEsperaSuper() {
+      bannerOnline('⚡', 'Resolviendo tu Súper…', 'super');
+      $('bt-moves').innerHTML =
+        '<div class="bt-lock">' +
+          '<div class="bt-lock-chip super">⚡ Resolviendo tu Súper…</div>' +
+          '<div class="bt-lock-sub">' + (ONL.rivalListo ? 'El rival ya eligió.' : 'El rival sigue eligiendo.') + '</div>' +
+        '</div>';
+    }
+    // súper por código: abrís TU reto; al resolver mandás la calidad al server (lanzarSuper)
     function abrirRetoOnline() {
       const reto = retoAlAzar(regionesDesbloqueadas(D.temas)); const t0 = Date.now();
       $('reto-q').textContent = reto.q;
@@ -631,7 +747,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const ok = i === reto.c, seg = (Date.now() - t0) / 1000;
       const calidad = ok ? Math.max(0.05, Math.min(1, 1 - seg / 12)) : 0;
       if (ok) sonarExito();
-      online.resolverSuper(calidad);
+      online.lanzarSuper(calidad);   // manda la acción {tipo:'super', calidad}; el server resuelve la ronda
     }
     function abrirMochilaOnline() {
       const inv = items();
@@ -650,9 +766,133 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       else if (it.curaEstado) { const ok = it.curaEstado === 'todos' ? !!a.estado : a.estado === it.curaEstado; if (!ok) { $('bt-msg').textContent = a.nombre + ' no tiene ese estado.'; return; } }
       else if (it.revive) { if (!me.equipo.some((c) => c.hp <= 0)) { $('bt-msg').textContent = 'No hay ningún Pokémon debilitado para revivir.'; return; } }
       if (!usarItem(itemId)) return;
-      online.usarPocion(itemId); $('mochila-modal').hidden = true;
+      $('mochila-modal').hidden = true;
+      elegirAccionOnline({ tipo: 'pocion', itemId }, esc(it.nombre));
     }
+    // ── REVEAL + animar la resolución de la ronda ──
+    // Estructurado para que Task 6 reemplace `narrarRonda(texto)` por el typewriter `await narrar(...)`.
+    function narrarRonda(texto) { return narrar(texto); }   // typewriter FireRed (await en los call-sites)
+
+    // refresca HUD (HP, sprites, estado, dots) desde un snapshot — sin re-armar el menú
+    function pintarHud(snap) {
+      const myUid = online.miUid();
+      const me = snap.jugadores.find((j) => j.uid === myUid), rival = snap.jugadores.find((j) => j.uid !== myUid);
+      if (!me || !rival) return;
+      const myAct = me.equipo[me.activo], rivAct = rival.equipo[rival.activo];
+      $('r-nom').textContent = rivAct.nombre; $('r-lv').textContent = 'Nv.' + rivAct.nivel; $('r-tipos').textContent = rivAct.tipos.join(' · '); $('r-estado').innerHTML = estadoChip(rivAct); setSpr('r-img', rivAct, false); hp('r-hp', rivAct); dots('r-dots', rival.equipo);
+      $('p-nom').textContent = myAct.nombre; $('p-lv').textContent = 'Nv.' + myAct.nivel; $('p-tipos').textContent = myAct.tipos.join(' · '); $('p-estado').innerHTML = estadoChip(myAct); setSpr('p-img', myAct, true); hp('p-hp', myAct); dots('p-dots', me.equipo);
+      hudIdent('r', rivAct); hudIdent('p', myAct);
+      $('bt-carga').style.width = me.super + '%'; $('bt-carga-txt').textContent = 'Súper: ' + me.super + '%';
+    }
+
+    // anima los `eventos` de una ronda en orden: narra cada texto, FX/cry de impacto, actualiza HUD desde snap.
+    // Estructura pensada para Task 6: cada `narrarRonda(...)` será `await narrar(...)`.
+    async function animarRonda(snap, eventos) {
+      ONL.animando = true; ONL.bloqueado = true; ONL.rivalListo = false; ONL.miEleccion = null;
+      cancelarTimerOnline();
+      bannerOnline('⚔️', 'Resolviendo…', 'resolviendo');
+      const evs = eventos || [];
+      const myUid = online.miUid();
+      // "▶ primero": quién posee el primer mover/super
+      const primero = evs.find((e) => e.t === 'mover' || e.t === 'super');
+      if (primero) {
+        const mio = primero.uid === myUid;
+        marcarPrimero(mio);
+        await narrarRonda(mio ? '▶ ¡Vos primero!' : '▶ El rival se adelanta…');
+        await esperar(420);
+      }
+      // anima cada evento en orden
+      for (const ev of evs) {
+        const dueno = ev.uid;                            // uid del que ACTÚA
+        const esMio = dueno === myUid;
+        if (ev.t === 'mover' || ev.t === 'super') {
+          // el que recibe es el otro lado
+          const atImgId = esMio ? 'p-img' : 'r-img', defImgId = esMio ? 'r-img' : 'p-img';
+          const atImg = $(atImgId), defImg = $(defImgId);
+          await narrarRonda(ev.texto || '¡Ataque!');
+          await esperar(220);   // pequeña pausa tras la línea, antes del impacto
+          if (atImg) { atImg.classList.add('bt-lunge'); await esperar(190); atImg.classList.remove('bt-lunge'); }
+          // FX por daño: destello sobre el defensor
+          if (ev.dmg != null) { destello(!esMio, ev.tipo || ''); if (defImg) { defImg.classList.add('bt-hit'); } if (ev.efec >= 2) document.querySelector('.bt-arena').classList.add('bt-sacude'); }
+          await esperar(260);
+          if (defImg) defImg.classList.remove('bt-hit'); document.querySelector('.bt-arena').classList.remove('bt-sacude');
+          await esperar(520);
+        } else if (ev.t === 'cambio' || ev.t === 'reemplazo' || ev.t === 'entra') {
+          await narrarRonda(ev.texto || '¡Adelante!'); const c = actDe(snap, dueno); if (c) cry(c.id, 0.4); await esperar(560);
+        } else if (ev.t === 'debilitado' || ev.t === 'cae') {
+          const c = actDe(snap, dueno); if (c) cry(c.id, 0.3);
+          const img = esMio ? $('p-img') : $('r-img'); if (img) { img.classList.add('bt-faint'); }
+          await narrarRonda(ev.texto || 'se debilitó.'); await esperar(620);
+          if (img) img.classList.remove('bt-faint');
+        } else {
+          // estado, fallo, pocion, tick, info, etc. — solo narrar
+          await narrarRonda(ev.texto || ''); await esperar(480);
+        }
+      }
+      // aplico el snapshot final (HP/sprites/super reales)
+      OS = { snap, prev: OS && OS.snap }; pintarHud(snap);
+      quitarPrimero();
+      ONL.animando = false;
+      // si seguimos en combate, el server mandará `ronda` y se reabrirá la selección;
+      // si es reemplazo, llega `reemplazo`; si es fin, llega `fin`.
+      if (snap.fase === 'fin') { bannerOnline('🏁', '¡Fin del combate!', 'fin'); }
+    }
+
+    function marcarPrimero(mio) {
+      quitarPrimero();
+      const tgt = mio ? document.querySelector('.bt-yo') : document.querySelector('.bt-rival');
+      if (tgt) tgt.classList.add('bt-primero');
+    }
+    function quitarPrimero() { document.querySelectorAll('.bt-primero').forEach((e) => e.classList.remove('bt-primero')); }
+
+    // ── Reemplazo: elegir el próximo Pokémon (un equipo cae) ──
+    function pintarReemplazo(uids) {
+      cancelarTimerOnline();
+      ONL.bloqueado = true; ONL.animando = false;
+      const myUid = online.miUid();
+      const meToca = (uids || []).includes(myUid);
+      if (!meToca) {
+        bannerOnline('🔄', 'El rival elige su próximo Pokémon…', 'reemplazo');
+        narrarRonda('Esperando que el rival elija su Pokémon…');
+        $('bt-moves').innerHTML = '<div class="bt-lock"><div class="bt-lock-chip">🔄 El rival está reemplazando…</div><div class="bt-lock-sub">Esperá tu turno.</div></div>';
+        $('reemplazo-modal').hidden = true;
+        return;
+      }
+      bannerOnline('🔄', 'Elegí tu próximo Pokémon', 'reemplazo');
+      narrarRonda('Tu Pokémon cayó — elegí el próximo.');
+      const me = OS && OS.snap && OS.snap.jugadores.find((j) => j.uid === myUid);
+      if (!me) return;
+      const lista = me.equipo.map((c, i) => {
+        const ko = c.hp <= 0, act = i === me.activo, pct = Math.max(0, Math.round((c.hp / c.hpMax) * 100));
+        const dis = ko || act;
+        return '<button class="bt-banca-m reemplazo-m' + (ko ? ' ko' : '') + '" data-rep="' + i + '"' + (dis ? ' disabled' : '') + '>' +
+          '<img src="' + spriteUrl(c.id, c.shiny) + '" alt="" /><span class="bm-nom">' + esc(c.nombre) + '</span>' +
+          '<span class="bm-hp"><i style="width:' + pct + '%"></i></span>' +
+          '<small>' + (ko ? '💀 Debilitado' : act ? '● En combate' : 'Nv.' + c.nivel) + '</small></button>';
+      }).join('');
+      $('reemplazo-lista').innerHTML = lista;
+      $('reemplazo-lista').querySelectorAll('[data-rep]').forEach((b) => b.onclick = () => {
+        const idx = +b.dataset.rep;
+        if (me.equipo[idx].hp <= 0 || idx === me.activo) return;
+        online.elegirReemplazo(idx);
+        $('reemplazo-modal').hidden = true;
+        bannerOnline('⏳', 'Listo — resolviendo…', 'esperando');
+        narrarRonda('¡Adelante! Esperando al rival…');
+      });
+      $('reemplazo-modal').hidden = false;
+    }
+
+    // limpia el estado de la ronda online (al terminar)
+    function limpiarOnline() {
+      cancelarTimerOnline(); cancelarRetoTimer();
+      ONL = { deadline: 0, miEleccion: null, bloqueado: false, rivalListo: false, animando: false, fase: 'combate' };
+      quitarPrimero();
+      $('reto-modal').hidden = true; $('mochila-modal').hidden = true; $('reemplazo-modal').hidden = true;
+    }
+
     async function finOnline(data) {
+      limpiarOnline();
+      bannerOnline('🏁', '¡Fin del combate!', 'fin');
       const gano = data.ganador === online.miUid(), pr = data.premios || {};
       $('fin-tit').textContent = gano ? '🏆 ¡Ganaste!' : '💪 Perdiste…';
       let m = gano ? 'Venciste a tu rival.' : 'Caíste esta vez.';
@@ -680,8 +920,50 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       online.onBatalla('invitado', () => loMsg('Invitación enviada. Esperando…'));
       online.onBatalla('invitacion', (d) => { if (confirm(((d && d.de) || 'Alguien') + ' te invitó a un duelo. ¿Aceptar?')) online.aceptar(d.roomId); });
       online.onBatalla('seleccion', (d) => { const m = $('so-msg'); if (m) { const r = (d.listos || []).find((x) => x.uid !== online.miUid()); m.textContent = r && r.listo ? 'Rival listo. ¡Empezamos!' : 'Esperando al rival…'; } });
-      online.onBatalla('estado', (snap) => { const prev = OS && OS.snap; OS = { snap, prev }; renderOnline(); animarOnline(snap, prev); if (snap.fase === 'combate' && !musOn) { musOn = true; musicaBatalla(); } });
-      online.onBatalla('retoSuper', () => abrirRetoOnline());
+      // snapshot inicial del combate
+      online.onBatalla('estado', (snap) => {
+        OS = { snap, prev: OS && OS.snap };
+        ONL.fase = snap.fase;
+        renderOnline();
+        if (snap.fase === 'combate' && !musOn) { musOn = true; musicaBatalla(); }
+      });
+      // arranca una ronda de selección: deadline (epoch ms) + snapshot
+      online.onBatalla('ronda', (d) => {
+        OS = { snap: d.snap || (OS && OS.snap), prev: OS && OS.snap };
+        ONL.bloqueado = false; ONL.animando = false; ONL.rivalListo = false; ONL.miEleccion = null; ONL.fase = 'combate';
+        bannerOnline('🟢', 'Elegí tu acción', 'elegir');
+        renderOnline();
+        narrarRonda('¡Elegí tu acción!');
+        armarTimerOnline(d.deadline);
+        if (!musOn) { musOn = true; musicaBatalla(); }
+      });
+      // el rival bloqueó su acción → ya no puedo re-elegir
+      online.onBatalla('rivalListo', () => {
+        ONL.rivalListo = true;
+        if (ONL.bloqueado && ONL.miEleccion) {
+          // ya elegí → refresco el chip para deshabilitar "Cambiar" y avisar
+          if (ONL.miEleccion.tipo === 'super') pintarEsperaSuper();
+          else pintarEspera(etiquetaAccion(ONL.miEleccion));
+        } else {
+          // todavía no elegí → el banner avisa que el rival ya bloqueó
+          bannerOnline('🟢', 'Elegí tu acción — el rival ya eligió', 'elegir');
+        }
+      });
+      // mi elección quedó guardada (el server confirma)
+      online.onBatalla('esperando', () => { if (!ONL.animando) { ONL.bloqueado = true; if (ONL.miEleccion && ONL.miEleccion.tipo !== 'super') pintarEspera(etiquetaAccion(ONL.miEleccion)); } });
+      // la ronda se resolvió → revelar y animar los eventos en orden
+      online.onBatalla('resolucion', (d) => {
+        cancelarTimerOnline();
+        ONL.fase = (d.snap && d.snap.fase) || 'combate';
+        animarRonda(d.snap, d.eventos || []);
+      });
+      // un equipo cayó: hay que elegir reemplazo
+      online.onBatalla('reemplazo', (d) => {
+        if (d && d.snap) OS = { snap: d.snap, prev: OS && OS.snap };
+        cancelarTimerOnline();
+        ONL.fase = 'reemplazo';
+        pintarReemplazo((d && d.uids) || []);
+      });
       online.onBatalla('fin', (d) => finOnline(d));
       online.onBatalla('rivalDesconectado', (d) => { $('bt-msg').textContent = '⚠️ Rival desconectado. Esperando ' + ((d && d.graciaSeg) || 30) + 's…'; });
       online.onBatalla('rivalVolvio', () => { $('bt-msg').textContent = 'El rival volvió. ¡Seguimos!'; });

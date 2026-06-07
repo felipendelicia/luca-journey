@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { ProgresoService } from '../progreso/progreso.service';
 import {
-  EstadoCombate, Inst, crearCombate, aplicarAccion, snapshot,
+  EstadoCombate, Inst, crearCombate, elegirAccion, snapshot,
+  elegirCPU, jugadorDe, rivalDe, activoDe,
 } from './motor';
 import { premiar, Premios, ratingDe } from './insignias';
 
@@ -14,12 +15,14 @@ interface Sala {
   id: string; codigo?: string; fase: 'seleccion' | 'combate' | 'fin';
   jugadores: JugadorSala[]; estado?: EstadoCombate;
   graciaTimer?: ReturnType<typeof setTimeout>; graciaDe?: string;
+  rondaTimer?: ReturnType<typeof setTimeout>;   // timer 30s de la ronda simultánea / reemplazo
 }
 interface EnCola { uid: string; nombre: string; socketId: string; rating: number; }
 
 const ROOM = (id: string) => `bsala:${id}`;
 const USER = (uid: string) => `bu:${uid}`;
 const GRACIA_MS = 30000;
+const RONDA_MS = 30000;     // tiempo por ronda (selección de acción) y por reemplazo
 const rid = () => Math.random().toString(36).slice(2, 10);
 const code6 = () => Math.random().toString(36).slice(2, 6).toUpperCase() + Math.floor(10 + Math.random() * 90);
 
@@ -142,23 +145,98 @@ export class SalasService {
     const primero = sala.jugadores[Math.floor(Math.random() * 2)].uid;
     sala.estado = crearCombate(sala.id, sala.jugadores.map((j) => ({ uid: j.uid, nombre: j.nombre, equipo: j.equipo })), primero);
     sala.fase = 'combate';
-    this.emitSala(sala.id, 'estado', snapshot(sala.estado));
-    this.emitSala(sala.id, 'tuTurno', { uid: sala.estado.turno });
+    this.emitSala(sala.id, 'estado', snapshot(sala.estado));   // estado inicial (incluye eventos de entrada)
+    this.nuevaRonda(sala);
   }
 
-  // ── acciones de combate (server-autoritativo) ──────────────────
-  accion(client: Socket, uid: string, accion: any) {
+  // ── ronda simultánea (server-autoritativo) ─────────────────────
+  // arranca una ronda fresca de selección: avisa el deadline y arma el timer de auto-move.
+  private nuevaRonda(sala: Sala) {
+    if (sala.rondaTimer) { clearTimeout(sala.rondaTimer); sala.rondaTimer = undefined; }
+    if (!sala.estado || sala.estado.fase !== 'combate') return;   // fin/reemplazo se manejan aparte
+    const deadline = Date.now() + RONDA_MS;
+    this.emitSala(sala.id, 'ronda', { deadline, snap: snapshot(sala.estado) });
+    sala.rondaTimer = setTimeout(() => this.timeoutRonda(sala), RONDA_MS);
+  }
+
+  // cliente elige una acción de la ronda (mover/cambiar/pocion/super/reemplazo/rendirse).
+  elegir(client: Socket, uid: string, accion: any) {
     const sala = this.salaDeUid(uid);
     if (!sala || sala.fase !== 'combate' || !sala.estado) return this.emitSock(client.id, 'error', { msg: 'no-en-combate' });
-    const r = aplicarAccion(sala.estado, uid, accion);
+    const fasePrevia = sala.estado.fase;
+    const r = elegirAccion(sala.estado, uid, accion);
     if (r.error) return this.emitSock(client.id, 'error', { msg: r.error });
-    this.emitSala(sala.id, 'estado', snapshot(sala.estado));
-    if (sala.estado.fase === 'super') {
-      this.emitUid(sala.estado.superDe!, 'retoSuper', { roomId: sala.id });
+
+    // avisar al rival que ya elegí (para bloquear su botón "cambiar"); solo útil en fase combate.
+    if (fasePrevia === 'combate') this.emitUid(rivalDe(sala.estado, uid).uid, 'rivalListo', { uid });
+
+    // ¿solo se almacenó la elección (ronda NO resuelta)? avisar "esperando" y salir.
+    if (r.listo && r.eventos.length === 0) {
+      this.emitSock(client.id, 'esperando', {});
       return;
     }
-    if (sala.estado.fase === 'fin') return void this.finalizar(sala);
-    this.emitSala(sala.id, 'tuTurno', { uid: sala.estado.turno });
+
+    // la ronda (o el reemplazo) se RESOLVIÓ → publicar resolución + avanzar.
+    this.trasResolucion(sala, r.eventos);
+  }
+
+  // publica la resolución de una ronda y decide el siguiente paso (fin / reemplazo / nueva ronda).
+  private trasResolucion(sala: Sala, eventos: any[]) {
+    const e = sala.estado!;
+    if (sala.rondaTimer) { clearTimeout(sala.rondaTimer); sala.rondaTimer = undefined; }
+    this.emitSala(sala.id, 'resolucion', { snap: snapshot(e), eventos });
+    if (e.fase === 'fin') return void this.finalizar(sala);
+    if (e.fase === 'reemplazo') {
+      this.emitSala(sala.id, 'reemplazo', { uids: e.reemplazan });
+      this.armarTimerReemplazo(sala);
+      return;
+    }
+    // fase combate, ronda avanzó → nueva ronda
+    this.nuevaRonda(sala);
+  }
+
+  // timeout de la ronda: auto-elige (CPU) por cada uid que no eligió; si acumula 3 timeouts, pierde.
+  private timeoutRonda(sala: Sala) {
+    const e = sala.estado;
+    if (!sala || sala.fase !== 'combate' || !e || e.fase !== 'combate') return;
+    const eventos: any[] = [];
+    for (const j of e.jugadores) {
+      if (e.acciones[j.uid] != null) continue;             // ya eligió en tiempo
+      const yo = jugadorDe(e, j.uid);
+      const mov = elegirCPU(activoDe(yo), activoDe(rivalDe(e, j.uid)));
+      const i = activoDe(yo).movs.findIndex((m) => m.id === mov.id);
+      const r = elegirAccion(e, j.uid, { tipo: 'mover', i: i < 0 ? 0 : i });
+      e.timeouts[j.uid]++;                                   // motor resetea a 0 a quien sí eligió a tiempo
+      if (r.eventos.length) eventos.push(...r.eventos);      // la última auto-elección resuelve la ronda
+    }
+
+    // ¿alguien llegó a 3 timeouts? → derrota por inactividad (la ronda ya se resolvió arriba)
+    const muerto = e.jugadores.find((j) => (e.timeouts[j.uid] || 0) >= 3);
+    if (muerto && (e.fase as string) !== 'fin') {
+      e.fase = 'fin'; e.ganador = rivalDe(e, muerto.uid).uid;
+      e.eventos.push({ t: 'fin', texto: `${muerto.nombre} perdió por inactividad. ¡Gana ${rivalDe(e, muerto.uid).nombre}!` });
+    }
+    this.trasResolucion(sala, eventos);
+  }
+
+  // timer del reemplazo: si tras 30s alguien no eligió, le metemos el primer banca vivo.
+  private armarTimerReemplazo(sala: Sala) {
+    if (sala.rondaTimer) { clearTimeout(sala.rondaTimer); sala.rondaTimer = undefined; }
+    sala.rondaTimer = setTimeout(() => this.timeoutReemplazo(sala), RONDA_MS);
+  }
+
+  private timeoutReemplazo(sala: Sala) {
+    const e = sala.estado;
+    if (!sala || sala.fase !== 'combate' || !e || e.fase !== 'reemplazo') return;
+    const eventos: any[] = [];
+    for (const uid of [...(e.reemplazan || [])]) {
+      const yo = jugadorDe(e, uid);
+      const idx = yo.equipo.findIndex((c, k) => c.hp > 0 && k !== yo.activo);
+      if (idx < 0) continue;
+      const r = elegirAccion(e, uid, { tipo: 'reemplazo', idx });
+      if (r.eventos.length) eventos.push(...r.eventos);
+    }
+    this.trasResolucion(sala, eventos);
   }
 
   // ── desconexión / reconexión ───────────────────────────────────
@@ -168,6 +246,8 @@ export class SalasService {
     if (sala.fase === 'fin') return;
     const yo = sala.jugadores.find((j) => j.uid === uid); if (yo) yo.socketId = null;
     if (sala.fase === 'seleccion') { this.abortar(sala, uid); return; }
+    // pausamos el timer de ronda/reemplazo mientras corre la gracia (la gracia decide el desenlace).
+    if (sala.rondaTimer) { clearTimeout(sala.rondaTimer); sala.rondaTimer = undefined; }
     sala.graciaDe = uid;
     this.emitSala(sala.id, 'rivalDesconectado', { uid, graciaSeg: GRACIA_MS / 1000 });
     sala.graciaTimer = setTimeout(() => {
@@ -181,7 +261,15 @@ export class SalasService {
     const sala = this.salaDeUid(uid); if (!sala) return;
     const yo = sala.jugadores.find((j) => j.uid === uid); if (!yo) return;
     yo.socketId = client.id; client.join(ROOM(sala.id));
-    if (sala.graciaDe === uid && sala.graciaTimer) { clearTimeout(sala.graciaTimer); sala.graciaTimer = undefined; sala.graciaDe = undefined; this.emitSala(sala.id, 'rivalVolvio', { uid }); }
+    if (sala.graciaDe === uid && sala.graciaTimer) {
+      clearTimeout(sala.graciaTimer); sala.graciaTimer = undefined; sala.graciaDe = undefined;
+      this.emitSala(sala.id, 'rivalVolvio', { uid });
+      // re-armamos el timer de la fase que estaba en curso (ronda o reemplazo)
+      if (sala.fase === 'combate' && sala.estado) {
+        if (sala.estado.fase === 'reemplazo') this.armarTimerReemplazo(sala);
+        else if (sala.estado.fase === 'combate') this.nuevaRonda(sala);
+      }
+    }
     if (sala.estado) this.emitSock(client.id, 'estado', snapshot(sala.estado));
   }
 
@@ -197,6 +285,7 @@ export class SalasService {
     if (sala.fase === 'fin') return;
     sala.fase = 'fin';
     if (sala.graciaTimer) { clearTimeout(sala.graciaTimer); sala.graciaTimer = undefined; }
+    if (sala.rondaTimer) { clearTimeout(sala.rondaTimer); sala.rondaTimer = undefined; }
     let premios: Record<string, Premios> = {};
     try { premios = await premiar(this.progreso, sala.estado!, abandonoUid); } catch { premios = {}; }
     for (const j of sala.jugadores) {

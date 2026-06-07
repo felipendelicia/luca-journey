@@ -9,6 +9,7 @@ import { sumarEV } from './combate-core';
 import { restarEV, evPorDerrotados } from './combate-core';
 import { statEf as statEf3, hpEf as hpEf3 } from './combate-core';
 import { calcularDano as cd, aplicarAilment as aa, acierta as ac } from './combate-core';
+import { prioridadMov, ordenLanzadores, PRIORIDAD_MOV } from './combate-core';
 
 // combatiente sintético (no necesita data real): se sobreescribe lo que cada test precise.
 const luchador = (over: Partial<Combatiente> = {}): Combatiente => ({
@@ -631,5 +632,24 @@ describe('EVs Fase 3', () => {
     const equipo = [{ id: 1, hp: 0 }, { id: 4, hp: 0 }, { id: 7, hp: 12 }];
     expect(evPorDerrotados(equipo, yields)).toEqual([0, 1, 0, 1, 0, 0]);
     expect(evPorDerrotados([{ id: 1, hp: 30 }], yields)).toEqual([0, 0, 0, 0, 0, 0]);
+  });
+});
+
+describe('orden de turno (PvP simultáneo)', () => {
+  test('prioridadMov: del mapa o 0 por default', () => {
+    expect(prioridadMov({ id: 1, nombre: 'Ataque Rápido', tipo: 'Normal' } as any)).toBe(1);
+    expect(prioridadMov({ id: 2, nombre: 'Placaje', tipo: 'Normal' } as any)).toBe(0);
+    expect(typeof PRIORIDAD_MOV).toBe('object');
+  });
+  test('ordenLanzadores: mayor prioridad va primero', () => {
+    expect(ordenLanzadores({ prio: 1, spe: 10 }, { prio: 0, spe: 99 }, () => 0.5)).toBeLessThan(0);
+  });
+  test('ordenLanzadores: misma prioridad → mayor velocidad primero', () => {
+    expect(ordenLanzadores({ prio: 0, spe: 120 }, { prio: 0, spe: 80 }, () => 0.5)).toBeLessThan(0);
+  });
+  test('ordenLanzadores: empate total → desempate por rng (determinista)', () => {
+    const a = { prio: 0, spe: 80 }, b = { prio: 0, spe: 80 };
+    expect(ordenLanzadores(a, b, () => 0.0)).toBeLessThan(0);
+    expect(ordenLanzadores(a, b, () => 0.9)).toBeGreaterThan(0);
   });
 });

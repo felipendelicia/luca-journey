@@ -51,19 +51,23 @@ export class BatallaGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   @SubscribeMessage('unirseCodigo')
   onUnirseCodigo(@ConnectedSocket() c: Socket, @MessageBody() code: string) { this.salas.unirseCodigo(c, this.uid(c), this.nombre(c), code); }
 
-  // ── selección + combate ──
+  // ── selección + combate (modelo SIMULTÁNEO) ──
   @SubscribeMessage('elegirEquipo')
   onElegir(@ConnectedSocket() c: Socket, @MessageBody() iids: string[]) { return this.salas.elegirEquipo(c, this.uid(c), iids); }
+  // 'elegir' = elección de acción de la ronda (cliente manda el objeto Accion completo).
+  @SubscribeMessage('elegir')
+  onElegirAccion(@ConnectedSocket() c: Socket, @MessageBody() accion: any) { this.salas.elegir(c, this.uid(c), accion); }
+  // atajos de conveniencia: arman el objeto Accion y delegan en 'elegir'.
   @SubscribeMessage('mover')
-  onMover(@ConnectedSocket() c: Socket, @MessageBody() i: number) { this.salas.accion(c, this.uid(c), { tipo: 'mover', i }); }
+  onMover(@ConnectedSocket() c: Socket, @MessageBody() i: number) { this.salas.elegir(c, this.uid(c), { tipo: 'mover', i }); }
   @SubscribeMessage('cambiar')
-  onCambiar(@ConnectedSocket() c: Socket, @MessageBody() idx: number) { this.salas.accion(c, this.uid(c), { tipo: 'cambiar', idx }); }
+  onCambiar(@ConnectedSocket() c: Socket, @MessageBody() idx: number) { this.salas.elegir(c, this.uid(c), { tipo: 'cambiar', idx }); }
   @SubscribeMessage('pocion')
-  onPocion(@ConnectedSocket() c: Socket, @MessageBody() itemId: string) { this.salas.accion(c, this.uid(c), { tipo: 'pocion', itemId }); }
+  onPocion(@ConnectedSocket() c: Socket, @MessageBody() itemId: string) { this.salas.elegir(c, this.uid(c), { tipo: 'pocion', itemId }); }
   @SubscribeMessage('super')
-  onSuper(@ConnectedSocket() c: Socket) { this.salas.accion(c, this.uid(c), { tipo: 'super' }); }
-  @SubscribeMessage('superResuelto')
-  onSuperResuelto(@ConnectedSocket() c: Socket, @MessageBody() calidad: number) { this.salas.accion(c, this.uid(c), { tipo: 'superResuelto', calidad }); }
+  onSuper(@ConnectedSocket() c: Socket, @MessageBody() calidad: number) { this.salas.elegir(c, this.uid(c), { tipo: 'super', calidad }); }
+  @SubscribeMessage('reemplazo')
+  onReemplazo(@ConnectedSocket() c: Socket, @MessageBody() idx: number) { this.salas.elegir(c, this.uid(c), { tipo: 'reemplazo', idx }); }
   @SubscribeMessage('rendirse')
-  onRendirse(@ConnectedSocket() c: Socket) { this.salas.accion(c, this.uid(c), { tipo: 'rendirse' }); }
+  onRendirse(@ConnectedSocket() c: Socket) { this.salas.elegir(c, this.uid(c), { tipo: 'rendirse' }); }
 }
