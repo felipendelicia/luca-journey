@@ -1130,6 +1130,14 @@ body.dark .id-tam{ color:var(--text); background:color-mix(in srgb, var(--accent
 .id-vit:active{ transform:translateY(0); }
 .id-vit-max{ background:transparent; border-style:dashed; cursor:default; color:var(--ink-mute); padding:2px 8px; }
 .id-vit-max:hover{ transform:none; border-color:var(--line); color:var(--ink-mute); background:transparent; }
+/* botón baya (−10 EV): variante "negativa" en rojo del .id-vit */
+.id-baja{ color:color-mix(in srgb,#e23b3b 78%, var(--ink-soft)); }
+.id-baja:hover{ border-color:#e23b3b; color:#c62f2f; background:color-mix(in srgb,#e23b3b 12%, var(--card)); }
+/* botón Reset EVs: chip sutil en el header del panel (♻️ borra todos los EVs) */
+.id-reset-ev{ margin-left:auto; display:inline-flex; align-items:center; gap:4px; font:800 .58rem var(--font-pixel); letter-spacing:.02em;
+  background:var(--card); border:1px dashed var(--line); border-radius:999px; padding:3px 9px; cursor:pointer; color:var(--ink-soft); transition:.12s; }
+.id-reset-ev:hover{ border-style:solid; border-color:#e23b3b; color:#c62f2f; background:color-mix(in srgb,#e23b3b 10%, var(--card)); transform:translateY(-1px); }
+.id-reset-ev:active{ transform:translateY(0); }
 
 /* —— panel unificado: cada stat = valor FINAL + desglose (base · IV · EV · naturaleza) —— */
 .es-formula{ font:600 .72rem var(--font-mono); line-height:1.45; color:var(--ink-soft); margin:2px 1px 11px; padding:7px 11px; border-radius:10px;

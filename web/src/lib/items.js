@@ -33,6 +33,13 @@ export const ITEMS = {
   zinc:     { nombre: 'Zinc',     sprite: 'vitamina', precio: 30, cat: 'ev', ev: 4, evMax: 100, desc: '+10 EV de Defensa Especial (hasta 100).' },
   carburo:  { nombre: 'Carburo',  sprite: 'vitamina', precio: 30, cat: 'ev', ev: 5, evMax: 100, desc: '+10 EV de Velocidad (hasta 100).' },
   masps:    { nombre: 'Más PS',   sprite: 'vitamina', precio: 30, cat: 'ev', ev: 0, evMax: 100, desc: '+10 EV de PS (hasta 100).' },
+  bayaps:   { nombre: 'Baya Zreza',  sprite: 'baya', cat: 'ev', baja: 0, precio: 20, desc: '−10 EV de PS.' },
+  bayaatk:  { nombre: 'Baya Pomeg',  sprite: 'baya', cat: 'ev', baja: 1, precio: 20, desc: '−10 EV de Ataque.' },
+  bayadef:  { nombre: 'Baya Kelpsy', sprite: 'baya', cat: 'ev', baja: 2, precio: 20, desc: '−10 EV de Defensa.' },
+  bayaspa:  { nombre: 'Baya Hondew', sprite: 'baya', cat: 'ev', baja: 3, precio: 20, desc: '−10 EV de Ataque Especial.' },
+  bayaspd:  { nombre: 'Baya Grepa',  sprite: 'baya', cat: 'ev', baja: 4, precio: 20, desc: '−10 EV de Defensa Especial.' },
+  bayavel:  { nombre: 'Baya Tamato', sprite: 'baya', cat: 'ev', baja: 5, precio: 20, desc: '−10 EV de Velocidad.' },
+  borrador: { nombre: 'Borrón EV',   sprite: 'borrador', cat: 'ev', reset: true, precio: 60, desc: 'Pone TODOS los EVs de un Pokémon en 0.' },
   // ── Pokeballs ── (la captura depende de `catch`/condición; ver safari-core.catchBall)
   pokeball:   { nombre: 'Poké Ball',  sprite: 'ball0', cat: 'ball', tier: 0, catch: 1,   noVenta: true, desc: 'La de siempre. Se gana resolviendo ejercicios. Captura estándar.' },
   superball:  { nombre: 'Super Ball', sprite: 'ball1', cat: 'ball', tier: 1, catch: 1.5, precio: 25, desc: 'Captura mejorada (×1.5). Para los que zafan un poco.' },

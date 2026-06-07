@@ -126,10 +126,16 @@ const regiones = [
       <h2 class="ayuda-h">💪 EVs: entrenar a tu Pokémon</h2>
       <p class="ayuda-p">Los <strong>EVs</strong> (esfuerzo) son la parte que <strong>sí podés mejorar</strong>: suben los stats con el entrenamiento. Hay dos formas de ganarlos:</p>
       <ol class="ayuda-pasos">
-        <li><b>Ganando combates de práctica</b> en <a href={u('/batalla')}>Batalla</a> (vs CPU): el Pokémon activo gana los EVs que "rinde" la especie que derrotó.</li>
+        <li><b>Peleando en <a href={u('/batalla')}>Batalla</a></b>, tanto contra la <b>CPU</b> como <b>en vivo (PvP)</b>: por cada rival que derrotás, tu equipo gana los EVs que "rinde" esa especie. Al terminar un duelo PvP vas a ver un <b>💪 +EVs</b> en el resultado.</li>
         <li><b>Vitaminas</b> de la <a href={u('/tienda')}>Tienda</a>: <b>Proteína</b> (Atq), <b>Hierro</b> (Def), <b>Calcio</b> (At.Esp), <b>Zinc</b> (Def.Esp), <b>Carburo</b> (Vel) y <b>Más PS</b> (PS). Cada una da <b>+10 EV</b> y se usa desde el modal de la Pokédex, con los botones por stat.</li>
       </ol>
       <p class="ayuda-p">Hay topes, igual que en la saga: <strong>252 EV por stat</strong>, <strong>510 EV en total</strong>, y <strong>100 EV por stat</strong> si los ganás con vitaminas (el resto, entrenando en batalla).</p>
+      <p class="ayuda-p">¿Te pasaste o querés rearmar a un Pokémon? En la <a href={u('/tienda')}>Tienda</a> hay <strong>bayas</strong> para <strong>bajar EVs</strong>, igual que en la saga:</p>
+      <ul class="ayuda-pasos">
+        <li><b>Zreza</b> baja PS, <b>Pomeg</b> baja Atq, <b>Kelpsy</b> baja Def, <b>Hondew</b> baja At.Esp, <b>Grepa</b> baja Def.Esp y <b>Tamato</b> baja Vel. Cada baya baja <b>−10 EV</b> de ese stat.</li>
+        <li><b>Borrón EV ♻️</b> — resetea <b>todos los EVs a 0</b> de un saque, para empezar el entrenamiento desde cero.</li>
+      </ul>
+      <p class="ayuda-p">Las bayas y el Borrón se usan desde el <a href={u('/pokedex')}>modal de la Pokédex</a> (tocá un Pokémon): vas a ver los botones <b>−10</b> por stat al lado de las vitaminas <b>+10</b>, y el botón <b>♻️ Reset EVs</b>.</p>
 
       <h2 class="ayuda-h">✨ Habilidades con efecto</h2>
       <p class="ayuda-p">La mayoría de las habilidades son sabor, pero un set elegido <strong>cambia el combate de verdad</strong>:</p>
