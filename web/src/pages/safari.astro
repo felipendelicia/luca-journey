@@ -90,6 +90,10 @@ const total = pokemon.length;
     // ── estado del encuentro ─────────────────────────────────────────────
     let enc = null, tiroN = 0, ballSel = null, animando = false;
 
+    // grito (cry) del Pokémon — PokeAPI .ogg, igual que en /batalla
+    const CRY_BASE = 'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/';
+    function cry(idp, vol = 0.5) { try { const a = new Audio(CRY_BASE + idp + '.ogg'); a.volume = vol; a.play().catch(() => {}); } catch {} }
+
     // resumen de identidad de la captura: género · IVs% · naturaleza · habilidad. Una línea.
     function capIdentidad(inst) {
       if (!inst) return '';
@@ -237,8 +241,17 @@ const total = pokemon.length;
       enc = r; tiroN = 0;
       const balls = inventarioBalls();
       ballSel = balls[0]?.key ?? null;
-      $('msg').textContent = '¡Un Pokémon salvaje apareció!';
-      renderCarta();
+      // el pasto se sacude → emerge el salvaje (diorama)
+      animando = true;
+      $('arena').innerHTML = '<div class="arena-rustle" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>';
+      sonarClick();
+      $('msg').textContent = 'Algo se mueve en el pasto… 🌿';
+      setTimeout(() => {
+        animando = false;
+        $('msg').textContent = '¡Un ' + nombreDe(enc.id) + ' salvaje apareció!';
+        renderCarta();
+        cry(enc.id, 0.55);
+      }, 470);
     }
 
     function renderCarta() {
@@ -254,23 +267,27 @@ const total = pokemon.length;
         '<div class="enc-card escena tier-' + t.nivel + (enc.shiny ? ' es-shiny' : '') + (enc.alfa ? ' es-alfa' : '') + '" style="--tier-color:' + t.color + '">'
         + '<div class="enc-stage">'
           + (enc.alfa ? '<span class="enc-aura"></span>' : '')
-          + '<img class="enc-sprite wild revelado' + (enc.shiny ? ' shiny' : '') + '" src="' + spriteUrl(enc.id, enc.shiny) + '" alt="' + nombre + '" />'
+          + '<span class="enc-sombra" aria-hidden="true"></span>'
+          + '<img class="enc-sprite emerge' + (enc.shiny ? ' shiny' : '') + '" src="' + spriteUrl(enc.id, enc.shiny) + '" alt="' + nombre + '" />'
           + (enc.shiny ? '<span class="enc-badge enc-shiny">✨</span>' : '')
           + (enc.alfa ? '<span class="enc-badge enc-alfa">👑</span>' : '')
+          + '<span class="enc-grass" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>'
         + '</div>'
-        + '<div class="enc-info">'
-          + '<div class="enc-name">' + nombre + ' <span class="enc-lvl">Nv ' + enc.nivel + '</span></div>'
-          + '<span class="cap-tier" style="--tier-color:' + t.color + '">' + (t.ico ? t.ico + ' ' : '') + t.nombre + '</span>'
-          + '<div class="enc-tasa" title="Tasación de IVs">'
-            + '<span class="enc-tasa-lbl">⭐ Tasación</span>'
-            + '<span class="enc-stars s' + enc.estrellas + '">' + tasacion(enc.estrellas) + '</span>'
+        + '<div class="enc-panel">'
+          + '<div class="enc-info">'
+            + '<div class="enc-name">' + nombre + ' <span class="enc-lvl">Nv ' + enc.nivel + '</span></div>'
+            + '<span class="cap-tier" style="--tier-color:' + t.color + '">' + (t.ico ? t.ico + ' ' : '') + t.nombre + '</span>'
+            + '<div class="enc-tasa" title="Tasación de IVs">'
+              + '<span class="enc-tasa-lbl">⭐ Tasación</span>'
+              + '<span class="enc-stars s' + enc.estrellas + '">' + tasacion(enc.estrellas) + '</span>'
+            + '</div>'
+            + '<div class="enc-nat">' + enc.naturalezaNombre + (enc.vistoYa ? ' <i class="enc-visto">· ya visto</i>' : '') + '</div>'
           + '</div>'
-          + '<div class="enc-nat">' + enc.naturalezaNombre + (enc.vistoYa ? ' <i class="enc-visto">· ya visto</i>' : '') + '</div>'
-        + '</div>'
-        + '<div class="ball-selector" id="ball-selector">' + chips + '</div>'
-        + '<div class="enc-acciones">'
-          + '<button class="enc-btn enc-huir" id="enc-huir" type="button">Huir</button>'
-          + '<button class="enc-btn enc-tirar" id="enc-tirar" type="button"' + (ballSel ? '' : ' disabled') + '>Tirar Ball</button>'
+          + '<div class="ball-selector" id="ball-selector">' + chips + '</div>'
+          + '<div class="enc-acciones">'
+            + '<button class="enc-btn enc-huir" id="enc-huir" type="button">Huir</button>'
+            + '<button class="enc-btn enc-tirar" id="enc-tirar" type="button"' + (ballSel ? '' : ' disabled') + '>Tirar Ball</button>'
+          + '</div>'
         + '</div>'
         + '</div>';
       // listeners de la carta
@@ -362,7 +379,10 @@ const total = pokemon.length;
     function jugarAnillo() {
       return new Promise((resolve) => {
         const ov = $('ring-overlay'), move = $('ring-move'), label = $('ring-label'), wild = $('ring-wild');
-        const TARGET = 42, R0 = 96, R1 = 18, DUR = 1100;
+        const TARGET = 42, R0 = 96, R1 = 18;
+        // velocidad RANDOM por tiro: más rápido (más difícil) para raros/alfa, con variación para que no se memorice
+        const baseDur = 1500 - enc.rarezaTier * 80;                                    // común ~1420 · legendario ~700
+        const DUR = Math.max(560, Math.round(baseDur * (0.82 + Math.random() * 0.42) * (enc.alfa ? 0.8 : 1)));
         wild.innerHTML = '<img src="' + spriteUrl(enc.id, enc.shiny) + '" class="' + (enc.shiny ? 'shiny' : '') + '" alt="" />';
         label.textContent = ''; label.className = 'ring-label';
         ov.hidden = false; ov.classList.add('abierto');

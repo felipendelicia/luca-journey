@@ -670,20 +670,35 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 
 /* —— carta de encuentro —— el pasto verde es FIJO en ambos temas, así que la carta va
    siempre con look claro (panel blanco, texto verde oscuro) sobre el campo, como la captura-txt vieja —— */
-.enc-card{ position:relative; display:flex; flex-direction:column; align-items:center; gap:8px;
-  width:min(380px,94%); margin:0 auto; padding:14px 16px 16px; min-height:auto;
-  background:linear-gradient(180deg, rgba(255,255,255,.93), rgba(255,255,255,.83));
-  border:1px solid color-mix(in srgb,var(--tier-color) 50%, rgba(22,51,30,.22)); border-radius:18px;
-  box-shadow:0 14px 34px -16px rgba(22,51,30,.5), 0 0 0 3px color-mix(in srgb,var(--tier-color) 22%, transparent);
-  animation:encIn .42s cubic-bezier(.2,1.4,.4,1); }
-@keyframes encIn{ 0%{ transform:translateY(16px) scale(.9); opacity:0 } 100%{ transform:none; opacity:1 } }
-.enc-stage{ position:relative; display:flex; align-items:center; justify-content:center; height:120px; }
-.enc-sprite{ width:118px; height:118px; image-rendering:pixelated;
-  filter:drop-shadow(0 6px 9px rgba(0,0,0,.28)); animation:flota 1.8s ease-in-out infinite; }
-.escena.tier-4 .enc-sprite,.escena.tier-5 .enc-sprite,.escena.tier-6 .enc-sprite{ filter:drop-shadow(0 0 12px var(--tier-color)) drop-shadow(0 6px 9px rgba(0,0,0,.28)); }
+/* la carta ya no es una caja: es una ESCENA. El salvaje emerge del pasto; los datos van en un panel. */
+.enc-card{ position:relative; display:flex; flex-direction:column; align-items:center; gap:0;
+  width:min(420px,96%); margin:0 auto; padding:0; min-height:auto; background:none; border:none; box-shadow:none; }
+.enc-stage{ position:relative; display:flex; align-items:flex-end; justify-content:center; height:160px; width:100%; overflow:hidden; }
+.enc-sprite{ position:relative; z-index:1; width:126px; height:126px; image-rendering:pixelated; margin-bottom:16px; transform-origin:bottom center;
+  filter:drop-shadow(0 7px 7px rgba(0,0,0,.32)); animation:emerge .6s cubic-bezier(.2,1.35,.35,1), sway 3s ease-in-out .6s infinite; }
+.escena.tier-4 .enc-sprite,.escena.tier-5 .enc-sprite,.escena.tier-6 .enc-sprite{ filter:drop-shadow(0 0 12px var(--tier-color)) drop-shadow(0 6px 7px rgba(0,0,0,.3)); }
 .escena.tier-7 .enc-sprite,.escena.tier-8 .enc-sprite{ filter:drop-shadow(0 0 18px var(--tier-color)) drop-shadow(0 0 8px var(--tier-color)); }
 .escena.tier-9 .enc-sprite,.escena.tier-10 .enc-sprite{ filter:drop-shadow(0 0 26px var(--tier-color)) drop-shadow(0 0 50px var(--tier-color)); }
-.enc-sprite.shiny{ animation:flota 1.8s ease-in-out infinite, brilloW 1.1s ease-in-out infinite; }
+.enc-sprite.shiny{ animation:emerge .6s cubic-bezier(.2,1.35,.35,1), sway 3s ease-in-out .6s infinite, brilloW 1.1s ease-in-out .6s infinite; }
+@keyframes emerge{ 0%{ transform:translateY(56px) scale(.68); opacity:0 } 52%{ opacity:1 } 72%{ transform:translateY(-7px) scale(1.05) } 100%{ transform:none; opacity:1 } }
+@keyframes sway{ 0%,100%{ transform:translateY(0) rotate(-1.3deg) } 50%{ transform:translateY(-5px) rotate(1.3deg) } }
+/* sombra del salvaje sobre el pasto */
+.enc-sombra{ position:absolute; bottom:16px; left:50%; transform:translateX(-50%); width:96px; height:17px; z-index:0;
+  background:radial-gradient(ellipse, rgba(0,0,0,.3), transparent 70%); animation:sombraResp 3s ease-in-out .6s infinite; }
+@keyframes sombraResp{ 0%,100%{ width:96px; opacity:.85 } 50%{ width:86px; opacity:.65 } }
+/* pasto en PRIMER plano: el salvaje emerge desde atrás */
+.enc-grass{ position:absolute; left:0; right:0; bottom:0; height:34px; z-index:2; pointer-events:none; display:flex; align-items:flex-end; justify-content:center; gap:3px; }
+.enc-grass i{ width:13px; transform-origin:bottom center; background:linear-gradient(180deg,#8fce6a,#5fa83e); clip-path:polygon(50% 0,100% 100%,0 100%); animation:grassSway 2.6s ease-in-out infinite; }
+.enc-grass i:nth-child(odd){ height:25px; } .enc-grass i:nth-child(even){ height:19px; animation-duration:3.1s; }
+.enc-grass i:nth-child(3n){ height:30px; background:linear-gradient(180deg,#7fc05a,#4f9a34); animation-delay:.2s; }
+@keyframes grassSway{ 0%,100%{ transform:skewX(-6deg) } 50%{ transform:skewX(6deg) } }
+/* panel translúcido con los datos + selector + acciones */
+.enc-panel{ position:relative; z-index:3; width:min(382px,94%); margin:-8px auto 0; padding:11px 15px 14px; display:flex; flex-direction:column; align-items:center; gap:8px;
+  background:linear-gradient(180deg, rgba(255,255,255,.93), rgba(255,255,255,.8));
+  border:1px solid color-mix(in srgb,var(--tier-color) 50%, rgba(22,51,30,.2)); border-radius:16px;
+  box-shadow:0 12px 30px -16px rgba(22,51,30,.5), 0 0 0 3px color-mix(in srgb,var(--tier-color) 20%, transparent);
+  animation:panelIn .4s ease .14s both; }
+@keyframes panelIn{ 0%{ transform:translateY(12px); opacity:0 } 100%{ transform:none; opacity:1 } }
 .enc-sprite.huye{ animation:huida .42s ease-in forwards; }
 @keyframes huida{ to{ transform:translateX(60px) scale(.4); opacity:0 } }
 .enc-sprite.zafa{ animation:zafada .5s ease; }
@@ -694,9 +709,15 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .enc-shiny{ right:2px; filter:drop-shadow(0 0 6px var(--yellow)); animation:pmBlink 1.2s ease-in-out infinite; }
 .enc-alfa{ left:2px; filter:drop-shadow(0 0 7px #b06bff); animation:pmBlink 1.4s ease-in-out infinite; }
 /* aura alfa */
-.es-alfa .enc-aura{ position:absolute; width:150px; height:150px; border-radius:50%; pointer-events:none;
+.es-alfa .enc-aura{ position:absolute; width:150px; height:150px; left:calc(50% - 75px); bottom:18px; border-radius:50%; pointer-events:none; z-index:0;
   background:radial-gradient(circle, rgba(176,107,255,.42), transparent 64%); animation:auraPulso 1.8s ease-in-out infinite; }
 @keyframes auraPulso{ 0%,100%{ transform:scale(.92); opacity:.6 } 50%{ transform:scale(1.08); opacity:1 } }
+/* pasto que se sacude ANTES de que aparezca el salvaje */
+.arena-rustle{ display:flex; align-items:flex-end; justify-content:center; gap:5px; height:130px; }
+.arena-rustle span{ width:15px; transform-origin:bottom center; background:linear-gradient(180deg,#8fce6a,#4f9a34); clip-path:polygon(50% 0,100% 100%,0 100%); animation:rustle .4s ease-in-out infinite; }
+.arena-rustle span:nth-child(odd){ height:42px; } .arena-rustle span:nth-child(even){ height:31px; animation-delay:.07s; }
+.arena-rustle span:nth-child(3n){ height:50px; background:linear-gradient(180deg,#7fc05a,#3f8a2a); animation-delay:.13s; }
+@keyframes rustle{ 0%,100%{ transform:skewX(-15deg) scaleY(.95) } 50%{ transform:skewX(15deg) scaleY(1.05) } }
 
 .enc-info{ display:flex; flex-direction:column; align-items:center; gap:5px; }
 .enc-name{ font:800 1.3rem var(--font-display); letter-spacing:-.02em; color:#16331e; }
