@@ -250,6 +250,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       if (esEstado(mov)) {
         const txt = aplicarEstado(mov, at, def);
         msg('¡' + at.nombre + ' usó ' + mov.nombre + '!  ' + txt);
+        efectoAtaque(document.querySelector('.bt-arena'), mov, defLado === 'r');   // FX de estado (flechas ↑/↓)
         render(); await esperar(950);
       } else {
         await aplicarGolpe(at, mov, defLado, calcularDano(at, mov, def, Math.random, tiraCritico()));

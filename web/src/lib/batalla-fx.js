@@ -120,12 +120,46 @@ const MOVE_FX = {
   98: (c) => { estallido(c.l, c.def.x, c.def.y, 6, (i) => ({ css: 'width:40px;height:5px;background:linear-gradient(90deg,transparent,#fff)', vars: { x: '0px', y: '0px', r: (i * 30 - 75) + 'deg', s: 1.5 }, dur: 0.25 })); TYPE_FX.Normal(c); },   // Ataque Rápido (rayas)
 };
 
-// punto de entrada: dispara el efecto del movimiento (override por id, o base por tipo).
+// ───────── fallback inteligente por CATEGORÍA (cubre TODOS los movimientos) ─────────
+const esEstadoMov = (m) => !m || m.categoria === 'Estado' || !m.poder;
+const AIL_COL = { veneno: '#b35fd6', quemadura: '#ff7a2c', paralisis: '#f2d022', sueno: '#8aa6df', congelado: '#7fe0e0', confusion: '#c060b0' };
+// flechas ↑/↓ que suben/bajan sobre un combatiente (cambios de stat)
+function flechas(l, x, y, sube) {
+  const col = sube ? '#5cd24a' : '#ff5a5a', ch = sube ? '▲' : '▼';
+  for (let i = 0; i < 5; i++) {
+    const p = document.createElement('div'); p.className = 'fxp'; p.textContent = ch;
+    p.style.cssText = 'left:' + (x + rnd(-22, 22)) + 'px;top:' + (y + 8) + 'px;font:800 22px monospace;color:' + col + ';text-shadow:0 0 5px ' + col;
+    p.style.setProperty('--x', '0px'); p.style.setProperty('--y', (sube ? -70 : 70) + 'px'); p.style.setProperty('--s', 1);
+    p.style.animation = 'fx-fly .75s ease-out ' + (i * 0.07) + 's forwards';
+    l.appendChild(p);
+  }
+}
+// efecto para movimientos de ESTADO (suben/bajan stats, o aplican un estado)
+function efectoEstado(l, ctx) {
+  const d = ctx.mov.desc || '';
+  if (/\b(sube|aumenta|increment|refuerza|eleva|crece)/i.test(d)) flechas(l, ctx.atk.x, ctx.atk.y, true);
+  else if (/\b(baja|reduce|disminu|debilita)/i.test(d)) flechas(l, ctx.def.x, ctx.def.y, false);
+  else { flash(l, ctx.def.x, ctx.def.y, 'rgba(255,255,255,.6)', 110); estallido(l, ctx.def.x, ctx.def.y, 8, () => { const a = rnd(0, 6.28), r = rnd(25, 55); return { css: 'width:7px;height:7px;border-radius:50%;background:#fff', vars: { x: Math.cos(a) * r + 'px', y: Math.sin(a) * r + 'px' }, dur: 0.5 }; }); }
+  if (ctx.mov.ailment) ailmentFx(l, ctx.def, ctx.mov.ailment);
+}
+// partículas del estado que un golpe puede infligir (veneno, quemadura…)
+function ailmentFx(l, d, ail) {
+  const col = AIL_COL[ail] || '#fff';
+  estallido(l, d.x, d.y, 6, () => ({ css: 'width:9px;height:9px;border-radius:50%;background:' + col + ';opacity:.85;box-shadow:0 0 5px ' + col, vars: { x: rnd(-25, 25) + 'px', y: rnd(-50, -10) + 'px' }, anim: 'rise', dur: 0.7, delay: rnd(0, 0.2) }));
+}
+
+// punto de entrada: TODO movimiento recibe un efecto adecuado.
 export function efectoAtaque(arena, mov, haciaRival) {
-  if (!arena) return;
+  if (!arena || !mov) return;
   const l = capa(arena);
   const { def, atk } = puntos(arena, haciaRival);
   const ctx = { l, d: def, def, atk, arena, mov };
-  const fn = MOVE_FX[mov && mov.id] || TYPE_FX[mov && mov.tipo] || TYPE_FX.Normal;
-  try { fn(ctx); } catch (e) {}
+  try {
+    if (MOVE_FX[mov.id]) { MOVE_FX[mov.id](ctx); return; }   // icónico: override propio
+    if (esEstadoMov(mov)) { efectoEstado(l, ctx); return; }  // estado: flechas/estado
+    // daño sin override: especial = haz dirigido (color del tipo); siempre el estallido del tipo
+    if (mov.categoria === 'Especial') rayo(l, atk, def, TCOLOR[mov.tipo] || '#fff', 14, 0.5);
+    (TYPE_FX[mov.tipo] || TYPE_FX.Normal)(ctx);
+    if (mov.ailment) ailmentFx(l, def, mov.ailment);        // + estado que inflige
+  } catch (e) {}
 }
