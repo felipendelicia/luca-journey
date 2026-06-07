@@ -822,9 +822,9 @@ body.tier-shake{ animation:tierShake .55s ease-in-out; }
 .id-ring-svg{ width:58px; height:58px; transform:rotate(-90deg); }
 .id-ring-bg{ fill:none; stroke:var(--line); stroke-width:3.2; }
 .id-ring-fg{ fill:none; stroke:var(--tier-color); stroke-width:3.2; stroke-linecap:round; transition:stroke-dasharray .6s ease; }
-.id-ring-num{ position:absolute; inset:0; display:flex; align-items:baseline; justify-content:center; gap:1px;
-  font:800 1.08rem var(--font-display); color:var(--ink); letter-spacing:-.04em; }
-.id-ring-num i{ font:700 .56rem var(--font-mono); color:var(--ink-soft); font-style:normal; }
+.id-ring-num{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:1px;
+  font:800 1.08rem var(--font-display); color:var(--ink); letter-spacing:-.04em; line-height:1; }
+.id-ring-num i{ font:700 .56rem var(--font-mono); color:var(--ink-soft); font-style:normal; align-self:center; }
 .id-head-txt{ min-width:0; }
 .id-stars{ font-size:1.05rem; letter-spacing:1px; color:var(--ink-mute); line-height:1; }
 .id-stars[data-s="3"],.id-stars[data-s="4"]{ color:var(--yellow-deep); text-shadow:0 0 9px color-mix(in srgb,var(--yellow) 60%,transparent); }
