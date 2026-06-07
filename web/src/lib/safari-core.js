@@ -15,6 +15,7 @@ export function catchBall(ballDef, ctx) {
     case 'turno': return 1 + ctx.tiroN * 0.3;
     case 'red': return (ctx.tiposWild || []).some((t) => t === 'Bicho' || t === 'Agua') ? 3 : 1;
     case 'repeticion': return ctx.vistoYa ? 3 : 1;
+    case 'dusk': return (ctx.noche || ctx.bioma === 'cueva') ? 3.5 : 1;
     default: return ballDef.catch ?? 1;   // poke 1, super 1.5, ultra 2, xeneize 2
   }
 }
@@ -41,3 +42,18 @@ export function pisoIV(ivs, calidad) {
 
 // Sincronía (pura): hab y nat del compañero → nat o null.
 export const sincronizaNat = (compHab, compNat) => compHab === 'synchronize' ? compNat : null;
+
+// ───────────────────────── Fase 2: racha / hora / bioma / tamaños ─────────────────────────
+// chance de shiny según la racha de capturas seguidas. Base 1%, cap 8%.
+export const shinyChance = (racha) => Math.min(0.08, 0.01 * (1 + (racha || 0) * 0.12));
+// IVs perfectos garantizados por racha alta.
+export const pisoRacha = (racha) => racha >= 50 ? 3 : racha >= 30 ? 2 : racha >= 15 ? 1 : 0;
+// ¿es de noche? (reloj del dispositivo). Noche = antes de las 6 o desde las 19.
+export const esNoche = (now = new Date()) => { const h = now.getHours(); return h < 6 || h >= 19; };
+// bioma actual: rota Hierba→Agua→Cueva cada 10 min, determinista por el reloj.
+export const biomaActual = (ms = Date.now()) => ['hierba', 'agua', 'cueva'][Math.floor(ms / 600000) % 3];
+// tamaño del ejemplar (cosmético). Casi siempre Normal; colas raras XXS/XXL.
+export function rolarTam(rng = Math.random) {
+  const r = rng();
+  return r < 0.03 ? 'XXS' : r < 0.12 ? 'S' : r > 0.97 ? 'XXL' : r > 0.88 ? 'L' : 'M';
+}

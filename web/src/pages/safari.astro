@@ -21,8 +21,10 @@ const total = pokemon.length;
     <div class="safari-barra">
       <div class="ss-item"><span class="ss-ico" set:html={ballSvg(0, 22)}></span><b id="balls">0</b><span class="ss-lbl">Pokéballs</span></div>
       <div class="ss-item"><span class="ss-ico">📕</span><b id="colN">0</b><span class="ss-lbl">de {total}</span></div>
+      <div class="ss-item ss-racha" id="ss-racha" hidden><span class="ss-ico">🔥</span><b id="rachaN">0</b><span class="ss-lbl">Racha</span></div>
       <button class="btn-regalo" id="regalo">🎁 Regalo (+8)</button>
     </div>
+    <div class="safari-amb" id="amb"></div>
     <p class="safari-regiones" id="regiones"></p>
 
     <!-- compañero (Sincronía) -->
@@ -74,7 +76,9 @@ const total = pokemon.length;
   <script>
     import { sincronizar, encontrar, capturar, inventarioBalls, tieneBall, companero, setCompanero,
       identidadDe, naturalezaDe, habMeta, ivPct, ivEstrellas, estado, vistos, reclamarRegalo,
-      regaloDisponible, regionesDesbloqueadas, spriteUrl, pc, renombrar, caramelosDe, CARAMELOS_POR_CAPTURA } from '../lib/coleccion.js';
+      regaloDisponible, regionesDesbloqueadas, spriteUrl, pc, renombrar, caramelosDe, CARAMELOS_POR_CAPTURA,
+      racha, romperRacha } from '../lib/coleccion.js';
+    import { biomaActual, esNoche } from '../lib/safari-core.js';
     import { sonarCaptura, sonarShiny, sonarEpico, sonarExito, sonarError, sonarClick } from '../lib/sonidos.js';
     import { TIERS } from '../lib/rareza.js';
     import { itemSvg } from '../lib/sprites.js';
@@ -132,6 +136,12 @@ const total = pokemon.length;
       $('balls').textContent = e.balls;
       const v = vistos();
       $('colN').textContent = D.pokemon.filter((p) => v.has(p.id)).length;
+      const rN = racha();
+      $('ss-racha').hidden = rN < 1;
+      $('rachaN').textContent = rN;
+      const bioma = biomaActual(), noche = esNoche();
+      const BIOMAS = { hierba: '🌿 Hierba', agua: '💧 Agua', cueva: '🪨 Cueva' };
+      $('amb').innerHTML = '<span class="amb-chip amb-' + bioma + '">' + BIOMAS[bioma] + '</span><span class="amb-chip amb-' + (noche ? 'noche' : 'dia') + '">' + (noche ? '🌙 Noche' : '☀️ Día') + '</span>';
       $('regalo').style.display = regaloDisponible() ? '' : 'none';
       const d = regionesDesbloqueadas(D.temas);
       $('regiones').innerHTML = 'Aparecen: ' +
@@ -156,6 +166,8 @@ const total = pokemon.length;
       refrescar();
     });
     setInterval(() => { if (regaloDisponible() && $('regalo').style.display === 'none') refrescar(); }, 20000);
+    // bioma/hora cambian solos según el reloj → refrescá la barra de ambiente periódicamente
+    setInterval(refrescar, 30000);
 
     // ── FX (estrellas) ───────────────────────────────────────────────────
     function estrellas(escena, { n = 16, dorado = false, color = '#ffd23f' } = {}) {
@@ -299,7 +311,7 @@ const total = pokemon.length;
         $('ball-selector').querySelectorAll('.ball-chip').forEach((x) => x.classList.toggle('sel', x.dataset.key === ballSel));
         $('enc-tirar').disabled = !ballSel;
       }));
-      $('enc-huir').addEventListener('click', () => { enc = null; $('msg').textContent = 'Te alejaste sin tirar. 🌿'; renderCarta(); });
+      $('enc-huir').addEventListener('click', () => { romperRacha(); enc = null; $('msg').textContent = 'Te alejaste sin tirar. 🌿'; refrescar(); renderCarta(); });
       $('enc-tirar').addEventListener('click', tirar);
     }
 
@@ -309,6 +321,7 @@ const total = pokemon.length;
       const calidad = await jugarAnillo();
       if (calidad == null) return;   // cancelado
       tiroN++;
+      const rachaPrevia = racha();   // capturar() rompe la racha en `huyo`; guardamos la previa para el mensaje
       const r = capturar(enc, ballSel, calidad, { tiroN });
       if (r.error === 'sin-ball') {
         $('msg').textContent = 'No te quedan de esa ball. Elegí otra. 🔴';
@@ -318,7 +331,9 @@ const total = pokemon.length;
       const ctx = await secuenciaBall(r);   // absorbe + sacude (3 si cae, 1-2 si falla) + abre/confirma
       if (r.ok) { await resumenCaptura(r, ctx); return; }
       if (r.huyo) {
-        $('msg').textContent = '¡' + nombreDe(enc.id) + ' se escapó! 🌿';
+        $('msg').textContent = rachaPrevia >= 2
+          ? '¡' + nombreDe(enc.id) + ' se escapó! 🌿💔 Se cortó la racha.'
+          : '¡' + nombreDe(enc.id) + ' se escapó! 🌿';
         sonarError();
         const sp = ctx && ctx.sp; if (sp) sp.classList.add('huye');
         await esperar(440);
@@ -386,7 +401,17 @@ const total = pokemon.length;
       else if (enc.alfa || t.nivel >= 7) sonarEpico(); else sonarCaptura();
       await esperar(340);
       if (ball) ball.remove();
-      if (sp) { sp.style.visibility = ''; sp.classList.remove('absorbido'); sp.classList.add('reaparece'); setTimeout(() => sp.classList.remove('reaparece'), 420); }
+
+      // tamaño/título del ejemplar: colosos (XL/XXL o alfa) y minis (XXS) escalan el sprite y ganan un título
+      const tam = enc.tam || 'M';
+      const colosal = tam === 'XL' || tam === 'XXL' || enc.alfa;
+      const mini = tam === 'XXS';
+      const tituloTam = colosal ? { ico: '👑', txt: 'Coloso', cls: 'cap-tam-xl' }
+        : mini ? { ico: '🔬', txt: 'Mini', cls: 'cap-tam-xxs' } : null;
+      const tamCls = tam === 'XXL' || (enc.alfa && tam === 'XL') ? 'tam-xxl'
+        : (tam === 'XL' || enc.alfa) ? 'tam-xl' : mini ? 'tam-xxs' : '';
+
+      if (sp) { sp.style.visibility = ''; sp.classList.remove('absorbido'); if (tamCls) sp.classList.add(tamCls); sp.classList.add('reaparece'); setTimeout(() => sp.classList.remove('reaparece'), 420); }
 
       const nombre = nombreDe(enc.id);
       const idn = identidadDe(r.inst), nat = naturalezaDe(r.inst), hm = habMeta(idn.hab);
@@ -396,13 +421,26 @@ const total = pokemon.length;
       const carTot = caramelosDe(enc.id);
       const calCls = { Excelente: 'cal-exc', Genial: 'cal-gen', Bien: 'cal-bien', Normal: 'cal-norm' }[r.calidad] || 'cal-norm';
       const hrefPokedex = (window.__BASE || '') + '/pokedex';
+      // racha: ×N a partir de 2; intensidad escala con la racha (cap a 4 niveles)
+      const rachaN = r.racha || 0;
+      const rachaLvl = rachaN >= 15 ? 4 : rachaN >= 8 ? 3 : rachaN >= 4 ? 2 : 1;
+      const rachaLinea = rachaN >= 2
+        ? '<div class="cap-racha cap-racha-' + rachaLvl + '"><span class="cap-racha-fuego">🔥</span> Racha <b>×' + rachaN + '</b></div>'
+        : '';
+      const tituloLinea = tituloTam
+        ? '<div class="cap-tam ' + tituloTam.cls + '">' + tituloTam.ico + ' ' + tituloTam.txt + '</div>'
+        : '';
+      const tamChip = tam !== 'M' ? '<span class="cap-b cap-b-tam">' + tam + '</span>' : '';
       const html =
         '<div class="cap-resumen">' +
           '<div class="cap-r-titulo">' + titulo + '</div>' +
+          tituloLinea +
           (nuevo ? '<div class="cap-nuevo">📒 ¡Nuevo en la Pokédex!</div>' : '') +
+          rachaLinea +
           '<div class="cap-r-linea"><span class="cap-r-nv">Nv ' + enc.nivel + '</span>' + gen +
             (enc.alfa ? '<span class="cap-b cap-b-alfa">👑 Alfa</span>' : '') +
-            (enc.shiny ? '<span class="cap-b cap-b-shiny">✨ Shiny</span>' : '') + '</div>' +
+            (enc.shiny ? '<span class="cap-b cap-b-shiny">✨ Shiny</span>' : '') +
+            tamChip + '</div>' +
           '<div class="cap-pot" title="Potencial genético: qué tan buenos son sus IVs (genes)."><span class="cap-pot-lbl">⭐ Potencial</span>' +
             '<span class="enc-stars s' + est + '">' + tasacion(est) + '</span>' +
             '<span class="cap-iv' + (pct >= 90 ? ' cap-iv-top' : pct >= 75 ? ' cap-iv-good' : '') + '">IVs ' + pct + '%</span></div>' +

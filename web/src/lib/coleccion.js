@@ -11,7 +11,8 @@ import { migrarPC } from './migracion-pc.js';
 import habilidades from '../data/habilidades.json';
 import yields from '../data/yields.json';
 import tipos from '../data/tipos.json' with { type: 'json' };
-import { probCaptura, pisoIV, fleeProb, sincronizaNat } from './safari-core.js';
+import biomas from '../data/biomas.json' with { type: 'json' };
+import { probCaptura, pisoIV, fleeProb, sincronizaNat, shinyChance, pisoRacha, esNoche, biomaActual, rolarTam } from './safari-core.js';
 import { rolarIdentidad, identidad as identidadCore, NATURALEZAS, sumarEV } from './combate-core.ts';
 
 // corre la migración a v2 (conteos→instancias) una vez, antes de tocar el PC.
@@ -74,11 +75,12 @@ export function nivelWild(id) {
 }
 
 // crea una instancia nueva (al atrapar) + suma a vistos + caramelos a la familia. Devuelve la instancia.
-export function atrapar(id, { shiny = false, nivel = 1, alfa = false, ivs = null, nat = null, hab = null, gen = null } = {}) {
+export function atrapar(id, { shiny = false, nivel = 1, alfa = false, tam = 'M', ivs = null, nat = null, hab = null, gen = null } = {}) {
   id = Number(id);
   const idn = (ivs && nat != null) ? { ivs, nat, hab, gen } : rolarIdentidad(id, habilidades);
   const inst = { iid: _uid(), id, nivel, exp: 0, shiny, movs: [], creado: Date.now(),
-    ivs: idn.ivs, nat: idn.nat, hab: idn.hab, gen: idn.gen, evs: [0, 0, 0, 0, 0, 0], ...(alfa ? { alfa: true } : {}) };
+    ivs: idn.ivs, nat: idn.nat, hab: idn.hab, gen: idn.gen, evs: [0, 0, 0, 0, 0, 0],
+    ...(alfa ? { alfa: true } : {}), ...(tam && tam !== 'M' ? { tam } : {}) };
   const arr = pc(); arr.push(inst); setPC(arr);
   addVisto(id); addCaramelos(id, CARAMELOS_POR_CAPTURA);
   return inst;
@@ -361,7 +363,7 @@ function elegirPonderado(pool, pesos) {
 }
 
 // ───────────────────────── safari profundo (encuentro 2 pasos) ─────────────────────────
-const BALL_KEYS = ['pokeball', 'superball', 'ultraball', 'veloz', 'turno', 'red', 'repeticion', 'xeneize', 'master'];
+const BALL_KEYS = ['pokeball', 'superball', 'ultraball', 'veloz', 'turno', 'red', 'repeticion', 'dusk', 'xeneize', 'master'];
 
 // inventario de balls que tenés (pokeball = contador col:balls; el resto = items). [{key,n,...meta}]
 export function inventarioBalls() {
@@ -380,6 +382,12 @@ function consumirBall(key) {
 export const companero = () => { const iid = get('col:companero', null); return iid ? pc().find((m) => m.iid === iid) || null : null; };
 export function setCompanero(iid) { set('col:companero', iid); }
 
+// racha de capturas seguidas (sube odds de shiny / IVs). col:racha-captura.
+// (col:racha ya lo usa la racha DIARIA; este es un contador aparte para no pisarla.)
+export const racha = () => get('col:racha-captura', 0);
+export const subirRacha = () => { const n = get('col:racha-captura', 0) + 1; set('col:racha-captura', n); return n; };
+export const romperRacha = () => set('col:racha-captura', 0);
+
 // sube los `n` IVs más bajos (no perfectos) a 31. Para alfa (3 garantizados).
 function forzarPerfectos(ivs, n) {
   const out = ivs.slice();
@@ -393,23 +401,28 @@ export const PROB_ALFA = 0.04;
 // PASO 1: aparece un salvaje. Rolea especie + identidad + shiny + alfa. NO persiste.
 export function encontrar(pokemon, temas, pesos = {}) {
   const regiones = regionesDesbloqueadas(temas);
-  const pool = pokemon.filter((p) => regiones.has(p.region));
-  if (!pool.length) return { error: 'vacio' };
+  const enRegion = pokemon.filter((p) => regiones.has(p.region));
+  if (!enRegion.length) return { error: 'vacio' };
+  const bioma = biomaActual(), noche = esNoche();
+  // filtro por bioma; si el bioma no tiene especies acá, cae al pool completo
+  const delBioma = enRegion.filter((p) => (biomas[String(p.id)] || 'hierba') === bioma);
+  const pool = delBioma.length ? delBioma : enRegion;
   const elegido = elegirPonderado(pool, pesos);
   const id = elegido.id;
   const idn = rolarIdentidad(id, habilidades);
-  // Sincronía: si el compañero la tiene, fija la naturaleza
   const comp = companero();
   if (comp) { const ci = identidadCore(comp, _DATOS_ID); const ns = sincronizaNat(ci.hab, ci.nat); if (ns != null) idn.nat = ns; }
   const alfa = Math.random() < PROB_ALFA;
-  const ivs = alfa ? forzarPerfectos(idn.ivs, 3) : idn.ivs;
+  const nPerf = Math.max(alfa ? 3 : 0, pisoRacha(racha()));
+  const ivs = nPerf ? forzarPerfectos(idn.ivs, nPerf) : idn.ivs;
+  const tam = alfa ? 'XL' : rolarTam();
   return {
     id, nivel: nivelWild(id), ivs, nat: idn.nat, hab: idn.hab, gen: idn.gen,
-    shiny: Math.random() < PROB_SHINY, alfa,
+    shiny: Math.random() < shinyChance(racha()), alfa, tam,
     rarezaTier: tierDe(id, aparicion).nivel, estrellas: ivEstrellas(ivs),
     naturalezaNombre: NATURALEZAS[idn.nat].nombre,
     tiposWild: tipos[String(id)] || [], vistoYa: vistos().has(id),
-    pokemon: elegido,
+    bioma, noche, pokemon: elegido,
   };
 }
 
@@ -419,13 +432,15 @@ export function capturar(enc, ballKey, calidad = 'Normal', extra = {}) {
   consumirBall(ballKey);
   const ballDef = { key: ballKey, ...ITEMS[ballKey] };
   const tiroN = extra.tiroN || 1;
-  const ctx = { tiroN, calidad, tiposWild: enc.tiposWild, vistoYa: enc.vistoYa };
+  const ctx = { tiroN, calidad, tiposWild: enc.tiposWild, vistoYa: enc.vistoYa, noche: enc.noche, bioma: enc.bioma };
   const prob = probCaptura(enc.rarezaTier, ballDef, ctx);
   if (Math.random() < prob) {
     const ivs = pisoIV(enc.ivs, calidad);
-    const inst = atrapar(enc.id, { shiny: enc.shiny, nivel: enc.nivel, alfa: enc.alfa, ivs, nat: enc.nat, hab: enc.hab, gen: enc.gen });
-    return { ok: true, inst, prob, calidad, ball: ballKey };
+    const inst = atrapar(enc.id, { shiny: enc.shiny, nivel: enc.nivel, alfa: enc.alfa, tam: enc.tam, ivs, nat: enc.nat, hab: enc.hab, gen: enc.gen });
+    const nracha = subirRacha();
+    return { ok: true, inst, prob, calidad, ball: ballKey, racha: nracha };
   }
   const huyo = Math.random() < fleeProb(enc.rarezaTier);
-  return { ok: false, huyo, prob, calidad, ball: ballKey };
+  if (huyo) romperRacha();
+  return { ok: false, huyo, prob, calidad, ball: ballKey, racha: racha() };
 }
