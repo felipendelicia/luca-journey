@@ -11,6 +11,7 @@ import { SocialModule } from './social/social.module';
 import { DesafiosModule } from './desafios/desafios.module';
 import { BatallaModule } from './batalla/batalla.module';
 import { ErroresModule } from './errores/errores.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { ErroresModule } from './errores/errores.module';
     // un grupo detrás de un NAT (varios usuarios, misma IP) entra cómodo; un bot a 5+/s se corta.
     // El ThrottlerGuard global lo aplica a TODAS las rutas HTTP (incluido el login, antes de autenticar).
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 300 }]),
-    PrismaModule, AuthModule, ProgresoModule, RealtimeModule, IntercambiosModule, SocialModule, DesafiosModule, BatallaModule, ErroresModule,
+    PrismaModule, AuthModule, ProgresoModule, RealtimeModule, IntercambiosModule, SocialModule, DesafiosModule, BatallaModule, ErroresModule, AdminModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

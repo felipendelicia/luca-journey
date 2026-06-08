@@ -1,0 +1,100 @@
+---
+import Base from '../layouts/Base.astro';
+// Panel de MODERACIÓN. Solo admin (el server gatea con AdminGuard por user_id; acá ocultamos la UI si no lo sos).
+---
+<Base title="Moderación — Pokédex Codex" active="">
+  <div class="wrap adm">
+    <h1>🛡️ Moderación</h1>
+    <p id="adm-loading" class="adm-muted">Cargando…</p>
+    <div id="adm-no" hidden><p class="adm-muted">⛔ No autorizado. Esta página es solo para administradores.</p></div>
+    <div id="adm-panel" hidden>
+      <section class="adm-sec">
+        <h2>👤 Perfiles <small id="adm-pn"></small></h2>
+        <div id="adm-perfiles" class="adm-list"></div>
+      </section>
+      <section class="adm-sec">
+        <h2>🧩 Desafíos de la comunidad <small id="adm-dn"></small></h2>
+        <div id="adm-desafios" class="adm-list"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    import { apiGet, apiPost, apiDelete } from '../lib/api.js';
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+    async function init() {
+      let soy = { admin: false };
+      try { soy = await apiGet('/admin/soy'); } catch {}
+      $('adm-loading').hidden = true;
+      if (!soy.admin) { $('adm-no').hidden = false; return; }
+      $('adm-panel').hidden = false;
+      await Promise.all([pintarPerfiles(), pintarDesafios()]);
+    }
+
+    async function pintarPerfiles() {
+      let rows = []; try { rows = await apiGet('/admin/perfiles'); } catch {}
+      $('adm-pn').textContent = '(' + rows.length + ')';
+      $('adm-perfiles').innerHTML = rows.map((r) => `
+        <div class="adm-row${r.baneado ? ' baneado' : ''}" data-uid="${esc(r.userId)}">
+          <div class="adm-info"><b>@${esc(r.handle)}</b> <span class="adm-muted">${esc(r.nombre)}</span>${r.baneado ? ' <span class="adm-tag">BANEADO</span>' : ''}
+            ${r.descripcion ? `<div class="adm-desc">${esc(r.descripcion)}</div>` : ''}</div>
+          <div class="adm-acc">
+            <button class="adm-btn" data-ban="${esc(r.userId)}">${r.baneado ? '✓ Desbanear' : '🚫 Banear'}</button>
+            <button class="adm-btn adm-del" data-delp="${esc(r.userId)}">🗑️ Borrar perfil</button>
+          </div>
+        </div>`).join('') || '<p class="adm-muted">Sin perfiles.</p>';
+      $('adm-perfiles').querySelectorAll('[data-ban]').forEach((b) => b.onclick = () => banear(b.dataset.ban, !b.textContent.includes('Desbanear')));
+      $('adm-perfiles').querySelectorAll('[data-delp]').forEach((b) => b.onclick = () => borrarPerfil(b.dataset.delp));
+    }
+
+    async function pintarDesafios() {
+      let rows = []; try { rows = await apiGet('/admin/desafios'); } catch {}
+      $('adm-dn').textContent = '(' + rows.length + ')';
+      $('adm-desafios').innerHTML = rows.map((d) => `
+        <div class="adm-row" data-did="${esc(d.id)}">
+          <div class="adm-info"><b>${esc(d.titulo)}</b> <span class="adm-muted">por @${esc(d.autor_handle || '?')}</span>
+            ${d.consigna ? `<div class="adm-desc">${esc(String(d.consigna).slice(0, 160))}</div>` : ''}</div>
+          <div class="adm-acc"><button class="adm-btn adm-del" data-deld="${esc(d.id)}">🗑️ Borrar</button></div>
+        </div>`).join('') || '<p class="adm-muted">Sin desafíos.</p>';
+      $('adm-desafios').querySelectorAll('[data-deld]').forEach((b) => b.onclick = () => borrarDesafio(b.dataset.deld));
+    }
+
+    async function banear(uid, baneado) {
+      if (baneado && !confirm('¿Banear a este usuario? Se le borra el perfil y no podrá volver a entrar.')) return;
+      try { await apiPost('/admin/ban/' + encodeURIComponent(uid), { baneado }); await pintarPerfiles(); } catch (e) { alert('Error: ' + (e.message || e)); }
+    }
+    async function borrarPerfil(uid) {
+      if (!confirm('¿Borrar el perfil público de este usuario? (no lo banea)')) return;
+      try { await apiDelete('/admin/perfil/' + encodeURIComponent(uid)); await pintarPerfiles(); } catch (e) { alert('Error: ' + (e.message || e)); }
+    }
+    async function borrarDesafio(id) {
+      if (!confirm('¿Borrar este desafío?')) return;
+      try { await apiDelete('/admin/desafio/' + encodeURIComponent(id)); await pintarDesafios(); } catch (e) { alert('Error: ' + (e.message || e)); }
+    }
+
+    window.addEventListener('nube:listo', init);
+    setTimeout(init, 1500);   // por si ya estaba logueado
+  </script>
+
+  <style>
+    .adm{ max-width:860px; }
+    .adm h1{ margin-bottom:1rem; }
+    .adm-muted{ color:var(--ink-soft); }
+    .adm-sec{ margin:1.5rem 0; }
+    .adm-sec h2{ font-size:1.05rem; margin-bottom:.6rem; border-bottom:1px solid var(--line); padding-bottom:.4rem; }
+    .adm-list{ display:flex; flex-direction:column; gap:8px; }
+    .adm-row{ display:flex; align-items:center; gap:12px; justify-content:space-between; flex-wrap:wrap;
+      background:var(--card, var(--paper-2)); border:1px solid var(--line); border-radius:10px; padding:10px 14px; }
+    .adm-row.baneado{ opacity:.7; border-color:var(--red); }
+    .adm-info{ min-width:0; flex:1; } .adm-info b{ color:var(--ink); }
+    .adm-desc{ font-size:.82rem; color:var(--ink-soft); margin-top:3px; word-break:break-word; }
+    .adm-tag{ font:800 .62rem var(--font-mono); background:var(--red); color:#fff; padding:2px 7px; border-radius:6px; }
+    .adm-acc{ display:flex; gap:8px; flex-shrink:0; }
+    .adm-btn{ font:700 .78rem var(--font-mono); padding:7px 12px; border-radius:9px; cursor:pointer;
+      border:1px solid var(--line); background:var(--paper-2); color:var(--ink); white-space:nowrap; }
+    .adm-btn:hover{ border-color:var(--ink-soft); }
+    .adm-del{ color:var(--red); border-color:color-mix(in srgb, var(--red) 40%, var(--line)); }
+  </style>
+</Base>

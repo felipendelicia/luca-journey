@@ -1,5 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { contieneGroseria } from '../common/groserias';
 
 const REGIONES = ['kanto', 'johto', 'hoenn', 'sinnoh', 'unova', 'kalos', 'libre'];
 
@@ -11,6 +12,7 @@ export class DesafiosService {
     if (!String(d.titulo || '').trim()) throw new BadRequestException('falta el título');
     if (!String(d.func || '').trim()) throw new BadRequestException('falta el nombre de la función');
     if (!Array.isArray(d.casos) || d.casos.length === 0) throw new BadRequestException('faltan casos');
+    if (contieneGroseria(d.titulo) || contieneGroseria(d.consigna)) throw new BadRequestException('el título/consigna tiene lenguaje no permitido');
     const row = await this.prisma.desafio.create({
       data: {
         autor: uid, titulo: d.titulo.trim(), consigna: d.consigna || '', func: d.func.trim(),

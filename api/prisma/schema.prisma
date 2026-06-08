@@ -10,6 +10,7 @@ model User {
   id        String   @id @default(uuid())
   email     String   @unique
   googleSub String?  @unique @map("google_sub")
+  baneado   Boolean  @default(false)
   creado    DateTime @default(now())
 
   @@map("users")

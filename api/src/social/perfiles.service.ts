@@ -1,4 +1,5 @@
 import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { contieneGroseria } from '../common/groserias';
 import { PrismaService } from '../prisma/prisma.service';
 import { AmigosService } from './amigos.service';
 
@@ -33,6 +34,7 @@ export class PerfilesService {
     }
     const h = (p.handle || '').trim().toLowerCase();
     if (!HANDLE_RE.test(h)) throw new BadRequestException('usuario inválido (3-20, minúsculas, números o _)');
+    if (contieneGroseria(h) || contieneGroseria(p.nombre)) throw new BadRequestException('ese nombre no está permitido, elegí otro');
     if (await this.prisma.perfil.findUnique({ where: { handle: h } })) throw new BadRequestException('ese @ ya está tomado');
     let codigoAmigo = code6();
     while (await this.prisma.perfil.findUnique({ where: { codigoAmigo } })) codigoAmigo = code6();
