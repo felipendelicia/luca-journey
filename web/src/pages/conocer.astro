@@ -70,8 +70,10 @@ const app = u('/');
     .feat:hover{ border-color:var(--neon); transform:translateY(-3px); box-shadow:0 14px 36px -18px rgba(93,255,122,.4); }
     .feat .ico{ font-size:1.7rem; } .feat h3{ margin:9px 0 5px; font-size:.98rem; color:#fff; }
     .feat p{ margin:0; color:var(--ink-soft); font-size:.85rem; line-height:1.5; }
-    .shots{ display:grid; grid-template-columns:1.3fr 1fr; gap:14px; }
-    .shot{ border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--card); }
+    .shots{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .shot{ margin:0; border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--card); }
+    .shot-wide{ grid-column:1 / -1; }
+    .shot img{ width:100%; height:auto; display:block; }
     .shot .bar{ display:flex; align-items:center; gap:6px; padding:9px 12px; background:#0a140f; border-bottom:1px solid var(--line); }
     .shot .bar i{ width:10px;height:10px;border-radius:50%; display:block; }
     .shot .bar i:nth-child(1){background:#ff5f56} .shot .bar i:nth-child(2){background:#ffbd2e} .shot .bar i:nth-child(3){background:#27c93f}
@@ -141,20 +143,14 @@ const app = u('/');
 
   <section class="sec"><div class="wrap">
     <h2 class="sec-h">Se ve así</h2>
-    <p class="sec-sub">Corrige, te explica el error y suma a tu progreso.</p>
+    <p class="sec-sub">Capturas reales: corregís y te explica el error, peleás y coleccionás.</p>
     <div class="shots">
-      <div class="shot"><div class="bar"><i></i><i></i><i></i><span>ejercicio.py</span></div>
-        <div class="body"><div class="code"><span class="cm"># corregís y te dice exactamente qué pasó</span>
-<span class="kw">def</span> <span class="fn">saludo</span>():
-    <span class="kw">return</span> <span class="st">"chau"</span></div><div class="ok">❌ Se esperaba '¡Hola!' pero tu código devolvió 'chau'.</div></div></div>
-      <div class="shot"><div class="bar"><i></i><i></i><i></i><span>batalla — en vivo</span></div>
-        <div class="body mini-batalla">
-          <div class="mini-row">🔥 Charizard Nv.40 <span style="margin-left:auto;color:var(--ink-soft)">120/120</span></div>
-          <div class="hpbar"><i style="width:100%"></i></div>
-          <div class="mini-row">🌊 Gyarados Nv.42 <span style="margin-left:auto;color:var(--ink-soft)">88/134</span></div>
-          <div class="hpbar"><i style="width:66%"></i></div>
-          <div style="margin-top:6px;font-size:.85rem;color:var(--neon)">⚡ ¡Súper listo! Resolvé tu reto de código…</div>
-        </div></div>
+      <figure class="shot shot-wide"><div class="bar"><i></i><i></i><i></i><span>ejercicio · corrección al instante</span></div>
+        <img src={u('/caps/editor.png')} alt="Editor de Python en el navegador: el ejercicio corrige y explica qué devolvió tu función vs lo esperado" loading="lazy" /></figure>
+      <figure class="shot"><div class="bar"><i></i><i></i><i></i><span>batalla</span></div>
+        <img src={u('/caps/batalla.png')} alt="Batalla Pokémon por turnos con barras de HP, movimientos y tu equipo" loading="lazy" /></figure>
+      <figure class="shot"><div class="bar"><i></i><i></i><i></i><span>Pokédex</span></div>
+        <img src={u('/caps/pokedex.png')} alt="Pokédex con el progreso por región y los Pokémon coleccionados" loading="lazy" /></figure>
     </div>
   </div></section>
 
