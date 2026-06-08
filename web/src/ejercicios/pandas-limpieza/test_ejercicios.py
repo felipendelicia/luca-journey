@@ -70,3 +70,52 @@ def test_a_mayusculas():
 def test_aplicar():
     r = modulo.aplicar(pd.Series([1, 2, 3]), lambda x: x * 10)
     assert list(r) == [10, 20, 30]
+
+
+def test_sacar_espacios():
+    assert modulo.sacar_espacios(pd.Series([" a ", "b "])).tolist() == ["a", "b"]
+
+
+def test_a_minusculas():
+    assert modulo.a_minusculas(pd.Series(["PIKA", "Onix"])).tolist() == ["pika", "onix"]
+
+
+def test_reemplazar_valor():
+    assert modulo.reemplazar_valor(pd.Series(["a", "b", "a"]), "a", "z").tolist() == ["z", "b", "z"]
+
+
+def test_contar_unicos():
+    assert modulo.contar_unicos(pd.Series([1, 1, 2, 3, 3])) == 3
+
+
+def test_valores_unicos():
+    assert modulo.valores_unicos(pd.Series([3, 1, 3, 2])) == [1, 2, 3]
+
+
+def test_promedio_sin_nulos():
+    assert modulo.promedio_sin_nulos(pd.Series([2, None, 4])) == 3.0
+
+
+def test_contar_valor():
+    assert modulo.contar_valor(pd.Series(["a", "b", "a"]), "a") == 2
+
+
+def test_mas_frecuente():
+    assert modulo.mas_frecuente(pd.Series(["agua", "agua", "fuego"])) == "agua"
+
+
+def test_capitalizar():
+    assert modulo.capitalizar(pd.Series(["pIKA", "onix"])).tolist() == ["Pika", "Onix"]
+
+
+def test_columnas_con_nulos():
+    df = pd.DataFrame({"a": [1, None], "b": [3, 4]})
+    assert modulo.columnas_con_nulos(df) == ["a"]
+
+
+def test_normalizar_texto():
+    assert modulo.normalizar_texto(pd.Series([" Pikachu ", "ONIX"])).tolist() == ["pikachu", "onix"]
+
+
+def test_longitud_textos():
+    assert modulo.longitud_textos(pd.Series(["pi", "onix"])) == [2, 4]

@@ -77,3 +77,100 @@ def el_mas_fuerte(df):
     """Devolvé el nombre (str) de la fila con mayor 'nivel'."""
     # TU CÓDIGO ACÁ
     pass
+
+
+# Nombres
+# Devolvé la columna "nombre" como lista.
+def nombres(df):
+    """Devolvé los nombres como lista."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Valor en una celda
+# Devolvé el valor de la fila `fila`, columna `col`. Pista: df.iloc[fila][col].
+def valor_en(df, fila, col):
+    """Devolvé el valor de esa celda."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Última fila
+# Devolvé la última fila como diccionario.
+def ultima_fila(df):
+    """Devolvé la última fila como dict."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# El más débil
+# Devolvé como diccionario la fila del Pokémon con menor "nivel". Pista: df["nivel"].idxmin().
+def mas_debil(df):
+    """Devolvé la fila del menor nivel, como dict."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Nivel de un Pokémon
+# Devolvé el "nivel" del Pokémon cuyo "nombre" sea `nombre`, o None si no está.
+def nivel_de(df, nombre):
+    """Devolvé el nivel de ese nombre, o None."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# ¿Existe el nombre?
+# Devolvé True si hay una fila con ese "nombre".
+def existe_nombre(df, nombre):
+    """Devolvé True si está ese nombre."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Primeros n nombres
+# Devolvé los nombres de las primeras `n` filas, como lista.
+def primeros_nombres(df, n):
+    """Devolvé los primeros n nombres."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Nombres ordenados
+# Devolvé los nombres ordenados alfabéticamente, como lista.
+def ordenar_nombres(df):
+    """Devolvé los nombres ordenados."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Contar de un tipo
+# Devolvé cuántas filas tienen "tipo" igual a `tipo` (como int).
+def contar_tipo(df, tipo):
+    """Devolvé cuántos son de ese tipo."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Niveles entre lo y hi
+# Devolvé los NOMBRES de los Pokémon con nivel entre `lo` y `hi` (ambos incluidos).
+def niveles_entre(df, lo, hi):
+    """Devolvé los nombres con nivel entre lo y hi."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Top n niveles
+# Devolvé los `n` niveles más altos, de mayor a menor, como lista.
+# Ejemplo:  con niveles [25, 12, 18, 30] y n=2  →  top_niveles(df, 2)  →  [30, 25]
+def top_niveles(df, n):
+    """Devolvé los n niveles más altos."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Nombres de un tipo
+# Devolvé los NOMBRES de los Pokémon cuyo "tipo" sea `tipo`, como lista.
+def nombres_de_tipo(df, tipo):
+    """Devolvé los nombres de ese tipo."""
+    # TU CÓDIGO ACÁ
+    pass

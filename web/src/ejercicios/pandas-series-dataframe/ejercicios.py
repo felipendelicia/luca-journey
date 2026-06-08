@@ -85,3 +85,94 @@ def agregar_columna(df, nombre, valores):
     """Devolvé una copia del df con la columna nueva."""
     # TU CÓDIGO ACÁ
     pass
+
+
+# Suma de una columna
+# Devolvé la suma de los valores de la columna `col`.
+def suma_columna(df, col):
+    """Devolvé la suma de la columna."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Máximo de una columna
+# Devolvé el valor más grande de la columna `col`.
+def maximo_columna(df, col):
+    """Devolvé el máximo de la columna."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Mínimo de una columna
+# Devolvé el valor más chico de la columna `col`.
+def minimo_columna(df, col):
+    """Devolvé el mínimo de la columna."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Columna a lista
+# Devolvé los valores de la columna `col` como una lista de Python. Pista: .tolist().
+def columna_a_lista(df, col):
+    """Devolvé la columna como lista."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Cantidad de columnas
+# Devolvé cuántas columnas tiene el DataFrame.
+def cantidad_columnas(df):
+    """Devolvé la cantidad de columnas."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# ¿Existe la columna?
+# Devolvé True si `col` es una columna del DataFrame.
+def existe_columna(df, col):
+    """Devolvé True si la columna existe."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Contar filas donde
+# Devolvé CUÁNTAS filas tienen la columna `col` con valor mayor que `n` (como int).
+# Ejemplo:  con una columna "nivel" [25, 12, 18] y n=15  →  contar_donde(df, "nivel", 15)  →  2
+def contar_donde(df, col, n):
+    """Devolvé cuántas filas tienen col > n."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Valores ordenados
+# Devolvé los valores de la columna `col` ordenados de menor a mayor, como lista.
+def valores_ordenados(df, col):
+    """Devolvé los valores de col ordenados, como lista."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Fila como diccionario
+# Devolvé la fila número `i` como un diccionario {columna: valor}. Pista: df.iloc[i].to_dict().
+def fila_como_dict(df, i):
+    """Devolvé la fila i como dict."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Renombrar columnas
+# Devolvé la LISTA de nombres de columnas después de aplicar el renombre `mapa`
+# (un dict {viejo: nuevo}). Pista: df.rename(columns=mapa).columns.
+# Ejemplo:  con columnas ["nombre", "nivel"] y mapa {"nivel": "lvl"}  →  ["nombre", "lvl"]
+def renombrar_columnas(df, mapa):
+    """Devolvé los nombres de columnas tras renombrar."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Mediana de una columna
+# Devolvé la mediana de la columna `col`. Pista: .median().
+def mediana_columna(df, col):
+    """Devolvé la mediana de la columna."""
+    # TU CÓDIGO ACÁ
+    pass

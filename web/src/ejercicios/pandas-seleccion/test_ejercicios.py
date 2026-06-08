@@ -67,3 +67,61 @@ def test_quitar_columna():
 
 def test_el_mas_fuerte():
     assert modulo.el_mas_fuerte(_pokedex()) == "Charizard"
+
+
+def _dfs():
+    return pd.DataFrame({
+        "nombre": ["pikachu", "onix", "eevee", "staryu"],
+        "tipo": ["electrico", "roca", "normal", "agua"],
+        "nivel": [25, 12, 18, 30],
+    })
+
+
+def test_nombres():
+    assert modulo.nombres(_dfs()) == ["pikachu", "onix", "eevee", "staryu"]
+
+
+def test_valor_en():
+    assert modulo.valor_en(_dfs(), 0, "nivel") == 25
+
+
+def test_ultima_fila():
+    assert modulo.ultima_fila(_dfs()) == {"nombre": "staryu", "tipo": "agua", "nivel": 30}
+
+
+def test_mas_debil():
+    assert modulo.mas_debil(_dfs())["nombre"] == "onix"
+
+
+def test_nivel_de():
+    assert modulo.nivel_de(_dfs(), "onix") == 12
+    assert modulo.nivel_de(_dfs(), "mew") is None, "Si no está, devolvé None"
+
+
+def test_existe_nombre():
+    assert modulo.existe_nombre(_dfs(), "eevee") is True
+    assert modulo.existe_nombre(_dfs(), "mew") is False
+
+
+def test_primeros_nombres():
+    assert modulo.primeros_nombres(_dfs(), 2) == ["pikachu", "onix"]
+
+
+def test_ordenar_nombres():
+    assert modulo.ordenar_nombres(_dfs()) == ["eevee", "onix", "pikachu", "staryu"]
+
+
+def test_contar_tipo():
+    assert modulo.contar_tipo(_dfs(), "agua") == 1
+
+
+def test_niveles_entre():
+    assert modulo.niveles_entre(_dfs(), 15, 30) == ["pikachu", "eevee", "staryu"]
+
+
+def test_top_niveles():
+    assert modulo.top_niveles(_dfs(), 2) == [30, 25]
+
+
+def test_nombres_de_tipo():
+    assert modulo.nombres_de_tipo(_dfs(), "agua") == ["staryu"]

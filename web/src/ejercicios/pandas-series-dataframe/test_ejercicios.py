@@ -73,3 +73,52 @@ def test_agregar_columna():
     assert "hp" in r.columns
     assert list(r["hp"]) == [35, 78, 45, 160]
     assert "hp" not in df.columns, "No modifiques el DataFrame original (usá .copy())"
+
+
+def _df():
+    return pd.DataFrame({"nombre": ["pikachu", "onix", "eevee"], "nivel": [25, 12, 18]})
+
+
+def test_suma_columna():
+    assert modulo.suma_columna(_df(), "nivel") == 55
+
+
+def test_maximo_columna():
+    assert modulo.maximo_columna(_df(), "nivel") == 25
+
+
+def test_minimo_columna():
+    assert modulo.minimo_columna(_df(), "nivel") == 12
+
+
+def test_columna_a_lista():
+    assert modulo.columna_a_lista(_df(), "nombre") == ["pikachu", "onix", "eevee"]
+
+
+def test_cantidad_columnas():
+    assert modulo.cantidad_columnas(_df()) == 2
+
+
+def test_existe_columna():
+    assert modulo.existe_columna(_df(), "nivel") is True
+    assert modulo.existe_columna(_df(), "hp") is False
+
+
+def test_contar_donde():
+    assert modulo.contar_donde(_df(), "nivel", 15) == 2
+
+
+def test_valores_ordenados():
+    assert modulo.valores_ordenados(_df(), "nivel") == [12, 18, 25]
+
+
+def test_fila_como_dict():
+    assert modulo.fila_como_dict(_df(), 0) == {"nombre": "pikachu", "nivel": 25}
+
+
+def test_renombrar_columnas():
+    assert modulo.renombrar_columnas(_df(), {"nivel": "lvl"}) == ["nombre", "lvl"]
+
+
+def test_mediana_columna():
+    assert modulo.mediana_columna(_df(), "nivel") == 18.0
