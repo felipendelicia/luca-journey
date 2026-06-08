@@ -446,9 +446,9 @@ export function encontrar(pokemon, temas, pesos = {}) {
   const enRegion = pokemon.filter((p) => regiones.has(p.region));
   if (!enRegion.length) return { error: 'vacio' };
   const bioma = biomaActual(), noche = esNoche();
-  // El bioma BIASEA, no excluye: las especies del bioma actual pesan ×4, el resto ×1. Antes era un filtro DURO
-  // y como muchas regiones (gen 4+) están todas en 'hierba', en bioma Cueva/Agua quedaban EXCLUIDAS por completo.
-  const elegido = elegirPonderado(enRegion, pesos, (p) => ((biomas[String(p.id)] || 'hierba') === bioma ? 4 : 1));
+  // El bioma BIASEA FUERTE, NO excluye: las especies del bioma actual pesan ×8, el resto ×1. Aparecen MUCHOS más
+  // del bioma, pero los de otros biomas igual pueden salir (ninguna región queda afuera). Biomas derivados del TIPO.
+  const elegido = elegirPonderado(enRegion, pesos, (p) => ((biomas[String(p.id)] || 'hierba') === bioma ? 8 : 1));
   const id = elegido.id;
   const idn = rolarIdentidad(id, habilidades);
   const comp = companero();
