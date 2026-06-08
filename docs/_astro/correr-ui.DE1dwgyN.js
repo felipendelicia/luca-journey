@@ -1,4 +1,4 @@
-import{r as c}from"./editor.D60dbama.js";import{p as g,t as _,a as y}from"./errores.B-spsqat.js";const b=`# runner.py — corre los tests de una semana en el navegador con pytest real (Pyodide).
+import{r as c}from"./editor.D60dbama.js";import{p as g,t as _,a as y}from"./errores.Ckplhl_-.js";const b=`# runner.py — corre los tests de una semana en el navegador con pytest real (Pyodide).
 # Escribe el código del alumno como ejercicios.py + el test + helpers, con
 # CURSO_MODULO=ejercicios, y ejecuta pytest recolectando el resultado por test.
 import os
@@ -70,7 +70,7 @@ def _msg(report):
     # el detalle real (valores/tipos) está en la línea '+ where False = func(args)'. La exponemos
     # (sólo se llega acá si no hubo una comparación ==/!=/is, que ya tienen prioridad arriba).
     whereline = next(
-        (l for l in lineas if "where " in l and any(fn in l for fn in ("array_equal", "allclose", "isinstance", "issubclass"))),
+        (l for l in lineas if "where " in l and any(fn in l for fn in ("array_equal", "allclose", "isclose", "isinstance", "issubclass"))),
         None,
     )
     if whereline:

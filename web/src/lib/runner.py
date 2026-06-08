@@ -70,7 +70,7 @@ def _msg(report):
     # el detalle real (valores/tipos) está en la línea '+ where False = func(args)'. La exponemos
     # (sólo se llega acá si no hubo una comparación ==/!=/is, que ya tienen prioridad arriba).
     whereline = next(
-        (l for l in lineas if "where " in l and any(fn in l for fn in ("array_equal", "allclose", "isinstance", "issubclass"))),
+        (l for l in lineas if "where " in l and any(fn in l for fn in ("array_equal", "allclose", "isclose", "isinstance", "issubclass"))),
         None,
     )
     if whereline:

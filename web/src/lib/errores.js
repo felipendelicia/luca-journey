@@ -107,6 +107,11 @@ export function pistaTest(msg) {
       if (arrs.length >= 2) return `Se esperaba ${cap(arrs[1])} pero tu código devolvió ${cap(arrs[0])}.`;
       return 'Tu arreglo no coincide con el esperado.';
     }
+    if (/isclose/.test(t)) {
+      const nums = t.match(/>\(([^,]+),\s*([^)]+)\)/);
+      if (nums) return `Se esperaba aproximadamente ${cap(nums[2].trim())} pero tu código devolvió ${cap(nums[1].trim())}.`;
+      return 'El número no coincide (aprox.) con el esperado.';
+    }
     const im = t.match(/isinstance\((.+),\s*([\w.]+)\)\s*$/) || t.match(/issubclass\((.+),\s*([\w.]+)\)\s*$/);
     if (im) return `Se esperaba un valor de tipo ${im[2].split('.').pop()}, pero el tipo no coincide.`;
     return 'El resultado no es del tipo esperado.';
