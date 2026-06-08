@@ -22,7 +22,7 @@ const total = pokemon.length;
 
     <div class="safari-barra">
       <div class="ss-item"><span class="ss-ico" set:html={ballSvg(0, 22)}></span><b id="balls">0</b><span class="ss-lbl">Pokéballs</span></div>
-      <div class="ss-item ss-energia" id="ss-energia"><span class="ss-ico">⚡</span><b id="energiaN">0</b><span class="ss-lbl" id="energiaLbl">Energía</span></div>
+      <div class="ss-item ss-energia" id="ss-energia"><span class="ss-ico">⚡</span><div class="energia-bar" title="Energía"><i id="energia-fill"></i><span id="energiaN" class="energia-num">0</span></div><span class="ss-lbl" id="energiaLbl">Energía</span></div>
       <div class="ss-item"><span class="ss-ico">📕</span><b id="colN">0</b><span class="ss-lbl">de {total}</span></div>
       <div class="ss-item ss-racha" id="ss-racha" hidden><span class="ss-ico">🔥</span><b id="rachaN">0</b><span class="ss-lbl">Racha</span></div>
       <button class="btn-regalo" id="regalo">🎁 Regalo (+8)</button>
@@ -136,7 +136,8 @@ const total = pokemon.length;
 
     function pintarEnergia() {
       const n = energiaActual();
-      $('energiaN').textContent = n;
+      $('energiaN').textContent = n + '/' + MAX_ENERGIA;
+      const fill = $('energia-fill'); if (fill) fill.style.width = (n / MAX_ENERGIA * 100) + '%';
       const lbl = $('energiaLbl');
       if (n >= MAX_ENERGIA) lbl.textContent = 'Llena';
       else lbl.textContent = '+1 en ' + Math.ceil(energiaProxMs() / 1000) + 's';
