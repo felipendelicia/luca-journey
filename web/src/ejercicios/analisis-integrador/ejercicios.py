@@ -71,3 +71,102 @@ def campeon_del_tipo(df, tipo):
     """Devolvé el nombre del de mayor nivel dentro de 'tipo'."""
     # TU CÓDIGO ACÁ
     pass
+
+
+# Mediana de nivel
+# Devolvé la mediana de la columna "nivel".
+def mediana_nivel(df):
+    """Devolvé la mediana de los niveles."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Proporción de un tipo
+# Devolvé la FRACCIÓN de Pokémon que son del tipo `tipo` (float entre 0 y 1).
+# Ejemplo:  con 2 de "agua" de 5  →  proporcion_tipo(df, "agua")  →  0.4
+def proporcion_tipo(df, tipo):
+    """Devolvé la fracción de Pokémon de ese tipo."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Nombres del top n
+# Devolvé los NOMBRES de los `n` Pokémon de mayor nivel, de mayor a menor.
+def nombres_top(df, n):
+    """Devolvé los nombres de los n de mayor nivel."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Tipos únicos
+# Devolvé una lista ORDENADA con los tipos distintos.
+def tipos_unicos(df):
+    """Devolvé los tipos distintos, ordenados."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Filtrar fuertes
+# Devolvé los NOMBRES de los Pokémon con nivel mayor o igual a `minimo`.
+def filtrar_fuertes(df, minimo):
+    """Devolvé los nombres con nivel >= minimo."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Rango de niveles
+# Devolvé la diferencia entre el nivel máximo y el mínimo (como int).
+def rango_niveles(df):
+    """Devolvé nivel máximo - mínimo."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Tipo con mayor promedio
+# Devolvé el tipo cuyo nivel PROMEDIO sea el más alto.
+def tipo_con_mayor_promedio(df):
+    """Devolvé el tipo de mayor nivel promedio."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Contar por rango de nivel
+# Devolvé cuántos Pokémon tienen nivel entre `lo` y `hi` (ambos incluidos), como int.
+def contar_por_rango(df, lo, hi):
+    """Devolvé cuántos tienen nivel entre lo y hi."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Nivel total
+# Devolvé la suma de todos los niveles.
+def nivel_total(df):
+    """Devolvé la suma de los niveles."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# ¿Hay alguno fuerte?
+# Devolvé True si algún Pokémon tiene nivel mayor o igual a `umbral`.
+def hay_fuertes(df, umbral):
+    """Devolvé True si alguno alcanza el umbral."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Tabla resumen
+# Devolvé un dict con "total" (cantidad de filas), "tipos" (cantidad de tipos distintos) y
+# "nivel_total" (suma de niveles).
+# Ejemplo:  {"total": 5, "tipos": 3, "nivel_total": 130}
+def tabla_resumen(df):
+    """Devolvé un dict resumen."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Cantidad por tipo
+# Devolvé un dict tipo → cantidad de Pokémon de ese tipo.
+def cantidad_por_tipo(df):
+    """Devolvé un dict tipo → cantidad."""
+    # TU CÓDIGO ACÁ
+    pass
