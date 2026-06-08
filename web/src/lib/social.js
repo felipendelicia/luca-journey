@@ -5,6 +5,11 @@ import { evaluar, contexto } from './logros.js';
 import { REGION_IDS, nombreDe } from './regiones.mjs';
 const haySupabase = hayApi;
 
+// usuarios "Creator" (creadores del proyecto) → badge especial en el perfil. Por user_id: es DURABLE
+// (no depende del blob de progreso, así que no se pisa cuando el usuario republica su snapshot).
+const CREADORES = new Set(['39560479-e110-474e-9566-3718bd479a5a']);   // felipo
+export const esCreador = (uid) => CREADORES.has(uid);
+
 const REGN = Object.fromEntries(REGION_IDS.map((id) => [id, nombreDe(id)]));
 const done = (slug, id) => localStorage.getItem(`ej:${slug}:${id}:ok`) === '1';
 

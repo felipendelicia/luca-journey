@@ -24,6 +24,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
           <div class="tcard-av" id="u-av">🎓</div>
           <div class="tcard-id">
             <div class="tcard-rango" id="u-rango">Novato</div>
+            <span class="u-creator" id="u-creator" hidden>👑 Creator</span>
             <h1 class="tcard-nombre" id="u-nombre"></h1>
             <div class="tcard-handle"><span id="u-handle"></span> · 🎴 <b id="u-codigo"></b></div>
             <p class="tcard-lema" id="u-desc" hidden></p>
@@ -150,6 +151,14 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     .tcard-id { min-width:0; }
     .tcard-rango { display:inline-block; font:800 .64rem var(--font-pixel, var(--font-mono)); letter-spacing:.12em; text-transform:uppercase;
       color:#3a2a00; background: linear-gradient(180deg,#ffe066,#e0a400); border-radius:999px; padding:3px 10px; margin-bottom:5px; }
+    /* badge especial de Creator (creador del proyecto) — holográfico, distinto del rango dorado */
+    .u-creator { display:inline-block; vertical-align:middle; margin:0 0 5px 7px;
+      font:800 .58rem var(--font-pixel, var(--font-mono)); letter-spacing:.06em; text-transform:uppercase; color:#fff;
+      padding:3px 9px; border-radius:999px; border:1px solid rgba(255,255,255,.38);
+      background: linear-gradient(135deg,#ff4d6d,#c026d3 55%,#7c3aed);
+      box-shadow:0 0 14px rgba(192,38,211,.55); animation: u-creator-glow 3s ease-in-out infinite; }
+    @keyframes u-creator-glow { 50% { box-shadow:0 0 20px rgba(255,77,109,.7); } }
+    @media (prefers-reduced-motion: reduce) { .u-creator { animation:none; } }
     .tcard-nombre { margin:0; font-size:1.6rem; line-height:1.05; }
     .tcard-handle { color: var(--ink-soft); font:600 .85rem var(--font-mono); margin-top:2px; }
     .tcard-lema { margin:8px 0 0; color: var(--ink); font-style:italic; opacity:.9; max-width:56ch; }
@@ -203,7 +212,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
 
   <script type="application/json" id="u-data" set:html={JSON.stringify({ nombres, regionDe, temas })}></script>
   <script>
-    import { perfilPublico, sonAmigos, solicitar, crearOferta, guardarDescripcion, pcDeUsuario, rankingPvp, actualizarSnapshot, haySupabase } from '../lib/social.js';
+    import { perfilPublico, sonAmigos, solicitar, crearOferta, guardarDescripcion, pcDeUsuario, rankingPvp, actualizarSnapshot, haySupabase, esCreador } from '../lib/social.js';
     import { pc as pcCol, vistos } from '../lib/coleccion.js';
     import { statsDesafios, desafiosDeUsuario } from '../lib/desafios.js';
     import { usuario, init as initNube } from '../lib/nube.js';
@@ -276,6 +285,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       $('u-nombre').textContent = p.nombre || 'Entrenador/a';
       $('u-handle').textContent = '@' + p.handle;
       $('u-codigo').textContent = p.codigo_amigo;
+      $('u-creator').hidden = !esCreador(p.user_id);   // badge especial de creador del proyecto
       $('u-av').innerHTML = p.avatar ? `<img src="${sprite(p.avatar)}" alt="avatar" />` : '🎓';
       if (p.descripcion) { $('u-desc').textContent = p.descripcion; $('u-desc').hidden = false; }
 
