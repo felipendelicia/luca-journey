@@ -477,6 +477,7 @@ body.dark .ej-mini{ background:#3a1c1a; } body.dark .ej-mini.win{ background:#13
 
 /* ===== Colección: Safari + Pokédex ===== */
 .safari-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.safari-head-acc{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-left:auto; }
 .dex-acciones{ display:flex; gap:8px; flex-wrap:wrap; }
 .safari-barra{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin:1.2rem 0; }
 .ss-item{ display:flex; align-items:center; gap:8px; background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:10px 16px; box-shadow:var(--shadow-sm); }
