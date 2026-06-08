@@ -135,6 +135,7 @@ export class SalasService {
   // valida que el uid REALMENTE tiene esas instancias (carga col:pc de su progreso en DB).
   private async validarEquipo(uid: string, iids: string[]): Promise<Inst[] | null> {
     if (!Array.isArray(iids) || iids.length < 1 || iids.length > 3) return null;
+    if (new Set(iids.map(String)).size !== iids.length) return null;   // sin Pokémon repetido (anti-exploit)
     const estado = await this.progreso.bajar(uid);
     let pc: any[] = [];
     try { pc = JSON.parse((estado as any)['col:pc'] || '[]'); } catch { pc = []; }
@@ -322,7 +323,8 @@ export class SalasService {
     let premios: Record<string, Premios> = {};
     try { premios = await premiar(this.progreso, sala.estado!, abandonoUid); } catch { premios = {}; }
     for (const j of sala.jugadores) {
-      this.emitSock(j.socketId, 'fin', { ganador: sala.estado?.ganador, premios: premios[j.uid] || null });
+      // por user-room (no socketId): si el jugador reconectó con otro socket, igual recibe el resultado.
+      this.emitUid(j.uid, 'fin', { ganador: sala.estado?.ganador, premios: premios[j.uid] || null });
       if (premios[j.uid]?.estado) this.emitUid(j.uid, 'progreso', premios[j.uid].estado);   // refresca su nube
       this.porUid.delete(j.uid);
     }
