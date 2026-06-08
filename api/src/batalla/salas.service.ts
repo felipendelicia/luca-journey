@@ -112,8 +112,11 @@ export class SalasService {
 
   private anunciarEmparejado(sala: Sala) {
     for (const j of sala.jugadores) {
+      // unir el socket ACTUAL de cada jugador a la sala + avisar por la USER-ROOM (no por el socketId, que puede
+      // estar viejo si el socket se reconectó mientras esperaba en la cola → si no, el rival no recibe 'emparejado').
+      this.server.in(USER(j.uid)).socketsJoin(ROOM(sala.id));
       const rival = sala.jugadores.find((o) => o.uid !== j.uid);
-      this.emitSock(j.socketId, 'emparejado', { roomId: sala.id, rival: rival ? { uid: rival.uid, nombre: rival.nombre } : null });
+      this.emitUid(j.uid, 'emparejado', { roomId: sala.id, rival: rival ? { uid: rival.uid, nombre: rival.nombre } : null });
     }
   }
 

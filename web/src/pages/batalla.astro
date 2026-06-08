@@ -108,19 +108,21 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     // narra una línea en el cuadro de texto (#bt-msg) escribiéndola LETRA POR LETRA (estilo FireRed).
     // Al terminar muestra el cursor ▼ (clase .listo) un instante y resuelve. Un tap saltea al texto completo.
     // prefers-reduced-motion → texto directo (sin tipeo).
-    let _narrarSkip = null;
+    let _narrarSkip = null, _narrarToken = 0;
     function narrar(texto) {
       const box = document.getElementById('bt-msg');
+      const tok = ++_narrarToken;   // invalida cualquier narración anterior EN CURSO (si no, dos se intercalan = texto roto)
       return new Promise((resolve) => {
         texto = String(texto == null ? '' : texto);
         if (!box || matchMedia('(prefers-reduced-motion: reduce)').matches) { if (box) box.textContent = texto; setTimeout(resolve, 280); return; }
         let i = 0; _narrarSkip = null;
         box.classList.add('escribiendo'); box.classList.remove('listo'); box.textContent = '';
-        const fin = () => { box.classList.remove('escribiendo'); box.classList.add('listo'); _narrarSkip = null; setTimeout(() => { box.classList.remove('listo'); resolve(); }, 450); };
+        const fin = () => { if (tok !== _narrarToken) return resolve(); box.classList.remove('escribiendo'); box.classList.add('listo'); _narrarSkip = null; setTimeout(() => { if (tok === _narrarToken) box.classList.remove('listo'); resolve(); }, 450); };
         const tick = () => {
+          if (tok !== _narrarToken) return resolve();   // otra narración tomó el control → cortar sin pisar el cuadro
           if (i >= texto.length) return fin();
           box.textContent += texto[i++];
-          _narrarSkip = () => { box.textContent = texto; i = texto.length; _narrarSkip = null; fin(); };
+          _narrarSkip = () => { if (tok !== _narrarToken) return; box.textContent = texto; i = texto.length; _narrarSkip = null; fin(); };
           setTimeout(tick, 24);
         };
         tick();
