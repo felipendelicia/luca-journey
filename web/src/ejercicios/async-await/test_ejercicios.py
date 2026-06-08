@@ -34,3 +34,74 @@ def test_agregar_await():
 def test_contar_awaits():
     assert modulo.contar_awaits("a = await f()\nb = await g()") == 2
     assert modulo.contar_awaits("x = 1") == 0
+
+
+def test_quitar_await():
+    assert modulo.quitar_await("await bajar()") == "bajar()"
+    assert modulo.quitar_await("sumar()") == "sumar()"
+
+
+def test_tiene_await_linea():
+    assert modulo.tiene_await_linea("await f()") is True
+    assert modulo.tiene_await_linea("f()") is False
+
+
+def test_lineas_con_await():
+    assert modulo.lineas_con_await(["x=1", "await a()", "await b()"]) == ["await a()", "await b()"]
+
+
+def test_lineas_sin_await():
+    assert modulo.lineas_sin_await(["x=1", "await a()"]) == ["x=1"]
+
+
+def test_indices_con_await():
+    assert modulo.indices_con_await(["x=1", "await a()", "await b()"]) == [1, 2]
+
+
+def test_cuantas_con_await():
+    assert modulo.cuantas_con_await(["await a()", "x=1", "await b()"]) == 2
+
+
+def test_todas_con_await():
+    assert modulo.todas_con_await(["await a()", "await b()"]) is True
+    assert modulo.todas_con_await(["await a()", "x=1"]) is False
+
+
+def test_ninguna_con_await():
+    assert modulo.ninguna_con_await(["x=1", "y=2"]) is True
+    assert modulo.ninguna_con_await(["await a()"]) is False
+
+
+def test_agregar_await_a_todas():
+    assert modulo.agregar_await_a_todas(["a()", "await b()"]) == ["await a()", "await b()"]
+
+
+def test_quitar_await_de_todas():
+    assert modulo.quitar_await_de_todas(["await a()", "b()"]) == ["a()", "b()"]
+
+
+def test_primer_indice_await():
+    assert modulo.primer_indice_await(["x=1", "await a()"]) == 1
+    assert modulo.primer_indice_await(["x=1"]) == -1
+
+
+def test_proporcion_con_await():
+    assert modulo.proporcion_con_await(["await a()", "x=1", "y=2", "await b()"]) == 0.5
+
+
+def test_normalizar_await():
+    assert modulo.normalizar_await("await await f()") == "await f()"
+    assert modulo.normalizar_await("f()") == "await f()"
+
+
+def test_contar_await_total():
+    assert modulo.contar_await_total("await a()\nawait b()") == 2
+
+
+def test_mas_corta_con_await():
+    assert modulo.mas_corta_con_await(["await bajar()", "await ir()"]) == "await ir()"
+    assert modulo.mas_corta_con_await(["x=1"]) is None, "Si no hay líneas con await, devolvé None"
+
+
+def test_juntar_lineas():
+    assert modulo.juntar_lineas(["a", "b", "c"]) == "a\nb\nc"
