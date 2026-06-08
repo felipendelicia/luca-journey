@@ -101,6 +101,10 @@ alcance hace falta exponerla (túnel/port-forward/dominio) y ajustar `GOOGLE_CAL
   **nunca** una "Pista:" con el código/solución. El alumno tiene que pensarla.
 - **Ayuda:** mantené `web/src/pages/ayuda.astro` al día cuando agregues o cambies features
   (desafíos de la comunidad, líderes de gimnasio, intercambios, etc.).
+- **Landing pública:** mantené `web/src/pages/conocer.astro` (la landing en `/conocer`, sin login) al día
+  cuando agregues/cambies features importantes: la grilla de features, los stats (Pokémon, regiones,
+  ejercicios), las "capturas" y el texto. Es la puerta de entrada para gente nueva — tiene que reflejar
+  lo que el proyecto ofrece HOY.
 - **Aprovechá las features nuevas:** al autorar/diseñar contenido o proponer ideas, contemplá
   las capacidades de la plataforma (desafíos de comunidad estilo CodeWars, líderes de gimnasio
   = proyectos por pasos, ▶ Ejecutar, logros, ranking) para no quedarnos atrás.

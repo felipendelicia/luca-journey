@@ -192,7 +192,11 @@ let n = 0;
         if (r.nuevo && r.bonus) { chip.classList.add('racha-nuevo'); import('../lib/sonidos.js').then((s) => s.sonarExito && s.sonarExito()).catch(() => {}); }
       }
       pintarProgreso();
-      setTimeout(() => iniciarTutorial(), 900);
+      // El tutorial espera al onboarding (elegir nombre de usuario) para no pisarse: si el onboarding ya se
+      // hizo, arranca solo; si está pendiente, arranca recién cuando termina ('onboarding:listo').
+      const lanzarTuto = () => setTimeout(() => iniciarTutorial(), 500);
+      if (localStorage.getItem('onboard:visto') === '1') lanzarTuto();
+      else window.addEventListener('onboarding:listo', lanzarTuto, { once: true });
     }
     // pintamos el progreso ya (localStorage) para no esperar; y de nuevo tras la sync de la nube
     pintarProgreso();

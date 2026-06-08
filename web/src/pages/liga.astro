@@ -148,14 +148,13 @@ const totalEj = regiones.reduce((a, r) => a + r.temas.reduce((b, t) => b + t.exI
   </script>
 
   <script>
-    import { miPerfil, guardarPerfil, actualizarSnapshot, snapshotPublico, haySupabase } from '../lib/social.js';
+    import { miPerfil, guardarPerfil, actualizarSnapshot, snapshotPublico, haySupabase, normHandle } from '../lib/social.js';
     import { usuario } from '../lib/nube.js';
     const LD = JSON.parse(document.getElementById('liga-data').textContent);
     const temas = LD.regiones.flatMap((r) => r.temas.map((t) => ({ slug: t.slug, region: r.id, ejercicios: t.exIds.map((id) => ({ id })) })));
     const B = (window.__BASE || '/').replace(/\/$/, '');
     const $ = (id) => document.getElementById(id);
     const nombre = $('nombre');
-    const normHandle = (s) => (s || '').trim().toLowerCase().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 20);
     let perfilActual = null;
 
     function bloquear(p) {

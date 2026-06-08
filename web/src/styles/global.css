@@ -2247,3 +2247,22 @@ body.claro .theme-toggle{ background:linear-gradient(180deg,#fffdf7,#eef3e6); bo
   body.claro .navlinks .navlink.activo{ background:linear-gradient(180deg,#3fbf57,#27993e); }
 }
 @media (prefers-reduced-motion: reduce){ .dex-led.r{ animation:none; } }
+
+/* ===== onboarding: modal de nombre de usuario al primer login ===== */
+.onb-modal{ position:fixed; inset:0; z-index:600; display:flex; align-items:center; justify-content:center; padding:18px;
+  background:color-mix(in srgb, var(--paper) 8%, rgba(4,7,6,.72)); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); animation:teoFade .18s ease; }
+.onb-card{ width:min(420px,96vw); background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:24px 22px; text-align:center;
+  box-shadow:0 24px 64px -22px rgba(0,0,0,.6); animation:teoPop .2s cubic-bezier(.2,.9,.3,1.15); }
+.onb-ico{ font-size:2rem; }
+.onb-card h2{ margin:8px 0 4px; font:800 1.15rem var(--font-display); color:var(--ink); }
+.onb-card > p{ margin:0 0 16px; color:var(--ink-soft); font-size:.9rem; line-height:1.5; }
+.onb-row{ display:flex; align-items:center; gap:8px; background:var(--paper-2); border:1px solid var(--line); border-radius:11px; padding:4px 12px; }
+.onb-at{ color:var(--ink-soft); font:800 1rem var(--font-mono, monospace); }
+.onb-row input{ flex:1; background:transparent; border:none; outline:none; color:var(--ink); font:800 1rem var(--font-mono, monospace); padding:9px 0; min-width:0; }
+.onb-msg{ min-height:1.1em; margin:9px 0 0; font-size:.82rem; color:var(--red); }
+.onb-acc{ display:flex; gap:10px; margin-top:16px; }
+.onb-skip,.onb-save{ flex:1; padding:11px; border-radius:11px; cursor:pointer; font:800 .88rem var(--font-mono, monospace); border:1px solid var(--line); }
+.onb-skip{ background:var(--paper-2); color:var(--ink-soft); }
+.onb-save{ background:var(--red); color:#fff; border-color:var(--red); }
+.onb-save:disabled{ opacity:.6; cursor:default; }
+@media (prefers-reduced-motion: reduce){ .onb-modal,.onb-card{ animation:none; } }

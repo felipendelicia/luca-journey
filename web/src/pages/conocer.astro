@@ -1,0 +1,179 @@
+---
+// Landing PÚBLICA (sin login). Página standalone: NO usa Base.astro (así no aparece el boot-overlay/gate).
+// Mantenela al día con las features (ver CLAUDE.md).
+import { u } from '../lib/url.ts';
+const desc = 'Aprendé Python y Linux desde cero, gratis y en tu navegador, con una aventura Pokémon: ejercicios que se corrigen solos, Pokédex, batallas PvP y una liga con medallas.';
+const titulo = 'Pokédex Codex — aprendé a programar jugando Pokémon';
+const ogImg = new URL(u('/og.png'), Astro.site).href;
+const canonical = new URL(u('/conocer'), Astro.site).href;
+const app = u('/');
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{titulo}</title>
+  <meta name="description" content={desc} />
+  <link rel="canonical" href={canonical} />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={titulo} />
+  <meta property="og:description" content={desc} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImg} />
+  <meta property="og:locale" content="es_AR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={titulo} />
+  <meta name="twitter:description" content={desc} />
+  <meta name="twitter:image" content={ogImg} />
+  <link rel="icon" type="image/svg+xml" href={u('/favicon.svg')} />
+  <meta name="theme-color" content="#070b0a" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+  <style>
+    :root{ --paper:#070b0a; --paper-2:#0b1411; --card:#0c1713; --ink:#dbf3e4; --ink-soft:#8fb8a2; --line:#1d3329;
+      --red:#ff4133; --neon:#5dff7a; --pix:'Press Start 2P',monospace; --mono:'JetBrains Mono',monospace; --crt:'VT323',monospace; }
+    *{ box-sizing:border-box; } html{ scroll-behavior:smooth; }
+    body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--mono);
+      background-image:linear-gradient(rgba(93,255,122,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(93,255,122,.04) 1px,transparent 1px); background-size:32px 32px; }
+    .wrap{ max-width:1040px; margin:0 auto; padding:0 20px; } a{ color:inherit; }
+    .nav{ position:sticky; top:0; z-index:10; display:flex; align-items:center; gap:10px; height:54px; padding:0 18px;
+      background:linear-gradient(180deg,#0f1c16,#0a140f); border-bottom:2px solid #16402b; box-shadow:inset 0 2px 0 rgba(93,255,122,.16); }
+    .lamp{ width:16px;height:16px;border-radius:50%; background:radial-gradient(circle at 32% 28%,#d9ffe6,#38e08a 50%,#0a6e44); box-shadow:0 0 10px rgba(56,224,138,.7); border:2px solid #0a1f16; }
+    .nbrand{ font:400 9px var(--pix); letter-spacing:.1em; color:#bff7d0; text-decoration:none; } .nbrand b{ color:#ff5648; }
+    .nav .cta-mini{ margin-left:auto; font:800 .72rem var(--mono); background:var(--neon); color:#06140d; padding:7px 14px; border-radius:9px; text-decoration:none; }
+    .hero{ position:relative; text-align:center; padding:64px 0 54px; overflow:hidden; }
+    .hero::before{ content:''; position:absolute; left:50%; top:-40px; width:680px; height:420px; transform:translateX(-50%);
+      background:radial-gradient(ellipse at center, rgba(93,255,122,.16), transparent 65%); pointer-events:none; }
+    .kicker{ display:inline-block; font:800 .64rem var(--mono); letter-spacing:.18em; text-transform:uppercase; color:var(--neon);
+      border:1px solid #1e4a33; background:#0c1713; padding:5px 13px; border-radius:999px; margin-bottom:20px; }
+    .h1{ font:400 2.05rem var(--pix); line-height:1.5; margin:0 0 8px; color:#fff; text-shadow:0 0 18px rgba(93,255,122,.25); }
+    .h1 .g{ color:var(--neon); } .h1 .r{ color:var(--red); }
+    .lead{ max-width:620px; margin:18px auto 0; font-size:1.06rem; line-height:1.6; color:var(--ink-soft); }
+    .cta-row{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:28px; }
+    .btn{ font:800 .92rem var(--mono); padding:13px 24px; border-radius:12px; text-decoration:none; cursor:pointer; border:1px solid transparent; display:inline-block; }
+    .btn-go{ background:linear-gradient(180deg,#7dffa0,#34d56e); color:#06140d; border-color:#5dff7a; box-shadow:0 0 22px rgba(93,255,122,.45); }
+    .btn-ghost{ background:#0c1713; color:var(--ink); border-color:#1e4a33; }
+    .free{ margin-top:14px; font-size:.82rem; color:var(--ink-soft); } .free b{ color:var(--neon); }
+    .stats{ display:flex; gap:26px; justify-content:center; flex-wrap:wrap; margin-top:34px; }
+    .stat b{ display:block; font:800 1.5rem var(--mono); color:#fff; } .stat span{ font-size:.74rem; color:var(--ink-soft); }
+    .sec{ padding:46px 0; }
+    .sec-h{ text-align:center; font:400 1.05rem var(--pix); color:#fff; margin:0 0 6px; }
+    .sec-sub{ text-align:center; color:var(--ink-soft); margin:0 0 30px; }
+    .pasos{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+    .paso{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px; }
+    .paso .n{ font:400 1rem var(--pix); color:var(--neon); } .paso h3{ margin:12px 0 6px; font-size:1rem; }
+    .paso p{ margin:0; color:var(--ink-soft); font-size:.9rem; line-height:1.5; }
+    .feats{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    .feat{ background:linear-gradient(180deg,#0d1813,#0a130f); border:1px solid var(--line); border-radius:14px; padding:18px; transition:.14s; }
+    .feat:hover{ border-color:var(--neon); transform:translateY(-3px); box-shadow:0 14px 36px -18px rgba(93,255,122,.4); }
+    .feat .ico{ font-size:1.7rem; } .feat h3{ margin:9px 0 5px; font-size:.98rem; color:#fff; }
+    .feat p{ margin:0; color:var(--ink-soft); font-size:.85rem; line-height:1.5; }
+    .shots{ display:grid; grid-template-columns:1.3fr 1fr; gap:14px; }
+    .shot{ border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--card); }
+    .shot .bar{ display:flex; align-items:center; gap:6px; padding:9px 12px; background:#0a140f; border-bottom:1px solid var(--line); }
+    .shot .bar i{ width:10px;height:10px;border-radius:50%; display:block; }
+    .shot .bar i:nth-child(1){background:#ff5f56} .shot .bar i:nth-child(2){background:#ffbd2e} .shot .bar i:nth-child(3){background:#27c93f}
+    .shot .bar span{ color:#5c6370; font:600 .7rem var(--mono); }
+    .shot .body{ padding:16px; min-height:150px; }
+    .code{ color:#dbf3e4; line-height:1.5; white-space:pre; font:1.05rem var(--crt); }
+    .code .kw{color:#c678dd}.code .fn{color:#61afef}.code .st{color:#98c379}.code .cm{color:#5c6370}
+    .ok{ color:var(--neon); margin-top:8px; white-space:normal; }
+    .mini-batalla{ display:flex; flex-direction:column; gap:8px; }
+    .hpbar{ height:8px; background:#1d3329; border-radius:99px; overflow:hidden; } .hpbar i{ display:block; height:100%; background:linear-gradient(90deg,#34d56e,#7dffa0); }
+    .mini-row{ display:flex; align-items:center; gap:8px; font-size:.85rem; }
+    .origen{ max-width:760px; margin:0 auto; background:linear-gradient(180deg,#0d1813,#0a130f); border:1px solid var(--line); border-radius:16px; padding:28px 30px; }
+    .origen-h{ font:400 .95rem var(--pix); color:#fff; margin:0 0 14px; line-height:1.5; }
+    .origen p{ color:var(--ink-soft); line-height:1.65; font-size:1rem; margin:0 0 12px; } .origen p b{ color:var(--ink); }
+    .origen-at{ color:#54c8ff; font-weight:800; }
+    .origen-vals{ font-size:.92rem !important; }
+    .origen-chips{ display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
+    .och{ font:800 .72rem var(--mono); color:var(--neon); border:1px solid #1e4a33; background:#0c1713; padding:5px 11px; border-radius:999px; }
+    .cta-final{ text-align:center; padding:56px 20px; margin:30px 0 0; border-top:1px solid var(--line);
+      background:radial-gradient(ellipse at center top, rgba(93,255,122,.1), transparent 70%); }
+    .foot{ text-align:center; color:var(--ink-soft); font-size:.8rem; padding:26px 0 50px; }
+    @media (max-width:760px){ .pasos,.feats{ grid-template-columns:1fr; } .shots{ grid-template-columns:1fr; } .h1{ font-size:1.3rem; line-height:1.6; } }
+    @media (prefers-reduced-motion: reduce){ .feat{ transition:none; } }
+  </style>
+</head>
+<body>
+  <nav class="nav"><a class="nbrand" href={app}><span class="lamp"></span> Pokédex <b>Codex</b></a><a class="cta-mini" href={app}>Entrar ▸</a></nav>
+
+  <header class="hero"><div class="wrap">
+    <span class="kicker">▰ Gratis · en tu navegador · sin instalar nada</span>
+    <h1 class="h1">Aprendé a <span class="g">programar</span><br />jugando <span class="r">Pokémon</span></h1>
+    <p class="lead">Python y Linux desde <b>cero</b>, con una aventura: resolvés ejercicios que se <b>corrigen solos</b>, atrapás Pokémon, subís de liga y peleás contra otros. Todo corre en tu navegador.</p>
+    <div class="cta-row">
+      <a class="btn btn-go" href={app}>⚡ Empezá gratis</a>
+      <a class="btn btn-ghost" href="#feats">Ver qué tiene ▾</a>
+    </div>
+    <p class="free">Entrás con Google · <b>0$</b> · sin tarjeta · 100% en el navegador</p>
+    <div class="stats">
+      <div class="stat"><b>1025</b><span>Pokémon para atrapar</span></div>
+      <div class="stat"><b>9</b><span>regiones · 50+ temas</span></div>
+      <div class="stat"><b>500+</b><span>ejercicios autocorregidos</span></div>
+    </div>
+  </div></header>
+
+  <section class="sec"><div class="wrap">
+    <h2 class="sec-h">Cómo funciona</h2>
+    <p class="sec-sub">Sin vueltas: leés, escribís código y lo corrés en el momento.</p>
+    <div class="pasos">
+      <div class="paso"><div class="n">01</div><h3>📖 Leés y probás</h3><p>El libro interactivo explica cada tema y podés correr el código ahí mismo, sin instalar Python.</p></div>
+      <div class="paso"><div class="n">02</div><h3>🏋️ Resolvés</h3><p>Hacés ejercicios y tocás <b>Corregir</b>: corremos los tests reales en tu navegador y te decimos qué falló y por qué.</p></div>
+      <div class="paso"><div class="n">03</div><h3>🎁 Progresás</h3><p>Cada tema te da medallas y Pokémon. Subís de liga, armás tu equipo y peleás contra otros entrenadores.</p></div>
+    </div>
+  </div></section>
+
+  <section class="sec" id="feats"><div class="wrap">
+    <h2 class="sec-h">Todo lo que te espera</h2>
+    <p class="sec-sub">Una plataforma de aprendizaje disfrazada de juego de Pokémon.</p>
+    <div class="feats">
+      <div class="feat"><div class="ico">📖</div><h3>Libro interactivo</h3><p>Teoría con editor + Python en vivo. Visualizador paso a paso y quizzes.</p></div>
+      <div class="feat"><div class="ico">🏋️</div><h3>Ejercicios autocorregidos</h3><p>Tests reales (pytest) corriendo en tu navegador. Te dice qué devolvió tu función vs lo esperado.</p></div>
+      <div class="feat"><div class="ico">🔴</div><h3>Pokédex + Safari</h3><p>Atrapás 1025 Pokémon (shiny, alfas, tamaños) mientras aprendés. Coleccionás de verdad.</p></div>
+      <div class="feat"><div class="ico">⚔️</div><h3>Batallas PvP en vivo</h3><p>Duelos por turnos simultáneos contra otros, con ranking ELO y un Súper que es un reto de código.</p></div>
+      <div class="feat"><div class="ico">🏅</div><h3>Liga + medallas</h3><p>9 regiones, líderes de gimnasio (proyectos por pasos) y medallas por cada tema que dominás.</p></div>
+      <div class="feat"><div class="ico">🧩</div><h3>Desafíos de la comunidad</h3><p>Creás y resolvés retos estilo CodeWars, votás soluciones y competís en el ranking.</p></div>
+    </div>
+  </div></section>
+
+  <section class="sec"><div class="wrap">
+    <h2 class="sec-h">Se ve así</h2>
+    <p class="sec-sub">Corrige, te explica el error y suma a tu progreso.</p>
+    <div class="shots">
+      <div class="shot"><div class="bar"><i></i><i></i><i></i><span>ejercicio.py</span></div>
+        <div class="body"><div class="code"><span class="cm"># corregís y te dice exactamente qué pasó</span>
+<span class="kw">def</span> <span class="fn">saludo</span>():
+    <span class="kw">return</span> <span class="st">"chau"</span></div><div class="ok">❌ Se esperaba '¡Hola!' pero tu código devolvió 'chau'.</div></div></div>
+      <div class="shot"><div class="bar"><i></i><i></i><i></i><span>batalla — en vivo</span></div>
+        <div class="body mini-batalla">
+          <div class="mini-row">🔥 Charizard Nv.40 <span style="margin-left:auto;color:var(--ink-soft)">120/120</span></div>
+          <div class="hpbar"><i style="width:100%"></i></div>
+          <div class="mini-row">🌊 Gyarados Nv.42 <span style="margin-left:auto;color:var(--ink-soft)">88/134</span></div>
+          <div class="hpbar"><i style="width:66%"></i></div>
+          <div style="margin-top:6px;font-size:.85rem;color:var(--neon)">⚡ ¡Súper listo! Resolvé tu reto de código…</div>
+        </div></div>
+    </div>
+  </div></section>
+
+  <section class="sec"><div class="wrap">
+    <div class="origen">
+      <h2 class="origen-h">💚 ¿Por qué nace este proyecto?</h2>
+      <p>Nace de las ganas de <b>enseñar</b>. Siempre quise enseñarle a programar a mi hermano <b>Luca</b> <span class="origen-at">@lucario</span> — y como a él le vuelve loco Pokémon, encontré esta forma: convertir el aprender a programar en una <b>aventura</b> que da ganas de jugar.</p>
+      <p>Si lo enganchó a él, capaz te engancha a vos también. 🙌</p>
+      <p class="origen-vals"><b>Open-source</b> y <b>sin fines de lucro</b>: gratis para siempre, hecho para que aprender programación sea accesible.</p>
+      <div class="origen-chips"><span class="och">🔓 Open-source</span><span class="och">🚫 Sin fines de lucro</span><span class="och">🆓 Gratis para siempre</span></div>
+    </div>
+  </div></section>
+
+  <section class="cta-final"><div class="wrap">
+    <h2 class="h1" style="font-size:1.3rem;line-height:1.6;margin-bottom:14px">¿Listo para <span class="g">atrapar</span> tu primer concepto?</h2>
+    <p class="lead" style="margin-bottom:22px">Es gratis y arrancás en 10 segundos.</p>
+    <a class="btn btn-go" href={app}>⚡ Empezá gratis</a>
+  </div></section>
+
+  <footer class="foot">Pokédex Codex · hecho con 💚 para aprender a programar · Python + Linux con Pokémon</footer>
+</body>
+</html>

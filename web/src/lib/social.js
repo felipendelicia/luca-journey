@@ -22,6 +22,9 @@ export function badgesDe(p) {
 // HTML de los chips (reutilizable en perfil y amigos).
 export const badgesHtml = (p) => badgesDe(p).map((b) => '<span class="esp-badge ' + b.clase + '">' + b.label + '</span>').join('');
 
+// normaliza un texto a un handle válido (minúsculas, números y _; máx 20). Compartido: liga + onboarding.
+export const normHandle = (s) => (s || '').trim().toLowerCase().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 20);
+
 const REGN = Object.fromEntries(REGION_IDS.map((id) => [id, nombreDe(id)]));
 const done = (slug, id) => localStorage.getItem(`ej:${slug}:${id}:ok`) === '1';
 
