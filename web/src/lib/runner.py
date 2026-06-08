@@ -39,8 +39,14 @@ def _msg(report):
     cr = getattr(rep, "reprcrash", None)
     crash = cr.message if (cr is not None and getattr(cr, "message", None)) else ""
     full = str(rep) if rep is not None else ""
-    # pytest prefija las líneas de detalle con "E"; las limpiamos.
-    lineas = [l.strip().lstrip("E").strip() for l in (crash + "\n" + full).splitlines() if l.strip()]
+    # pytest prefija el DETALLE con 'E' + espacios y la línea de SOURCE con '>' + espacios; los sacamos.
+    # (Sacar sólo el marcador, no cualquier 'E' inicial: si no, ">  assert a > b" hacía que el '>' del
+    #  marcador se confundiera con el operador '>' y elegía la línea de source en vez de la comparación real.)
+    def _clean(l):
+        s = l.strip()
+        m = re.match(r"^[E>]\s+(.*)$", s)
+        return m.group(1).strip() if m else s
+    lineas = [_clean(l) for l in (crash + "\n" + full).splitlines() if l.strip()]
     # la línea de comparación puede venir sola ('assert 75 == 50') o embebida
     # ('AssertionError: assert 'Onix' == 'Pikachu''); en ambos casos extraemos desde 'assert '.
     cmp_line = next(
@@ -60,6 +66,15 @@ def _msg(report):
     if noraise:
         i = noraise.find("DID NOT RAISE")
         return "DID NOT RAISE" + noraise[i + len("DID NOT RAISE"):]
+    # comparaciones por función (np.array_equal/allclose/isinstance) fallan como 'assert False';
+    # el detalle real (valores/tipos) está en la línea '+ where False = func(args)'. La exponemos
+    # (sólo se llega acá si no hubo una comparación ==/!=/is, que ya tienen prioridad arriba).
+    whereline = next(
+        (l for l in lineas if "where " in l and any(fn in l for fn in ("array_equal", "allclose", "isinstance", "issubclass"))),
+        None,
+    )
+    if whereline:
+        return whereline[whereline.find("where "):]
     custom = next((l for l in lineas if l.startswith("AssertionError:")), None)
     if custom:
         return custom

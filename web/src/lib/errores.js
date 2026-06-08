@@ -100,6 +100,17 @@ export function pistaTest(msg) {
   // pytest.raises esperaba un error que tu código NO lanzó ('DID NOT RAISE <class 'ValueError'>')
   let nr = t.match(/DID NOT RAISE\s+<class '([^']+)'>/) || t.match(/DID NOT RAISE\s+(\w+)/);
   if (nr) return `Se esperaba que tu código lanzara un error (${nr[1].split('.').pop()}), pero no lanzó ninguno.`;
+  // comparación de arrays/tipos por función ('where False = array_equal(array([..]), array([..]))')
+  if (/^where (True|False) = /.test(t)) {
+    if (/array_equal|allclose/.test(t)) {
+      const arrs = [...t.matchAll(/array\(([^)]*)\)/g)].map((x) => x[1]);
+      if (arrs.length >= 2) return `Se esperaba ${cap(arrs[1])} pero tu código devolvió ${cap(arrs[0])}.`;
+      return 'Tu arreglo no coincide con el esperado.';
+    }
+    const im = t.match(/isinstance\((.+),\s*([\w.]+)\)\s*$/) || t.match(/issubclass\((.+),\s*([\w.]+)\)\s*$/);
+    if (im) return `Se esperaba un valor de tipo ${im[2].split('.').pop()}, pero el tipo no coincide.`;
+    return 'El resultado no es del tipo esperado.';
+  }
   // si el test reventó por una excepción (no un assert), traducir el error
   if (!/^assert\b/.test(t) && pareceError(t)) {
     const e = traducirError(t);
