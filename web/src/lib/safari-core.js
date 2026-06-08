@@ -32,12 +32,12 @@ export function probCaptura(tier, ballDef, ctx) {
 // prob. de huida tras un fallo (raros huyen más), acotada a [0.2, 0.6]. Más alta que antes (huyen más seguido).
 export const fleeProb = (tier) => Math.max(0.20, Math.min(0.6, 0.20 + tier * 0.04));
 
-// piso de IVs por Excelente: los 2 índices con menor IV → 31. Devuelve copia.
+// piso de IVs por Excelente: SOLO el índice con menor IV → 31 (antes 2; ahora los IVs altos son más raros).
 export function pisoIV(ivs, calidad) {
   if (calidad !== 'Excelente') return ivs.slice();
   const out = ivs.slice();
   const orden = out.map((v, i) => [v, i]).sort((a, b) => a[0] - b[0]);
-  for (let k = 0; k < 2; k++) out[orden[k][1]] = 31;
+  for (let k = 0; k < 1; k++) out[orden[k][1]] = 31;
   return out;
 }
 
@@ -48,8 +48,8 @@ export const sincronizaNat = (compHab, compNat) => compHab === 'synchronize' ? c
 // chance de shiny según la racha de capturas seguidas. Base 0.1% (1/1000), cap ~0.67% (~1/150).
 // (En los juegos reales es ~1/4096; acá un poco más generoso, pero las shinies siguen siendo un evento.)
 export const shinyChance = (racha) => Math.min(0.0067, 0.001 * (1 + (racha || 0) * 0.1));
-// IVs perfectos garantizados por racha alta.
-export const pisoRacha = (racha) => racha >= 50 ? 3 : racha >= 30 ? 2 : racha >= 15 ? 1 : 0;
+// IVs perfectos garantizados por racha alta. Umbrales más altos y tope 2 (antes 15/30/50 → 1/2/3): IVs altos raros.
+export const pisoRacha = (racha) => racha >= 60 ? 2 : racha >= 30 ? 1 : 0;
 // ¿es de noche? (reloj del dispositivo). Noche = antes de las 6 o desde las 19.
 export const esNoche = (now = new Date()) => { const h = now.getHours(); return h < 6 || h >= 19; };
 // bioma actual: rota Hierba→Agua→Cueva cada 10 min, determinista por el reloj.

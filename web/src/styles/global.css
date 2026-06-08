@@ -2308,3 +2308,8 @@ body.claro .theme-toggle{ background:linear-gradient(180deg,#fffdf7,#eef3e6); bo
 @keyframes vsFlash{ 0%{ opacity:0; transform:scale(.2); } 40%{ opacity:1; } 100%{ opacity:0; transform:scale(1.6); } }
 @media (prefers-reduced-motion: reduce){ .vs-izq,.vs-der,.vs-mid,.vs-flash,.vs-found,.bt-recall,.bt-sendout{ animation:none; } }
 @media (max-width:560px){ .vs-row{ gap:10px; } .vs-lado{ width:96px; } .vs-av{ width:62px; height:62px; } }
+
+/* energía del safari (anti-spam de buscar) */
+.ss-energia b{ color:#ffce4a; }
+.ss-energia .ss-lbl{ font-variant-numeric:tabular-nums; min-width:52px; text-align:center; }
+.ss-energia.vacia b{ color:#ff6b6b; } .ss-energia.vacia .ss-ico{ filter:grayscale(.35); opacity:.8; }

@@ -44,8 +44,8 @@ test('Repetición: ×3 si visto', () => {
   assert.equal(catchBall(repe, ctx({ vistoYa: true })), 3);
   assert.equal(catchBall(repe, ctx({ vistoYa: false })), 1);
 });
-test('pisoIV: Excelente sube los 2 más bajos a 31', () => {
-  assert.deepEqual(pisoIV([5, 20, 2, 30, 31, 10], 'Excelente'), [31, 20, 31, 30, 31, 10]);
+test('pisoIV: Excelente sube SOLO el más bajo a 31', () => {
+  assert.deepEqual(pisoIV([5, 20, 2, 30, 31, 10], 'Excelente'), [5, 20, 31, 30, 31, 10]);
 });
 test('pisoIV: otras calidades no tocan', () => {
   assert.deepEqual(pisoIV([5, 20, 2, 30, 31, 10], 'Genial'), [5, 20, 2, 30, 31, 10]);
@@ -63,11 +63,11 @@ test('shinyChance: racha 0 = 0.001, crece, cap 0.0067', () => {
   assert.ok(shinyChance(25) > shinyChance(10));
   assert.equal(shinyChance(1000), 0.0067);
 });
-test('pisoRacha: umbrales 15/30/50', () => {
-  assert.equal(pisoRacha(14), 0);
-  assert.equal(pisoRacha(15), 1);
-  assert.equal(pisoRacha(30), 2);
-  assert.equal(pisoRacha(50), 3);
+test('pisoRacha: umbrales 30/60, tope 2', () => {
+  assert.equal(pisoRacha(29), 0);
+  assert.equal(pisoRacha(30), 1);
+  assert.equal(pisoRacha(60), 2);
+  assert.equal(pisoRacha(200), 2);
 });
 test('esNoche: 23h noche, 12h día, 5h noche', () => {
   assert.equal(esNoche(new Date(2026, 0, 1, 23, 0)), true);

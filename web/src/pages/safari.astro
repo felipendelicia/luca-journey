@@ -20,6 +20,7 @@ const total = pokemon.length;
 
     <div class="safari-barra">
       <div class="ss-item"><span class="ss-ico" set:html={ballSvg(0, 22)}></span><b id="balls">0</b><span class="ss-lbl">Pokéballs</span></div>
+      <div class="ss-item ss-energia" id="ss-energia"><span class="ss-ico">⚡</span><b id="energiaN">0</b><span class="ss-lbl" id="energiaLbl">Energía</span></div>
       <div class="ss-item"><span class="ss-ico">📕</span><b id="colN">0</b><span class="ss-lbl">de {total}</span></div>
       <div class="ss-item ss-racha" id="ss-racha" hidden><span class="ss-ico">🔥</span><b id="rachaN">0</b><span class="ss-lbl">Racha</span></div>
       <button class="btn-regalo" id="regalo">🎁 Regalo (+8)</button>
@@ -77,7 +78,7 @@ const total = pokemon.length;
     import { sincronizar, encontrar, capturar, inventarioBalls, tieneBall, companero, setCompanero,
       identidadDe, naturalezaDe, habMeta, ivPct, ivEstrellas, estado, vistos, reclamarRegalo,
       regaloDisponible, regionesDesbloqueadas, spriteUrl, pc, renombrar, caramelosDe, CARAMELOS_POR_CAPTURA,
-      racha, romperRacha } from '../lib/coleccion.js';
+      racha, romperRacha, energiaActual, energiaProxMs, gastarEnergia, MAX_ENERGIA } from '../lib/coleccion.js';
     import { biomaActual, esNoche } from '../lib/safari-core.js';
     import { sonarCaptura, sonarShiny, sonarEpico, sonarExito, sonarError, sonarClick, volumen } from '../lib/sonidos.js';
     import { TIERS } from '../lib/rareza.js';
@@ -131,9 +132,20 @@ const total = pokemon.length;
       document.addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrar(); });
     })();
 
+    function pintarEnergia() {
+      const n = energiaActual();
+      $('energiaN').textContent = n;
+      const lbl = $('energiaLbl');
+      if (n >= MAX_ENERGIA) lbl.textContent = 'Llena';
+      else lbl.textContent = '+1 en ' + Math.ceil(energiaProxMs() / 1000) + 's';
+      $('ss-energia').classList.toggle('vacia', n <= 0);
+    }
+    setInterval(pintarEnergia, 1000);   // tick: cuenta regresiva de recarga
+
     function refrescar() {
       const e = estado();
       $('balls').textContent = e.balls;
+      pintarEnergia();
       const v = vistos();
       $('colN').textContent = D.pokemon.filter((p) => v.has(p.id)).length;
       const rN = racha();
@@ -252,6 +264,11 @@ const total = pokemon.length;
       if (animando) return;
       const r = encontrar(D.pokemon, D.temas, D.pesos);
       if (r.error === 'vacio') { $('msg').textContent = 'Hacé un ejercicio para desbloquear Pokémon salvajes. 💪'; return; }
+      if (!gastarEnergia()) {   // sin energía → no se puede buscar (anti-spam); regenera con el tiempo o estudiando
+        $('msg').textContent = '⚡ Sin energía. Recuperás 1 en ' + Math.ceil(energiaProxMs() / 1000) + 's, o resolvé ejercicios (+3 c/u).';
+        return;
+      }
+      pintarEnergia();
       enc = r; tiroN = 0;
       const balls = inventarioBalls();
       ballSel = balls[0]?.key ?? null;

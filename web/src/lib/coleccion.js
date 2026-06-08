@@ -184,6 +184,7 @@ export function sincronizar(temas) {
   const ganados = new Set(get('col:ganados', []));
   const hitos = new Set(get('col:hitos', []));
   const nuevo = { balls: 0, capturas: [] };
+  let nuevosEj = 0;
 
   const capturar = (id) => { if (id) { atrapar(id, { nivel: nivelWild(id) }); nuevo.capturas.push(id); } };
   const proyOk = (k) => localStorage.getItem('proy:' + k + ':ok') === '1';
@@ -194,7 +195,7 @@ export function sincronizar(temas) {
       if (ejDone(t.slug, ex.id)) {
         hechos++;
         const gk = `${t.slug}:${ex.id}`;
-        if (!ganados.has(gk)) { ganados.add(gk); balls += BALLS_POR_EJERCICIO; nuevo.balls += BALLS_POR_EJERCICIO; }
+        if (!ganados.has(gk)) { ganados.add(gk); balls += BALLS_POR_EJERCICIO; nuevo.balls += BALLS_POR_EJERCICIO; nuevosEj++; }
       }
     }
     if (t.ejercicios.length && hechos === t.ejercicios.length && (proyOk(t.slug) || hitos.has(`tema:${t.slug}`))) {
@@ -215,6 +216,7 @@ export function sincronizar(temas) {
   set('col:balls', balls);
   set('col:ganados', [...ganados]);
   set('col:hitos', [...hitos]);
+  if (nuevosEj) { darEnergia(nuevosEj * ENERGIA_POR_EJERCICIO); nuevo.energia = nuevosEj * ENERGIA_POR_EJERCICIO; }
   return nuevo;
 }
 
@@ -295,6 +297,32 @@ export function setMovs(iid, moveIds) {
 // Premios (batalla): sumar caramelos a una familia / sumar Pokéballs.
 export function darCaramelos(id, n) { addCaramelos(id, Math.max(0, n | 0)); }
 export function darBalls(n) { set('col:balls', get('col:balls', 0) + Math.max(0, n | 0)); }
+
+// ───────── Energía del Safari (anti-spam de 'Buscar en el pasto') ─────────
+export const MAX_ENERGIA = 15;
+const ENERGIA_REGEN_MS = 60 * 1000;        // +1 cada 1 minuto
+export const ENERGIA_POR_EJERCICIO = 3;     // estudiar también recarga
+// energía actual, regenerada con el tiempo desde el último cambio (lazy: no hay timers de fondo).
+export function energiaActual() {
+  const e = get('col:energia', null);
+  if (!e || typeof e.n !== 'number') { set('col:energia', { n: MAX_ENERGIA, ts: Date.now() }); return MAX_ENERGIA; }
+  return Math.max(0, Math.min(MAX_ENERGIA, e.n + Math.floor((Date.now() - (e.ts || 0)) / ENERGIA_REGEN_MS)));
+}
+// ms hasta recuperar 1 (0 si está llena).
+export function energiaProxMs() {
+  if (energiaActual() >= MAX_ENERGIA) return 0;
+  const e = get('col:energia', { ts: Date.now() });
+  return ENERGIA_REGEN_MS - ((Date.now() - (e.ts || 0)) % ENERGIA_REGEN_MS);
+}
+// gasta n; banca lo regenerado y reinicia el reloj. false si no alcanza.
+export function gastarEnergia(n = 1) {
+  const cur = energiaActual(); if (cur < n) return false;
+  set('col:energia', { n: cur - n, ts: Date.now() }); return true;
+}
+export function darEnergia(n) {
+  const cur = energiaActual();
+  set('col:energia', { n: Math.min(MAX_ENERGIA, cur + Math.max(0, n | 0)), ts: Date.now() });
+}
 
 // ───────── Tienda · inventario de items (col:items) ─────────
 export const items = () => get('col:items', {});
@@ -409,7 +437,7 @@ function forzarPerfectos(ivs, n) {
   return out;
 }
 
-export const PROB_ALFA = 0.04;
+export const PROB_ALFA = 0.012;   // alfa raro (antes 4%). El alfa fuerza 3 IVs perfectos + XL.
 
 // PASO 1: aparece un salvaje. Rolea especie + identidad + shiny + alfa. NO persiste.
 export function encontrar(pokemon, temas, pesos = {}) {

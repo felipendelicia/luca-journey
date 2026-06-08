@@ -1,4 +1,4 @@
-import{e as z,r as N,a as _}from"./editor.D60dbama.js";import{t as A}from"./errores.CzSJvCsS.js";import"./hoisted.BdJEoW-M.js";const S=`# trazador.py — traza la ejecución del código PASO A PASO para el visualizador del libro.
+import{e as z,r as N,a as _}from"./editor.D60dbama.js";import{t as A}from"./errores.CzSJvCsS.js";import"./hoisted.jGKS51NH.js";const S=`# trazador.py — traza la ejecución del código PASO A PASO para el visualizador del libro.
 # Corre el código bajo sys.settrace y registra, antes de cada línea, el número de línea,
 # las variables y lo impreso hasta ese momento. Devuelve JSON con la lista de pasos.
 import sys
