@@ -6,6 +6,7 @@ import sys
 import json
 import ast
 import io
+import re
 import contextlib
 import traceback
 
@@ -49,6 +50,11 @@ def _msg(report):
     if cmp_line:
         i = cmp_line.find("assert ")
         return cmp_line[i:] if i >= 0 else cmp_line
+    # la EXCEPCIÓN real de Python (SyntaxError/NameError/IndentationError/…): la ÚLTIMA línea que parece
+    # excepción. Clave cuando el módulo no importa por un error de sintaxis (si no, se ve el path interno de pytest).
+    errs = [l for l in lineas if re.match(r"^[A-Za-z_][\w.]*(Error|Exception)\s*:", l)]
+    if errs:
+        return errs[-1]
     custom = next((l for l in lineas if l.startswith("AssertionError:")), None)
     if custom:
         return custom

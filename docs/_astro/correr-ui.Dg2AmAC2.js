@@ -1,4 +1,4 @@
-import{r as c}from"./editor.D60dbama.js";import{p as g,t as _,a as v}from"./errores.CzSJvCsS.js";const h=`# runner.py — corre los tests de una semana en el navegador con pytest real (Pyodide).
+import{r as c}from"./editor.D60dbama.js";import{p as g,t as v,a as _}from"./errores.CzSJvCsS.js";const h=`# runner.py — corre los tests de una semana en el navegador con pytest real (Pyodide).
 # Escribe el código del alumno como ejercicios.py + el test + helpers, con
 # CURSO_MODULO=ejercicios, y ejecuta pytest recolectando el resultado por test.
 import os
@@ -6,6 +6,7 @@ import sys
 import json
 import ast
 import io
+import re
 import contextlib
 import traceback
 
@@ -49,6 +50,11 @@ def _msg(report):
     if cmp_line:
         i = cmp_line.find("assert ")
         return cmp_line[i:] if i >= 0 else cmp_line
+    # la EXCEPCIÓN real de Python (SyntaxError/NameError/IndentationError/…): la ÚLTIMA línea que parece
+    # excepción. Clave cuando el módulo no importa por un error de sintaxis (si no, se ve el path interno de pytest).
+    errs = [l for l in lineas if re.match(r"^[A-Za-z_][\\w.]*(Error|Exception)\\s*:", l)]
+    if errs:
+        return errs[-1]
     custom = next((l for l in lineas if l.startswith("AssertionError:")), None)
     if custom:
         return custom
@@ -117,7 +123,7 @@ def correr(slug, ejercicios_code, test_code, extra_json, solo_json="[]"):
     if carga is None and not rec.res:
         carga = "No se pudieron cargar los tests (revisá errores de sintaxis)."
     return json.dumps({"carga_error": carga, "tests": rec.res})
-`;function j(r){const e=r||[],s=e.includes("flask");return{packages:["pytest",...s?["micropip"]:[],...e.filter(t=>t!=="flask")],flask:s}}function w(r,e,s=1e4){const{packages:t,flask:d}=j(e),i=d?`import micropip
+`;function y(r){const e=r||[],n=e.includes("flask");return{packages:["pytest",...n?["micropip"]:[],...e.filter(t=>t!=="flask")],flask:n}}function E(r,e,n=1e4){const{packages:t,flask:d}=y(e),i=d?`import micropip
 await micropip.install('flask')
 
-`+r:r;let a=null;function l(){return a||(a=c(i,t,"ejecutar",[""],6e4).catch(o=>{throw a=null,o})),a}return{asegurar:l,async correr(o,p,u,m,f){return await l(),c(i,t,"correr",[o,p,u,m,f],s)},async ejecutar(o){return await l(),c(i,t,"ejecutar",[o],s)}}}const n=r=>String(r??"").replace(/[&<>]/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;"})[e]);function y(r){if(/⏱️|tardó demasiado/.test(r))return'<div class="ejer-err">'+n(r)+"</div>";const e=_(r);return e?'<div class="ejer-err err-amigable"><div class="err-tit">'+e.ico+" "+n(e.titulo)+(e.linea?' <span class="err-linea">línea '+e.linea+"</span>":"")+'</div><div class="err-causa">'+n(e.causa)+'</div><div class="err-fix">💡 '+n(e.fix)+'</div><details class="err-raw"><summary>Ver el error técnico</summary><code>'+n(r)+"</code></details></div>":'<div class="ejer-err">⚠️ El código no se pudo ejecutar:<br><code>'+n(r)+"</code></div>"}function k(r){let e='<ul class="ejer-lista">';for(const s of r){if(e+='<li class="'+(s.ok?"ok":"no")+'"><span class="ic">'+(s.ok?"✅":"❌")+"</span><code>"+n(s.name)+"</code>",s.msg){const t=v(s.msg);e+='<div class="m">💡 '+n(t)+"</div>",t!==s.msg&&(e+='<details class="m-raw"><summary>detalle del test</summary><code>'+n(s.msg)+"</code></details>")}s.out&&(e+='<div class="ej-out"><span class="lbl">🖨️ tus prints</span>'+n(s.out)+"</div>"),e+="</li>"}return e+"</ul>"}function E(r){let e='<div class="ejer-run"><span class="lbl">▶ Ejecutar</span>';r.out&&g(r.out)?e+=y(r.out):r.out&&(e+='<pre class="ej-stdout">'+n(r.out)+"</pre>");const s=r.ret!==null&&r.ret!==void 0;return s&&(e+='<div class="ej-ret">↩ devuelve <code>'+n(r.ret)+"</code></div>"),!r.out&&!s&&(e+='<div class="ej-vacio">Sin salida. Agregá <code>print(...)</code> o poné una llamada como última línea para ver qué devuelve.</div>'),e+"</div>"}export{y as b,w as c,k as l,h as r,E as s};
+`+r:r;let a=null;function l(){return a||(a=c(i,t,"ejecutar",[""],6e4).catch(o=>{throw a=null,o})),a}return{asegurar:l,async correr(o,p,u,m,f){return await l(),c(i,t,"correr",[o,p,u,m,f],n)},async ejecutar(o){return await l(),c(i,t,"ejecutar",[o],n)}}}const s=r=>String(r??"").replace(/[&<>]/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;"})[e]);function j(r){if(/⏱️|tardó demasiado/.test(r))return'<div class="ejer-err">'+s(r)+"</div>";const e=v(r);return e?'<div class="ejer-err err-amigable"><div class="err-tit">'+e.ico+" "+s(e.titulo)+(e.linea?' <span class="err-linea">línea '+e.linea+"</span>":"")+'</div><div class="err-causa">'+s(e.causa)+'</div><div class="err-fix">💡 '+s(e.fix)+'</div><details class="err-raw"><summary>Ver el error técnico</summary><code>'+s(r)+"</code></details></div>":'<div class="ejer-err">⚠️ El código no se pudo ejecutar:<br><code>'+s(r)+"</code></div>"}function w(r){let e='<ul class="ejer-lista">';for(const n of r){if(e+='<li class="'+(n.ok?"ok":"no")+'"><span class="ic">'+(n.ok?"✅":"❌")+"</span><code>"+s(n.name)+"</code>",n.msg){const t=_(n.msg);e+='<div class="m">💡 '+s(t)+"</div>",t!==n.msg&&(e+='<details class="m-raw"><summary>detalle del test</summary><code>'+s(n.msg)+"</code></details>")}n.out&&(e+='<div class="ej-out"><span class="lbl">🖨️ tus prints</span>'+s(n.out)+"</div>"),e+="</li>"}return e+"</ul>"}function k(r){let e='<div class="ejer-run"><span class="lbl">▶ Ejecutar</span>';r.out&&g(r.out)?e+=j(r.out):r.out&&(e+='<pre class="ej-stdout">'+s(r.out)+"</pre>");const n=r.ret!==null&&r.ret!==void 0;return n&&(e+='<div class="ej-ret">↩ devuelve <code>'+s(r.ret)+"</code></div>"),!r.out&&!n&&(e+='<div class="ej-vacio">Sin salida. Agregá <code>print(...)</code> o poné una llamada como última línea para ver qué devuelve.</div>'),e+"</div>"}export{j as b,E as c,w as l,h as r,k as s};
