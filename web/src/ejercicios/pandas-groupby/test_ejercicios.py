@@ -66,3 +66,64 @@ def test_tipos_populares():
     r = modulo.tipos_populares(_pokedex())
     assert set(r.index) == {"Electrico", "Planta"}
     assert "Fuego" not in r.index
+
+
+def _dfg():
+    return pd.DataFrame({
+        "nombre": ["pikachu", "raichu", "onix", "staryu", "gyarados"],
+        "tipo": ["electrico", "electrico", "roca", "agua", "agua"],
+        "nivel": [25, 40, 12, 18, 35],
+    })
+
+
+def test_minimo_por_tipo():
+    assert modulo.minimo_por_tipo(_dfg()) == {"agua": 18, "electrico": 25, "roca": 12}
+
+
+def test_suma_nivel_por_tipo():
+    assert modulo.suma_nivel_por_tipo(_dfg()) == {"agua": 53, "electrico": 65, "roca": 12}
+
+
+def test_tipos_distintos():
+    assert modulo.tipos_distintos(_dfg()) == ["agua", "electrico", "roca"]
+
+
+def test_cantidad_tipos():
+    assert modulo.cantidad_tipos(_dfg()) == 3
+
+
+def test_tipo_con_mas_pokemon():
+    assert modulo.tipo_con_mas_pokemon(_dfg()) == "agua"
+
+
+def test_nombres_por_tipo():
+    assert modulo.nombres_por_tipo(_dfg()) == {"agua": ["staryu", "gyarados"], "electrico": ["pikachu", "raichu"], "roca": ["onix"]}
+
+
+def test_nivel_total():
+    assert modulo.nivel_total(_dfg()) == 130
+
+
+def test_hay_tipo():
+    assert modulo.hay_tipo(_dfg(), "agua") is True
+    assert modulo.hay_tipo(_dfg(), "fuego") is False
+
+
+def test_promedio_general():
+    assert modulo.promedio_general(_dfg(), "nivel") == 26.0
+
+
+def test_ordenar_tipos_por_cantidad():
+    assert modulo.ordenar_tipos_por_cantidad(_dfg()) == ["agua", "electrico", "roca"]
+
+
+def test_tipo_con_nivel_mas_alto():
+    assert modulo.tipo_con_nivel_mas_alto(_dfg()) == "electrico"
+
+
+def test_filtrar_grupos_grandes():
+    assert modulo.filtrar_grupos_grandes(_dfg(), 2) == ["agua", "electrico"]
+
+
+def test_mediana_por_tipo():
+    assert modulo.mediana_por_tipo(_dfg()) == {"agua": 26.5, "electrico": 32.5, "roca": 12.0}
