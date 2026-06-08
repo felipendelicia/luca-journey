@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { ProgresoService } from '../progreso/progreso.service';
 import {
-  EstadoCombate, Inst, crearCombate, elegirAccion, snapshot,
+  EstadoCombate, Inst, crearCombate, elegirAccion, snapshot, snapshotPara,
   elegirCPU, jugadorDe, rivalDe, activoDe,
 } from './motor';
+import learnsets from './data/learnsets.json';
 import { premiar, Premios, ratingDe } from './insignias';
 
 // Una sala pasa por: seleccion (cada uno elige 3) → combate (motor) → fin.
@@ -19,13 +20,16 @@ interface Sala {
   // sincronización: tras una resolución, esperamos que AMBOS clientes terminen de animar (ack) antes
   // del próximo paso (ronda/reemplazo). Si no, el próximo turno le gana a la animación → desync.
   ackRonda?: Set<string>; siguiente?: () => void; ackTimer?: ReturnType<typeof setTimeout>;
+  selTimer?: ReturnType<typeof setTimeout>;   // TTL: si la sala queda en 'seleccion' sin arrancar, se aborta
 }
-interface EnCola { uid: string; nombre: string; socketId: string; rating: number; }
+interface EnCola { uid: string; nombre: string; socketId: string; rating: number; ts: number; }
 
 const ROOM = (id: string) => `bsala:${id}`;
 const USER = (uid: string) => `bu:${uid}`;
 const GRACIA_MS = 30000;
 const RONDA_MS = 30000;     // tiempo por ronda (selección de acción) y por reemplazo
+const SEL_TTL_MS = 5 * 60 * 1000;   // una sala en 'seleccion' que no arranca en 5 min se aborta (no fugar memoria)
+const COLA_TTL_MS = 5 * 60 * 1000;  // una entrada en la cola más vieja que esto se purga
 const rid = () => Math.random().toString(36).slice(2, 10);
 const code6 = () => Math.random().toString(36).slice(2, 6).toUpperCase() + Math.floor(10 + Math.random() * 90);
 
@@ -42,6 +46,20 @@ export class SalasService {
   private emitSala(id: string, ev: string, payload: any) { this.server.to(ROOM(id)).emit(ev, payload); }
   private emitUid(uid: string, ev: string, payload: any) { this.server.to(USER(uid)).emit(ev, payload); }
   private emitSock(socketId: string | null, ev: string, payload: any) { if (socketId) this.server.to(socketId).emit(ev, payload); }
+  // emite a CADA jugador su snapshot personalizado (oculta los movs del rival). `extra` = campos extra junto a `snap`.
+  private emitSnap(sala: Sala, ev: string, extra: any = {}) {
+    if (!sala.estado) return;
+    for (const j of sala.jugadores) this.emitUid(j.uid, ev, { ...extra, snap: snapshotPara(sala.estado, j.uid) });
+  }
+  private emitEstado(sala: Sala) {
+    if (!sala.estado) return;
+    for (const j of sala.jugadores) this.emitUid(j.uid, 'estado', snapshotPara(sala.estado, j.uid));
+  }
+  // TTL de selección: si la sala no arranca el combate a tiempo, se aborta (libera memoria de invitaciones/códigos colgados).
+  private armarSelTimer(sala: Sala) {
+    if (sala.selTimer) clearTimeout(sala.selTimer);
+    sala.selTimer = setTimeout(() => { if (this.salas.get(sala.id) === sala && sala.fase === 'seleccion') this.abortar(sala); }, SEL_TTL_MS);
+  }
 
   salaDeUid(uid: string): Sala | undefined { const id = this.porUid.get(uid); return id ? this.salas.get(id) : undefined; }
 
@@ -49,7 +67,9 @@ export class SalasService {
   // cola pública: empareja con el rating ELO más cercano; si no hay nadie, encola.
   async buscar(client: Socket, uid: string, nombre: string) {
     if (this.salaDeUid(uid)) return this.emitSock(client.id, 'error', { msg: 'ya-estas-en-sala' });
-    this.cola = this.cola.filter((c) => c.uid !== uid);
+    // purga: saco mi entrada vieja + cualquiera caducada (socket muerto sin evento de disconnect, etc.).
+    const ahora = Date.now();
+    this.cola = this.cola.filter((c) => c.uid !== uid && ahora - c.ts < COLA_TTL_MS);
     let rating = 1000; try { rating = ratingDe(await this.progreso.bajar(uid)); } catch {}
     if (this.cola.length) {
       let best = 0, bestD = Infinity;
@@ -57,7 +77,7 @@ export class SalasService {
       const otro = this.cola.splice(best, 1)[0];
       this.crearSeleccion([{ uid: otro.uid, nombre: otro.nombre, socketId: otro.socketId }, { uid, nombre, socketId: client.id }]);
     } else {
-      this.cola.push({ uid, nombre, socketId: client.id, rating });
+      this.cola.push({ uid, nombre, socketId: client.id, rating, ts: ahora });
       this.emitSock(client.id, 'enCola', { ok: true });
     }
   }
@@ -68,7 +88,7 @@ export class SalasService {
     if (this.salaDeUid(uid)) return this.emitSock(client.id, 'error', { msg: 'ya-estas-en-sala' });
     const id = rid();
     const sala: Sala = { id, fase: 'seleccion', jugadores: [{ uid, nombre, socketId: client.id, equipo: [], listo: false }] };
-    this.salas.set(id, sala); this.porUid.set(uid, id);
+    this.salas.set(id, sala); this.porUid.set(uid, id); this.armarSelTimer(sala);
     client.join(ROOM(id));
     this.emitUid(rivalUid, 'invitacion', { roomId: id, de: nombre, deUid: uid });
     this.emitSock(client.id, 'invitado', { roomId: id });
@@ -87,7 +107,7 @@ export class SalasService {
     if (this.salaDeUid(uid)) return this.emitSock(client.id, 'error', { msg: 'ya-estas-en-sala' });
     const id = rid(); const code = code6();
     const sala: Sala = { id, codigo: code, fase: 'seleccion', jugadores: [{ uid, nombre, socketId: client.id, equipo: [], listo: false }] };
-    this.salas.set(id, sala); this.codigos.set(code, id); this.porUid.set(uid, id);
+    this.salas.set(id, sala); this.codigos.set(code, id); this.porUid.set(uid, id); this.armarSelTimer(sala);
     client.join(ROOM(id));
     this.emitSock(client.id, 'codigoCreado', { roomId: id, codigo: code });
   }
@@ -105,7 +125,7 @@ export class SalasService {
   private crearSeleccion(js: { uid: string; nombre: string; socketId: string }[]) {
     const id = rid();
     const sala: Sala = { id, fase: 'seleccion', jugadores: js.map((j) => ({ ...j, equipo: [], listo: false })) };
-    this.salas.set(id, sala);
+    this.salas.set(id, sala); this.armarSelTimer(sala);
     for (const j of js) { this.porUid.set(j.uid, id); this.server.to(j.socketId).socketsJoin(ROOM(id)); }
     this.anunciarEmparejado(sala);
   }
@@ -143,16 +163,21 @@ export class SalasService {
     const equipo: Inst[] = [];
     for (const iid of iids) {
       const m = porIid.get(String(iid)); if (!m) return null;
-      equipo.push({ iid: String(m.iid), id: Number(m.id), nivel: Number(m.nivel) || 1, shiny: !!m.shiny, movs: Array.isArray(m.movs) ? m.movs.map(Number) : [] });
+      // anti-trampa: solo movimientos del LEARNSET de esa especie (el cliente sube col:pc; podría meter moves ilegales).
+      // Si tras filtrar no queda ninguno (dato raro), va [] y movsDe deriva los legales por nivel.
+      const legales = new Set(((learnsets as any)[m.id] || []).map((x: any) => x.m));
+      const movs = (Array.isArray(m.movs) ? m.movs.map(Number) : []).filter((mid: number) => legales.has(mid));
+      equipo.push({ iid: String(m.iid), id: Number(m.id), nivel: Number(m.nivel) || 1, shiny: !!m.shiny, movs });
     }
     return equipo;
   }
 
   private arrancar(sala: Sala) {
+    if (sala.selTimer) { clearTimeout(sala.selTimer); sala.selTimer = undefined; }
     const primero = sala.jugadores[Math.floor(Math.random() * 2)].uid;
     sala.estado = crearCombate(sala.id, sala.jugadores.map((j) => ({ uid: j.uid, nombre: j.nombre, equipo: j.equipo })), primero);
     sala.fase = 'combate';
-    this.emitSala(sala.id, 'estado', snapshot(sala.estado));   // estado inicial (incluye eventos de entrada)
+    this.emitEstado(sala);   // estado inicial (incluye eventos de entrada); por-destinatario (oculta movs del rival)
     this.nuevaRonda(sala);
   }
 
@@ -163,7 +188,7 @@ export class SalasService {
     if (!sala.estado || sala.estado.fase !== 'combate') return;   // fin/reemplazo se manejan aparte
     const deadline = Date.now() + RONDA_MS;
     // `dur` = el cliente arma su timer con su propio reloj (sin depender del reloj del server → el rival no ve mal el timer).
-    this.emitSala(sala.id, 'ronda', { deadline, dur: RONDA_MS, snap: snapshot(sala.estado) });
+    this.emitSnap(sala, 'ronda', { deadline, dur: RONDA_MS });
     sala.rondaTimer = setTimeout(() => this.timeoutRonda(sala), RONDA_MS);
   }
 
@@ -192,7 +217,7 @@ export class SalasService {
   private trasResolucion(sala: Sala, eventos: any[]) {
     const e = sala.estado!;
     if (sala.rondaTimer) { clearTimeout(sala.rondaTimer); sala.rondaTimer = undefined; }
-    this.emitSala(sala.id, 'resolucion', { snap: snapshot(e), eventos });
+    this.emitSnap(sala, 'resolucion', { eventos });
     // esperar a que AMBOS clientes terminen de animar (ack 'listoRonda') antes del próximo paso → sin desync.
     // INCLUIDO el FIN: así el resultado no tapa la animación del golpe que gana (no más "perdió" instantáneo).
     const fin = e.fase === 'fin';
@@ -304,10 +329,11 @@ export class SalasService {
         else if (sala.estado.fase === 'combate') this.nuevaRonda(sala);
       }
     }
-    if (sala.estado) this.emitSock(client.id, 'estado', snapshot(sala.estado));
+    if (sala.estado) this.emitSock(client.id, 'estado', snapshotPara(sala.estado, uid));
   }
 
   private abortar(sala: Sala, culpaUid?: string) {
+    if (sala.selTimer) { clearTimeout(sala.selTimer); sala.selTimer = undefined; }
     this.emitSala(sala.id, 'abortado', { motivo: 'rival-salio' });
     for (const j of sala.jugadores) this.porUid.delete(j.uid);
     if (sala.codigo) this.codigos.delete(sala.codigo);
@@ -320,6 +346,8 @@ export class SalasService {
     sala.fase = 'fin';
     if (sala.graciaTimer) { clearTimeout(sala.graciaTimer); sala.graciaTimer = undefined; }
     if (sala.rondaTimer) { clearTimeout(sala.rondaTimer); sala.rondaTimer = undefined; }
+    if (sala.ackTimer) { clearTimeout(sala.ackTimer); sala.ackTimer = undefined; }
+    if (sala.selTimer) { clearTimeout(sala.selTimer); sala.selTimer = undefined; }
     let premios: Record<string, Premios> = {};
     try { premios = await premiar(this.progreso, sala.estado!, abandonoUid); } catch { premios = {}; }
     for (const j of sala.jugadores) {

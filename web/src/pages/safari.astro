@@ -81,6 +81,7 @@ const total = pokemon.length;
       identidadDe, naturalezaDe, habMeta, ivPct, ivEstrellas, estado, vistos, reclamarRegalo,
       regaloDisponible, regionesDesbloqueadas, spriteUrl, pc, renombrar, caramelosDe, CARAMELOS_POR_CAPTURA,
       racha, romperRacha, energiaActual, energiaProxMs, gastarEnergia, MAX_ENERGIA } from '../lib/coleccion.js';
+    import { refrescarDesdeNube } from '../lib/nube.js';
     import { biomaActual, esNoche } from '../lib/safari-core.js';
     import { sonarCaptura, sonarShiny, sonarEpico, sonarExito, sonarError, sonarClick, volumen } from '../lib/sonidos.js';
     import { TIERS } from '../lib/rareza.js';
@@ -183,6 +184,18 @@ const total = pokemon.length;
     setInterval(() => { if (regaloDisponible() && $('regalo').style.display === 'none') refrescar(); }, 20000);
     // bioma/hora cambian solos según el reloj → refrescá la barra de ambiente periódicamente
     setInterval(refrescar, 30000);
+
+    // al volver a la pestaña: baja el progreso de la nube + re-sincroniza (desbloquea regiones de ejercicios
+    // recién resueltos en otra pestaña/dispositivo sin tener que recargar a mano). Debounced.
+    let _resyncTs = 0;
+    async function resyncSafari() {
+      if (Date.now() - _resyncTs < 4000) return;
+      _resyncTs = Date.now();
+      try { await refrescarDesdeNube(); } catch {}
+      sincronizar(D.temas); refrescar();
+    }
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) resyncSafari(); });
+    window.addEventListener('focus', resyncSafari);
 
     // ── FX (estrellas) ───────────────────────────────────────────────────
     function estrellas(escena, { n = 16, dorado = false, color = '#ffd23f' } = {}) {

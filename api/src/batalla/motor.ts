@@ -200,19 +200,10 @@ export function elegirAccion(
       if (yo.equipo[idx].hp <= 0) return err('debilitado');
       break;
     }
-    case 'pocion': {
-      const itemId = accion.itemId || 'pocion';
-      if (POCION_CURA[itemId] != null) {
-        if (atk.hp >= atk.hpMax) return err('hp-lleno');
-      } else if (CURA_ESTADO[itemId]) {
-        const cura = CURA_ESTADO[itemId];
-        const aplica = cura === 'todos' ? !!atk.estado : atk.estado === cura;
-        if (!aplica) return err('no-aplica');
-      } else if (REVIVE[itemId] != null) {
-        if (!yo.equipo.some((c) => c.hp <= 0)) return err('sin-debilitado');
-      } else return err('item-invalido');
-      break;
-    }
+    case 'pocion':
+      // PvP NO permite items: el server no valida inventario, así que aceptarlos habilitaba curas/revivir
+      // infinitos. La UI online tampoco los ofrece. (En práctica/CPU sí hay items, pero eso corre en el cliente.)
+      return err('items-no-permitidos');
     default:
       return err('accion-desconocida');
   }
@@ -323,6 +314,16 @@ export function snapshot(e: EstadoCombate) {
     })),
     eventos: e.eventos.slice(-12),
   };
+}
+
+// snapshot por DESTINATARIO: oculta los movimientos del RIVAL (anti info-leak — el cliente solo usa los movs
+// propios; el equipo/movs completos del rival no se deben revelar). El jugador `paraUid` ve su equipo intacto.
+export function snapshotPara(e: EstadoCombate, paraUid: string): any {
+  const s: any = snapshot(e);
+  s.jugadores = s.jugadores.map((j: any) =>
+    j.uid === paraUid ? j : { ...j, equipo: j.equipo.map((c: any) => ({ ...c, movs: undefined })) },
+  );
+  return s;
 }
 
 // compat: salas.service todavía llama aplicarAccion (Task 3 lo migra a elegirAccion). Wrapper fino.

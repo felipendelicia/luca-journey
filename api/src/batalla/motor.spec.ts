@@ -1,7 +1,7 @@
 import {
   efectividad, calcularDano, aplicarEstado, danoSuper, combatiente, hpMax,
   crearCombate, elegirAccion, chequearFin, EstadoCombate, Mov,
-  acierta, puedeActuar, aplicarAilment, tickEstado,
+  acierta, puedeActuar, aplicarAilment, tickEstado, snapshotPara,
 } from './motor';
 
 const rng0 = () => 0;          // determinista: rand = 0.85
@@ -280,27 +280,26 @@ describe('estados alterados + fallar', () => {
   });
 });
 
-describe('items en PvP (cura/estado/revivir)', () => {
-  it('antídoto cura el envenenamiento del activo', () => {
+describe('items en PvP (deshabilitados)', () => {
+  it('rechaza pociones/curas/revivir — PvP no permite items (sin validar inventario serían infinitos)', () => {
     const e = combateBasico();
     e.jugadores[0].equipo[0].estado = 'veneno';
-    elegirAccion(e, 'A', { tipo: 'pocion', itemId: 'antidoto' }, rng0);
-    const r = elegirAccion(e, 'B', { tipo: 'mover', i: 0 }, rng0);
-    expect(r.error).toBeUndefined();
-    expect(e.jugadores[0].equipo[0].estado).toBeNull();
-  });
-  it('antídoto sin veneno se rechaza', () => {
-    const e = combateBasico();
-    expect(elegirAccion(e, 'A', { tipo: 'pocion', itemId: 'antidoto' }, rng0).error).toBe('no-aplica');
-    expect(e.acciones['A']).toBeNull();
-  });
-  it('revivir trae de vuelta a un debilitado al 50% HP', () => {
-    const e = combateBasico();
     e.jugadores[0].equipo[1].hp = 0;
-    elegirAccion(e, 'A', { tipo: 'pocion', itemId: 'revivir' }, rng0);
-    elegirAccion(e, 'B', { tipo: 'mover', i: 0 }, rng0);
-    const revivido = e.jugadores[0].equipo[1];
-    expect(revivido.hp).toBe(Math.round(revivido.hpMax * 0.5));
+    for (const item of ['pocion', 'superpocion', 'antidoto', 'curatotal', 'revivir']) {
+      expect(elegirAccion(e, 'A', { tipo: 'pocion', itemId: item }, rng0).error).toBe('items-no-permitidos');
+    }
+    expect(e.acciones['A']).toBeNull();   // nada se almacenó
+  });
+});
+
+describe('snapshotPara (anti info-leak)', () => {
+  it('oculta los movs del rival y conserva los propios', () => {
+    const e = combateBasico();
+    const sA: any = snapshotPara(e, 'A');
+    const yo = sA.jugadores.find((j: any) => j.uid === 'A');
+    const rival = sA.jugadores.find((j: any) => j.uid === 'B');
+    expect(yo.equipo.every((c: any) => Array.isArray(c.movs))).toBe(true);     // los míos intactos
+    expect(rival.equipo.every((c: any) => c.movs === undefined)).toBe(true);    // los del rival, ocultos
   });
 });
 
