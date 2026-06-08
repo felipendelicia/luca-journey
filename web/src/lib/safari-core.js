@@ -1,10 +1,11 @@
 // safari-core.js — lógica PURA del safari (captura / escape / tasación). Sin DOM, sin JSON, sin estado.
 // Testeable con `node --test src/lib/safari-core.test.mjs`. La orquestación (estado) vive en coleccion.js.
 
-export const MULT_CALIDAD = { Normal: 1.0, Bien: 1.3, Genial: 1.7, Excelente: 2.2 };
+// un tiro flojo (Normal) ahora PENALIZA la captura; uno bueno la sube. La calidad del anillo importa.
+export const MULT_CALIDAD = { Normal: 0.65, Bien: 1.0, Genial: 1.5, Excelente: 2.2 };
 
-// captura base por tier de rareza (1..10): comunes alto, legendarios bajo.
-export const baseCaptura = (tier) => Math.max(0.12, Math.min(0.95, 1.0 - tier * 0.08));
+// captura base por tier de rareza (1..10): comunes ~0.5, legendarios bajo. Más difícil que antes (era ~0.95).
+export const baseCaptura = (tier) => Math.max(0.06, Math.min(0.5, 0.55 - tier * 0.06));
 
 // modificador de captura de la ball (puede depender del contexto del encuentro).
 // ctx = { tiroN, calidad, tiposWild: string[], vistoYa: boolean }
@@ -28,8 +29,8 @@ export function probCaptura(tier, ballDef, ctx) {
   return Math.max(0, Math.min(1, p));
 }
 
-// prob. de huida tras un fallo (raros huyen más), acotada a [0.1, 0.5].
-export const fleeProb = (tier) => Math.max(0.10, Math.min(0.5, 0.10 + tier * 0.035));
+// prob. de huida tras un fallo (raros huyen más), acotada a [0.2, 0.6]. Más alta que antes (huyen más seguido).
+export const fleeProb = (tier) => Math.max(0.20, Math.min(0.6, 0.20 + tier * 0.04));
 
 // piso de IVs por Excelente: los 2 índices con menor IV → 31. Devuelve copia.
 export function pisoIV(ivs, calidad) {
@@ -44,8 +45,9 @@ export function pisoIV(ivs, calidad) {
 export const sincronizaNat = (compHab, compNat) => compHab === 'synchronize' ? compNat : null;
 
 // ───────────────────────── Fase 2: racha / hora / bioma / tamaños ─────────────────────────
-// chance de shiny según la racha de capturas seguidas. Base 1%, cap 8%.
-export const shinyChance = (racha) => Math.min(0.08, 0.01 * (1 + (racha || 0) * 0.12));
+// chance de shiny según la racha de capturas seguidas. Base 0.1% (1/1000), cap ~0.67% (~1/150).
+// (En los juegos reales es ~1/4096; acá un poco más generoso, pero las shinies siguen siendo un evento.)
+export const shinyChance = (racha) => Math.min(0.0067, 0.001 * (1 + (racha || 0) * 0.1));
 // IVs perfectos garantizados por racha alta.
 export const pisoRacha = (racha) => racha >= 50 ? 3 : racha >= 30 ? 2 : racha >= 15 ? 1 : 0;
 // ¿es de noche? (reloj del dispositivo). Noche = antes de las 6 o desde las 19.

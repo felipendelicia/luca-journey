@@ -12,9 +12,9 @@ const red = { key: 'red' };
 const repe = { key: 'repeticion' };
 const ctx = (o = {}) => ({ tiroN: 1, calidad: 'Normal', tiposWild: [], vistoYa: false, ...o });
 
-test('baseCaptura: comunes alto, legendarios bajo, piso 0.12', () => {
+test('baseCaptura: comunes alto, legendarios bajo, piso 0.06', () => {
   assert.ok(baseCaptura(1) > baseCaptura(10));
-  assert.ok(baseCaptura(10) >= 0.12);
+  assert.ok(baseCaptura(10) >= 0.06);
 });
 test('probCaptura: Ultra > Poké', () => {
   assert.ok(probCaptura(5, ultra, ctx()) > probCaptura(5, poke, ctx()));
@@ -54,14 +54,14 @@ test('sincronizaNat: synchronize → nat del compañero; otra → null', () => {
   assert.equal(sincronizaNat('synchronize', 7), 7);
   assert.equal(sincronizaNat('overgrow', 7), null);
 });
-test('fleeProb: crece con la rareza, en [0.1, 0.5]', () => {
+test('fleeProb: crece con la rareza, en [0.2, 0.6]', () => {
   assert.ok(fleeProb(10) > fleeProb(1));
-  assert.ok(fleeProb(1) >= 0.1 && fleeProb(10) <= 0.5);
+  assert.ok(fleeProb(1) >= 0.2 && fleeProb(10) <= 0.6);
 });
-test('shinyChance: racha 0 = 0.01, crece, cap 0.08', () => {
-  assert.equal(shinyChance(0), 0.01);
+test('shinyChance: racha 0 = 0.001, crece, cap 0.0067', () => {
+  assert.equal(shinyChance(0), 0.001);
   assert.ok(shinyChance(25) > shinyChance(10));
-  assert.equal(shinyChance(1000), 0.08);
+  assert.equal(shinyChance(1000), 0.0067);
 });
 test('pisoRacha: umbrales 15/30/50', () => {
   assert.equal(pisoRacha(14), 0);
