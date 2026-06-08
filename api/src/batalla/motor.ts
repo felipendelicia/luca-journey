@@ -136,8 +136,9 @@ function ejecutarAtaque(e: EstadoCombate, yo: JugadorEstado, rival: JugadorEstad
     }
     yo.super = Math.min(SUPER_MAX, yo.super + SUPER_GANANCIA);
   }
-  // ¿cayó el rival a este golpe? aviso de debilitamiento (el reemplazo se resuelve al final de la ronda)
-  if (activoDe(rival).hp <= 0) push('debilitado', `¡${activoDe(rival).nombre} se debilitó!`, { uid: yo.uid });
+  // ¿cayó el rival a este golpe? aviso de debilitamiento. uid = el dueño del que CAYÓ (rival), para que la
+  // animación de muerte salga en el sprite correcto (antes iba el del atacante → caía el Pokémon equivocado).
+  if (activoDe(rival).hp <= 0) push('debilitado', `¡${activoDe(rival).nombre} se debilitó!`, { uid: rival.uid });
 }
 
 // valida + almacena la acción de `uid`. Si ambos eligieron, resuelve la ronda.
