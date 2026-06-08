@@ -395,11 +395,12 @@ export function rachaHoy() {
 
 // Elige un Pokémon del pool con probabilidad proporcional a su peso (rareza):
 // los comunes (peso alto) salen más seguido; los raros/legendarios (peso bajo), menos.
-function elegirPonderado(pool, pesos) {
+function elegirPonderado(pool, pesos, mult = null) {
+  const w = (p) => (pesos[p.id] || 1) * (mult ? mult(p) : 1);
   let total = 0;
-  for (const p of pool) total += pesos[p.id] || 1;
+  for (const p of pool) total += w(p);
   let r = Math.random() * total;
-  for (const p of pool) { r -= pesos[p.id] || 1; if (r <= 0) return p; }
+  for (const p of pool) { r -= w(p); if (r <= 0) return p; }
   return pool[pool.length - 1];
 }
 
@@ -445,10 +446,9 @@ export function encontrar(pokemon, temas, pesos = {}) {
   const enRegion = pokemon.filter((p) => regiones.has(p.region));
   if (!enRegion.length) return { error: 'vacio' };
   const bioma = biomaActual(), noche = esNoche();
-  // filtro por bioma; si el bioma no tiene especies acá, cae al pool completo
-  const delBioma = enRegion.filter((p) => (biomas[String(p.id)] || 'hierba') === bioma);
-  const pool = delBioma.length ? delBioma : enRegion;
-  const elegido = elegirPonderado(pool, pesos);
+  // El bioma BIASEA, no excluye: las especies del bioma actual pesan ×4, el resto ×1. Antes era un filtro DURO
+  // y como muchas regiones (gen 4+) están todas en 'hierba', en bioma Cueva/Agua quedaban EXCLUIDAS por completo.
+  const elegido = elegirPonderado(enRegion, pesos, (p) => ((biomas[String(p.id)] || 'hierba') === bioma ? 4 : 1));
   const id = elegido.id;
   const idn = rolarIdentidad(id, habilidades);
   const comp = companero();
