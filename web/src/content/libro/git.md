@@ -249,6 +249,34 @@ Este ciclo lo vas a repetir **miles** de veces en tu vida de programador. 🔁
 
 ---
 
+## ✅ Comprobá lo que aprendiste
+
+```quiz
+P: En la analogía del libro, hacer un `commit` es como…
++ guardar la partida en Pokémon
+- apagar la consola sin guardar
+- borrar el cartucho
+> Cada commit es un punto de guardado al que siempre podés volver.
+```
+
+```quiz
+P: ¿Qué comando SUBE tus commits a GitHub?
++ git push
+- git pull
+- git status
+> `push` empuja tus cambios a la nube; `pull` los baja. Regla rápida: pu**SH** = su**bir**.
+```
+
+```quiz
+P: Querés probar una idea sin arruinar lo que ya funciona. ¿Qué creás?
++ una rama (branch) con `git switch -c`
+- un commit con `git commit`
+- un repositorio nuevo con `git init`
+> La rama es una línea temporal alternativa: experimentás ahí y, si funciona, la fusionás (`merge`).
+```
+
+---
+
 ## ➡️ ¿Y ahora qué?
 
 Probá los comandos vos mismo y seguí con el próximo capítulo para sumar más herramientas a tu Pokédex. 💪
