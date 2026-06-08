@@ -54,3 +54,49 @@ def forma(arr):
 def aplanar(matriz):
     """Recibí un array 2D y devolvé su versión 1D."""
     return matriz.flatten()
+
+
+def sumar_arrays(a, b):
+    return a + b
+
+
+def mayores_a(a, n):
+    return a[a > n]
+
+
+def contar_mayores(a, n):
+    return int((a > n).sum())
+
+
+def array_de(valor, n):
+    return np.full(n, valor)
+
+
+def invertir_array(a):
+    return a[::-1]
+
+
+def primeros_n(a, n):
+    return a[:n]
+
+
+def ultimos_n(a, n):
+    return a[-n:]
+
+
+def multiplicar_por(a, k):
+    return a * k
+
+
+def reemplazar_negativos(a):
+    b = a.copy()
+    b[b < 0] = 0
+    return b
+
+
+def indices_donde(a, n):
+    return np.where(a == n)[0]
+
+
+def concatenar(a, b):
+    return np.concatenate([a, b])

@@ -62,3 +62,47 @@ def test_aplanar():
     r = modulo.aplanar(np.array([[1, 2], [3, 4]]))
     assert np.array_equal(r, np.array([1, 2, 3, 4]))
     assert r.ndim == 1
+
+
+def test_sumar_arrays():
+    assert np.array_equal(modulo.sumar_arrays(np.array([1, 2]), np.array([10, 20])), np.array([11, 22]))
+
+
+def test_mayores_a():
+    assert np.array_equal(modulo.mayores_a(np.array([5, 20, 12, 30]), 15), np.array([20, 30]))
+
+
+def test_contar_mayores():
+    assert modulo.contar_mayores(np.array([5, 20, 30]), 15) == 2
+
+
+def test_array_de():
+    assert np.array_equal(modulo.array_de(7, 3), np.array([7, 7, 7]))
+
+
+def test_invertir_array():
+    assert np.array_equal(modulo.invertir_array(np.array([1, 2, 3])), np.array([3, 2, 1]))
+
+
+def test_primeros_n():
+    assert np.array_equal(modulo.primeros_n(np.array([1, 2, 3, 4]), 2), np.array([1, 2]))
+
+
+def test_ultimos_n():
+    assert np.array_equal(modulo.ultimos_n(np.array([1, 2, 3, 4]), 2), np.array([3, 4]))
+
+
+def test_multiplicar_por():
+    assert np.array_equal(modulo.multiplicar_por(np.array([1, 2, 3]), 10), np.array([10, 20, 30]))
+
+
+def test_reemplazar_negativos():
+    assert np.array_equal(modulo.reemplazar_negativos(np.array([-3, 5, -1, 2])), np.array([0, 5, 0, 2]))
+
+
+def test_indices_donde():
+    assert np.array_equal(modulo.indices_donde(np.array([5, 9, 5, 1]), 5), np.array([0, 2]))
+
+
+def test_concatenar():
+    assert np.array_equal(modulo.concatenar(np.array([1, 2]), np.array([3, 4])), np.array([1, 2, 3, 4]))

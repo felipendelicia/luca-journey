@@ -54,3 +54,47 @@ def normalizar(arr):
 def sin_negativos(arr):
     """Para [-3, 5, -1, 8] devolvé array([0, 5, 0, 8])."""
     return np.where(arr < 0, 0, arr)
+
+
+def minimo(arr):
+    return int(arr.min())
+
+
+def maximo(arr):
+    return int(arr.max())
+
+
+def rango(arr):
+    return int(arr.max() - arr.min())
+
+
+def producto(arr):
+    return int(arr.prod())
+
+
+def raiz(arr):
+    return np.sqrt(arr)
+
+
+def acumulado(arr):
+    return np.cumsum(arr)
+
+
+def media_por_fila(matriz):
+    return matriz.mean(axis=1)
+
+
+def maximo_por_columna(matriz):
+    return matriz.max(axis=0)
+
+
+def clip_valores(arr, lo, hi):
+    return np.clip(arr, lo, hi)
+
+
+def proporcion_mayores(arr, n):
+    return float((arr > n).mean())
+
+
+def donde_mayor(arr, n):
+    return np.where(arr > n, arr, 0)
