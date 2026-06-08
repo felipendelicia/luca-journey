@@ -52,3 +52,60 @@ def test_cuantos_por_tipo():
 def test_promedio_por_tipo():
     r = modulo.promedio_por_tipo(_db())
     assert r["Electrico"] == 30 and r["Fuego"] == 90
+
+
+def test_nivel_minimo():
+    assert modulo.nivel_minimo(_db()) == 10
+
+
+def test_cuantos_de_tipo():
+    assert modulo.cuantos_de_tipo(_db(), "Electrico") == 2
+
+
+def test_suma_por_tipo():
+    assert modulo.suma_por_tipo(_db()) == {"Electrico": 60, "Fuego": 90, "Planta": 10}
+
+
+def test_maximo_por_tipo():
+    assert modulo.maximo_por_tipo(_db()) == {"Electrico": 40, "Fuego": 90, "Planta": 10}
+
+
+def test_tipo_mas_numeroso():
+    assert modulo.tipo_mas_numeroso(_db()) == "Electrico"
+
+
+def test_nivel_total_de_tipo():
+    assert modulo.nivel_total_de_tipo(_db(), "Electrico") == 60
+
+
+def test_cantidad_tipos():
+    assert modulo.cantidad_tipos(_db()) == 3
+
+
+def test_rango_nivel():
+    assert modulo.rango_nivel(_db()) == 80
+
+
+def test_cuantos_arriba_de():
+    assert modulo.cuantos_arriba_de(_db(), 30) == 2
+
+
+def test_promedio_de_tipo():
+    assert modulo.promedio_de_tipo(_db(), "Electrico") == 30.0
+
+
+def test_minimo_por_tipo():
+    assert modulo.minimo_por_tipo(_db()) == {"Electrico": 20, "Fuego": 90, "Planta": 10}
+
+
+def test_el_mas_fuerte():
+    assert modulo.el_mas_fuerte(_db()) == "Charizard"
+
+
+def test_hay_de_tipo():
+    assert modulo.hay_de_tipo(_db(), "Fuego") is True
+    assert modulo.hay_de_tipo(_db(), "Agua") is False
+
+
+def test_conteo_por_tipo_ordenado():
+    assert modulo.conteo_por_tipo_ordenado(_db()) == [("Electrico", 2), ("Fuego", 1), ("Planta", 1)]
