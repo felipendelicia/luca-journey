@@ -47,3 +47,83 @@ def test_crear_pokedex():
     c = sqlite3.connect(":memory:")
     modulo.crear_pokedex(c)
     assert c.execute("SELECT nombre, nivel FROM pokemon").fetchall() == [("Pikachu", 25)]
+
+
+def _lleno():
+    c = _con_tabla()
+    c.executemany("INSERT INTO entrenadores VALUES (?, ?)", [("Ash", 8), ("Gary", 5), ("Misty", 3)])
+    return c
+
+
+def test_contar():
+    assert modulo.contar(_lleno()) == 3
+
+
+def test_todos_los_nombres():
+    assert modulo.todos_los_nombres(_lleno()) == ["Ash", "Gary", "Misty"]
+
+
+def test_medallas_de():
+    assert modulo.medallas_de(_lleno(), "Gary") == 5
+    assert modulo.medallas_de(_lleno(), "Brock") is None
+
+
+def test_total_medallas():
+    assert modulo.total_medallas(_lleno()) == 16
+
+
+def test_promedio_medallas():
+    assert round(modulo.promedio_medallas(_lleno()), 2) == 5.33
+
+
+def test_el_mejor():
+    assert modulo.el_mejor(_lleno()) == "Ash"
+
+
+def test_con_mas_de():
+    assert sorted(modulo.con_mas_de(_lleno(), 4)) == ["Ash", "Gary"]
+
+
+def test_ordenados_por_medallas():
+    assert modulo.ordenados_por_medallas(_lleno()) == ["Ash", "Gary", "Misty"]
+
+
+def test_existe():
+    assert modulo.existe(_lleno(), "Ash") is True
+    assert modulo.existe(_lleno(), "Brock") is False
+
+
+def test_insertar_si_no_existe():
+    c = _lleno()
+    modulo.insertar_si_no_existe(c, "Brock", 7)
+    assert modulo.contar(c) == 4
+    modulo.insertar_si_no_existe(c, "Ash", 99)
+    assert modulo.contar(c) == 4
+
+
+def test_maximo_medallas():
+    assert modulo.maximo_medallas(_lleno()) == 8
+
+
+def test_cantidad_con():
+    assert modulo.cantidad_con(_lleno(), 5) == 1
+
+
+def test_nombres_y_medallas():
+    assert modulo.nombres_y_medallas(_lleno()) == [("Ash", 8), ("Gary", 5), ("Misty", 3)]
+
+
+def test_vaciar():
+    c = _lleno()
+    modulo.vaciar(c)
+    assert modulo.contar(c) == 0
+
+
+def test_actualizar_medallas():
+    c = _lleno()
+    modulo.actualizar_medallas(c, "Misty", 10)
+    assert modulo.medallas_de(c, "Misty") == 10
+
+
+def test_campeones():
+    assert sorted(modulo.campeones(_lleno(), 5)) == ["Ash", "Gary"]
