@@ -95,7 +95,8 @@ export const pareceError = (txt) => /Traceback \(most recent call last\)|[A-Za-z
 // Pista a partir del mensaje de un test fallido (pytest). No revela la solución.
 export function pistaTest(msg) {
   if (!msg) return '';
-  const t = msg.trim();
+  // pytest a veces antepone "AssertionError:" a la comparación reescrita → lo sacamos para leer los valores.
+  const t = msg.trim().replace(/^AssertionError:\s*/, '');
   // si el test reventó por una excepción (no un assert), traducir el error
   if (!/^assert\b/.test(t) && pareceError(t)) {
     const e = traducirError(t);

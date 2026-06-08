@@ -40,12 +40,15 @@ def _msg(report):
     full = str(rep) if rep is not None else ""
     # pytest prefija las líneas de detalle con "E"; las limpiamos.
     lineas = [l.strip().lstrip("E").strip() for l in (crash + "\n" + full).splitlines() if l.strip()]
+    # la línea de comparación puede venir sola ('assert 75 == 50') o embebida
+    # ('AssertionError: assert 'Onix' == 'Pikachu''); en ambos casos extraemos desde 'assert '.
     cmp_line = next(
-        (l for l in lineas if l.startswith("assert ") and any(op in l for op in ("==", "!=", " in ", "<", ">"))),
+        (l for l in lineas if "assert " in l and any(op in l for op in ("==", "!=", " in ", "<", ">"))),
         None,
     )
     if cmp_line:
-        return cmp_line
+        i = cmp_line.find("assert ")
+        return cmp_line[i:] if i >= 0 else cmp_line
     custom = next((l for l in lineas if l.startswith("AssertionError:")), None)
     if custom:
         return custom
