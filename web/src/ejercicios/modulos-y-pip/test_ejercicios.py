@@ -135,3 +135,30 @@ def test_pokeutils_slug():
 def test_pokeutils_resumen_legendario_tiene_estrella():
     resultado = pokeutils.resumen("mewtwo", "Psiquico", 70)
     assert "⭐" in resultado, "Un legendario debería tener una estrella en el resumen"
+
+
+def test_factorial_de():
+    assert modulo.factorial_de(5) == 120
+    assert modulo.factorial_de(0) == 1
+
+
+def test_distancia():
+    assert modulo.distancia(0, 0, 3, 4) == 5.0
+    assert modulo.distancia(1, 1, 1, 1) == 0.0
+
+
+def test_muestra_unica():
+    lista = ["Pikachu", "Onix", "Eevee", "Gengar"]
+    r = modulo.muestra_unica(lista, 2)
+    assert len(r) == 2, "Tenés que devolver exactamente n Pokémon"
+    assert len(set(r)) == 2, "Los Pokémon de la muestra no se deben repetir"
+    assert all(x in lista for x in r), "Todos los elegidos deben salir de la lista original"
+
+
+def test_extension():
+    assert modulo.extension("pokedex.json") == ".json"
+    assert modulo.extension("notas.txt") == ".txt"
+
+
+def test_json_ordenado():
+    assert modulo.json_ordenado({"nivel": 25, "hp": 35}) == '{"hp": 35, "nivel": 25}'

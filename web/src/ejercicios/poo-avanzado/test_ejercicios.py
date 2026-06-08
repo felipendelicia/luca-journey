@@ -170,3 +170,48 @@ def test_cantidad_por_tipo():
     ]
     assert modulo.cantidad_por_tipo(equipo, "Fuego") == 2
     assert modulo.cantidad_por_tipo(equipo, "Planta") == 0
+
+
+def test_total_hp():
+    equipo = [modulo.PokemonFuego("Vulpix", 10), modulo.PokemonAgua("Squirtle", 12)]
+    assert modulo.total_hp(equipo) == 200
+
+
+def test_equipo_mas_fuerte():
+    a = modulo.PokemonFuego("Vulpix", 10)
+    b = modulo.PokemonAgua("Squirtle", 30)
+    assert modulo.equipo_mas_fuerte([a, b]) is b
+    assert modulo.equipo_mas_fuerte([]) is None, "Con un equipo vacío hay que devolver None"
+
+
+def test_contar_tipos():
+    equipo = [modulo.PokemonFuego("A", 5), modulo.PokemonFuego("B", 5), modulo.PokemonAgua("C", 5)]
+    assert modulo.contar_tipos(equipo) == {"Fuego": 2, "Agua": 1}
+
+
+def test_nombres_por_nivel():
+    equipo = [modulo.PokemonFuego("Bajo", 5), modulo.PokemonAgua("Alto", 40), modulo.PokemonPlanta("Medio", 20)]
+    assert modulo.nombres_por_nivel(equipo) == ["Alto", "Medio", "Bajo"]
+
+
+def test_clonar():
+    original = modulo.PokemonFuego("Charmander", 7)
+    copia = modulo.clonar(original)
+    assert type(copia) is modulo.PokemonFuego, "El clon tiene que ser de la misma clase que el original"
+    assert copia.nombre == "Charmander"
+    assert copia.nivel == 7
+    assert copia is not original, "El clon tiene que ser un objeto NUEVO, no el mismo"
+
+
+def test_mejor_contra():
+    defensor = modulo.PokemonFuego("Charmander", 10)
+    equipo = [modulo.PokemonElectrico("Pikachu", 10), modulo.PokemonAgua("Squirtle", 10)]
+    assert modulo.mejor_contra(equipo, defensor) is equipo[1]
+    assert modulo.mejor_contra([modulo.PokemonElectrico("Pika", 10)], defensor) is None, "Si nadie tiene ventaja, devolvé None"
+
+
+def test_cuantos_vivos():
+    a = modulo.PokemonFuego("Vivo", 10)
+    b = modulo.PokemonAgua("Caido", 10)
+    b.recibir_dano(100)
+    assert modulo.cuantos_vivos([a, b]) == 1

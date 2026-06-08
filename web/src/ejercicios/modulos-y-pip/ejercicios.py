@@ -144,3 +144,51 @@ def resumen_pokemon(nombre, tipo, nivel):
     """Devolvé pokeutils.resumen(nombre, tipo, nivel)."""
     # TU CÓDIGO ACÁ
     pass
+
+# Factorial
+# Devolvé el factorial de n (n! = n × (n-1) × … × 1). Está en el módulo math.
+# Ejemplo:  factorial_de(5)  →  120   ·   factorial_de(0)  →  1
+def factorial_de(n):
+    """Devolvé el factorial de n."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Distancia entre dos puntos
+# Devolvé la distancia en línea recta entre (x1, y1) y (x2, y2). El módulo math tiene
+# una función que calcula la hipotenusa a partir de los dos catetos.
+# Ejemplo:  distancia(0, 0, 3, 4)  →  5.0
+def distancia(x1, y1, x2, y2):
+    """Devolvé la distancia entre (x1, y1) y (x2, y2)."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Equipo al azar (sin repetir)
+# Elegí 'n' Pokémon al azar de la lista, SIN repetir ninguno. El módulo random tiene
+# una función para tomar una muestra sin reemplazo.
+# Ejemplo:  muestra_unica(["Pikachu", "Onix", "Eevee", "Gengar"], 2)  →  ["Eevee", "Onix"]  (al azar)
+def muestra_unica(lista, n):
+    """Devolvé n elementos al azar de la lista, sin repetir."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Extensión del archivo
+# De una ruta, devolvé solo la extensión, con el punto. El módulo os.path tiene una
+# función que separa el nombre de la extensión.
+# Ejemplo:  extension("pokedex.json")  →  ".json"   ·   extension("notas.txt")  →  ".txt"
+def extension(ruta):
+    """Devolvé la extensión del archivo (con el punto)."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# JSON ordenado por clave
+# Convertí el diccionario a texto JSON con las claves ORDENADAS alfabéticamente.
+# json.dumps tiene un parámetro para ordenar las claves.
+# Ejemplo:  json_ordenado({"nivel": 25, "hp": 35})  →  '{"hp": 35, "nivel": 25}'
+def json_ordenado(diccionario):
+    """Devolvé el diccionario como JSON con las claves ordenadas."""
+    # TU CÓDIGO ACÁ
+    pass

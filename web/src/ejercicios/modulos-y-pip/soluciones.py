@@ -117,3 +117,28 @@ def resumen_pokemon(nombre, tipo, nivel):
     """Usa el módulo propio pokeutils."""
     # Reusamos una función de nuestro módulo.
     return pokeutils.resumen(nombre, tipo, nivel)
+
+
+# 16) Factorial — math.factorial calcula n!
+def factorial_de(n):
+    return math.factorial(n)
+
+
+# 17) Distancia — math.hypot(cateto_x, cateto_y) da la hipotenusa
+def distancia(x1, y1, x2, y2):
+    return math.hypot(x2 - x1, y2 - y1)
+
+
+# 18) Muestra única — random.sample toma n elementos sin repetir
+def muestra_unica(lista, n):
+    return random.sample(lista, n)
+
+
+# 19) Extensión — os.path.splitext separa (nombre, extensión)
+def extension(ruta):
+    return os.path.splitext(ruta)[1]
+
+
+# 20) JSON ordenado — sort_keys=True ordena las claves alfabéticamente
+def json_ordenado(diccionario):
+    return json.dumps(diccionario, sort_keys=True)

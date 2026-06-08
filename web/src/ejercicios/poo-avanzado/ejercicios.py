@@ -184,3 +184,65 @@ def cantidad_por_tipo(equipo, tipo):
     """Devolvé cuántos Pokémon son del tipo dado."""
     # TU CÓDIGO ACÁ
     pass
+
+
+# HP total del equipo
+# 'equipo' es una lista de Pokémon. Devolvé la suma de los hp de todos.
+# Ejemplo:  dos Pokémon recién creados (100 HP c/u)  →  total_hp(equipo)  →  200
+def total_hp(equipo):
+    """Devolvé la suma de los hp del equipo."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# El más fuerte
+# Devolvé el objeto Pokémon con el nivel más alto. Si el equipo está vacío, devolvé None.
+def equipo_mas_fuerte(equipo):
+    """Devolvé el Pokémon de mayor nivel (o None si está vacío)."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Contar por tipo
+# Devolvé un diccionario {tipo: cantidad} con cuántos Pokémon hay de cada tipo.
+# Ejemplo:  dos de Fuego y uno de Agua  →  {"Fuego": 2, "Agua": 1}
+def contar_tipos(equipo):
+    """Devolvé un dict {tipo: cantidad}."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Nombres ordenados por nivel
+# Devolvé una lista con los NOMBRES, del nivel más alto al más bajo.
+# Ejemplo:  niveles 5, 40, 20  →  ["Alto", "Medio", "Bajo"]
+def nombres_por_nivel(equipo):
+    """Devolvé los nombres ordenados de mayor a menor nivel."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Clonar un Pokémon
+# Devolvé un Pokémon NUEVO, de la MISMA clase que el original, con su mismo nombre y nivel.
+# (No copies a mano cada subclase: hay una forma de preguntarle a un objeto de qué clase es.)
+def clonar(pokemon):
+    """Devolvé una copia nueva del pokemon, de su misma clase."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# El mejor contra un rival
+# Devolvé el primer Pokémon del equipo que tenga VENTAJA de tipo sobre 'defensor'.
+# Si ninguno tiene ventaja, devolvé None.  (Reusá tiene_ventaja.)
+def mejor_contra(equipo, defensor):
+    """Devolvé el primero con ventaja sobre defensor, o None."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Cuántos siguen en pie
+# Devolvé cuántos Pokémon del equipo NO están debilitados.
+# Ejemplo:  uno con HP y otro en 0  →  cuantos_vivos(equipo)  →  1
+def cuantos_vivos(equipo):
+    """Devolvé cuántos Pokémon no están debilitados."""
+    # TU CÓDIGO ACÁ
+    pass

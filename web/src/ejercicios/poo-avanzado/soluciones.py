@@ -186,3 +186,46 @@ def cantidad_por_tipo(equipo, tipo):
         if pokemon.tipo == tipo:
             cantidad = cantidad + 1
     return cantidad
+
+
+# 14) HP total del equipo
+def total_hp(equipo):
+    return sum(p.hp for p in equipo)
+
+
+# 15) El más fuerte (mayor nivel)
+def equipo_mas_fuerte(equipo):
+    if not equipo:
+        return None
+    return max(equipo, key=lambda p: p.nivel)
+
+
+# 16) Contar por tipo
+def contar_tipos(equipo):
+    conteo = {}
+    for p in equipo:
+        conteo[p.tipo] = conteo.get(p.tipo, 0) + 1
+    return conteo
+
+
+# 17) Nombres ordenados por nivel (desc)
+def nombres_por_nivel(equipo):
+    return [p.nombre for p in sorted(equipo, key=lambda p: p.nivel, reverse=True)]
+
+
+# 18) Clonar — type(obj) da la clase; la usamos como constructor
+def clonar(pokemon):
+    return type(pokemon)(pokemon.nombre, pokemon.nivel)
+
+
+# 19) El mejor contra un rival (reusa tiene_ventaja)
+def mejor_contra(equipo, defensor):
+    for p in equipo:
+        if tiene_ventaja(p, defensor):
+            return p
+    return None
+
+
+# 20) Cuántos siguen en pie
+def cuantos_vivos(equipo):
+    return sum(1 for p in equipo if not p.esta_debilitado())
