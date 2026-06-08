@@ -1805,6 +1805,8 @@ body.dark .id-tam{ color:var(--text); background:color-mix(in srgb, var(--accent
 .esp-badge{ display:inline-block; vertical-align:middle; font:800 .55rem var(--font-pixel, var(--font-mono));
   letter-spacing:.04em; text-transform:uppercase; color:#fff; padding:3px 8px; border-radius:999px;
   border:1px solid rgba(255,255,255,.38); white-space:nowrap; }
+/* en /amigos la fila es chica: chip COMPACTO (mono, no el pixel grande) y bien centrado */
+.am-nom .esp-badge{ font:800 .58rem var(--font-mono, monospace); letter-spacing:.01em; padding:2px 7px; line-height:1.5; }
 .esp-creator{ background:linear-gradient(135deg,#ff4d6d,#c026d3 55%,#7c3aed); box-shadow:0 0 13px rgba(192,38,211,.5); animation:espGlowC 3s ease-in-out infinite; }
 @keyframes espGlowC{ 50%{ box-shadow:0 0 20px rgba(255,77,109,.7); } }
 .esp-tester{ background:linear-gradient(135deg,#22d3ee,#0ea5e9 55%,#2563eb); box-shadow:0 0 12px rgba(14,165,233,.5); animation:espGlowT 3.4s ease-in-out infinite; }
