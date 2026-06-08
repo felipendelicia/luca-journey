@@ -182,3 +182,91 @@ def test_contar_debilitados():
     c.recibir_dano(100)   # debilitado
     assert modulo.contar_debilitados([a, b, c]) == 2
     assert modulo.contar_debilitados([]) == 0
+
+
+def _equipo():
+    return [
+        modulo.Pokemon("Pikachu", "Electrico", 25),
+        modulo.Pokemon("Charizard", "Fuego", 90),
+        modulo.Pokemon("Vulpix", "Fuego", 18),
+    ]
+
+
+def test_nombres_de():
+    assert modulo.nombres_de(_equipo()) == ["Pikachu", "Charizard", "Vulpix"]
+
+
+def test_nivel_promedio():
+    assert round(modulo.nivel_promedio(_equipo()), 2) == round((25 + 90 + 18) / 3, 2)
+
+
+def test_hay_debilitado():
+    eq = _equipo()
+    assert modulo.hay_debilitado(eq) is False
+    eq[0].recibir_dano(100)
+    assert modulo.hay_debilitado(eq) is True
+
+
+def test_curar_a_todos():
+    eq = _equipo()
+    eq[0].recibir_dano(50)
+    modulo.curar_a_todos(eq)
+    assert eq[0].hp == eq[0].hp_max
+
+
+def test_subir_a_todos():
+    eq = _equipo()
+    modulo.subir_a_todos(eq)
+    assert eq[0].nivel == 26
+
+
+def test_total_hp():
+    assert modulo.total_hp(_equipo()) == 300
+
+
+def test_vivos():
+    eq = _equipo()
+    eq[0].recibir_dano(100)
+    assert modulo.nombres_de(modulo.vivos(eq)) == ["Charizard", "Vulpix"]
+
+
+def test_ordenar_por_nivel():
+    assert modulo.nombres_de(modulo.ordenar_por_nivel(_equipo())) == ["Charizard", "Pikachu", "Vulpix"]
+
+
+def test_clonar():
+    p = modulo.Pokemon("Pikachu", "Electrico", 25)
+    c = modulo.clonar(p)
+    assert (c.nombre, c.tipo, c.nivel) == ("Pikachu", "Electrico", 25)
+    assert c is not p, "Tiene que ser un objeto NUEVO, no el mismo"
+
+
+def test_es_del_tipo():
+    p = modulo.Pokemon("Charizard", "Fuego", 90)
+    assert modulo.es_del_tipo(p, "Fuego") is True
+    assert modulo.es_del_tipo(p, "Agua") is False
+
+
+def test_contar_de_tipo():
+    assert modulo.contar_de_tipo(_equipo(), "Fuego") == 2
+
+
+def test_crear_equipo():
+    eq = modulo.crear_equipo(["A", "B"], "Agua", 10)
+    assert modulo.nombres_de(eq) == ["A", "B"]
+    assert eq[0].tipo == "Agua"
+    assert eq[1].nivel == 10
+
+
+def test_promedio_hp():
+    assert modulo.promedio_hp(_equipo()) == 100.0
+
+
+def test_el_de_nombre():
+    assert modulo.el_de_nombre(_equipo(), "Vulpix").nivel == 18
+    assert modulo.el_de_nombre(_equipo(), "Mew") is None, "Si no está, devolvé None"
+
+
+def test_mas_debil_del_equipo():
+    assert modulo.mas_debil_del_equipo(_equipo()).nombre == "Vulpix"
+    assert modulo.mas_debil_del_equipo([]) is None

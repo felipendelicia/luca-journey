@@ -141,3 +141,72 @@ def contar_debilitados(equipo):
         if pokemon.esta_debilitado():
             cantidad = cantidad + 1
     return cantidad
+
+
+def nombres_de(equipo):
+    return [p.nombre for p in equipo]
+
+
+def nivel_promedio(equipo):
+    return sum(p.nivel for p in equipo) / len(equipo)
+
+
+def hay_debilitado(equipo):
+    return any(p.esta_debilitado() for p in equipo)
+
+
+def curar_a_todos(equipo):
+    for p in equipo:
+        p.hp = p.hp_max
+    return equipo
+
+
+def subir_a_todos(equipo):
+    for p in equipo:
+        p.subir_nivel()
+    return equipo
+
+
+def total_hp(equipo):
+    return sum(p.hp for p in equipo)
+
+
+def vivos(equipo):
+    return [p for p in equipo if not p.esta_debilitado()]
+
+
+def ordenar_por_nivel(equipo):
+    return sorted(equipo, key=lambda p: p.nivel, reverse=True)
+
+
+def clonar(pokemon):
+    return Pokemon(pokemon.nombre, pokemon.tipo, pokemon.nivel)
+
+
+def es_del_tipo(pokemon, tipo):
+    return pokemon.tipo == tipo
+
+
+def contar_de_tipo(equipo, tipo):
+    return sum(1 for p in equipo if p.tipo == tipo)
+
+
+def crear_equipo(nombres, tipo, nivel):
+    return [Pokemon(n, tipo, nivel) for n in nombres]
+
+
+def promedio_hp(equipo):
+    return sum(p.porcentaje_hp() for p in equipo) / len(equipo)
+
+
+def el_de_nombre(equipo, nombre):
+    for p in equipo:
+        if p.nombre == nombre:
+            return p
+    return None
+
+
+def mas_debil_del_equipo(equipo):
+    if not equipo:
+        return None
+    return min(equipo, key=lambda p: p.nivel)

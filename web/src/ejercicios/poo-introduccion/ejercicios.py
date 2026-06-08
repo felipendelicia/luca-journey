@@ -134,3 +134,124 @@ def contar_debilitados(equipo):
     """Devolvé cuántos Pokémon de la lista están debilitados."""
     # TU CÓDIGO ACÁ
     pass
+
+
+# Nombres del equipo
+# 'equipo' es una lista de objetos Pokemon. Devolvé una lista con el nombre de cada uno.
+def nombres_de(equipo):
+    """Devolvé los nombres de los Pokémon del equipo."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Nivel promedio
+# Devolvé el nivel promedio del equipo.
+def nivel_promedio(equipo):
+    """Devolvé el nivel promedio."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# ¿Hay alguno debilitado?
+# Devolvé True si al menos un Pokémon del equipo está debilitado. Usá su método esta_debilitado().
+def hay_debilitado(equipo):
+    """Devolvé True si hay alguno debilitado."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Curar a todos
+# Poné el hp de cada Pokémon en su hp_max. Devolvé el equipo.
+def curar_a_todos(equipo):
+    """Curá a todos al máximo y devolvé el equipo."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Subir de nivel a todos
+# Subí 1 nivel a cada Pokémon (usá su método subir_nivel()). Devolvé el equipo.
+def subir_a_todos(equipo):
+    """Subí de nivel a todos y devolvé el equipo."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# HP total
+# Devolvé la suma del hp de todos los Pokémon del equipo.
+def total_hp(equipo):
+    """Devolvé la suma del hp del equipo."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Los que están vivos
+# Devolvé la lista de Pokémon que NO están debilitados.
+def vivos(equipo):
+    """Devolvé los Pokémon no debilitados."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Ordenar por nivel
+# Devolvé los Pokémon ordenados de mayor a menor nivel.
+def ordenar_por_nivel(equipo):
+    """Devolvé el equipo ordenado por nivel (desc)."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Clonar
+# Devolvé un Pokemon NUEVO con el mismo nombre, tipo y nivel que `pokemon`.
+def clonar(pokemon):
+    """Devolvé una copia del Pokémon."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# ¿Es de ese tipo?
+# Devolvé True si el `pokemon` es de tipo `tipo`.
+def es_del_tipo(pokemon, tipo):
+    """Devolvé True si el Pokémon es de ese tipo."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Contar de un tipo
+# Devolvé cuántos Pokémon del equipo son de tipo `tipo`.
+def contar_de_tipo(equipo, tipo):
+    """Devolvé cuántos son de ese tipo."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Crear un equipo
+# Recibís una lista de nombres, un tipo y un nivel. Devolvé una lista de objetos Pokemon
+# (uno por nombre, todos con ese tipo y nivel).
+def crear_equipo(nombres, tipo, nivel):
+    """Devolvé una lista de Pokemon con esos nombres."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Promedio de HP (en %)
+# Devolvé el promedio de porcentaje_hp() de todos los Pokémon.
+def promedio_hp(equipo):
+    """Devolvé el promedio de porcentaje de HP."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Buscar por nombre
+# Devolvé el Pokémon del equipo cuyo nombre sea `nombre`, o None si no está.
+def el_de_nombre(equipo, nombre):
+    """Devolvé el Pokémon con ese nombre, o None."""
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# El más débil del equipo
+# Devolvé el Pokémon con el nivel MÁS BAJO, o None si el equipo está vacío.
+def mas_debil_del_equipo(equipo):
+    """Devolvé el de menor nivel, o None."""
+    # TU CÓDIGO ACÁ
+    pass
