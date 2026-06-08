@@ -46,3 +46,65 @@ def test_nombres_y_niveles():
 
 def test_primero():
     assert modulo.primero(_db()) == "Pikachu"
+
+
+def test_ordenados_por_nivel():
+    assert modulo.ordenados_por_nivel(_db()) == ["Charizard", "Pikachu", "Bulbasaur"]
+
+
+def test_mas_de():
+    assert modulo.mas_de(_db(), 20) == ["Pikachu", "Charizard"]
+
+
+def test_de_tipo():
+    assert modulo.de_tipo(_db(), "Fuego") == ["Charizard"]
+
+
+def test_promedio_nivel():
+    assert round(modulo.promedio_nivel(_db()), 1) == 42.3
+
+
+def test_maximo_nivel():
+    assert modulo.maximo_nivel(_db()) == 90
+
+
+def test_minimo_nivel():
+    assert modulo.minimo_nivel(_db()) == 12
+
+
+def test_nivel_total():
+    assert modulo.nivel_total(_db()) == 127
+
+
+def test_contar_de_tipo():
+    assert modulo.contar_de_tipo(_db(), "Fuego") == 1
+
+
+def test_el_mas_fuerte():
+    assert modulo.el_mas_fuerte(_db()) == "Charizard"
+
+
+def test_tipos_distintos():
+    assert modulo.tipos_distintos(_db()) == ["Electrico", "Fuego", "Planta"]
+
+
+def test_existe():
+    assert modulo.existe(_db(), "Pikachu") is True
+    assert modulo.existe(_db(), "Mew") is False
+
+
+def test_nivel_de():
+    assert modulo.nivel_de(_db(), "Pikachu") == 25
+    assert modulo.nivel_de(_db(), "Mew") is None
+
+
+def test_primeros():
+    assert modulo.primeros(_db(), 2) == ["Pikachu", "Charizard"]
+
+
+def test_nombres_que_empiezan():
+    assert modulo.nombres_que_empiezan(_db(), "B") == ["Bulbasaur"]
+
+
+def test_ordenados_alfabeticamente():
+    assert modulo.ordenados_alfabeticamente(_db()) == ["Bulbasaur", "Charizard", "Pikachu"]

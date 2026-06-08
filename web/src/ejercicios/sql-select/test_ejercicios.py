@@ -48,3 +48,64 @@ def test_empiezan_con():
 
 def test_top():
     assert modulo.top(_db(), 2) == ["Charizard", "Snorlax"]
+
+
+def test_debiles():
+    assert sorted(modulo.debiles(_db(), 40)) == ["Bulbasaur", "Charmander", "Pikachu"]
+
+
+def test_entre_niveles():
+    assert sorted(modulo.entre_niveles(_db(), 20, 70)) == ["Charmander", "Pikachu", "Snorlax"]
+
+
+def test_no_de_tipo():
+    assert sorted(modulo.no_de_tipo(_db(), "Fuego")) == ["Bulbasaur", "Pikachu", "Snorlax"]
+
+
+def test_contienen():
+    assert sorted(modulo.contienen(_db(), "Char")) == ["Charizard", "Charmander"]
+
+
+def test_ordenados_alfabeticamente():
+    assert modulo.ordenados_alfabeticamente(_db()) == ["Bulbasaur", "Charizard", "Charmander", "Pikachu", "Snorlax"]
+
+
+def test_ultimo_alfabetico():
+    assert modulo.ultimo_alfabetico(_db()) == "Snorlax"
+
+
+def test_nombres_y_tipos():
+    assert modulo.nombres_y_tipos(_db())[0] == ("Pikachu", "Electrico")
+
+
+def test_dos_tipos():
+    assert sorted(modulo.dos_tipos(_db(), "Fuego", "Planta")) == ["Bulbasaur", "Charizard", "Charmander"]
+
+
+def test_cantidad_por_encima():
+    assert modulo.cantidad_por_encima(_db(), 30) == 3
+
+
+def test_nombres_largos():
+    assert sorted(modulo.nombres_largos(_db(), 7)) == ["Bulbasaur", "Charizard", "Charmander"]
+
+
+def test_el_de_nivel():
+    assert modulo.el_de_nivel(_db(), 90) == "Charizard"
+    assert modulo.el_de_nivel(_db(), 999) is None
+
+
+def test_distintos_tipos():
+    assert modulo.distintos_tipos(_db()) == ["Electrico", "Fuego", "Normal", "Planta"]
+
+
+def test_los_n_mas_debiles():
+    assert modulo.los_n_mas_debiles(_db(), 2) == ["Bulbasaur", "Pikachu"]
+
+
+def test_mas_fuerte_de_tipo():
+    assert modulo.mas_fuerte_de_tipo(_db(), "Fuego") == "Charizard"
+
+
+def test_ordenar_por_tipo():
+    assert modulo.ordenar_por_tipo(_db()) == ["Pikachu", "Charizard", "Charmander", "Snorlax", "Bulbasaur"]
