@@ -37,3 +37,71 @@ def test_hola():
 def test_version():
     r = cliente.get("/version")
     assert r.get_data(as_text=True) == "1.0"
+
+
+def _txt(ruta):
+    return cliente.get(ruta).get_data(as_text=True)
+
+
+def test_estado():
+    assert _txt("/estado") == "activo"
+
+
+def test_autor():
+    assert _txt("/autor") == "Profesor Oak"
+
+
+def test_region():
+    assert _txt("/region") == "Kanto"
+
+
+def test_total():
+    assert _txt("/total") == "151"
+
+
+def test_salud():
+    assert _txt("/salud") == "OK"
+
+
+def test_creador():
+    assert _txt("/creador") == "Ash Ketchum"
+
+
+def test_api():
+    assert _txt("/api") == "Pokedex API v1"
+
+
+def test_ayuda():
+    assert _txt("/ayuda") == "Usa /pokemon"
+
+
+def test_tipos():
+    assert _txt("/tipos") == "fuego, agua, planta"
+
+
+def test_destacado():
+    assert _txt("/destacado") == "Pikachu"
+
+
+def test_contacto():
+    assert _txt("/contacto") == "oak@kanto.com"
+
+
+def test_horario():
+    assert _txt("/horario") == "9 a 18"
+
+
+def test_reglas():
+    assert _txt("/reglas") == "Atrapalos a todos"
+
+
+def test_lema():
+    assert _txt("/lema") == "Hazte con todos"
+
+
+def test_numero():
+    assert _txt("/numero") == "25"
+
+
+def test_servidor():
+    assert _txt("/servidor") == "online"

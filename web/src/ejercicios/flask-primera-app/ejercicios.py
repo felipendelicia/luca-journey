@@ -42,3 +42,115 @@ def hola():
 def version():
     # TU CÓDIGO ACÁ
     pass
+
+
+# Ruta "/estado" → "activo"
+@app.route("/estado")
+def estado():
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Ruta "/autor" → "Profesor Oak"
+@app.route("/autor")
+def autor():
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Ruta "/region" → "Kanto"
+@app.route("/region")
+def region():
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Ruta "/total" → "151"
+@app.route("/total")
+def total():
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Ruta "/salud" → "OK"
+@app.route("/salud")
+def salud():
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Ruta "/creador" → "Ash Ketchum"
+@app.route("/creador")
+def creador():
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Ruta "/api" → "Pokedex API v1"
+@app.route("/api")
+def api():
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Ruta "/ayuda" → "Usa /pokemon"
+@app.route("/ayuda")
+def ayuda():
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Ruta "/tipos" → "fuego, agua, planta"
+@app.route("/tipos")
+def tipos():
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Ruta "/destacado" → "Pikachu"
+@app.route("/destacado")
+def destacado():
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Ruta "/contacto" → "oak@kanto.com"
+@app.route("/contacto")
+def contacto():
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Ruta "/horario" → "9 a 18"
+@app.route("/horario")
+def horario():
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Ruta "/reglas" → "Atrapalos a todos"
+@app.route("/reglas")
+def reglas():
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Ruta "/lema" → "Hazte con todos"
+@app.route("/lema")
+def lema():
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Ruta "/numero" → "25"
+@app.route("/numero")
+def numero():
+    # TU CÓDIGO ACÁ
+    pass
+
+
+# Ruta "/servidor" → "online"
+@app.route("/servidor")
+def servidor():
+    # TU CÓDIGO ACÁ
+    pass
