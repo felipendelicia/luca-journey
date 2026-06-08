@@ -52,3 +52,74 @@ def test_borrar():
 def test_borrar_no_existe():
     r = cliente.delete("/pokedex/999")
     assert r.status_code == 404
+
+
+def _cj(ruta):
+    return cliente.get(ruta).get_json()
+
+
+def test_cat_listar():
+    assert _cj("/catalogo") == [{"id": 10, "nombre": "Mew"}, {"id": 11, "nombre": "Mewtwo"}, {"id": 12, "nombre": "Ditto"}]
+
+
+def test_cat_cantidad():
+    assert _cj("/catalogo-cantidad") == {"cantidad": 3}
+
+
+def test_cat_nombres():
+    assert _cj("/catalogo-nombres") == {"nombres": ["Mew", "Mewtwo", "Ditto"]}
+
+
+def test_cat_ids():
+    assert _cj("/catalogo-ids") == {"ids": [10, 11, 12]}
+
+
+def test_cat_obtener():
+    assert _cj("/catalogo-id/11") == {"id": 11, "nombre": "Mewtwo"}
+    assert cliente.get("/catalogo-id/99").status_code == 404
+
+
+def test_cat_existe():
+    assert _cj("/catalogo-existe/10") == {"existe": True}
+    assert _cj("/catalogo-existe/99") == {"existe": False}
+
+
+def test_cat_primero():
+    assert _cj("/catalogo-primero") == {"id": 10, "nombre": "Mew"}
+
+
+def test_cat_ultimo():
+    assert _cj("/catalogo-ultimo") == {"id": 12, "nombre": "Ditto"}
+
+
+def test_cat_buscar():
+    assert _cj("/catalogo-buscar/Ditto") == {"id": 12, "nombre": "Ditto"}
+    assert cliente.get("/catalogo-buscar/Xyz").status_code == 404
+
+
+def test_cat_ordenado():
+    assert _cj("/catalogo-ordenado") == ["Ditto", "Mew", "Mewtwo"]
+
+
+def test_cat_maxid():
+    assert _cj("/catalogo-maxid") == {"max": 12}
+
+
+def test_cat_minid():
+    assert _cj("/catalogo-minid") == {"min": 10}
+
+
+def test_cat_contar():
+    assert cliente.post("/catalogo-contar", json={"ids": [1, 2, 3]}).get_json() == {"cantidad": 3}
+
+
+def test_cat_filtrar():
+    assert _cj("/catalogo-filtrar/11") == {"ids": [11, 12]}
+
+
+def test_cat_resumen():
+    assert _cj("/catalogo-resumen") == {"total": 3, "primero": "Mew"}
+
+
+def test_cat_vacio():
+    assert _cj("/catalogo-vacio") == {"vacio": False}
