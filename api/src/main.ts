@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { readFileSync, existsSync } from 'fs';
 import { NestFactory } from '@nestjs/core';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -18,6 +19,9 @@ async function bootstrap() {
       ? { cert: readFileSync(cert), key: readFileSync(key) }
       : undefined;
   const app = await NestFactory.create(AppModule, httpsOptions ? { httpsOptions } : {});
+  // headers de seguridad. Desactivamos CSP (es una API JSON, no sirve HTML) y CORP (no romper el fetch
+  // cross-origin desde GitHub Pages; el control cross-origin lo maneja CORS).
+  app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: false }));
   const origins = (process.env.CORS_ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean);
   app.enableCors({ origin: origins.length ? origins : true, credentials: true });
   await app.listen(Number(process.env.PORT) || 3000);
