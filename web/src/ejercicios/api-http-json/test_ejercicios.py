@@ -50,3 +50,62 @@ def test_nombres():
 def test_total_niveles():
     t = '[{"nivel": 25}, {"nivel": 90}, {"nivel": 12}]'
     assert modulo.total_niveles(t) == 127
+
+
+def test_con_indentacion():
+    assert modulo.con_indentacion({"a": 1}) == '{\n  "a": 1\n}'
+
+
+def test_claves_json():
+    assert modulo.claves_json('{"nombre": "Pika", "nivel": 25}') == ["nombre", "nivel"]
+
+
+def test_valor_de():
+    assert modulo.valor_de('{"nivel": 25}', "nivel") == 25
+    assert modulo.valor_de('{"nivel": 25}', "hp") is None
+
+
+def test_cantidad_items():
+    assert modulo.cantidad_items("[1, 2, 3]") == 3
+
+
+def test_agregar_campo():
+    assert modulo.agregar_campo('{"a": 1}', "b", 2) == '{"a": 1, "b": 2}'
+
+
+def test_es_json_valido():
+    assert modulo.es_json_valido('{"a": 1}') is True
+    assert modulo.es_json_valido("no es json {") is False
+
+
+def test_ordenar_claves():
+    assert modulo.ordenar_claves({"b": 2, "a": 1}) == '{"a": 1, "b": 2}'
+
+
+def test_fusionar_json():
+    assert modulo.fusionar_json('{"a": 1}', '{"b": 2}') == '{"a": 1, "b": 2}'
+
+
+def test_extraer_campo():
+    assert modulo.extraer_campo('[{"n": "a"}, {"n": "b"}]', "n") == ["a", "b"]
+
+
+def test_es_codigo_exito():
+    assert modulo.es_codigo_exito(200) is True
+    assert modulo.es_codigo_exito(404) is False
+
+
+def test_es_codigo_error():
+    assert modulo.es_codigo_error(500) is True
+    assert modulo.es_codigo_error(200) is False
+
+
+def test_clase_status():
+    assert modulo.clase_status(200) == "exito"
+    assert modulo.clase_status(301) == "redireccion"
+    assert modulo.clase_status(404) == "cliente"
+    assert modulo.clase_status(500) == "servidor"
+
+
+def test_contar_validos():
+    assert modulo.contar_validos(['{"a": 1}', "roto {", "[1, 2]"]) == 2

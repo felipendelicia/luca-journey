@@ -43,3 +43,67 @@ def test_contar_resultados():
 def test_primer_resultado():
     t = '{"results": [{"name": "bulbasaur"}, {"name": "ivysaur"}]}'
     assert modulo.primer_resultado(t) == "bulbasaur"
+
+
+_J = '[{"nombre": "pikachu", "tipo": "electrico", "nivel": 25}, {"nombre": "onix", "tipo": "roca", "nivel": 12}, {"nombre": "staryu", "tipo": "agua", "nivel": 30}]'
+
+
+def test_ultimo_resultado():
+    assert modulo.ultimo_resultado(_J)["nombre"] == "staryu"
+    assert modulo.ultimo_resultado("[]") is None
+
+
+def test_nombres_de():
+    assert modulo.nombres_de(_J) == ["pikachu", "onix", "staryu"]
+
+
+def test_ordenar_por_nivel():
+    assert modulo.ordenar_por_nivel(_J) == ["staryu", "pikachu", "onix"]
+
+
+def test_promedio_nivel():
+    assert modulo.promedio_nivel(_J) == (25 + 12 + 30) / 3
+
+
+def test_mas_fuerte():
+    assert modulo.mas_fuerte(_J) == "staryu"
+
+
+def test_existe():
+    assert modulo.existe(_J, "onix") is True
+    assert modulo.existe(_J, "mew") is False
+
+
+def test_buscar():
+    assert modulo.buscar(_J, "onix")["nivel"] == 12
+    assert modulo.buscar(_J, "mew") is None
+
+
+def test_tipos_unicos():
+    assert modulo.tipos_unicos(_J) == ["agua", "electrico", "roca"]
+
+
+def test_contar_por_tipo():
+    assert modulo.contar_por_tipo(_J) == {"electrico": 1, "roca": 1, "agua": 1}
+
+
+def test_filtrar_nivel_minimo():
+    assert modulo.filtrar_nivel_minimo(_J, 20) == ["pikachu", "staryu"]
+
+
+def test_hay_resultados():
+    assert modulo.hay_resultados(_J) is True
+    assert modulo.hay_resultados("[]") is False
+
+
+def test_nombres_de_tipo():
+    assert modulo.nombres_de_tipo(_J, "agua") == ["staryu"]
+
+
+def test_nivel_de():
+    assert modulo.nivel_de(_J, "pikachu") == 25
+    assert modulo.nivel_de(_J, "mew") is None
+
+
+def test_resumen():
+    assert modulo.resumen(_J) == {"total": 3, "tipos": 3}
