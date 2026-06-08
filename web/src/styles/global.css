@@ -1797,9 +1797,19 @@ body.dark .id-tam{ color:var(--text); background:color-mix(in srgb, var(--accent
 .am-fila{ display:flex; align-items:center; gap:12px; background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:8px 12px; }
 .am-av{ width:42px; height:42px; flex:none; border-radius:10px; background:var(--card); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:1.2rem; overflow:hidden; }
 .am-av img{ width:36px; height:36px; image-rendering:pixelated; }
-.am-info{ flex:1; display:flex; flex-direction:column; text-decoration:none; color:var(--ink); }
+.am-info{ flex:1; min-width:0; display:flex; flex-direction:column; text-decoration:none; color:var(--ink); }
 .am-info b{ font-size:.95rem; }
 .am-info span{ color:var(--ink-soft); font-size:.82rem; }
+.am-nom{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+/* badges especiales de staff (Creator/Tester) — perfil + amigos */
+.esp-badge{ display:inline-block; vertical-align:middle; font:800 .55rem var(--font-pixel, var(--font-mono));
+  letter-spacing:.04em; text-transform:uppercase; color:#fff; padding:3px 8px; border-radius:999px;
+  border:1px solid rgba(255,255,255,.38); white-space:nowrap; }
+.esp-creator{ background:linear-gradient(135deg,#ff4d6d,#c026d3 55%,#7c3aed); box-shadow:0 0 13px rgba(192,38,211,.5); animation:espGlowC 3s ease-in-out infinite; }
+@keyframes espGlowC{ 50%{ box-shadow:0 0 20px rgba(255,77,109,.7); } }
+.esp-tester{ background:linear-gradient(135deg,#22d3ee,#0ea5e9 55%,#2563eb); box-shadow:0 0 12px rgba(14,165,233,.5); animation:espGlowT 3.4s ease-in-out infinite; }
+@keyframes espGlowT{ 50%{ box-shadow:0 0 18px rgba(34,211,238,.7); } }
+@media (prefers-reduced-motion: reduce){ .esp-creator,.esp-tester{ animation:none; } }
 .am-acc{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
 .am-oferta{ background:var(--paper-2); border:1px solid var(--line); border-radius:14px; padding:10px 12px; }
 .am-of-tit{ font-weight:700; font-size:.9rem; margin-bottom:.5rem; }

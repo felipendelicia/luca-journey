@@ -57,7 +57,7 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
 
   <script type="application/json" id="am-data" set:html={JSON.stringify({ nombres })}></script>
   <script>
-    import { buscar, solicitar, responder, quitar, amigos, solicitudes, ofertas, responderOferta, cancelarOferta, listarPerfiles, misRelaciones, haySupabase } from '../lib/social.js';
+    import { buscar, solicitar, responder, quitar, amigos, solicitudes, ofertas, responderOferta, cancelarOferta, listarPerfiles, misRelaciones, haySupabase, badgesHtml } from '../lib/social.js';
     import { usuario, init as initNube, refrescarDesdeNube } from '../lib/nube.js';
 
     const D = JSON.parse(document.getElementById('am-data').textContent);
@@ -89,8 +89,9 @@ const nombres = Object.fromEntries(pokemon.map((p) => [p.id, p.nombre]));
     function fila(p, acciones) {
       const div = document.createElement('div');
       div.className = 'am-fila';
+      const bdg = badgesHtml(p);   // chips Creator/Tester
       div.innerHTML = `<div class="am-av">${avSprite(p.avatar)}</div>`
-        + `<a class="am-info" href="${B}/u?h=${esc(p.handle)}"><b>${esc(p.nombre) || 'Entrenador/a'}</b><span>@${esc(p.handle)}</span></a>`;
+        + `<a class="am-info" href="${B}/u?h=${esc(p.handle)}"><span class="am-nom"><b>${esc(p.nombre) || 'Entrenador/a'}</b>${bdg}</span><span>@${esc(p.handle)}</span></a>`;
       const acc = document.createElement('div'); acc.className = 'am-acc';
       acciones.forEach((a) => acc.appendChild(a));
       div.appendChild(acc);

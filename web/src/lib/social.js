@@ -5,10 +5,22 @@ import { evaluar, contexto } from './logros.js';
 import { REGION_IDS, nombreDe } from './regiones.mjs';
 const haySupabase = hayApi;
 
-// usuarios "Creator" (creadores del proyecto) → badge especial en el perfil. Por user_id: es DURABLE
-// (no depende del blob de progreso, así que no se pisa cuando el usuario republica su snapshot).
-const CREADORES = new Set(['39560479-e110-474e-9566-3718bd479a5a']);   // felipo
-export const esCreador = (uid) => CREADORES.has(uid);
+// badges especiales (staff del proyecto) → chips en el perfil y en amigos. Se matchean por user_id Y por
+// handle (algunas listas traen solo el handle). Son DURABLES: no dependen del blob de progreso, así que
+// NO se pisan cuando el usuario republica su snapshot.
+const BADGES_ESP = [
+  { id: 'creator', label: '👑 Creator', clase: 'esp-creator',
+    uids: ['39560479-e110-474e-9566-3718bd479a5a'], handles: ['felipo'] },
+  { id: 'tester', label: '🧪 Tester', clase: 'esp-tester',
+    uids: ['6c21d1f6-59e3-4933-9f15-0c83a322231d', '56f92dbd-4bb7-45a6-89e1-b296d67d4d78'], handles: ['lucario', 'natalu'] },
+];
+// badges especiales de un perfil {user_id, handle}.
+export function badgesDe(p) {
+  if (!p) return [];
+  return BADGES_ESP.filter((b) => (p.user_id && b.uids.includes(p.user_id)) || (p.handle && b.handles.includes(p.handle)));
+}
+// HTML de los chips (reutilizable en perfil y amigos).
+export const badgesHtml = (p) => badgesDe(p).map((b) => '<span class="esp-badge ' + b.clase + '">' + b.label + '</span>').join('');
 
 const REGN = Object.fromEntries(REGION_IDS.map((id) => [id, nombreDe(id)]));
 const done = (slug, id) => localStorage.getItem(`ej:${slug}:${id}:ok`) === '1';
