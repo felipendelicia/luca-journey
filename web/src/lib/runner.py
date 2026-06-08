@@ -44,7 +44,7 @@ def _msg(report):
     # la línea de comparación puede venir sola ('assert 75 == 50') o embebida
     # ('AssertionError: assert 'Onix' == 'Pikachu''); en ambos casos extraemos desde 'assert '.
     cmp_line = next(
-        (l for l in lineas if "assert " in l and any(op in l for op in ("==", "!=", " in ", "<", ">"))),
+        (l for l in lineas if "assert " in l and any(op in l for op in ("==", "!=", " in ", " is ", "<", ">"))),
         None,
     )
     if cmp_line:
@@ -55,6 +55,11 @@ def _msg(report):
     errs = [l for l in lineas if re.match(r"^[A-Za-z_][\w.]*(Error|Exception)\s*:", l)]
     if errs:
         return errs[-1]
+    # pytest.raises que no se cumplió: 'Failed: DID NOT RAISE <class ...>'. La traducimos aparte.
+    noraise = next((l for l in lineas if "DID NOT RAISE" in l), None)
+    if noraise:
+        i = noraise.find("DID NOT RAISE")
+        return "DID NOT RAISE" + noraise[i + len("DID NOT RAISE"):]
     custom = next((l for l in lineas if l.startswith("AssertionError:")), None)
     if custom:
         return custom

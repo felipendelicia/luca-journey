@@ -1,4 +1,4 @@
-import{r as c}from"./editor.D60dbama.js";import{p as g,t as v,a as _}from"./errores.CzSJvCsS.js";const h=`# runner.py — corre los tests de una semana en el navegador con pytest real (Pyodide).
+import{r as c}from"./editor.D60dbama.js";import{p as g,t as v,a as _}from"./errores.DDG7nBVT.js";const h=`# runner.py — corre los tests de una semana en el navegador con pytest real (Pyodide).
 # Escribe el código del alumno como ejercicios.py + el test + helpers, con
 # CURSO_MODULO=ejercicios, y ejecuta pytest recolectando el resultado por test.
 import os
@@ -44,7 +44,7 @@ def _msg(report):
     # la línea de comparación puede venir sola ('assert 75 == 50') o embebida
     # ('AssertionError: assert 'Onix' == 'Pikachu''); en ambos casos extraemos desde 'assert '.
     cmp_line = next(
-        (l for l in lineas if "assert " in l and any(op in l for op in ("==", "!=", " in ", "<", ">"))),
+        (l for l in lineas if "assert " in l and any(op in l for op in ("==", "!=", " in ", " is ", "<", ">"))),
         None,
     )
     if cmp_line:
@@ -55,6 +55,11 @@ def _msg(report):
     errs = [l for l in lineas if re.match(r"^[A-Za-z_][\\w.]*(Error|Exception)\\s*:", l)]
     if errs:
         return errs[-1]
+    # pytest.raises que no se cumplió: 'Failed: DID NOT RAISE <class ...>'. La traducimos aparte.
+    noraise = next((l for l in lineas if "DID NOT RAISE" in l), None)
+    if noraise:
+        i = noraise.find("DID NOT RAISE")
+        return "DID NOT RAISE" + noraise[i + len("DID NOT RAISE"):]
     custom = next((l for l in lineas if l.startswith("AssertionError:")), None)
     if custom:
         return custom
@@ -126,4 +131,4 @@ def correr(slug, ejercicios_code, test_code, extra_json, solo_json="[]"):
 `;function y(r){const e=r||[],n=e.includes("flask");return{packages:["pytest",...n?["micropip"]:[],...e.filter(t=>t!=="flask")],flask:n}}function E(r,e,n=1e4){const{packages:t,flask:d}=y(e),i=d?`import micropip
 await micropip.install('flask')
 
-`+r:r;let a=null;function l(){return a||(a=c(i,t,"ejecutar",[""],6e4).catch(o=>{throw a=null,o})),a}return{asegurar:l,async correr(o,p,u,m,f){return await l(),c(i,t,"correr",[o,p,u,m,f],n)},async ejecutar(o){return await l(),c(i,t,"ejecutar",[o],n)}}}const s=r=>String(r??"").replace(/[&<>]/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;"})[e]);function j(r){if(/⏱️|tardó demasiado/.test(r))return'<div class="ejer-err">'+s(r)+"</div>";const e=v(r);return e?'<div class="ejer-err err-amigable"><div class="err-tit">'+e.ico+" "+s(e.titulo)+(e.linea?' <span class="err-linea">línea '+e.linea+"</span>":"")+'</div><div class="err-causa">'+s(e.causa)+'</div><div class="err-fix">💡 '+s(e.fix)+'</div><details class="err-raw"><summary>Ver el error técnico</summary><code>'+s(r)+"</code></details></div>":'<div class="ejer-err">⚠️ El código no se pudo ejecutar:<br><code>'+s(r)+"</code></div>"}function w(r){let e='<ul class="ejer-lista">';for(const n of r){if(e+='<li class="'+(n.ok?"ok":"no")+'"><span class="ic">'+(n.ok?"✅":"❌")+"</span><code>"+s(n.name)+"</code>",n.msg){const t=_(n.msg);e+='<div class="m">💡 '+s(t)+"</div>",t!==n.msg&&(e+='<details class="m-raw"><summary>detalle del test</summary><code>'+s(n.msg)+"</code></details>")}n.out&&(e+='<div class="ej-out"><span class="lbl">🖨️ tus prints</span>'+s(n.out)+"</div>"),e+="</li>"}return e+"</ul>"}function k(r){let e='<div class="ejer-run"><span class="lbl">▶ Ejecutar</span>';r.out&&g(r.out)?e+=j(r.out):r.out&&(e+='<pre class="ej-stdout">'+s(r.out)+"</pre>");const n=r.ret!==null&&r.ret!==void 0;return n&&(e+='<div class="ej-ret">↩ devuelve <code>'+s(r.ret)+"</code></div>"),!r.out&&!n&&(e+='<div class="ej-vacio">Sin salida. Agregá <code>print(...)</code> o poné una llamada como última línea para ver qué devuelve.</div>'),e+"</div>"}export{j as b,E as c,w as l,h as r,k as s};
+`+r:r;let a=null;function l(){return a||(a=c(i,t,"ejecutar",[""],6e4).catch(o=>{throw a=null,o})),a}return{asegurar:l,async correr(o,p,u,m,f){return await l(),c(i,t,"correr",[o,p,u,m,f],n)},async ejecutar(o){return await l(),c(i,t,"ejecutar",[o],n)}}}const s=r=>String(r??"").replace(/[&<>]/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;"})[e]);function j(r){if(/⏱️|tardó demasiado/.test(r))return'<div class="ejer-err">'+s(r)+"</div>";const e=v(r);return e?'<div class="ejer-err err-amigable"><div class="err-tit">'+e.ico+" "+s(e.titulo)+(e.linea?' <span class="err-linea">línea '+e.linea+"</span>":"")+'</div><div class="err-causa">'+s(e.causa)+'</div><div class="err-fix">💡 '+s(e.fix)+'</div><details class="err-raw"><summary>Ver el error técnico</summary><code>'+s(r)+"</code></details></div>":'<div class="ejer-err">⚠️ El código no se pudo ejecutar:<br><code>'+s(r)+"</code></div>"}function N(r){let e='<ul class="ejer-lista">';for(const n of r){if(e+='<li class="'+(n.ok?"ok":"no")+'"><span class="ic">'+(n.ok?"✅":"❌")+"</span><code>"+s(n.name)+"</code>",n.msg){const t=_(n.msg);e+='<div class="m">💡 '+s(t)+"</div>",t!==n.msg&&(e+='<details class="m-raw"><summary>detalle del test</summary><code>'+s(n.msg)+"</code></details>")}n.out&&(e+='<div class="ej-out"><span class="lbl">🖨️ tus prints</span>'+s(n.out)+"</div>"),e+="</li>"}return e+"</ul>"}function w(r){let e='<div class="ejer-run"><span class="lbl">▶ Ejecutar</span>';r.out&&g(r.out)?e+=j(r.out):r.out&&(e+='<pre class="ej-stdout">'+s(r.out)+"</pre>");const n=r.ret!==null&&r.ret!==void 0;return n&&(e+='<div class="ej-ret">↩ devuelve <code>'+s(r.ret)+"</code></div>"),!r.out&&!n&&(e+='<div class="ej-vacio">Sin salida. Agregá <code>print(...)</code> o poné una llamada como última línea para ver qué devuelve.</div>'),e+"</div>"}export{j as b,E as c,N as l,h as r,w as s};

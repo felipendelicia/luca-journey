@@ -97,6 +97,9 @@ export function pistaTest(msg) {
   if (!msg) return '';
   // pytest a veces antepone "AssertionError:" a la comparación reescrita → lo sacamos para leer los valores.
   const t = msg.trim().replace(/^AssertionError:\s*/, '');
+  // pytest.raises esperaba un error que tu código NO lanzó ('DID NOT RAISE <class 'ValueError'>')
+  let nr = t.match(/DID NOT RAISE\s+<class '([^']+)'>/) || t.match(/DID NOT RAISE\s+(\w+)/);
+  if (nr) return `Se esperaba que tu código lanzara un error (${nr[1].split('.').pop()}), pero no lanzó ninguno.`;
   // si el test reventó por una excepción (no un assert), traducir el error
   if (!/^assert\b/.test(t) && pareceError(t)) {
     const e = traducirError(t);
@@ -110,6 +113,15 @@ export function pistaTest(msg) {
   if (m) return `Se esperaba que ${cap(m[1])} fuera ${m[2]} ${cap(m[3])}.`;
   m = t.match(/^assert\s+(.+?)\s+in\s+(.+)$/s);
   if (m) return `Se esperaba encontrar ${cap(m[1])} dentro de ${cap(m[2])}.`;
+  // X is True / is False / is None  (pytest reescribe a 'assert <valor> is True')
+  m = t.match(/^assert\s+(.+?)\s+is\s+(not\s+)?(True|False|None)$/s);
+  if (m) {
+    if (m[3] === 'None') return m[2]
+      ? `Se esperaba un valor, pero tu código devolvió None (no devolvió nada).`
+      : `Se esperaba None (es decir, nada) pero tu código devolvió ${cap(m[1])}.`;
+    const esp = m[2] ? (m[3] === 'True' ? 'False' : 'True') : m[3];
+    return `Se esperaba ${esp} pero tu código devolvió ${cap(m[1])}.`;
+  }
   if (/^assert\b/.test(t)) return `No se cumplió una condición esperada (${cap(t.replace(/^assert\s+/, ''), 80)}).`;
   return t;
 }
