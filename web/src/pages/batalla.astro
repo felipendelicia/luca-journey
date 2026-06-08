@@ -880,7 +880,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
           await esperar(260);
           if (defImg) defImg.classList.remove('bt-hit'); document.querySelector('.bt-arena').classList.remove('bt-sacude');
           await esperar(520);
-        } else if (ev.t === 'cambio' || ev.t === 'reemplazo' || ev.t === 'entra') {
+        } else if (ev.t === 'cambiar' || ev.t === 'cambio' || ev.t === 'reemplazo' || ev.t === 'entra') {
           await narrarRonda(ev.texto || '¡Adelante!');
           mostrarLado(snap, dueno, ev.hpRest, ev.hpMax);   // cambia el sprite/HUD al nuevo Pokémon EN EL MOMENTO
           const c = actDe(snap, dueno); if (c) cry(c.id, 0.4); await esperar(560);
@@ -901,10 +901,10 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       OS = { snap, prev: OS && OS.snap }; pintarHud(snap);
       quitarPrimero();
       ONL.animando = false;
-      if (snap.fase === 'fin') { bannerOnline('🏁', '¡Fin del combate!', 'fin'); return; }
-      // aviso al server que terminé de animar; espera al rival antes de la próxima ronda/reemplazo (anti-desync).
-      // Recién cuando llegue `ronda`/`reemplazo` se reabre la selección, sincronizado con el otro cliente.
+      // aviso al server que terminé de animar — SIEMPRE, incluido el FIN: así el server espera a que AMBOS
+      // terminen de ver la animación antes de mostrar el resultado (no más "perdió" instantáneo sin animación).
       online.ackRonda();
+      if (snap.fase === 'fin') { bannerOnline('🏁', '¡Fin del combate!', 'fin'); return; }
       bannerOnline('⌛', 'Esperando al rival…', 'resolviendo');
     }
 
@@ -1004,7 +1004,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
         bannerOnline('🟢', 'Elegí tu acción', 'elegir');
         renderOnline();
         narrarRonda('¡Elegí tu acción!');
-        armarTimerOnline(d.deadline);
+        armarTimerOnline(Date.now() + (d.dur || 30000));   // duración local: sin depender del reloj del server (el rival veía mal el timer)
         if (!musOn) { musOn = true; musicaBatalla(); }
       });
       // el rival bloqueó su acción → ya no puedo re-elegir

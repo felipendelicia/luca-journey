@@ -158,7 +158,8 @@ export class SalasService {
     if (sala.rondaTimer) { clearTimeout(sala.rondaTimer); sala.rondaTimer = undefined; }
     if (!sala.estado || sala.estado.fase !== 'combate') return;   // fin/reemplazo se manejan aparte
     const deadline = Date.now() + RONDA_MS;
-    this.emitSala(sala.id, 'ronda', { deadline, snap: snapshot(sala.estado) });
+    // `dur` = el cliente arma su timer con su propio reloj (sin depender del reloj del server → el rival no ve mal el timer).
+    this.emitSala(sala.id, 'ronda', { deadline, dur: RONDA_MS, snap: snapshot(sala.estado) });
     sala.rondaTimer = setTimeout(() => this.timeoutRonda(sala), RONDA_MS);
   }
 
@@ -188,13 +189,15 @@ export class SalasService {
     const e = sala.estado!;
     if (sala.rondaTimer) { clearTimeout(sala.rondaTimer); sala.rondaTimer = undefined; }
     this.emitSala(sala.id, 'resolucion', { snap: snapshot(e), eventos });
-    if (e.fase === 'fin') return void this.finalizar(sala);
     // esperar a que AMBOS clientes terminen de animar (ack 'listoRonda') antes del próximo paso → sin desync.
+    // INCLUIDO el FIN: así el resultado no tapa la animación del golpe que gana (no más "perdió" instantáneo).
+    const fin = e.fase === 'fin';
     const reemplazo = e.fase === 'reemplazo';
     const reemplazan = reemplazo ? [...(e.reemplazan || [])] : [];
     this.esperarAck(sala, () => {
       if (!sala.estado) return;
-      if (reemplazo) { this.emitSala(sala.id, 'reemplazo', { uids: reemplazan }); this.armarTimerReemplazo(sala); }
+      if (fin) this.finalizar(sala);
+      else if (reemplazo) { this.emitSala(sala.id, 'reemplazo', { uids: reemplazan }); this.armarTimerReemplazo(sala); }
       else this.nuevaRonda(sala);
     });
   }
