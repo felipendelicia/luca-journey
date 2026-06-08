@@ -2245,6 +2245,18 @@ body.claro .theme-toggle{ background:linear-gradient(180deg,#fffdf7,#eef3e6); bo
   .navlinks .navlink.activo{ background:linear-gradient(180deg,#7dffa0,#34d56e); }
   body.claro .navlinks{ background:#eef3e6; }
   body.claro .navlinks .navlink.activo{ background:linear-gradient(180deg,#3fbf57,#27993e); }
+  /* la marca no envuelve a 2 líneas; el brand-link puede encogerse */
+  .brand-link{ min-width:0; flex-shrink:1; }
+  .brand{ white-space:nowrap; }
+  .dex-plate{ min-width:0; overflow:hidden; }
+}
+/* pantallas chicas: marca más compacta y solo la lámpara (sin los 3 LEDs) para que entre todo en una línea */
+@media (max-width:480px){
+  .topbar{ gap:6px; padding:0 10px; }
+  .topbar::before,.topbar::after{ display:none; }   /* sin tornillos: liberan espacio en los bordes */
+  .dex-leds{ gap:0; } .dex-led{ display:none; } .dex-lamp{ width:16px; height:16px; }
+  .dex-plate{ padding:5px 9px; }
+  .brand{ font-size:8px; letter-spacing:.04em; }
 }
 @media (prefers-reduced-motion: reduce){ .dex-led.r{ animation:none; } }
 
@@ -2266,3 +2278,33 @@ body.claro .theme-toggle{ background:linear-gradient(180deg,#fffdf7,#eef3e6); bo
 .onb-save{ background:var(--red); color:#fff; border-color:var(--red); }
 .onb-save:disabled{ opacity:.6; cursor:default; }
 @media (prefers-reduced-motion: reduce){ .onb-modal,.onb-card{ animation:none; } }
+
+/* ===== batalla: animación de cambio (recall→send-out), botón "Al azar", reveal "VS" ===== */
+.bt-sprite.bt-recall{ animation:btRecall .24s ease-in forwards; }
+@keyframes btRecall{ to{ transform:scale(.5) translateY(12px); opacity:0; } }
+.bt-sprite.bt-sendout{ animation:btSendout .3s ease-out; }
+@keyframes btSendout{ from{ transform:scale(.6); opacity:0; } to{ transform:none; opacity:1; } }
+.bt-selbar{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:.2rem 0 1rem; }
+.bt-selbar .bt-filtros{ margin:0; flex:1 1 auto; }
+.bt-random{ font:800 .74rem var(--font-mono, monospace); padding:7px 13px; border-radius:10px; cursor:pointer; white-space:nowrap;
+  color:var(--ink); background:var(--paper-2); border:1px solid var(--line); }
+.bt-random:hover{ border-color:var(--red); }
+.vs-reveal{ position:fixed; inset:0; z-index:400; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:26px;
+  background:radial-gradient(ellipse at center, rgba(20,30,24,.96), rgba(4,7,6,.98)); }
+.vs-reveal.vs-out{ animation:vsFade .26s ease forwards; } @keyframes vsFade{ to{ opacity:0; } }
+.vs-found{ font:400 1rem var(--font-pixel, var(--font-mono)); color:var(--neon, #5dff7a); letter-spacing:.06em; text-shadow:0 0 14px rgba(93,255,122,.6); animation:vsFound .4s ease both; }
+@keyframes vsFound{ from{ opacity:0; transform:translateY(-10px); } to{ opacity:1; transform:none; } }
+.vs-row{ display:flex; align-items:center; gap:18px; }
+.vs-lado{ display:flex; flex-direction:column; align-items:center; gap:8px; width:130px; }
+.vs-lado span{ font:800 .85rem var(--font-mono, monospace); color:var(--ink); max-width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.vs-av{ width:78px; height:78px; border-radius:16px; background:var(--paper-2); border:2px solid var(--line); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.vs-av img{ width:100%; height:100%; object-fit:contain; image-rendering:pixelated; } .vs-emoji{ font-size:2rem; }
+.vs-izq{ animation:vsIzq .45s cubic-bezier(.2,.9,.3,1.2) both; } .vs-der{ animation:vsDer .45s cubic-bezier(.2,.9,.3,1.2) both; }
+@keyframes vsIzq{ from{ opacity:0; transform:translateX(-90px); } to{ opacity:1; transform:none; } }
+@keyframes vsDer{ from{ opacity:0; transform:translateX(90px); } to{ opacity:1; transform:none; } }
+.vs-mid{ position:relative; font:400 1.6rem var(--font-pixel, var(--font-mono)); color:var(--red, #ff4133); text-shadow:0 0 16px rgba(255,65,51,.7); animation:vsMid .5s .3s ease both; }
+@keyframes vsMid{ from{ opacity:0; transform:scale(.4); } to{ opacity:1; transform:scale(1); } }
+.vs-flash{ position:absolute; inset:-30px; border-radius:50%; background:radial-gradient(circle, rgba(255,255,255,.8), transparent 60%); animation:vsFlash .5s .42s ease both; pointer-events:none; }
+@keyframes vsFlash{ 0%{ opacity:0; transform:scale(.2); } 40%{ opacity:1; } 100%{ opacity:0; transform:scale(1.6); } }
+@media (prefers-reduced-motion: reduce){ .vs-izq,.vs-der,.vs-mid,.vs-flash,.vs-found,.bt-recall,.bt-sendout{ animation:none; } }
+@media (max-width:560px){ .vs-row{ gap:10px; } .vs-lado{ width:96px; } .vs-av{ width:62px; height:62px; } }

@@ -152,6 +152,25 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       img.onerror = () => { img.onerror = null; img.src = spriteUrl(c.id, c.shiny); };
       img.src = spriteBatalla(c.id, c.shiny, back);
     }
+    const _reduce = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
+    // animación de CAMBIO: el sprite que sale hace "recall" (se encoge y desvanece), se cambia al nuevo, y entra (send-out).
+    function recallSprite(id) {
+      const img = document.getElementById(id); if (!img || _reduce()) return Promise.resolve();
+      return new Promise((r) => { img.classList.add('bt-recall'); setTimeout(r, 240); });
+    }
+    function sendoutSprite(id) {
+      const img = document.getElementById(id); if (!img || _reduce()) return;
+      img.classList.remove('bt-recall'); img.classList.add('bt-sendout'); setTimeout(() => img.classList.remove('bt-sendout'), 320);
+    }
+    // swap completo (recall → setSpr → send-out). Para el PvP (mostrarLado).
+    function swapSprite(imgId, c, back) {
+      const img = document.getElementById(imgId);
+      if (!img || _reduce()) { setSpr(imgId, c, back); return; }
+      img.classList.add('bt-recall');
+      setTimeout(() => { setSpr(imgId, c, back); img.classList.remove('bt-recall'); img.classList.add('bt-sendout'); setTimeout(() => img.classList.remove('bt-sendout'), 320); }, 240);
+    }
+    // elige hasta n elementos al azar de una lista (para el botón "🎲 Al azar").
+    function tomarRandom(arr, n) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a.slice(0, n); }
     const chipsTipo = (tipos) => (tipos || []).map((t) => '<span class="bt-tipo" style="background:' + (TCOLOR[t] || '#888') + '">' + t + '</span>').join('');
     // HUD: género (♂/♀) junto al nombre + habilidad debajo. `c` es un Combatiente (.gen / .hab).
     const genHud = (gen) => gen === 'm' ? '<span class="bt-gen-m">♂</span>' : gen === 'f' ? '<span class="bt-gen-f">♀</span>' : '';
@@ -197,7 +216,8 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const lista = porPoder(arr), tipos = tiposPresentes(lista), sel = new Set();
       let filtro = null;
       $('bt-sel').innerHTML = '<h2 class="liga-h">Elegí tu equipo <small>(hasta 3 · ordenados por poder)</small></h2>'
-        + chipsFiltroTipo(tipos, filtro) + '<div class="bt-picks" id="bt-grid-sel"></div>'
+        + '<div class="bt-selbar">' + chipsFiltroTipo(tipos, filtro) + '<button class="bt-random" id="bt-random" type="button">🎲 Al azar</button></div>'
+        + '<div class="bt-picks" id="bt-grid-sel"></div>'
         + '<button class="btn-tirar" id="bt-go" disabled>⚔️ ¡Pelear!</button>';
       const grid = $('bt-grid-sel');
       function pintarGrid() {
@@ -216,6 +236,11 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
         $('bt-sel').querySelectorAll('.bt-ftipo').forEach((x) => x.classList.toggle('on', (x.dataset.ftipo || '') === (filtro || '')));
         pintarGrid();
       }));
+      $('bt-random').addEventListener('click', () => {
+        const vis = filtro ? lista.filter((x) => x.tipos.includes(filtro)) : lista;
+        sel.clear(); tomarRandom(vis, 3).forEach((x) => sel.add(String(x.m.iid)));
+        pintarGrid(); $('bt-go').disabled = sel.size === 0;
+      });
       $('bt-go').addEventListener('click', () => empezar([...sel]));
     }
 
@@ -319,7 +344,9 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     async function cambiar(i) {
       if (G.lock || i === G.pa || G.equipo[i].hp <= 0) return;
       cancelarTimer(); G.lock = true; render();
-      G.pa = i; render(); cry(miAct().id, 0.4); await narrar('¡Adelante, ' + miAct().nombre + '!');
+      await recallSprite('p-img');                 // el que sale se recoge a la pokébola
+      G.pa = i; render(); sendoutSprite('p-img');   // entra el nuevo
+      cry(miAct().id, 0.4); await narrar('¡Adelante, ' + miAct().nombre + '!');
       await esperar(450);
       { const te = habAlEntrar(miAct(), rivAct()); if (te) { render(); await narrar(te); await esperar(400); } }
       await turnoRival();
@@ -630,6 +657,29 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     }
 
     // ── Selección de equipo (en vivo) ──
+    // Reveal "VS" al encontrar partida: tu nombre/avatar entra desde la izquierda, el del rival desde la
+    // derecha, flash de choque, y a ~1.3s avanza a la selección de equipo.
+    function vsReveal(rival, done) {
+      if (_reduce()) { done(); return; }
+      const av = (n) => n > 0 ? '<img src="' + spriteUrl(n) + '" alt="" />' : '<span class="vs-emoji">🎓</span>';
+      const miNom = (localStorage.getItem('liga:nombre') || 'Vos');
+      const miAv = Number(localStorage.getItem('col:avatar')) || 0;
+      const rivNom = (rival && (rival.nombre || rival.handle)) || 'Rival';
+      const rivAv = Number(rival && rival.avatar) || 0;
+      const ov = document.createElement('div');
+      ov.className = 'vs-reveal';
+      ov.innerHTML =
+        '<div class="vs-found">¡Rival encontrado!</div>' +
+        '<div class="vs-row">' +
+          '<div class="vs-lado vs-izq"><div class="vs-av">' + av(miAv) + '</div><span>' + esc(miNom) + '</span></div>' +
+          '<div class="vs-mid">VS<span class="vs-flash"></span></div>' +
+          '<div class="vs-lado vs-der"><div class="vs-av">' + av(rivAv) + '</div><span>' + esc(rivNom) + '</span></div>' +
+        '</div>';
+      document.body.appendChild(ov);
+      try { import('../lib/sonidos.js').then((s) => s.sonarEpico && s.sonarEpico()).catch(() => {}); } catch {}
+      setTimeout(() => { ov.classList.add('vs-out'); setTimeout(() => { ov.remove(); done(); }, 260); }, 1150);
+    }
+
     function seleccionOnline(rival) {
       selOnline = new Set();
       const arr = pc();
@@ -638,7 +688,8 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       let filtro = null;
       $('bt-online').innerHTML =
         '<h2 class="liga-h">Elegí tu equipo <small>(hasta 3 · por poder) · rival: ' + esc((rival && rival.nombre) || '?') + '</small></h2>' +
-        chipsFiltroTipo(tipos, filtro) + '<div class="bt-picks" id="so-grid"></div>' +
+        '<div class="bt-selbar">' + chipsFiltroTipo(tipos, filtro) + '<button class="bt-random" id="so-random" type="button">🎲 Al azar</button></div>' +
+        '<div class="bt-picks" id="so-grid"></div>' +
         '<button class="btn-tirar" id="so-listo" disabled>✅ ¡Listo!</button><p class="bt-msg" id="so-msg"></p>';
       $('bt-online').hidden = false; $('bt-combate').hidden = true;
       const grid = $('so-grid');
@@ -655,6 +706,11 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
         });
       }
       pintarGrid();
+      $('so-random').addEventListener('click', () => {
+        const vis = filtro ? lista.filter((x) => x.tipos.includes(filtro)) : lista;
+        selOnline.clear(); tomarRandom(vis, 3).forEach((x) => selOnline.add(String(x.m.iid)));
+        pintarGrid(); $('so-listo').disabled = selOnline.size < 1;
+      });
       $('bt-online').querySelectorAll('.bt-ftipo').forEach((b) => b.addEventListener('click', () => {
         filtro = b.dataset.ftipo || null;
         $('bt-online').querySelectorAll('.bt-ftipo').forEach((x) => x.classList.toggle('on', (x.dataset.ftipo || '') === (filtro || '')));
@@ -845,7 +901,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
       const esMio = uid === online.miUid(), pre = esMio ? 'p' : 'r';
       $(pre + '-nom').textContent = c.nombre; $(pre + '-lv').textContent = 'Nv.' + c.nivel;
       $(pre + '-tipos').textContent = (c.tipos || []).join(' · '); $(pre + '-estado').innerHTML = estadoChip(c);
-      setSpr(pre + '-img', c, esMio);
+      swapSprite(pre + '-img', c, esMio);   // recall del que sale → entra el nuevo (animado)
       hp(pre + '-hp', { hp: hpRest != null ? hpRest : c.hp, hpMax: hpMax != null ? hpMax : c.hpMax });
     }
 
@@ -984,7 +1040,7 @@ const temas = datos.map((w) => ({ slug: w.slug, region: w.region, ejercicios: w.
     function wireOnline() {
       if (onlineWired) return; onlineWired = true;
       online.conectarBatalla(localStorage.getItem('liga:nombre') || '');
-      online.onBatalla('emparejado', (d) => { OS = null; seleccionOnline(d.rival); });
+      online.onBatalla('emparejado', (d) => { OS = null; vsReveal(d.rival, () => seleccionOnline(d.rival)); });
       online.onBatalla('enCola', () => loMsg('En cola, esperando rival…'));
       online.onBatalla('codigoCreado', (d) => loMsg('Tu código: ' + d.codigo + ' — compartilo. Esperando rival…'));
       online.onBatalla('invitado', () => loMsg('Invitación enviada. Esperando…'));
