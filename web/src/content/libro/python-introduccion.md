@@ -116,16 +116,6 @@ P: ¿De qué tipo es el valor `6.0`?
 
 ---
 
-```quiz
-P: ¿Qué hace `input()` cuando el usuario escribe el número `42`?
-- Devuelve el entero 42
-- Devuelve el float 42.0
-+ Devuelve el texto "42"
-> `input()` SIEMPRE devuelve un `str`, sin importar qué escriba el usuario. Para tener el número, hay que convertirlo con `int()`.
-```
-
----
-
 ## ⌨️ input(): pedirle datos al usuario
 
 `input()` **pausa** el programa y espera a que el usuario escriba algo y apriete Enter. Lo que escribe se guarda como texto.
@@ -136,6 +126,14 @@ print("¡Hola,", nombre + "!")
 ```
 
 > ⚠️ **MUY IMPORTANTE:** `input()` SIEMPRE devuelve **texto (str)**, aunque el usuario escriba un número. Si querés un número, hay que convertirlo (lo vemos ahora).
+
+```quiz
+P: ¿Qué hace `input()` cuando el usuario escribe el número `42`?
+- Devuelve el entero 42
+- Devuelve el float 42.0
++ Devuelve el texto "42"
+> `input()` SIEMPRE devuelve un `str`, sin importar qué escriba el usuario. Para tener el número, hay que convertirlo con `int()`.
+```
 
 ---
 

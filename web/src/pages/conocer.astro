@@ -36,6 +36,7 @@ const app = u('/');
       --red:#ff4133; --neon:#5dff7a; --pix:'Press Start 2P',monospace; --mono:'JetBrains Mono',monospace; --crt:'VT323',monospace; }
     *{ box-sizing:border-box; } html{ scroll-behavior:smooth; }
     body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--mono);
+      font-variant-ligatures:none; font-feature-settings:"liga" 0,"calt" 0;
       background-image:linear-gradient(rgba(93,255,122,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(93,255,122,.04) 1px,transparent 1px); background-size:32px 32px; }
     .wrap{ max-width:1040px; margin:0 auto; padding:0 20px; } a{ color:inherit; }
     .nav{ position:sticky; top:0; z-index:10; display:flex; align-items:center; gap:10px; height:54px; padding:0 18px;

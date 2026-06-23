@@ -142,7 +142,17 @@ const grupos = agrupar(caps);
       out.innerHTML = '<span class="lbl">SALIDA</span>';
       py.setStdout({ batched: (s) => out.appendChild(document.createTextNode(s + '\n')) });
       py.setStderr({ batched: (s) => { const e = document.createElement('span'); e.className = 'err'; e.textContent = s + '\n'; out.appendChild(e); } });
-      py.setStdin({ stdin: () => { const v = window.prompt('input():'); return v === null ? '' : v; } });
+      // input() interactivo: redefinimos builtins.input para que el cuadro del navegador muestre
+      // el prompt REAL pasado a input("...") (Pyodide no se lo pasa al callback de setStdin).
+      py.setStdin({ stdin: () => '' });
+      py.runPython(
+        'import builtins as _b, js as _js\n' +
+        'def _luca_input(prompt=""):\n' +
+        '    _b.print(prompt, end="")\n' +
+        '    _v = _js.window.prompt(str(prompt))\n' +
+        '    return "" if _v is None else str(_v)\n' +
+        '_b.input = _luca_input\n'
+      );
       if (usaPlot) await py.runPythonAsync("import matplotlib; matplotlib.use('AGG')");
       await py.runPythonAsync(codigo);
       if (usaPlot) {

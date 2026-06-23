@@ -30,6 +30,14 @@ strong{color:var(--red-ink);}
 code{font-family:var(--font-mono); font-size:.85em; background:#fbe7e1; color:var(--red-deep);
   border:1px solid #f2cdc1; border-radius:6px; padding:.06em .4em;}
 
+/* Sin ligaduras: que ==, !=, >=, <=, -> se vean como DOS caracteres y no fusionados en un
+   glifo. JetBrains Mono une los operadores por defecto; lo apagamos en todo el sitio (se
+   hereda, así cubre también los divs con --font-mono por estilo inline). */
+body, code, kbd, samp, pre, .cm-editor, .astro-code{
+  font-variant-ligatures:none;
+  font-feature-settings:"liga" 0,"calt" 0;
+}
+
 /* fondo con grilla de puntos */
 .bg-grid{position:fixed; inset:0; z-index:-2; pointer-events:none;
   background:
