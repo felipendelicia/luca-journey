@@ -1,0 +1,38 @@
+name: shared-postgres
+
+# Instancia Postgres COMPARTIDA para varios proyectos en la Pi.
+# - Lifecycle propio (independiente de luca-journey u otros).
+# - Accesible SOLO por la red Docker `shared-db` (sin puertos al host).
+# - Reusa el volumen histórico `luca-journey_dbdata` (external): NO se migra data.
+#   El cluster ya tiene el rol/DB superusuario `luca`.
+# Para exponer el puerto 5433 en DEV: `-f docker-compose.yml -f docker-compose.dev.yml`.
+
+services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      # Solo se usan si el volumen estuviera vacío (init). Con data existente se ignoran.
+      POSTGRES_USER: luca
+      POSTGRES_PASSWORD: luca
+      POSTGRES_DB: luca
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    networks:
+      shared-db:
+        aliases:
+          - postgres   # los proyectos conectan a `postgres:5432`
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U luca"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+networks:
+  shared-db:
+    external: true
+
+volumes:
+  dbdata:
+    external: true
+    name: luca-journey_dbdata   # volumen histórico; la data vive acá

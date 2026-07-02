@@ -1,0 +1,8 @@
+# Override OPT-IN para desarrollo local: publica el puerto al host para poder
+# correr la API fuera de docker apuntando a localhost:5433.
+# NO se auto-carga: usar `docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d`.
+# En la Pi NUNCA se usa este archivo (Postgres queda sin puertos al host).
+services:
+  postgres:
+    ports:
+      - "5433:5432"

@@ -34,12 +34,18 @@ El backend es **NestJS 10 + Prisma v7 + Postgres**, corriendo en Docker. Reempla
 - **Ubicación:** `api/` (NestJS). Módulos: `auth` (Google OAuth → JWT), `progreso`,
   `intercambios`, `social` (perfiles / amigos / ofertas), `desafios`, `realtime` (gateway
   socket.io).
+- **Postgres compartido:** el `db` ya **no** vive en este compose. Corre como instancia
+  **compartida** en `shared-postgres/` (red Docker externa `shared-db`), reutilizable por
+  varios proyectos. La `api` se conecta por el hostname interno `postgres:5432`. Ver
+  `shared-postgres/README.md`.
 - **Correr localmente:**
   ```
-  docker compose up -d --build
+  docker network create shared-db                                   # una vez
+  cd shared-postgres && docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+  cd .. && docker compose up -d --build
   ```
-  Levanta los servicios `db` (Postgres, puerto host **5433**) y `api` (NestJS). El contenedor
-  `api` corre `prisma migrate deploy` al arrancar.
+  Primero levanta `shared-postgres` (Postgres, expone **5433** solo en dev vía su override),
+  después la `api` (NestJS), que corre `prisma migrate deploy` al arrancar.
 - **Env del servidor** (`api/.env`): `DATABASE_URL`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`,
   `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL`, `FRONTEND_URL`, `CORS_ORIGINS`.
   La API necesita `GOOGLE_*` no vacíos para arrancar.
@@ -82,8 +88,11 @@ docker save luca-journey-api:latest | gzip -1 | ssh felipe@192.168.1.112 'gunzip
 # 4) sincronizar compose + fuente (liviano; el build real no se corre en la Pi)
 rsync -az --exclude node_modules --exclude dist --exclude .env --exclude '*.tsbuildinfo' \
   docker-compose.yml api felipe@192.168.1.112:luca-journey/
-# 5) levantar en la Pi (usa la imagen cargada; baja postgres:17 arm64; corre migrate deploy)
-ssh felipe@192.168.1.112 'cd ~/luca-journey && docker compose up -d'
+rsync -az shared-postgres felipe@192.168.1.112:                       # compose del Postgres compartido
+# 5) levantar en la Pi: PRIMERO el Postgres compartido, después la api
+ssh felipe@192.168.1.112 'docker network create shared-db 2>/dev/null; \
+  cd ~/shared-postgres && docker compose up -d && \
+  cd ~/luca-journey && docker compose up -d'
 ```
 
 Verificación: `curl http://192.168.1.112:3000/auth/me` → `401`. La API necesita `GOOGLE_*`

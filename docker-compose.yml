@@ -1,30 +1,14 @@
-services:
-  db:
-    image: postgres:17
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: luca
-      POSTGRES_PASSWORD: luca
-      POSTGRES_DB: luca
-    ports:
-      - "5433:5432"   # 5433 host para no chocar con un postgres local
-    volumes:
-      - dbdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U luca"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+# Postgres ya NO vive acá: corre como instancia compartida en `../shared-postgres`
+# (red Docker externa `shared-db`). Antes de levantar esto, subí shared-postgres.
+# Ver shared-postgres/README.md.
 
+services:
   api:
     build: ./api
     image: luca-journey-api:latest   # tag fijo: permite buildear en otra máquina y cargar la imagen en la Pi (sin rebuild)
     restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
     environment:
-      DATABASE_URL: postgres://luca:luca@db:5432/luca
+      DATABASE_URL: postgres://luca:luca@postgres:5432/luca   # `postgres` = alias en la red shared-db
       JWT_SECRET: ${JWT_SECRET}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
@@ -38,6 +22,9 @@ services:
       TLS_KEY: "${TLS_KEY:-}"
     ports:
       - "${API_PUBLISH:-3000:3000}"
+    networks:
+      - shared-db
 
-volumes:
-  dbdata:
+networks:
+  shared-db:
+    external: true
