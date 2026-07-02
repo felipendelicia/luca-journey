@@ -20,12 +20,19 @@ lugar corre **una instancia compartida**, con **una base + un rol por proyecto**
 
 ## Correr
 
-### En la Pi (producción)
+### En la Pi (producción, EXPUESTO a internet con TLS)
+
+La Pi corre con el override `docker-compose.expose.yml`, que publica el `5432`, fuerza SSL
+y usa el `pg_hba` endurecido. Requiere el cert copiado en `./certs/` (lo deja
+`refresh-pg-certs.sh`).
 
 ```bash
-docker network create shared-db          # una sola vez
-cd ~/shared-postgres && docker compose up -d
+docker network create shared-db                       # una sola vez
+sudo ~/shared-postgres/refresh-pg-certs.sh            # copia el cert LE con perms de postgres (uid 999)
+cd ~/shared-postgres && docker compose -f docker-compose.yml -f docker-compose.expose.yml up -d
 ```
+
+Ver **Exposición a internet** más abajo.
 
 ### En dev (local), exponiendo 5433 al host
 
@@ -67,6 +74,30 @@ Luego cada proyecto (p.ej. `luca-journey`) se levanta aparte y se une a `shared-
 
 El rol `miproyecto` es NO-superusuario y dueño solo de su base → no ve las bases de
 otros proyectos.
+
+## Exposición a internet
+
+La instancia está publicada en `poke.servegame.com:5432` (port-forward del modem →
+`192.168.1.112:5432`) para que apps en la nube (p.ej. Vercel) la usen. Blindaje:
+
+- **TLS obligatorio**: `pg_hba.conf` solo acepta `hostssl` (SSL) en TCP; sin SSL se rechaza.
+  El cert es el de Let's Encrypt de `poke.servegame.com` (mismo que la API en 443).
+- **Passwords fuertes scram** por rol. El superusuario `luca` dejó su password trivial.
+- **Aislamiento por base**: cada proyecto tiene rol NO-superusuario dueño solo de su base,
+  y `REVOKE CONNECT ... FROM PUBLIC` en cada DB.
+- **Renovación**: el hook `/etc/letsencrypt/renewal-hooks/deploy/restart-postgres.sh` corre
+  `refresh-pg-certs.sh` y reinicia el contenedor al renovar el cert (si no, el TLS queda
+  con cert viejo en ~60 días).
+
+Strings de conexión:
+- **Desde la LAN** (dev/migraciones): `...@192.168.1.112:5432/<db>?sslmode=require`
+  (la IP no matchea el cert → `require`, no `verify-full`).
+- **Desde internet / Vercel**: `...@poke.servegame.com:5432/<db>?sslmode=verify-full`
+  (el hostname matchea el cert → verificación completa).
+
+> Postura honesta: el `5432` queda abierto al mundo aceptando intentos de auth. La defensa
+> es TLS + passwords fuertes. Endurecimiento opcional futuro: `userland-proxy=false` +
+> allowlist de IPs (Vercel rota IPs, así que requiere su feature de IP fija).
 
 ## Backup
 

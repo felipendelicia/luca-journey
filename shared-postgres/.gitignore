@@ -1,0 +1,3 @@
+# El cert copiado para Postgres (server.crt/server.key) NO se versiona: es material TLS
+# de producción, se genera en la Pi con refresh-pg-certs.sh.
+certs/

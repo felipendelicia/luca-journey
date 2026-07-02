@@ -89,9 +89,11 @@ docker save luca-journey-api:latest | gzip -1 | ssh felipe@192.168.1.112 'gunzip
 rsync -az --exclude node_modules --exclude dist --exclude .env --exclude '*.tsbuildinfo' \
   docker-compose.yml api felipe@192.168.1.112:luca-journey/
 rsync -az shared-postgres felipe@192.168.1.112:                       # compose del Postgres compartido
-# 5) levantar en la Pi: PRIMERO el Postgres compartido, después la api
+# 5) levantar en la Pi: PRIMERO el Postgres compartido (con el override de exposición:
+#    TLS + puerto 5432 + pg_hba endurecido), después la api. Ver shared-postgres/README.md.
 ssh felipe@192.168.1.112 'docker network create shared-db 2>/dev/null; \
-  cd ~/shared-postgres && docker compose up -d && \
+  sudo ~/shared-postgres/refresh-pg-certs.sh; \
+  cd ~/shared-postgres && docker compose -f docker-compose.yml -f docker-compose.expose.yml up -d && \
   cd ~/luca-journey && docker compose up -d'
 ```
 

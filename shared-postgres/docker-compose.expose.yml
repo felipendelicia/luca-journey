@@ -1,0 +1,21 @@
+# Override SOLO para la Pi: expone Postgres a internet con TLS.
+#   docker compose -f docker-compose.yml -f docker-compose.expose.yml up -d
+# NO usar en dev: requiere el cert de poke.servegame.com en ./certs/ (server.crt/server.key,
+# los deja refresh-pg-certs.sh). Publica el 5432 al host (para el port-forward del modem),
+# fuerza SSL y usa el pg_hba endurecido. Ver README.md.
+services:
+  postgres:
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./certs:/certs:ro
+      - ./pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+    command:
+      - -c
+      - ssl=on
+      - -c
+      - ssl_cert_file=/certs/server.crt
+      - -c
+      - ssl_key_file=/certs/server.key
+      - -c
+      - hba_file=/etc/postgresql/pg_hba.conf

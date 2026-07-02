@@ -8,7 +8,9 @@ services:
     image: luca-journey-api:latest   # tag fijo: permite buildear en otra máquina y cargar la imagen en la Pi (sin rebuild)
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgres://luca:luca@postgres:5432/luca   # `postgres` = alias en la red shared-db
+      # Dev usa el default (luca:luca, sin SSL). En la Pi el .env define DATABASE_URL con
+      # password fuerte + `?sslmode=require` (la instancia compartida exige TLS al estar expuesta).
+      DATABASE_URL: ${DATABASE_URL:-postgres://luca:luca@postgres:5432/luca}   # `postgres` = alias en shared-db
       JWT_SECRET: ${JWT_SECRET}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
