@@ -90,8 +90,15 @@ La instancia está publicada en `poke.servegame.com:5432` (port-forward del mode
   con cert viejo en ~60 días).
 
 Strings de conexión:
-- **Desde la LAN** (dev/migraciones): `...@192.168.1.112:5432/<db>?sslmode=require`
-  (la IP no matchea el cert → `require`, no `verify-full`).
+- **Desde otro contenedor en la red `shared-db`** (p.ej. la API de luca, node-postgres):
+  `...@postgres:5432/<db>?sslmode=no-verify`. OJO: node-postgres/`pg` trata `sslmode=require`
+  como verificación **completa** (incluye hostname), a diferencia de libpq. El alias interno
+  `postgres` no matchea el cert de `poke.servegame.com` → con `require` el TLS se rechaza
+  (`Hostname/IP does not match certificate's altnames`) y **toda** operación con DB tira 500.
+  `no-verify` cifra (satisface el `hostssl`) sin validar el cert (correcto en un bridge Docker
+  aislado del mismo host; el auth sigue por scram).
+- **Desde la LAN** (dev/migraciones, psql/libpq): `...@192.168.1.112:5432/<db>?sslmode=require`
+  (la IP no matchea el cert → `require`, que en libpq NO verifica; no `verify-full`).
 - **Desde internet / Vercel**: `...@poke.servegame.com:5432/<db>?sslmode=verify-full`
   (el hostname matchea el cert → verificación completa).
 

@@ -9,7 +9,9 @@ services:
     restart: unless-stopped
     environment:
       # Dev usa el default (luca:luca, sin SSL). En la Pi el .env define DATABASE_URL con
-      # password fuerte + `?sslmode=require` (la instancia compartida exige TLS al estar expuesta).
+      # password fuerte + `?sslmode=no-verify` (el Postgres compartido exige TLS -hostssl-, pero
+      # node-postgres trata `require` como verify-full y el alias interno `postgres` no matchea el
+      # cert de poke.servegame.com → usar `no-verify`: cifra sin verificar. Ver shared-postgres/README.md).
       DATABASE_URL: ${DATABASE_URL:-postgres://luca:luca@postgres:5432/luca}   # `postgres` = alias en shared-db
       JWT_SECRET: ${JWT_SECRET}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
